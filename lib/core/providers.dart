@@ -26,6 +26,9 @@ import '../features/backup/domain/backup_repository.dart';
 import '../features/pos/domain/complete_sale_use_case.dart';
 import '../features/printing/domain/printer_factory.dart';
 import '../features/printing/domain/printer_service.dart';
+import '../features/audit/data/audit_repository_drift.dart';
+import '../features/audit/domain/audit_repository.dart';
+import '../features/backup/domain/backup_service.dart';
 
 /// The single AppDatabase instance for the whole app lifetime. Kept alive
 /// for the entire process — never disposed mid-session.
@@ -81,6 +84,14 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
 
 final backupRepositoryProvider = Provider<BackupRepository>((ref) {
   return DriftBackupRepository(ref.watch(databaseProvider));
+});
+
+final auditRepositoryProvider = Provider<AuditRepository>((ref) {
+  return DriftAuditRepository(ref.watch(databaseProvider));
+});
+
+final backupServiceProvider = Provider<BackupService>((ref) {
+  return BackupService(ref.watch(backupRepositoryProvider));
 });
 
 final completeSaleUseCaseProvider = Provider<CompleteSaleUseCase>((ref) {

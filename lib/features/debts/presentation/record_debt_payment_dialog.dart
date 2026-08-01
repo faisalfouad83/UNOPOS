@@ -68,6 +68,14 @@ Future<void> showRecordDebtPaymentDialog(BuildContext context, WidgetRef ref, De
                     isCash: isCash,
                   );
               await ref.read(debtsRepositoryProvider).attachJournalEntryToPayment(paymentId, journalEntry.id);
+              await ref.read(auditRepositoryProvider).log(
+                    storeId: session.store!.id,
+                    userId: session.employee!.id,
+                    action: 'debt_payment_recorded',
+                    entityType: 'debt_ledger_entry',
+                    entityId: entry.id,
+                    afterValueJson: '$amount',
+                  );
 
               if (context.mounted) Navigator.of(context).pop();
             },

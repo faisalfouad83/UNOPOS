@@ -67,6 +67,14 @@ Future<void> showSupplierPaymentDialog(BuildContext context, WidgetRef ref, Supp
                     isCash: isCash,
                   );
               await ref.read(suppliersRepositoryProvider).attachJournalEntry(txId, journalEntry.id);
+              await ref.read(auditRepositoryProvider).log(
+                    storeId: session.store!.id,
+                    userId: session.employee!.id,
+                    action: 'supplier_payment_recorded',
+                    entityType: 'supplier',
+                    entityId: supplier.id,
+                    afterValueJson: '$amount',
+                  );
 
               if (context.mounted) Navigator.of(context).pop();
             },
