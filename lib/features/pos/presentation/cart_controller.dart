@@ -90,6 +90,15 @@ class CartController extends Notifier<CartState> {
     state = state.copyWith(lines: state.lines.where((l) => l.product.id != productId).toList());
   }
 
+  void setLineDiscount(String productId, int discountAmountMinorUnits) {
+    final updated = state.lines.map((l) {
+      if (l.product.id != productId) return l;
+      final clamped = discountAmountMinorUnits.clamp(0, l.grossMinorUnits);
+      return l.copyWith(discountAmountMinorUnits: clamped);
+    }).toList();
+    state = state.copyWith(lines: updated);
+  }
+
   void loadHeldSale(SaleRecord sale, List<ProductRecord> products) {
     final byId = {for (final p in products) p.id: p};
     final lines = sale.lines

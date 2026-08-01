@@ -17,6 +17,11 @@ abstract class DebtsRepository {
 
   Stream<List<DebtLedgerEntryRecord>> watchDebtsForCustomer(String customerId);
   Stream<List<DebtLedgerEntryRecord>> watchOpenDebts(String storeId);
+  Future<DebtLedgerEntryRecord?> findBySaleId(String saleId);
+
+  /// Used when a pay-later sale is partially or fully returned — shrinks
+  /// what the customer owes instead of leaving a stale balance.
+  Future<void> reduceOriginalAmount(String debtLedgerEntryId, int reduceByMinorUnits);
 
   /// Inserts the payment row and updates the parent entry's amountPaid/status.
   /// Returns the new payment's id. Does not touch accounting — orchestrate

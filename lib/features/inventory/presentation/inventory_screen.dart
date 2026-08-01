@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
+import 'catalog_tab.dart';
 import 'products_tab.dart';
 import 'purchase_orders_tab.dart';
 import 'stock_tab.dart';
@@ -12,15 +13,17 @@ class InventoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.inventoryTitle),
           bottom: TabBar(
+            isScrollable: true,
             tabs: [
               Tab(text: l10n.inventoryProducts),
               Tab(text: l10n.inventoryStockLevel),
               Tab(text: l10n.inventoryPurchaseOrders),
+              const Tab(text: 'Catalog'),
             ],
           ),
         ),
@@ -29,6 +32,7 @@ class InventoryScreen extends StatelessWidget {
             ProductsTab(),
             StockTab(),
             PurchaseOrdersTab(),
+            CatalogTab(),
           ],
         ),
       ),

@@ -658,6 +658,36 @@ abstract class AppLocalizations {
   /// **'Opening Cash Float'**
   String get posOpeningFloat;
 
+  /// No description provided for @posSalesHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales History'**
+  String get posSalesHistory;
+
+  /// No description provided for @posProcessReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Process Return'**
+  String get posProcessReturn;
+
+  /// No description provided for @posRefundMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund Method'**
+  String get posRefundMethod;
+
+  /// No description provided for @posReturnReducesBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'This reduces the customer\'s outstanding balance'**
+  String get posReturnReducesBalance;
+
+  /// No description provided for @posNoReturnableQuantitySelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one item to return'**
+  String get posNoReturnableQuantitySelected;
+
   /// No description provided for @inventoryTitle.
   ///
   /// In en, this message translates to:

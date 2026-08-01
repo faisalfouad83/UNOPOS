@@ -44,6 +44,21 @@ abstract class InventoryRepository {
 
   Future<void> receiveStockTransfer(String transferId, String receivedByUserId);
 
+  Stream<List<StockTransferRecord>> watchStockTransfers(String storeId);
+
+  Future<DiscountRecord> createDiscount({
+    required String storeId,
+    required String name,
+    required DiscountType type,
+    required int value,
+    String appliedScope = 'cart',
+    String? scopeTargetId,
+  });
+
+  Stream<List<DiscountRecord>> watchDiscounts(String storeId);
+
+  Future<void> setDiscountActive(String discountId, bool isActive);
+
   Future<PurchaseOrderRecord> createPurchaseOrder({
     required String storeId,
     required String branchId,

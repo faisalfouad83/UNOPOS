@@ -352,6 +352,83 @@ class DriftInventoryRepository implements InventoryRepository {
   }
 
   @override
+  Stream<List<StockTransferRecord>> watchStockTransfers(String storeId) {
+    final query = _db.select(_db.stockTransfers)
+      ..where((t) => t.storeId.equals(storeId))
+      ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
+    return query.watch().asyncMap((rows) async {
+      final result = <StockTransferRecord>[];
+      for (final row in rows) {
+        final lines = await (_db.select(_db.stockTransferLines)..where((t) => t.stockTransferId.equals(row.id))).get();
+        result.add(StockTransferRecord(
+          id: row.id,
+          storeId: row.storeId,
+          fromBranchId: row.fromBranchId,
+          toBranchId: row.toBranchId,
+          status: row.status,
+          requestedByUserId: row.requestedByUserId,
+          receivedByUserId: row.receivedByUserId,
+          createdAt: row.createdAt,
+          receivedAt: row.receivedAt,
+          lines: lines.map((l) => StockTransferLineRecord(productId: l.productId, quantity: l.quantity)).toList(),
+        ));
+      }
+      return result;
+    });
+  }
+
+  DiscountRecord _mapDiscount(Discount row) => DiscountRecord(
+        id: row.id,
+        storeId: row.storeId,
+        name: row.name,
+        type: row.type == 'amountOff' ? DiscountType.amountOff : DiscountType.percentOff,
+        value: row.value,
+        appliedScope: row.appliedScope,
+        scopeTargetId: row.scopeTargetId,
+        startDate: row.startDate,
+        endDate: row.endDate,
+        isActive: row.isActive,
+      );
+
+  @override
+  Future<DiscountRecord> createDiscount({
+    required String storeId,
+    required String name,
+    required DiscountType type,
+    required int value,
+    String appliedScope = 'cart',
+    String? scopeTargetId,
+  }) async {
+    final id = IdGenerator.newId();
+    await _db.into(_db.discounts).insert(
+          DiscountsCompanion.insert(
+            id: id,
+            storeId: storeId,
+            name: name,
+            type: type.name,
+            value: value,
+            appliedScope: appliedScope,
+            scopeTargetId: Value(scopeTargetId),
+          ),
+        );
+    return DiscountRecord(id: id, storeId: storeId, name: name, type: type, value: value, appliedScope: appliedScope, scopeTargetId: scopeTargetId);
+  }
+
+  @override
+  Stream<List<DiscountRecord>> watchDiscounts(String storeId) {
+    return (_db.select(_db.discounts)
+          ..where((t) => t.storeId.equals(storeId) & t.isActive.equals(true)))
+        .watch()
+        .map((rows) => rows.map(_mapDiscount).toList());
+  }
+
+  @override
+  Future<void> setDiscountActive(String discountId, bool isActive) async {
+    await (_db.update(_db.discounts)..where((t) => t.id.equals(discountId)))
+        .write(DiscountsCompanion(isActive: Value(isActive)));
+  }
+
+  @override
   Future<PurchaseOrderRecord> createPurchaseOrder({
     required String storeId,
     required String branchId,

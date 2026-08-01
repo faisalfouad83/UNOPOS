@@ -7,12 +7,15 @@ import '../../../core/theming/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_models.dart';
+import '../../inventory/presentation/discounts_section.dart';
+import '../../inventory/presentation/tax_rates_section.dart';
 import '../../shifts/presentation/close_shift_dialog.dart';
 import '../../shifts/presentation/open_shift_dialog.dart';
 import '../../shifts/presentation/shift_providers.dart';
 import '../domain/pos_models.dart';
 import 'cart_controller.dart';
 import 'checkout_sheet.dart';
+import 'sales_history_screen.dart';
 
 typedef _ProductQueryKey = ({String storeId, String query});
 typedef _BranchKey = ({String storeId, String branchId});
@@ -58,6 +61,13 @@ class PosScreen extends ConsumerWidget {
                     ),
                   ),
             orElse: () => const SizedBox.shrink(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.receipt_long_outlined),
+            tooltip: l10n.posSalesHistory,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => SalesHistoryScreen(storeId: storeId)),
+            ),
           ),
           _HeldSalesButton(storeId: storeId, branchId: branchId),
         ],
@@ -250,12 +260,19 @@ class _ProductTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final taxRates = ref.watch(taxRatesProvider(product.storeId)).value ?? const [];
+    final taxRatePercent = product.taxRateId == null
+        ? 0.0
+        : (taxRates.where((t) => t.id == product.taxRateId).isEmpty
+            ? 0.0
+            : taxRates.firstWhere((t) => t.id == product.taxRateId).ratePercent);
+
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => ref.read(cartControllerProvider.notifier).addProduct(product),
+        onTap: () => ref.read(cartControllerProvider.notifier).addProduct(product, taxRatePercent: taxRatePercent),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -296,6 +313,7 @@ class _CartPanel extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final line = cart.lines[index];
                     return ListTile(
+                      onLongPress: () => _showLineDiscountDialog(context, ref, line),
                       leading: IconButton(
                         icon: const Icon(Icons.remove_circle_outline),
                         onPressed: () =>
@@ -307,7 +325,11 @@ class _CartPanel extends ConsumerWidget {
                           Text('${line.quantity}'),
                         ],
                       ),
-                      subtitle: Text(Money.format(line.unitPriceMinorUnits, currencySymbol: r'$')),
+                      subtitle: Text(
+                        line.discountAmountMinorUnits > 0
+                            ? '${Money.format(line.unitPriceMinorUnits, currencySymbol: r'$')} · -${Money.format(line.discountAmountMinorUnits, currencySymbol: r'$')}'
+                            : Money.format(line.unitPriceMinorUnits, currencySymbol: r'$'),
+                      ),
                       trailing: SizedBox(
                         width: 96,
                         child: Row(
@@ -384,4 +406,65 @@ class _CartPanel extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// Long-press a cart line to apply either one of the store's configured
+/// discounts or a manual percent/amount override, for cashiers handling a
+/// one-off price adjustment at checkout.
+Future<void> _showLineDiscountDialog(BuildContext context, WidgetRef ref, CartLine line) async {
+  final l10n = AppLocalizations.of(context);
+  final storeId = ref.read(sessionControllerProvider).store?.id;
+  if (storeId == null) return;
+  final discounts = await ref.read(discountsProvider(storeId).future);
+  if (!context.mounted) return;
+
+  final customController = TextEditingController();
+
+  await showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('${l10n.commonDiscount}: ${line.product.name}'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (line.discountAmountMinorUnits > 0)
+            TextButton.icon(
+              icon: const Icon(Icons.close),
+              label: const Text('Remove discount'),
+              onPressed: () {
+                ref.read(cartControllerProvider.notifier).setLineDiscount(line.product.id, 0);
+                Navigator.of(context).pop();
+              },
+            ),
+          ...discounts.map((d) => ListTile(
+                title: Text(d.name),
+                subtitle: Text(d.type == DiscountType.percentOff ? '${d.value}%' : Money.format(d.value, currencySymbol: r'$')),
+                onTap: () {
+                  ref
+                      .read(cartControllerProvider.notifier)
+                      .setLineDiscount(line.product.id, d.amountForMinorUnits(line.grossMinorUnits));
+                  Navigator.of(context).pop();
+                },
+              )),
+          const Divider(),
+          TextField(
+            controller: customController,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(labelText: 'Custom amount off'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
+        FilledButton(
+          onPressed: () {
+            final amount = Money.toMinorUnits(double.tryParse(customController.text) ?? 0);
+            ref.read(cartControllerProvider.notifier).setLineDiscount(line.product.id, amount);
+            Navigator.of(context).pop();
+          },
+          child: Text(l10n.actionConfirm),
+        ),
+      ],
+    ),
+  );
 }

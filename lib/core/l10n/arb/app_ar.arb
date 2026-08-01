@@ -102,6 +102,11 @@
   "posShiftOpen": "فتح الوردية",
   "posShiftClose": "إغلاق الوردية",
   "posOpeningFloat": "رصيد الصندوق الافتتاحي",
+  "posSalesHistory": "سجل المبيعات",
+  "posProcessReturn": "معالجة المرتجع",
+  "posRefundMethod": "طريقة الاسترجاع",
+  "posReturnReducesBalance": "سيؤدي هذا إلى تخفيض رصيد الزبون المستحق",
+  "posNoReturnableQuantitySelected": "اختر عنصراً واحداً على الأقل للإرجاع",
 
   "inventoryTitle": "المخزون",
   "inventoryProducts": "المنتجات",

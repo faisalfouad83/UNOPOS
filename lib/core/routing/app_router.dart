@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'app_bootstrap.dart';
 import 'route_guard.dart';
 import 'route_paths.dart';
-import '../widgets/coming_soon_screen.dart';
 import '../../features/auth/domain/auth_models.dart';
 import '../../features/auth/domain/session_controller.dart';
 import '../../features/auth/presentation/pin_pad_screen.dart';
@@ -23,6 +22,7 @@ import '../../features/debts/presentation/debts_screen.dart';
 import '../../features/suppliers/presentation/suppliers_screen.dart';
 import '../../features/accounting/presentation/accounting_screen.dart';
 import '../../features/hr/presentation/hr_screen.dart';
+import '../../features/reports/presentation/reports_dashboard_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 
 class _GoRouterRefreshNotifier extends ChangeNotifier {
@@ -71,11 +71,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: RoutePaths.suppliers, builder: (context, state) => const SuppliersScreen()),
           GoRoute(path: RoutePaths.accounting, builder: (context, state) => const AccountingScreen()),
           GoRoute(path: RoutePaths.hr, builder: (context, state) => const HrScreen()),
-          GoRoute(
-            path: RoutePaths.reports,
-            builder: (context, state) =>
-                const ComingSoonScreen(title: 'Reports', icon: Icons.bar_chart_outlined),
-          ),
+          GoRoute(path: RoutePaths.reports, builder: (context, state) => const ReportsDashboardScreen()),
           GoRoute(path: RoutePaths.settings, builder: (context, state) => const SettingsScreen()),
         ],
       ),

@@ -14,86 +14,118 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
   final session = ref.read(sessionControllerProvider);
   if (session.store == null) return;
 
+  final repo = ref.read(inventoryRepositoryProvider);
+  final categories = await repo.watchCategories(session.store!.id).first;
+  final taxRates = await repo.watchTaxRates(session.store!.id).first;
+  if (!context.mounted) return;
+
   final nameController = TextEditingController(text: existing?.name);
   final skuController = TextEditingController(text: existing?.sku);
   final barcodeController = TextEditingController(text: existing?.barcode);
-  final costController = TextEditingController(text: existing == null ? '' : Money.toMajorUnits(existing.costPriceMinorUnits).toStringAsFixed(2));
-  final priceController = TextEditingController(text: existing == null ? '' : Money.toMajorUnits(existing.sellPriceMinorUnits).toStringAsFixed(2));
+  final costController =
+      TextEditingController(text: existing == null ? '' : Money.toMajorUnits(existing.costPriceMinorUnits).toStringAsFixed(2));
+  final priceController =
+      TextEditingController(text: existing == null ? '' : Money.toMajorUnits(existing.sellPriceMinorUnits).toStringAsFixed(2));
   final reorderController = TextEditingController(text: '${existing?.reorderLevel ?? 0}');
+  String? categoryId = existing?.categoryId;
+  String? taxRateId = existing?.taxRateId ?? (taxRates.where((t) => t.isDefault).isNotEmpty ? taxRates.firstWhere((t) => t.isDefault).id : null);
 
   await showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text(existing == null ? AppLocalizations.of(context).inventoryAddProduct : existing.name),
-      content: SizedBox(
-        width: 420,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameController, decoration: InputDecoration(labelText: AppLocalizations.of(context).commonName)),
-              const SizedBox(height: 12),
-              TextField(controller: skuController, decoration: const InputDecoration(labelText: 'SKU')),
-              const SizedBox(height: 12),
-              BarcodeInputField(controller: barcodeController, label: AppLocalizations.of(context).inventoryBarcode),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: costController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                      decoration: const InputDecoration(labelText: 'Cost price'),
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: Text(existing == null ? AppLocalizations.of(context).inventoryAddProduct : existing.name),
+        content: SizedBox(
+          width: 420,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(controller: nameController, decoration: InputDecoration(labelText: AppLocalizations.of(context).commonName)),
+                const SizedBox(height: 12),
+                TextField(controller: skuController, decoration: const InputDecoration(labelText: 'SKU')),
+                const SizedBox(height: 12),
+                BarcodeInputField(controller: barcodeController, label: AppLocalizations.of(context).inventoryBarcode),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: costController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                        decoration: const InputDecoration(labelText: 'Cost price'),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: priceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).commonPrice),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: priceController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context).commonPrice),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: reorderController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(labelText: 'Reorder level'),
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String?>(
+                  initialValue: categoryId,
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context).inventoryCategories),
+                  items: [
+                    const DropdownMenuItem(value: null, child: Text('—')),
+                    ...categories.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))),
+                  ],
+                  onChanged: (v) => setState(() => categoryId = v),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String?>(
+                  initialValue: taxRateId,
+                  decoration: const InputDecoration(labelText: 'Tax rate'),
+                  items: [
+                    const DropdownMenuItem(value: null, child: Text('None')),
+                    ...taxRates.map((t) => DropdownMenuItem(value: t.id, child: Text('${t.name} (${t.ratePercent}%)'))),
+                  ],
+                  onChanged: (v) => setState(() => taxRateId = v),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: reorderController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(labelText: 'Reorder level'),
+                ),
+              ],
+            ),
           ),
         ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(AppLocalizations.of(context).actionCancel)),
+          FilledButton(
+            onPressed: () async {
+              final record = ProductRecord(
+                id: existing?.id ?? IdGenerator.newId(),
+                storeId: session.store!.id,
+                categoryId: categoryId,
+                sku: skuController.text.trim(),
+                barcode: barcodeController.text.trim().isEmpty ? null : barcodeController.text.trim(),
+                name: nameController.text.trim(),
+                taxRateId: taxRateId,
+                costPriceMinorUnits: Money.toMinorUnits(double.tryParse(costController.text) ?? 0),
+                sellPriceMinorUnits: Money.toMinorUnits(double.tryParse(priceController.text) ?? 0),
+                reorderLevel: int.tryParse(reorderController.text) ?? 0,
+              );
+              if (existing == null) {
+                await repo.createProduct(record);
+              } else {
+                await repo.updateProduct(record);
+              }
+              if (context.mounted) Navigator.of(context).pop();
+            },
+            child: Text(AppLocalizations.of(context).actionSave),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(AppLocalizations.of(context).actionCancel)),
-        FilledButton(
-          onPressed: () async {
-            final repo = ref.read(inventoryRepositoryProvider);
-            final record = ProductRecord(
-              id: existing?.id ?? IdGenerator.newId(),
-              storeId: session.store!.id,
-              sku: skuController.text.trim(),
-              barcode: barcodeController.text.trim().isEmpty ? null : barcodeController.text.trim(),
-              name: nameController.text.trim(),
-              costPriceMinorUnits: Money.toMinorUnits(double.tryParse(costController.text) ?? 0),
-              sellPriceMinorUnits: Money.toMinorUnits(double.tryParse(priceController.text) ?? 0),
-              reorderLevel: int.tryParse(reorderController.text) ?? 0,
-            );
-            if (existing == null) {
-              await repo.createProduct(record);
-            } else {
-              await repo.updateProduct(record);
-            }
-            if (context.mounted) Navigator.of(context).pop();
-          },
-          child: Text(AppLocalizations.of(context).actionSave),
-        ),
-      ],
     ),
   );
 }

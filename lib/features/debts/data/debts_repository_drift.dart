@@ -127,6 +127,28 @@ class DriftDebtsRepository implements DebtsRepository {
   }
 
   @override
+  Future<DebtLedgerEntryRecord?> findBySaleId(String saleId) async {
+    final row =
+        await (_db.select(_db.debtLedgerEntries)..where((t) => t.saleId.equals(saleId))).getSingleOrNull();
+    return row == null ? null : _mapEntry(row);
+  }
+
+  @override
+  Future<void> reduceOriginalAmount(String debtLedgerEntryId, int reduceByMinorUnits) async {
+    final entry = await (_db.select(_db.debtLedgerEntries)..where((t) => t.id.equals(debtLedgerEntryId))).getSingle();
+    final newOriginal = (entry.originalAmountMinorUnits - reduceByMinorUnits).clamp(0, entry.originalAmountMinorUnits);
+    final newStatus = entry.amountPaidMinorUnits >= newOriginal
+        ? 'paid'
+        : (entry.amountPaidMinorUnits > 0 ? 'partiallyPaid' : 'open');
+    await (_db.update(_db.debtLedgerEntries)..where((t) => t.id.equals(debtLedgerEntryId))).write(
+      DebtLedgerEntriesCompanion(
+        originalAmountMinorUnits: Value(newOriginal),
+        status: Value(newStatus),
+      ),
+    );
+  }
+
+  @override
   Future<String> recordPayment({
     required String debtLedgerEntryId,
     required int amountMinorUnits,

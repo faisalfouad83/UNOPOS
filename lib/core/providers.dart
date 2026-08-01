@@ -24,6 +24,7 @@ import '../features/settings/domain/settings_repository.dart';
 import '../features/backup/data/backup_repository_drift.dart';
 import '../features/backup/domain/backup_repository.dart';
 import '../features/pos/domain/complete_sale_use_case.dart';
+import '../features/pos/domain/process_sale_return_use_case.dart';
 import '../features/printing/domain/printer_factory.dart';
 import '../features/printing/domain/printer_service.dart';
 import '../features/audit/data/audit_repository_drift.dart';
@@ -96,6 +97,15 @@ final backupServiceProvider = Provider<BackupService>((ref) {
 
 final completeSaleUseCaseProvider = Provider<CompleteSaleUseCase>((ref) {
   return CompleteSaleUseCase(
+    posRepository: ref.watch(posRepositoryProvider),
+    inventoryRepository: ref.watch(inventoryRepositoryProvider),
+    accountingPostingService: ref.watch(accountingPostingServiceProvider),
+    debtsRepository: ref.watch(debtsRepositoryProvider),
+  );
+});
+
+final processSaleReturnUseCaseProvider = Provider<ProcessSaleReturnUseCase>((ref) {
+  return ProcessSaleReturnUseCase(
     posRepository: ref.watch(posRepositoryProvider),
     inventoryRepository: ref.watch(inventoryRepositoryProvider),
     accountingPostingService: ref.watch(accountingPostingServiceProvider),

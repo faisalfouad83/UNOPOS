@@ -102,6 +102,11 @@
   "posShiftOpen": "کردنەوەی شیفت",
   "posShiftClose": "داخستنی شیفت",
   "posOpeningFloat": "پارەی سەرەتای سندوق",
+  "posSalesHistory": "مێژووی فرۆشتن",
+  "posProcessReturn": "بەڕێوەبردنی گەڕاندنەوە",
+  "posRefundMethod": "شێوازی گەڕاندنەوەی پارە",
+  "posReturnReducesBalance": "ئەمە قەرزی کڕیار کەم دەکاتەوە",
+  "posNoReturnableQuantitySelected": "لانیکەم یەک کاڵا هەڵبژێرە بۆ گەڕاندنەوە",
 
   "inventoryTitle": "کۆگا",
   "inventoryProducts": "کاڵاکان",

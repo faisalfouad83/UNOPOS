@@ -105,6 +105,11 @@
   "posShiftOpen": "Open Shift",
   "posShiftClose": "Close Shift",
   "posOpeningFloat": "Opening Cash Float",
+  "posSalesHistory": "Sales History",
+  "posProcessReturn": "Process Return",
+  "posRefundMethod": "Refund Method",
+  "posReturnReducesBalance": "This reduces the customer's outstanding balance",
+  "posNoReturnableQuantitySelected": "Select at least one item to return",
 
   "inventoryTitle": "Inventory",
   "inventoryProducts": "Products",

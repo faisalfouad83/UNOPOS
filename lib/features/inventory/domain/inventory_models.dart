@@ -120,6 +120,77 @@ class SupplierPurchaseLine {
   final int unitCostMinorUnits;
 }
 
+enum DiscountType { percentOff, amountOff }
+
+class DiscountRecord {
+  const DiscountRecord({
+    required this.id,
+    required this.storeId,
+    required this.name,
+    required this.type,
+    required this.value,
+    this.appliedScope = 'cart',
+    this.scopeTargetId,
+    this.startDate,
+    this.endDate,
+    this.isActive = true,
+  });
+
+  final String id;
+  final String storeId;
+  final String name;
+  final DiscountType type;
+
+  /// Percent (e.g. 10 for 10%) when [type] is percentOff, or minor units
+  /// when [type] is amountOff.
+  final int value;
+  final String appliedScope;
+  final String? scopeTargetId;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final bool isActive;
+
+  /// Computes the discount amount in minor units for a line with the given
+  /// gross total.
+  int amountForMinorUnits(int grossMinorUnits) {
+    if (type == DiscountType.amountOff) return value.clamp(0, grossMinorUnits);
+    final amount = (grossMinorUnits * value / 100).round();
+    return amount.clamp(0, grossMinorUnits);
+  }
+}
+
+class StockTransferRecord {
+  const StockTransferRecord({
+    required this.id,
+    required this.storeId,
+    required this.fromBranchId,
+    required this.toBranchId,
+    this.status = 'pending',
+    required this.requestedByUserId,
+    this.receivedByUserId,
+    required this.createdAt,
+    this.receivedAt,
+    this.lines = const [],
+  });
+
+  final String id;
+  final String storeId;
+  final String fromBranchId;
+  final String toBranchId;
+  final String status;
+  final String requestedByUserId;
+  final String? receivedByUserId;
+  final DateTime createdAt;
+  final DateTime? receivedAt;
+  final List<StockTransferLineRecord> lines;
+}
+
+class StockTransferLineRecord {
+  const StockTransferLineRecord({required this.productId, required this.quantity});
+  final String productId;
+  final int quantity;
+}
+
 class PurchaseOrderRecord {
   const PurchaseOrderRecord({
     required this.id,

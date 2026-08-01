@@ -293,6 +293,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get posOpeningFloat => 'رصيد الصندوق الافتتاحي';
 
   @override
+  String get posSalesHistory => 'سجل المبيعات';
+
+  @override
+  String get posProcessReturn => 'معالجة المرتجع';
+
+  @override
+  String get posRefundMethod => 'طريقة الاسترجاع';
+
+  @override
+  String get posReturnReducesBalance =>
+      'سيؤدي هذا إلى تخفيض رصيد الزبون المستحق';
+
+  @override
+  String get posNoReturnableQuantitySelected =>
+      'اختر عنصراً واحداً على الأقل للإرجاع';
+
+  @override
   String get inventoryTitle => 'المخزون';
 
   @override

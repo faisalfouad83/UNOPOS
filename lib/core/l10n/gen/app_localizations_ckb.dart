@@ -294,6 +294,22 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get posOpeningFloat => 'پارەی سەرەتای سندوق';
 
   @override
+  String get posSalesHistory => 'مێژووی فرۆشتن';
+
+  @override
+  String get posProcessReturn => 'بەڕێوەبردنی گەڕاندنەوە';
+
+  @override
+  String get posRefundMethod => 'شێوازی گەڕاندنەوەی پارە';
+
+  @override
+  String get posReturnReducesBalance => 'ئەمە قەرزی کڕیار کەم دەکاتەوە';
+
+  @override
+  String get posNoReturnableQuantitySelected =>
+      'لانیکەم یەک کاڵا هەڵبژێرە بۆ گەڕاندنەوە';
+
+  @override
   String get inventoryTitle => 'کۆگا';
 
   @override

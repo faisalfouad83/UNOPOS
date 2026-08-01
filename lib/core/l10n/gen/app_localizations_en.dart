@@ -295,6 +295,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posOpeningFloat => 'Opening Cash Float';
 
   @override
+  String get posSalesHistory => 'Sales History';
+
+  @override
+  String get posProcessReturn => 'Process Return';
+
+  @override
+  String get posRefundMethod => 'Refund Method';
+
+  @override
+  String get posReturnReducesBalance =>
+      'This reduces the customer\'s outstanding balance';
+
+  @override
+  String get posNoReturnableQuantitySelected =>
+      'Select at least one item to return';
+
+  @override
   String get inventoryTitle => 'Inventory';
 
   @override
