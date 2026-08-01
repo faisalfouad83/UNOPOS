@@ -1,12 +1,37 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/widgets/coming_soon_screen.dart';
+import '../../../core/l10n/gen/app_localizations.dart';
+import 'products_tab.dart';
+import 'purchase_orders_tab.dart';
+import 'stock_tab.dart';
 
 class InventoryScreen extends StatelessWidget {
   const InventoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const ComingSoonScreen(title: 'Inventory', icon: Icons.inventory_2_outlined);
+    final l10n = AppLocalizations.of(context);
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.inventoryTitle),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: l10n.inventoryProducts),
+              Tab(text: l10n.inventoryStockLevel),
+              Tab(text: l10n.inventoryPurchaseOrders),
+            ],
+          ),
+        ),
+        body: const TabBarView(
+          children: [
+            ProductsTab(),
+            StockTab(),
+            PurchaseOrdersTab(),
+          ],
+        ),
+      ),
+    );
   }
 }
