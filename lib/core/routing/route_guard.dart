@@ -1,0 +1,88 @@
+import '../../features/auth/domain/session_controller.dart';
+import '../constants/roles.dart';
+import 'route_paths.dart';
+
+/// Central RBAC + first-run/subsequent-run flow guard. Returns the path to
+/// redirect to, or null if the requested location is allowed as-is.
+class RouteGuard {
+  const RouteGuard._();
+
+  static const Map<String, Set<SessionRole>> _allowedRoles = {
+    RoutePaths.pos: {SessionRole.owner, SessionRole.manager, SessionRole.cashier},
+    RoutePaths.debts: {SessionRole.owner, SessionRole.manager, SessionRole.cashier},
+    RoutePaths.inventory: {SessionRole.owner, SessionRole.manager, SessionRole.warehouseManager},
+    RoutePaths.suppliers: {SessionRole.owner, SessionRole.manager},
+    RoutePaths.accounting: {SessionRole.owner, SessionRole.manager},
+    RoutePaths.hr: {SessionRole.owner, SessionRole.manager, SessionRole.developer},
+    RoutePaths.reports: {SessionRole.owner, SessionRole.manager},
+    RoutePaths.settings: {SessionRole.owner, SessionRole.manager},
+  };
+
+  static bool isRoleAllowed(String location, SessionRole? role) {
+    final matchingKey = _allowedRoles.keys.firstWhere(
+      (k) => location.startsWith(k),
+      orElse: () => '',
+    );
+    if (matchingKey.isEmpty) return true; // no restriction declared
+    if (role == null) return false;
+    return _allowedRoles[matchingKey]!.contains(role);
+  }
+
+  /// [hasStoreOnDisk] / [hasValidLicense] are resolved asynchronously before
+  /// the router is even built (see AppBootstrap), so by the time redirects
+  /// run they're plain booleans.
+  static String? redirect({
+    required String location,
+    required bool hasValidLicense,
+    required bool hasStoreOnDisk,
+    required SessionState session,
+  }) {
+    final isOnboardingRoute = location == RoutePaths.activation ||
+        location == RoutePaths.onboardingStore ||
+        location == RoutePaths.onboardingManager;
+
+    if (!hasValidLicense) {
+      return location == RoutePaths.activation ? null : RoutePaths.activation;
+    }
+
+    if (!hasStoreOnDisk) {
+      // Mid-onboarding steps are allowed to proceed; anything else bounces
+      // to the start of onboarding.
+      if (location == RoutePaths.onboardingStore || location == RoutePaths.onboardingManager) {
+        return null;
+      }
+      return RoutePaths.onboardingStore;
+    }
+
+    // Store exists and license is valid: onboarding/activation routes are
+    // done, send stragglers to the login flow.
+    if (isOnboardingRoute) {
+      return session.isAuthenticated ? RoutePaths.home : RoutePaths.tilePicker;
+    }
+
+    if (location == RoutePaths.storeLogin) {
+      return null; // always reachable to re-auth the store if needed
+    }
+
+    if (!session.isAuthenticated) {
+      if (location == RoutePaths.tilePicker || location == RoutePaths.pinPad) {
+        return null;
+      }
+      return RoutePaths.tilePicker;
+    }
+
+    if (session.developerMode) {
+      return location == RoutePaths.developerHome ? null : RoutePaths.developerHome;
+    }
+
+    if (location == RoutePaths.tilePicker || location == RoutePaths.pinPad) {
+      return RoutePaths.home;
+    }
+
+    if (!isRoleAllowed(location, session.role)) {
+      return RoutePaths.home;
+    }
+
+    return null;
+  }
+}
