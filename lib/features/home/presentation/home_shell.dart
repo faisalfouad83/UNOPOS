@@ -52,6 +52,10 @@ List<_Destination> _destinationsForRole(SessionRole? role) {
   }
 }
 
+/// Provides navigation chrome (rail/bottom bar) plus a thin persistent
+/// account strip. Deliberately NOT a Scaffold itself — each destination
+/// screen owns its own Scaffold/AppBar (so it can add screen-specific
+/// actions), this just wraps it with navigation on the side or bottom.
 class HomeShell extends ConsumerWidget {
   const HomeShell({super.key, required this.child, required this.currentPath});
 
@@ -63,7 +67,8 @@ class HomeShell extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final session = ref.watch(sessionControllerProvider);
     final destinations = _destinationsForRole(session.role);
-    final selectedIndex = destinations.indexWhere((d) => currentPath.startsWith(d.path)).clamp(0, destinations.length - 1);
+    final selectedIndex =
+        destinations.indexWhere((d) => currentPath.startsWith(d.path)).clamp(0, destinations.isEmpty ? 0 : destinations.length - 1);
 
     final width = MediaQuery.sizeOf(context).width;
     final isCompact = AppBreakpoints.isCompact(width);
@@ -73,63 +78,89 @@ class HomeShell extends ConsumerWidget {
       context.go(destinations[index].path);
     }
 
-    final content = Scaffold(
-      appBar: AppBar(
-        title: Text(destinations.isEmpty ? '' : destinations[selectedIndex.clamp(0, destinations.length - 1)].labelBuilder(l10n)),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'signOut') {
-                ref.read(sessionControllerProvider.notifier).signOutToTilePicker();
-                context.go(RoutePaths.tilePicker);
-              }
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                enabled: false,
-                child: Text('${session.employee?.name ?? ''} · ${session.role?.name ?? ''}'),
-              ),
-              PopupMenuItem(value: 'signOut', child: Text(l10n.actionSignOut)),
-            ],
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: CircleAvatar(
-                radius: 16,
+    final accountStrip = Material(
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Row(
+            children: [
+              Icon(Icons.storefront_rounded, size: 20, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              Expanded(
                 child: Text(
-                  (session.employee?.name.isNotEmpty ?? false) ? session.employee!.name[0].toUpperCase() : '?',
+                  session.store?.displayName ?? '',
+                  style: Theme.of(context).textTheme.labelLarge,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
-      body: isCompact
-          ? child
-          : Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: destinations.isEmpty ? 0 : selectedIndex,
-                  onDestinationSelected: onSelect,
-                  labelType: NavigationRailLabelType.all,
-                  destinations: destinations
-                      .map((d) => NavigationRailDestination(icon: Icon(d.icon), label: Text(d.labelBuilder(l10n))))
-                      .toList(),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'signOut') {
+                    ref.read(sessionControllerProvider.notifier).signOutToTilePicker();
+                    context.go(RoutePaths.tilePicker);
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Text('${session.employee?.name ?? ''} · ${session.role?.name ?? ''}'),
+                  ),
+                  PopupMenuItem(value: 'signOut', child: Text(l10n.actionSignOut)),
+                ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 14,
+                      child: Text(
+                        (session.employee?.name.isNotEmpty ?? false) ? session.employee!.name[0].toUpperCase() : '?',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_drop_down),
+                  ],
                 ),
-                const VerticalDivider(width: 1),
-                Expanded(child: child),
-              ],
-            ),
-      bottomNavigationBar: isCompact && destinations.isNotEmpty
-          ? NavigationBar(
-              selectedIndex: selectedIndex,
-              onDestinationSelected: onSelect,
-              destinations: destinations
-                  .map((d) => NavigationDestination(icon: Icon(d.icon), label: d.labelBuilder(l10n)))
-                  .toList(),
-            )
-          : null,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
 
-    return content;
+    return Column(
+      children: [
+        accountStrip,
+        const Divider(height: 1),
+        Expanded(
+          child: isCompact
+              ? child
+              : Row(
+                  children: [
+                    NavigationRail(
+                      selectedIndex: destinations.isEmpty ? 0 : selectedIndex,
+                      onDestinationSelected: onSelect,
+                      labelType: NavigationRailLabelType.all,
+                      destinations: destinations
+                          .map((d) => NavigationRailDestination(icon: Icon(d.icon), label: Text(d.labelBuilder(l10n))))
+                          .toList(),
+                    ),
+                    const VerticalDivider(width: 1),
+                    Expanded(child: child),
+                  ],
+                ),
+        ),
+        if (isCompact && destinations.isNotEmpty)
+          NavigationBar(
+            selectedIndex: selectedIndex,
+            onDestinationSelected: onSelect,
+            destinations: destinations
+                .map((d) => NavigationDestination(icon: Icon(d.icon), label: d.labelBuilder(l10n)))
+                .toList(),
+          ),
+      ],
+    );
   }
 }

@@ -83,9 +83,9 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
       await ref.read(accountingRepositoryProvider).seedDefaultChartOfAccounts(widget.store.id);
       await ref.read(settingsRepositoryProvider).ensureSettings(widget.store.id);
 
-      ref.read(sessionControllerProvider.notifier)
-        ..setStore(widget.store)
-        ..signInEmployeeDirectly(owner);
+      final sessionNotifier = ref.read(sessionControllerProvider.notifier);
+      sessionNotifier.setStore(widget.store);
+      await sessionNotifier.signInEmployeeDirectly(owner);
 
       if (mounted) context.go(RoutePaths.home);
     } catch (_) {

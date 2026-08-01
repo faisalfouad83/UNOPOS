@@ -75,6 +75,7 @@ class SessionController extends Notifier<SessionState> {
       final ok = await ref.read(authRepositoryProvider).findEmployeeByPin(selectedEmployee.storeId, pin);
       if (ok != null && ok.id == selectedEmployee.id) {
         state = state.copyWith(employee: ok, clearDeveloperMode: true);
+        await _resolveCurrentBranch(ok);
         return PinResult.success;
       }
     }
@@ -83,8 +84,24 @@ class SessionController extends Notifier<SessionState> {
 
   /// Used only right after onboarding creates the founding owner account, so
   /// they land straight on the home screen without re-entering their PIN.
-  void signInEmployeeDirectly(EmployeeRecord employee) {
+  Future<void> signInEmployeeDirectly(EmployeeRecord employee) async {
     state = state.copyWith(employee: employee, clearDeveloperMode: true);
+    await _resolveCurrentBranch(employee);
+  }
+
+  /// If the employee is tied to a specific branch, use that; otherwise
+  /// (e.g. an owner overseeing several branches) default to the store's
+  /// main branch. Employees/owners can switch branches later from the
+  /// dashboard if the store has more than one.
+  Future<void> _resolveCurrentBranch(EmployeeRecord employee) async {
+    if (employee.branchId != null) {
+      state = state.copyWith(currentBranchId: employee.branchId);
+      return;
+    }
+    final branches = await ref.read(authRepositoryProvider).listBranches(employee.storeId);
+    if (branches.isEmpty) return;
+    final main = branches.where((b) => b.isMainBranch).toList();
+    state = state.copyWith(currentBranchId: (main.isNotEmpty ? main.first : branches.first).id);
   }
 
   /// Sign out returns to the employee tile picker — the store-level session

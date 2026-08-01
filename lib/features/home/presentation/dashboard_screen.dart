@@ -11,18 +11,21 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final session = ref.watch(sessionControllerProvider);
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${l10n.navDashboard} · ${session.store?.displayName ?? ''}',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 8),
-          Text('${session.employee?.name ?? ''} (${session.role?.name ?? ''})'),
-        ],
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.navDashboard)),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              session.store?.displayName ?? '',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text('${session.employee?.name ?? ''} (${session.role?.name ?? ''})'),
+          ],
+        ),
       ),
     );
   }

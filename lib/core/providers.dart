@@ -23,6 +23,9 @@ import '../features/settings/data/settings_repository_drift.dart';
 import '../features/settings/domain/settings_repository.dart';
 import '../features/backup/data/backup_repository_drift.dart';
 import '../features/backup/domain/backup_repository.dart';
+import '../features/pos/domain/complete_sale_use_case.dart';
+import '../features/printing/domain/printer_factory.dart';
+import '../features/printing/domain/printer_service.dart';
 
 /// The single AppDatabase instance for the whole app lifetime. Kept alive
 /// for the entire process — never disposed mid-session.
@@ -79,3 +82,19 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
 final backupRepositoryProvider = Provider<BackupRepository>((ref) {
   return DriftBackupRepository(ref.watch(databaseProvider));
 });
+
+final completeSaleUseCaseProvider = Provider<CompleteSaleUseCase>((ref) {
+  return CompleteSaleUseCase(
+    posRepository: ref.watch(posRepositoryProvider),
+    inventoryRepository: ref.watch(inventoryRepositoryProvider),
+    accountingPostingService: ref.watch(accountingPostingServiceProvider),
+    debtsRepository: ref.watch(debtsRepositoryProvider),
+  );
+});
+
+/// Builds a fresh driver instance per print job from the store's current
+/// PrinterConfig — thermal/print connections are cheap to open and close
+/// per receipt rather than held open for the app's whole lifetime.
+PrinterService buildPrinterService(String driverType, {int paperWidthMm = 58}) {
+  return PrinterFactory.create(driverType, paperWidthMm: paperWidthMm);
+}
