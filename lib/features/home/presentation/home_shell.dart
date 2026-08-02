@@ -6,6 +6,7 @@ import '../../../core/constants/roles.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/theming/app_theme.dart';
 import '../../../core/routing/route_paths.dart';
+import '../../../core/widgets/unopos_logo.dart';
 import '../../auth/domain/session_controller.dart';
 
 class _Destination {
@@ -86,7 +87,7 @@ class HomeShell extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Row(
             children: [
-              Icon(Icons.storefront_rounded, size: 20, color: Theme.of(context).colorScheme.primary),
+              const UnoposLogo(size: 22),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

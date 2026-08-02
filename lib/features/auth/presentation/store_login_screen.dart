@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/routing/route_paths.dart';
+import '../../../core/widgets/unopos_logo.dart';
 import '../domain/session_controller.dart';
 
 class StoreLoginScreen extends ConsumerStatefulWidget {
@@ -64,7 +65,7 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(Icons.storefront_rounded, size: 56, color: Theme.of(context).colorScheme.primary),
+                  const UnoposLogo(size: 56),
                   const SizedBox(height: 12),
                   Text(l10n.loginStoreTitle,
                       style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),

@@ -7,6 +7,7 @@ import '../core/providers.dart';
 import '../core/routing/app_bootstrap.dart';
 import '../core/routing/app_router.dart';
 import '../core/theming/app_theme.dart';
+import '../core/widgets/unopos_logo.dart';
 import '../features/backup/domain/auto_backup_checker.dart';
 import '../features/settings/domain/settings_models.dart';
 
@@ -130,7 +131,7 @@ class _SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.storefront_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
+            const UnoposLogo(size: 64),
             const SizedBox(height: 16),
             const CircularProgressIndicator(),
           ],
