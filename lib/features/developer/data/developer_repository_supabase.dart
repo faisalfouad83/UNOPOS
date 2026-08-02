@@ -101,6 +101,44 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
   }
 
   @override
+  Future<void> assignPlan(String storeId, String planId) async {
+    await _client.from('stores').update({'plan_id': planId}).eq('id', storeId);
+  }
+
+  SubscriptionPlanRecord _mapPlan(Map<String, dynamic> row) => SubscriptionPlanRecord(
+        id: row['id'] as String,
+        name: row['name'] as String,
+        maxEmployees: (row['max_employees'] as num).toInt(),
+        maxBranches: (row['max_branches'] as num).toInt(),
+        maxProducts: (row['max_products'] as num).toInt(),
+        maxUsers: (row['max_users'] as num).toInt(),
+        maxWarehouses: (row['max_warehouses'] as num).toInt(),
+        maxStorageMb: (row['max_storage_mb'] as num).toInt(),
+        maxDailyTransactions: (row['max_daily_transactions'] as num).toInt(),
+        isActive: row['is_active'] as bool? ?? true,
+      );
+
+  @override
+  Stream<List<SubscriptionPlanRecord>> watchPlans() {
+    return _client.from('subscription_plans').stream(primaryKey: ['id']).order('max_employees').map((rows) => rows.map(_mapPlan).toList());
+  }
+
+  @override
+  Future<void> updatePlanLimits(SubscriptionPlanRecord plan) async {
+    await _client.from('subscription_plans').update({
+      'name': plan.name,
+      'max_employees': plan.maxEmployees,
+      'max_branches': plan.maxBranches,
+      'max_products': plan.maxProducts,
+      'max_users': plan.maxUsers,
+      'max_warehouses': plan.maxWarehouses,
+      'max_storage_mb': plan.maxStorageMb,
+      'max_daily_transactions': plan.maxDailyTransactions,
+      'is_active': plan.isActive,
+    }).eq('id', plan.id);
+  }
+
+  @override
   Future<ActivationCodeRecord> generateAndAssignLicense({
     required String storeId,
     required LicenseTier tier,

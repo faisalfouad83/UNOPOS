@@ -20,7 +20,7 @@ class DeveloperConsoleScreen extends StatefulWidget {
 }
 
 class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with SingleTickerProviderStateMixin {
-  late final TabController _tabController = TabController(length: 4, vsync: this);
+  late final TabController _tabController = TabController(length: 5, vsync: this);
 
   @override
   void dispose() {
@@ -36,9 +36,11 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
           color: Theme.of(context).colorScheme.surfaceContainerLow,
           child: TabBar(
             controller: _tabController,
+            isScrollable: true,
             tabs: const [
               Tab(text: 'Dashboard'),
               Tab(text: 'Stores'),
+              Tab(text: 'Plans'),
               Tab(text: 'Licenses'),
               Tab(text: 'Notifications'),
             ],
@@ -50,6 +52,7 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
             children: const [
               _DashboardTab(),
               _StoresTab(),
+              _PlansTab(),
               LicenseConsole(),
               _NotificationsTab(),
             ],
@@ -63,6 +66,111 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
 final _storesStreamProvider = StreamProvider.autoDispose<List<DeveloperStoreRecord>>((ref) {
   return ref.watch(developerRepositoryProvider)!.watchStores();
 });
+
+final _plansStreamProvider = StreamProvider.autoDispose<List<SubscriptionPlanRecord>>((ref) {
+  return ref.watch(developerRepositoryProvider)!.watchPlans();
+});
+
+class _PlansTab extends ConsumerWidget {
+  const _PlansTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final plansAsync = ref.watch(_plansStreamProvider);
+    return plansAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text('Error: $e')),
+      data: (plans) => ListView(
+        padding: const EdgeInsets.all(12),
+        children: plans.map((p) => _PlanCard(plan: p)).toList(),
+      ),
+    );
+  }
+}
+
+class _PlanCard extends ConsumerWidget {
+  const _PlanCard({required this.plan});
+  final SubscriptionPlanRecord plan;
+
+  Future<void> _editLimits(BuildContext context, WidgetRef ref) async {
+    final employees = TextEditingController(text: '${plan.maxEmployees}');
+    final branches = TextEditingController(text: '${plan.maxBranches}');
+    final products = TextEditingController(text: '${plan.maxProducts}');
+    final users = TextEditingController(text: '${plan.maxUsers}');
+    final warehouses = TextEditingController(text: '${plan.maxWarehouses}');
+    final storage = TextEditingController(text: '${plan.maxStorageMb}');
+    final dailyTx = TextEditingController(text: '${plan.maxDailyTransactions}');
+
+    Widget field(String label, TextEditingController c) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: TextField(
+            controller: c,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: label),
+          ),
+        );
+
+    final save = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Edit ${plan.name} limits'),
+        content: SizedBox(
+          width: 340,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                field('Max employees', employees),
+                field('Max branches', branches),
+                field('Max products', products),
+                field('Max users', users),
+                field('Max warehouses', warehouses),
+                field('Max storage (MB)', storage),
+                field('Max daily transactions', dailyTx),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Save')),
+        ],
+      ),
+    );
+    if (save != true) return;
+
+    int parse(TextEditingController c, int fallback) => int.tryParse(c.text) ?? fallback;
+    await ref.read(developerRepositoryProvider)!.updatePlanLimits(SubscriptionPlanRecord(
+          id: plan.id,
+          name: plan.name,
+          maxEmployees: parse(employees, plan.maxEmployees),
+          maxBranches: parse(branches, plan.maxBranches),
+          maxProducts: parse(products, plan.maxProducts),
+          maxUsers: parse(users, plan.maxUsers),
+          maxWarehouses: parse(warehouses, plan.maxWarehouses),
+          maxStorageMb: parse(storage, plan.maxStorageMb),
+          maxDailyTransactions: parse(dailyTx, plan.maxDailyTransactions),
+          isActive: plan.isActive,
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: ListTile(
+        title: Text(plan.name),
+        subtitle: Text(
+          'Employees: ${plan.maxEmployees} · Branches: ${plan.maxBranches} · Products: ${plan.maxProducts} · '
+          'Daily sales: ${plan.maxDailyTransactions} · Storage: ${plan.maxStorageMb}MB',
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.edit_outlined),
+          onPressed: () => _editLimits(context, ref),
+        ),
+      ),
+    );
+  }
+}
 
 class _DashboardTab extends ConsumerWidget {
   const _DashboardTab();
@@ -197,6 +305,38 @@ class _StoreCard extends ConsumerWidget {
         );
   }
 
+  Future<void> _changePlan(BuildContext context, WidgetRef ref) async {
+    final plans = ref.read(_plansStreamProvider).valueOrNull ?? const <SubscriptionPlanRecord>[];
+    if (plans.isEmpty) return;
+    var selected = plans.firstWhere((p) => p.id == store.planId, orElse: () => plans.first).id;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setState) => AlertDialog(
+          title: const Text('Change plan'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: plans
+                .map((p) => RadioListTile<String>(
+                      title: Text(p.name),
+                      value: p.id,
+                      groupValue: selected,
+                      onChanged: (v) => setState(() => selected = v!),
+                    ))
+                .toList(),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Save')),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true) return;
+    await ref.read(developerRepositoryProvider)!.assignPlan(store.id, selected);
+  }
+
   Future<void> _resetPassword(BuildContext context, WidgetRef ref) async {
     final controller = TextEditingController();
     final confirmed = await showDialog<bool>(
@@ -311,6 +451,11 @@ class _StoreCard extends ConsumerWidget {
                       onPressed: () => _extendSubscription(context, ref),
                       icon: const Icon(Icons.calendar_month_outlined, size: 18),
                       label: const Text('Extend subscription'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => _changePlan(context, ref),
+                      icon: const Icon(Icons.swap_horiz, size: 18),
+                      label: const Text('Change plan'),
                     ),
                     OutlinedButton.icon(
                       onPressed: () => _generateLicense(context, ref),

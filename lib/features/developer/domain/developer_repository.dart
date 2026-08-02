@@ -28,6 +28,12 @@ abstract class DeveloperRepository {
 
   Future<void> extendSubscription(String storeId, DateTime newExpiresAt);
 
+  Future<void> assignPlan(String storeId, String planId);
+
+  Stream<List<SubscriptionPlanRecord>> watchPlans();
+
+  Future<void> updatePlanLimits(SubscriptionPlanRecord plan);
+
   Future<ActivationCodeRecord> generateAndAssignLicense({
     required String storeId,
     required LicenseTier tier,

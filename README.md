@@ -30,7 +30,7 @@ The database is a local SQLite file (via Drift) stored in the app's support dire
 
 UNOPOS is being migrated to run many stores off one shared Supabase backend
 instead of one local SQLite file per install. This is a phased migration;
-**Phases H1–H3 are done**, H4–H5 are not:
+**Phases H1–H4 are done**, H5 is not:
 
 - `supabase/migrations/0001_multi_tenant_schema.sql` — the full schema: every
   store's data isolated by Row-Level Security (`store_id` scoped, join-based
@@ -58,7 +58,14 @@ instead of one local SQLite file per install. This is a phased migration;
   sandbox — verify this actually works against your real project before
   relying on it in production), and assigning a license to a store on the
   developer's initiative instead of the store's own self-service redemption.
-  Run all four migration files, in order, against a fresh Supabase
+- `supabase/migrations/0005_plan_limits.sql` — actually enforces the 4
+  subscription plans' limits server-side instead of just storing numbers
+  nobody checks: `BEFORE INSERT` triggers on `users`/`branches`/`products`/
+  `sales` raise an exception once a store's plan limit is reached (employee
+  count, branch count, product count, daily sale count). Storage-MB and
+  warehouse limits are intentionally not enforced this way — see the
+  migration file's header comment for why.
+  Run all five migration files, in order, against a fresh Supabase
   project's SQL editor before enabling Supabase mode.
 - The app defaults to the local Drift database exactly as before — nothing
   changes unless you opt in. To run against Supabase instead:
@@ -77,12 +84,13 @@ instead of one local SQLite file per install. This is a phased migration;
   The Developer gate (`1313`) requires a real Supabase Auth sign-in checked
   against a `developer_admins` table server-side, instead of just a local
   passcode. Once signed in, the Developer Console becomes a full multi-tab
-  admin surface (Dashboard/Stores/Licenses/Notifications) instead of just a
-  license generator: per-store view/edit/activate/deactivate/suspend/
-  delete/reset-password/extend-subscription/generate-license, plus sending
-  a platform notification to one store or all of them. `BackupRepository`
-  stays Drift-backed in both modes (local file backups are inherently a
-  local-device concept).
+  admin surface (Dashboard/Stores/Plans/Licenses/Notifications) instead of
+  just a license generator: per-store view/edit/activate/deactivate/
+  suspend/delete/reset-password/extend-subscription/change-plan/
+  generate-license, editing the 4 plans' limits with no redeploy needed,
+  plus sending a platform notification to one store or all of them.
+  `BackupRepository` stays Drift-backed in both modes (local file backups
+  are inherently a local-device concept).
 - Store login now also checks the Developer Console's "Disable" flag after
   a successful password check — a disabled store's session is signed back
   out immediately rather than left live.
@@ -91,12 +99,10 @@ instead of one local SQLite file per install. This is a phased migration;
   functional as their own standalone mode; the local build's Developer
   Console also stays exactly the simple license generator it always was
   (there's no concept of "other stores" to manage from a single install).
-- **Not yet done**: subscription-plan limit enforcement isn't wired up yet
-  (a store can't currently be blocked from exceeding its plan's employee/
-  product/branch counts — Phase H4); the in-app notification inbox (sent
-  notifications land in the DB but stores can't read them yet), a developer
-  audit-log viewer, and the tenant-isolation test checklist for running
-  against a real project are still pending (Phase H5).
+- **Not yet done**: the in-app notification inbox (sent notifications land
+  in the DB but stores can't read them yet), a developer audit-log viewer,
+  and the tenant-isolation test checklist for running against a real
+  project are still pending (Phase H5).
 
 ## Known limitations (by design, for this first pass)
 

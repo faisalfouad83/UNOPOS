@@ -46,6 +46,32 @@ class DeveloperStoreRecord {
   bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
 }
 
+class SubscriptionPlanRecord {
+  const SubscriptionPlanRecord({
+    required this.id,
+    required this.name,
+    required this.maxEmployees,
+    required this.maxBranches,
+    required this.maxProducts,
+    required this.maxUsers,
+    required this.maxWarehouses,
+    required this.maxStorageMb,
+    required this.maxDailyTransactions,
+    this.isActive = true,
+  });
+
+  final String id;
+  final String name;
+  final int maxEmployees;
+  final int maxBranches;
+  final int maxProducts;
+  final int maxUsers;
+  final int maxWarehouses;
+  final int maxStorageMb;
+  final int maxDailyTransactions;
+  final bool isActive;
+}
+
 class DashboardStats {
   const DashboardStats({
     required this.totalStores,
