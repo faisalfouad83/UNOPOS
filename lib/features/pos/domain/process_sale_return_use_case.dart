@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../accounting/domain/accounting_posting_service.dart';
 import '../../debts/domain/debts_repository.dart';
 import '../../inventory/domain/inventory_models.dart';
@@ -15,8 +17,22 @@ class ReturnLineInput {
 /// return restocks inventory, posts the reversing accounting entry, and (for
 /// a pay-later sale) shrinks the customer's outstanding debt instead of
 /// leaving a stale balance.
-class ProcessSaleReturnUseCase {
-  ProcessSaleReturnUseCase({
+///
+/// Same two-implementation split as [CompleteSaleUseCase] — see that file's
+/// class doc for why.
+abstract class ProcessSaleReturnUseCase {
+  Future<void> processReturn({
+    required SaleRecord originalSale,
+    required List<ReturnLineInput> returnLines,
+    required String processedByUserId,
+    required bool refundToCash,
+  });
+}
+
+/// Today's exact orchestration, moved verbatim — used on the local Drift
+/// database.
+class OrchestratedProcessSaleReturnUseCase implements ProcessSaleReturnUseCase {
+  OrchestratedProcessSaleReturnUseCase({
     required PosRepository posRepository,
     required InventoryRepository inventoryRepository,
     required AccountingPostingService accountingPostingService,
@@ -31,6 +47,7 @@ class ProcessSaleReturnUseCase {
   final AccountingPostingService _accountingPostingService;
   final DebtsRepository _debtsRepository;
 
+  @override
   Future<void> processReturn({
     required SaleRecord originalSale,
     required List<ReturnLineInput> returnLines,
@@ -87,5 +104,35 @@ class ProcessSaleReturnUseCase {
         await _debtsRepository.reduceOriginalAmount(debtEntry.id, refundMinorUnits);
       }
     }
+  }
+}
+
+/// Runs the entire return as one Postgres transaction via the
+/// `process_sale_return` RPC — return + lines, restocking, the reversing
+/// journal entry, and (for a pay-later original sale) the debt reduction
+/// either all commit together or none of them do.
+class SupabaseAtomicProcessSaleReturnUseCase implements ProcessSaleReturnUseCase {
+  SupabaseAtomicProcessSaleReturnUseCase({required SupabaseClient client}) : _client = client;
+
+  final SupabaseClient _client;
+
+  @override
+  Future<void> processReturn({
+    required SaleRecord originalSale,
+    required List<ReturnLineInput> returnLines,
+    required String processedByUserId,
+    required bool refundToCash,
+  }) async {
+    final lines = returnLines.where((l) => l.quantityReturned > 0).toList();
+    if (lines.isEmpty) return;
+
+    await _client.rpc('process_sale_return', params: {
+      'p_original_sale_id': originalSale.id,
+      'p_return_lines': lines
+          .map((l) => {'sale_line_id': l.saleLine.id, 'quantity_returned': l.quantityReturned})
+          .toList(),
+      'p_processed_by_user_id': processedByUserId,
+      'p_refund_to_cash': refundToCash,
+    });
   }
 }

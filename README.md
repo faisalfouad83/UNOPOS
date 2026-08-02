@@ -30,15 +30,28 @@ The database is a local SQLite file (via Drift) stored in the app's support dire
 
 UNOPOS is being migrated to run many stores off one shared Supabase backend
 instead of one local SQLite file per install. This is a phased migration;
-**Phase H1 (foundation) is done**, later phases are not:
+**Phases H1 and H2 are done**, H3–H5 are not:
 
 - `supabase/migrations/0001_multi_tenant_schema.sql` — the full schema: every
   store's data isolated by Row-Level Security (`store_id` scoped, join-based
   policies), PIN hashes locked in a table with zero client policies (only
   reachable through `SECURITY DEFINER` functions), store registration,
   activation-code redemption, and employee PIN verify/create/update all as
-  server-side functions. Run this against a fresh Supabase project's SQL
-  editor before enabling Supabase mode.
+  server-side functions.
+- `supabase/migrations/0002_business_operations.sql` — a per-store sale-number
+  counter (replacing a racy client-side count), indexes on FK columns that
+  now cross the network, a `low_stock_items` view, a corrected 19-account
+  Chart-of-Accounts seed (0001's `register_store` only seeded 9 — fixed here
+  via `create or replace function` rather than editing 0001), and every
+  atomic-operation RPC (stock movements, receiving transfers/purchase
+  orders, journal posting, trial balance, debt payments, supplier balance).
+- `supabase/migrations/0003_checkout_rpcs.sql` — `checkout_sale` and
+  `process_sale_return`: the entire checkout/return flow (sale + stock +
+  accounting + debt entry) as ONE Postgres transaction each — genuinely more
+  atomic than the original Dart orchestration ever was, since Postgres
+  offers it for free and this is the money/stock-critical path.
+  Run all three migration files, in order, against a fresh Supabase
+  project's SQL editor before enabling Supabase mode.
 - The app defaults to the local Drift database exactly as before — nothing
   changes unless you opt in. To run against Supabase instead:
   ```bash
@@ -50,19 +63,21 @@ instead of one local SQLite file per install. This is a phased migration;
   Also disable "Confirm email" in the Supabase project's Auth settings —
   store accounts use a synthetic, never-emailed address under the hood, so
   there's no inbox to confirm from.
-- **What's cut over so far**: store registration/login and employee PIN
-  sign-in (`AuthRepository`, `LicensingRepository`) run fully on Supabase in
-  this mode. The Developer gate (`1313`) now requires a real Supabase Auth
-  sign-in checked against a `developer_admins` table server-side, instead of
-  just a local passcode.
-- **What's still local-only even in Supabase mode** (until Phase H2):
-  inventory, POS/sales, debts, suppliers, accounting, shifts, settings,
-  audit — these still read/write the local Drift database. Don't run
-  Supabase mode in production until that phase lands; it's here so the
-  foundation can be reviewed and iterated on early.
+- **What's cut over so far**: all 10 repositories (Auth, Licensing,
+  Accounting, Inventory, POS, Debts, Suppliers, Shifts, Settings, Audit) run
+  fully on Supabase in this mode, plus checkout/sale-return as atomic RPCs.
+  The Developer gate (`1313`) requires a real Supabase Auth sign-in checked
+  against a `developer_admins` table server-side, instead of just a local
+  passcode. `BackupRepository` stays Drift-backed in both modes (local file
+  backups are inherently a local-device concept).
 - Nothing about this touches the default local build — the local Drift
   schema, its tables, and its repositories are untouched and still fully
   functional as their own standalone mode.
+- **Not yet done**: the Developer Console (dashboard, store management,
+  license management) still targets the old local model, not Supabase
+  (Phase H3); subscription-plan limit enforcement isn't wired up yet (Phase
+  H4); platform notifications and the tenant-isolation test checklist for
+  running against a real project are still pending (Phase H5).
 
 ## Known limitations (by design, for this first pass)
 
