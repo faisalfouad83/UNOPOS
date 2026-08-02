@@ -41,6 +41,16 @@ class RouteGuard {
         location == RoutePaths.onboardingStore ||
         location == RoutePaths.onboardingManager;
 
+    // The hidden developer gate (passcode 1313) must win over every other
+    // check — that's the whole point of it being reachable before any
+    // license/store exists yet (bootstrapping the very first activation
+    // code). This has to run before the hasValidLicense check below, or
+    // entering 1313 on a fresh install just bounces straight back to the
+    // activation screen.
+    if (session.developerMode) {
+      return location == RoutePaths.developerHome ? null : RoutePaths.developerHome;
+    }
+
     if (!hasValidLicense) {
       return location == RoutePaths.activation ? null : RoutePaths.activation;
     }
@@ -69,10 +79,6 @@ class RouteGuard {
         return null;
       }
       return RoutePaths.tilePicker;
-    }
-
-    if (session.developerMode) {
-      return location == RoutePaths.developerHome ? null : RoutePaths.developerHome;
     }
 
     if (location == RoutePaths.tilePicker || location == RoutePaths.pinPad) {
