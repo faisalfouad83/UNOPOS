@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/security/activation_code_codec.dart';
@@ -9,6 +11,22 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
   SupabaseDeveloperRepository(this._client);
 
   final SupabaseClient _client;
+  String? _cachedAdminId;
+
+  Future<void> _logAudit(String action, String? targetStoreId, [Map<String, dynamic>? details]) async {
+    _cachedAdminId ??= (await _client
+            .from('developer_admins')
+            .select('id')
+            .eq('auth_user_id', _client.auth.currentUser!.id)
+            .maybeSingle())?['id']
+        as String?;
+    await _client.from('platform_audit_logs').insert({
+      'admin_id': _cachedAdminId,
+      'action': action,
+      'target_store_id': targetStoreId,
+      'details_json': details == null ? null : jsonEncode(details),
+    });
+  }
 
   DeveloperStoreRecord _mapStore(Map<String, dynamic> row) => DeveloperStoreRecord(
         id: row['id'] as String,
@@ -64,20 +82,26 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
       'address': address,
       'currency_code': currencyCode,
     }).eq('id', storeId);
+    await _logAudit('store.edit', storeId);
   }
 
   @override
   Future<void> setStoreDisabled(String storeId, bool disabled) async {
     await _client.from('stores').update({'is_disabled': disabled}).eq('id', storeId);
+    await _logAudit(disabled ? 'store.disable' : 'store.enable', storeId);
   }
 
   @override
   Future<void> setStoreSuspended(String storeId, bool suspended) async {
     await _client.from('stores').update({'is_suspended': suspended}).eq('id', storeId);
+    await _logAudit(suspended ? 'store.suspend' : 'store.unsuspend', storeId);
   }
 
   @override
   Future<void> deleteStore(String storeId) async {
+    // Logged before deleting — target_store_id references stores(id) with
+    // ON DELETE SET NULL, so the log row survives the store's own deletion.
+    await _logAudit('store.delete', storeId);
     // Cascades to every tenant table via ON DELETE CASCADE — irreversible,
     // the UI must confirm before calling this.
     await _client.from('stores').delete().eq('id', storeId);
@@ -89,6 +113,7 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
       'p_store_id': storeId,
       'p_new_password': newPassword,
     });
+    await _logAudit('store.reset_password', storeId);
   }
 
   @override
@@ -98,11 +123,13 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
       'subscription_status': 'active',
       'activation_status': 'active',
     }).eq('id', storeId);
+    await _logAudit('store.extend_subscription', storeId, {'new_expires_at': newExpiresAt.toIso8601String()});
   }
 
   @override
   Future<void> assignPlan(String storeId, String planId) async {
     await _client.from('stores').update({'plan_id': planId}).eq('id', storeId);
+    await _logAudit('store.change_plan', storeId, {'plan_id': planId});
   }
 
   SubscriptionPlanRecord _mapPlan(Map<String, dynamic> row) => SubscriptionPlanRecord(
@@ -136,6 +163,7 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
       'max_daily_transactions': plan.maxDailyTransactions,
       'is_active': plan.isActive,
     }).eq('id', plan.id);
+    await _logAudit('plan.edit_limits', null, {'plan_id': plan.id});
   }
 
   @override
@@ -157,6 +185,7 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
     }).single();
 
     await _client.rpc('developer_assign_license', params: {'p_store_id': storeId, 'p_code': code});
+    await _logAudit('license.generate_and_assign', storeId, {'tier': tier.name, 'code': code});
 
     return _mapActivationCode(row);
   }
@@ -184,5 +213,26 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
         recipientIds.map((id) => {'notification_id': notificationId, 'store_id': id}).toList(),
       );
     }
+    await _logAudit('notification.send', targetStoreIds?.length == 1 ? targetStoreIds!.first : null,
+        {'title': title, 'recipient_count': recipientIds.length});
+  }
+
+  PlatformAuditLogRecord _mapAuditLog(Map<String, dynamic> row) => PlatformAuditLogRecord(
+        id: row['id'] as String,
+        adminId: row['admin_id'] as String?,
+        action: row['action'] as String,
+        targetStoreId: row['target_store_id'] as String?,
+        detailsJson: row['details_json'] as String?,
+        createdAt: DateTime.parse(row['created_at'] as String),
+      );
+
+  @override
+  Stream<List<PlatformAuditLogRecord>> watchAuditLog({int limit = 200}) {
+    return _client
+        .from('platform_audit_logs')
+        .stream(primaryKey: ['id'])
+        .order('created_at', ascending: false)
+        .limit(limit)
+        .map((rows) => rows.map(_mapAuditLog).toList());
   }
 }

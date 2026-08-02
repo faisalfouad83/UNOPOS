@@ -46,6 +46,27 @@ class DeveloperStoreRecord {
   bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
 }
 
+/// A developer action logged to platform_audit_logs — separate from the
+/// per-store audit_logs table (features/audit), which records what
+/// employees do inside their own store.
+class PlatformAuditLogRecord {
+  const PlatformAuditLogRecord({
+    required this.id,
+    this.adminId,
+    required this.action,
+    this.targetStoreId,
+    this.detailsJson,
+    required this.createdAt,
+  });
+
+  final String id;
+  final String? adminId;
+  final String action;
+  final String? targetStoreId;
+  final String? detailsJson;
+  final DateTime createdAt;
+}
+
 class SubscriptionPlanRecord {
   const SubscriptionPlanRecord({
     required this.id,

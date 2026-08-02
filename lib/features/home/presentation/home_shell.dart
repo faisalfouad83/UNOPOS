@@ -8,6 +8,7 @@ import '../../../core/theming/app_theme.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../../auth/domain/session_controller.dart';
+import '../../notifications/presentation/notification_bell.dart';
 
 class _Destination {
   const _Destination(this.path, this.icon, this.labelBuilder);
@@ -96,6 +97,7 @@ class HomeShell extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const NotificationBell(),
               PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'signOut') {

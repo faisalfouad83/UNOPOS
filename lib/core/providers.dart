@@ -44,6 +44,8 @@ import '../features/audit/domain/audit_repository.dart';
 import '../features/backup/domain/backup_service.dart';
 import '../features/developer/data/developer_repository_supabase.dart';
 import '../features/developer/domain/developer_repository.dart';
+import '../features/notifications/data/notifications_repository_supabase.dart';
+import '../features/notifications/domain/notifications_repository.dart';
 
 /// The single AppDatabase instance for the whole app lifetime. Kept alive
 /// for the entire process — never disposed mid-session. Only ever touched
@@ -154,6 +156,12 @@ final backupServiceProvider = Provider<BackupService>((ref) {
 final developerRepositoryProvider = Provider<DeveloperRepository?>((ref) {
   if (!kUseSupabaseBackend) return null;
   return SupabaseDeveloperRepository(ref.watch(supabaseClientProvider));
+});
+
+/// Null on the local Drift build — same reasoning as developerRepositoryProvider.
+final notificationsRepositoryProvider = Provider<NotificationsRepository?>((ref) {
+  if (!kUseSupabaseBackend) return null;
+  return SupabaseNotificationsRepository(ref.watch(supabaseClientProvider));
 });
 
 /// On Supabase, checkout/return run as one Postgres transaction each (see

@@ -45,4 +45,6 @@ abstract class DeveloperRepository {
     required String body,
     List<String>? targetStoreIds,
   });
+
+  Stream<List<PlatformAuditLogRecord>> watchAuditLog({int limit = 200});
 }

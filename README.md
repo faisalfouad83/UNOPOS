@@ -26,11 +26,14 @@ flutter run -d windows   # or -d <android-device-id>
 
 The database is a local SQLite file (via Drift) stored in the app's support directory — no server needed for now. The repository layer is written behind interfaces specifically so it can be swapped for a Supabase/Firebase-backed implementation later without touching business logic or UI.
 
-## Multi-tenant SaaS backend (Supabase) — in progress
+## Multi-tenant SaaS backend (Supabase)
 
-UNOPOS is being migrated to run many stores off one shared Supabase backend
-instead of one local SQLite file per install. This is a phased migration;
-**Phases H1–H4 are done**, H5 is not:
+UNOPOS can now run many stores off one shared Supabase backend instead of
+one local SQLite file per install. **All 5 migration phases (H1–H5) are
+done.** See `supabase/TENANT_ISOLATION_CHECKLIST.md` before putting this in
+front of real customers — nothing here could be verified against a live
+Supabase project from the sandbox this was built in, only reasoned through
+carefully; that checklist is how you close that gap on your own project.
 
 - `supabase/migrations/0001_multi_tenant_schema.sql` — the full schema: every
   store's data isolated by Row-Level Security (`store_id` scoped, join-based
@@ -65,7 +68,13 @@ instead of one local SQLite file per install. This is a phased migration;
   count, branch count, product count, daily sale count). Storage-MB and
   warehouse limits are intentionally not enforced this way — see the
   migration file's header comment for why.
-  Run all five migration files, in order, against a fresh Supabase
+- `supabase/migrations/0006_notification_inbox.sql` — one additional read
+  policy so a store can actually read the title/body of a platform
+  notification addressed to it (0001 made `platform_notifications`
+  developer-only for every operation including select, which silently
+  broke the inbox before it existed — caught while building the inbox
+  itself, fixed here rather than by loosening 0001).
+  Run all six migration files, in order, against a fresh Supabase
   project's SQL editor before enabling Supabase mode.
 - The app defaults to the local Drift database exactly as before — nothing
   changes unless you opt in. To run against Supabase instead:
@@ -99,10 +108,18 @@ instead of one local SQLite file per install. This is a phased migration;
   functional as their own standalone mode; the local build's Developer
   Console also stays exactly the simple license generator it always was
   (there's no concept of "other stores" to manage from a single install).
-- **Not yet done**: the in-app notification inbox (sent notifications land
-  in the DB but stores can't read them yet), a developer audit-log viewer,
-  and the tenant-isolation test checklist for running against a real
-  project are still pending (Phase H5).
+- **Notification inbox**: a bell icon in the store's account strip (top
+  right, next to the sign-out menu) shows an unread badge and opens the
+  inbox — notifications sent from the Developer Console land here in
+  real time.
+- **Developer audit log**: every mutating Developer Console action
+  (activate/deactivate/suspend/delete/reset-password/extend/change-plan/
+  generate-license/edit-plan-limits/send-notification) is logged to
+  `platform_audit_logs`, visible in the console's "Audit Log" tab.
+- See `supabase/TENANT_ISOLATION_CHECKLIST.md` for the manual + SQL-script
+  verification to run against your real project before going live —
+  confirms RLS, the PIN-hash lockdown, the privileged-column trigger, and
+  the sale-number/stock-movement concurrency fixes actually hold.
 
 ## Known limitations (by design, for this first pass)
 

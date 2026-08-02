@@ -20,7 +20,7 @@ class DeveloperConsoleScreen extends StatefulWidget {
 }
 
 class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with SingleTickerProviderStateMixin {
-  late final TabController _tabController = TabController(length: 5, vsync: this);
+  late final TabController _tabController = TabController(length: 6, vsync: this);
 
   @override
   void dispose() {
@@ -43,6 +43,7 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
               Tab(text: 'Plans'),
               Tab(text: 'Licenses'),
               Tab(text: 'Notifications'),
+              Tab(text: 'Audit Log'),
             ],
           ),
         ),
@@ -55,6 +56,7 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
               _PlansTab(),
               LicenseConsole(),
               _NotificationsTab(),
+              _AuditLogTab(),
             ],
           ),
         ),
@@ -558,6 +560,47 @@ class _NotificationsTabState extends ConsumerState<_NotificationsTab> {
           ],
         ),
       ),
+    );
+  }
+}
+
+final _auditLogStreamProvider = StreamProvider.autoDispose<List<PlatformAuditLogRecord>>((ref) {
+  return ref.watch(developerRepositoryProvider)!.watchAuditLog();
+});
+
+class _AuditLogTab extends ConsumerWidget {
+  const _AuditLogTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final logAsync = ref.watch(_auditLogStreamProvider);
+    final storesAsync = ref.watch(_storesStreamProvider);
+    final storeNames = {for (final s in storesAsync.value ?? const <DeveloperStoreRecord>[]) s.id: s.displayName};
+
+    return logAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text('Error: $e')),
+      data: (entries) {
+        if (entries.isEmpty) return const Center(child: Text('No actions logged yet'));
+        return ListView.builder(
+          padding: const EdgeInsets.all(12),
+          itemCount: entries.length,
+          itemBuilder: (context, index) {
+            final e = entries[index];
+            final target = e.targetStoreId == null ? null : (storeNames[e.targetStoreId] ?? e.targetStoreId);
+            return ListTile(
+              dense: true,
+              leading: const Icon(Icons.history, size: 18),
+              title: Text(e.action),
+              subtitle: Text([
+                if (target != null) target,
+                if (e.detailsJson != null) e.detailsJson!,
+              ].join(' · ')),
+              trailing: Text(AppDateFormat.shortDate(e.createdAt)),
+            );
+          },
+        );
+      },
     );
   }
 }
