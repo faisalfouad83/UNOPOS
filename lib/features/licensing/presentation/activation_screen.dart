@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/magic_passcodes.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/security/activation_code_codec.dart';
 import '../../../core/widgets/numeric_pin_pad.dart';
+import '../../auth/domain/session_controller.dart';
 
 class ActivationScreen extends ConsumerStatefulWidget {
   const ActivationScreen({super.key});
@@ -64,12 +64,15 @@ class _ActivationScreenState extends ConsumerState<ActivationScreen> {
             child: NumericPinPad(
               value: pin,
               onChanged: (v) => setDialogState(() => pin = v),
-              onSubmit: () {
-                if (pin == MagicPasscodes.developerGate) {
-                  Navigator.of(dialogContext).pop();
+              onSubmit: () async {
+                // Must go through SessionController so session.developerMode
+                // actually flips to true — RouteGuard only lets the
+                // Developer console through once that flag is set, it does
+                // not react to a bare context.go() call.
+                final result = await ref.read(sessionControllerProvider.notifier).submitPin(pin);
+                if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+                if (result == PinResult.developerGate && mounted) {
                   context.go(RoutePaths.developerHome);
-                } else {
-                  Navigator.of(dialogContext).pop();
                 }
               },
             ),
