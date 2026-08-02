@@ -1,0 +1,73 @@
+/// A store as seen by the Developer Console — deliberately a separate model
+/// from auth's StoreRecord (what a store knows about its own session).
+/// Every field here is something only a developer_admin is ever allowed to
+/// read (enforced server-side by RLS, not just by this model existing).
+class DeveloperStoreRecord {
+  const DeveloperStoreRecord({
+    required this.id,
+    required this.storeLoginId,
+    required this.displayName,
+    this.ownerName = '',
+    this.phone = '',
+    this.address = '',
+    this.currencyCode = 'IQD',
+    required this.planId,
+    required this.subscriptionStatus,
+    required this.activationStatus,
+    this.licenseKey,
+    required this.createdAt,
+    this.expiresAt,
+    this.lastLoginAt,
+    this.isDisabled = false,
+    this.isSuspended = false,
+  });
+
+  final String id;
+  final String storeLoginId;
+  final String displayName;
+  final String ownerName;
+  final String phone;
+  final String address;
+  final String currencyCode;
+  final String planId;
+
+  /// trial/active/pastDue/cancelled
+  final String subscriptionStatus;
+
+  /// pending/active/expired/revoked
+  final String activationStatus;
+  final String? licenseKey;
+  final DateTime createdAt;
+  final DateTime? expiresAt;
+  final DateTime? lastLoginAt;
+  final bool isDisabled;
+  final bool isSuspended;
+
+  bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
+}
+
+class DashboardStats {
+  const DashboardStats({
+    required this.totalStores,
+    required this.trialStores,
+    required this.activeStores,
+    required this.expiredStores,
+    required this.disabledStores,
+  });
+
+  final int totalStores;
+  final int trialStores;
+  final int activeStores;
+  final int expiredStores;
+  final int disabledStores;
+
+  factory DashboardStats.fromStores(List<DeveloperStoreRecord> stores) {
+    return DashboardStats(
+      totalStores: stores.length,
+      trialStores: stores.where((s) => s.subscriptionStatus == 'trial').length,
+      activeStores: stores.where((s) => s.subscriptionStatus == 'active' && !s.isExpired).length,
+      expiredStores: stores.where((s) => s.isExpired || s.activationStatus == 'expired').length,
+      disabledStores: stores.where((s) => s.isDisabled).length,
+    );
+  }
+}

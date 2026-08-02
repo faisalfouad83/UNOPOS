@@ -42,6 +42,8 @@ import '../features/audit/data/audit_repository_drift.dart';
 import '../features/audit/data/audit_repository_supabase.dart';
 import '../features/audit/domain/audit_repository.dart';
 import '../features/backup/domain/backup_service.dart';
+import '../features/developer/data/developer_repository_supabase.dart';
+import '../features/developer/domain/developer_repository.dart';
 
 /// The single AppDatabase instance for the whole app lifetime. Kept alive
 /// for the entire process — never disposed mid-session. Only ever touched
@@ -144,6 +146,14 @@ final auditRepositoryProvider = Provider<AuditRepository>((ref) {
 
 final backupServiceProvider = Provider<BackupService>((ref) {
   return BackupService(ref.watch(backupRepositoryProvider));
+});
+
+/// Null on the local Drift build — there's no concept of "other stores" to
+/// manage from a single install, so the Developer Console only renders its
+/// full form (see developer_home_screen.dart) when this is non-null.
+final developerRepositoryProvider = Provider<DeveloperRepository?>((ref) {
+  if (!kUseSupabaseBackend) return null;
+  return SupabaseDeveloperRepository(ref.watch(supabaseClientProvider));
 });
 
 /// On Supabase, checkout/return run as one Postgres transaction each (see

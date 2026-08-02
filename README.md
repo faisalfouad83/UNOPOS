@@ -30,7 +30,7 @@ The database is a local SQLite file (via Drift) stored in the app's support dire
 
 UNOPOS is being migrated to run many stores off one shared Supabase backend
 instead of one local SQLite file per install. This is a phased migration;
-**Phases H1 and H2 are done**, H3–H5 are not:
+**Phases H1–H3 are done**, H4–H5 are not:
 
 - `supabase/migrations/0001_multi_tenant_schema.sql` — the full schema: every
   store's data isolated by Row-Level Security (`store_id` scoped, join-based
@@ -50,7 +50,15 @@ instead of one local SQLite file per install. This is a phased migration;
   accounting + debt entry) as ONE Postgres transaction each — genuinely more
   atomic than the original Dart orchestration ever was, since Postgres
   offers it for free and this is the money/stock-critical path.
-  Run all three migration files, in order, against a fresh Supabase
+- `supabase/migrations/0004_developer_console.sql` — two functions the
+  Developer Console needs beyond plain table access (RLS already gives a
+  developer_admin full read/write on every store row): resetting a store's
+  login password (writes `auth.users.encrypted_password` directly via
+  pgcrypto, since the Admin API/Edge Functions aren't reachable from this
+  sandbox — verify this actually works against your real project before
+  relying on it in production), and assigning a license to a store on the
+  developer's initiative instead of the store's own self-service redemption.
+  Run all four migration files, in order, against a fresh Supabase
   project's SQL editor before enabling Supabase mode.
 - The app defaults to the local Drift database exactly as before — nothing
   changes unless you opt in. To run against Supabase instead:
@@ -68,16 +76,27 @@ instead of one local SQLite file per install. This is a phased migration;
   fully on Supabase in this mode, plus checkout/sale-return as atomic RPCs.
   The Developer gate (`1313`) requires a real Supabase Auth sign-in checked
   against a `developer_admins` table server-side, instead of just a local
-  passcode. `BackupRepository` stays Drift-backed in both modes (local file
-  backups are inherently a local-device concept).
+  passcode. Once signed in, the Developer Console becomes a full multi-tab
+  admin surface (Dashboard/Stores/Licenses/Notifications) instead of just a
+  license generator: per-store view/edit/activate/deactivate/suspend/
+  delete/reset-password/extend-subscription/generate-license, plus sending
+  a platform notification to one store or all of them. `BackupRepository`
+  stays Drift-backed in both modes (local file backups are inherently a
+  local-device concept).
+- Store login now also checks the Developer Console's "Disable" flag after
+  a successful password check — a disabled store's session is signed back
+  out immediately rather than left live.
 - Nothing about this touches the default local build — the local Drift
   schema, its tables, and its repositories are untouched and still fully
-  functional as their own standalone mode.
-- **Not yet done**: the Developer Console (dashboard, store management,
-  license management) still targets the old local model, not Supabase
-  (Phase H3); subscription-plan limit enforcement isn't wired up yet (Phase
-  H4); platform notifications and the tenant-isolation test checklist for
-  running against a real project are still pending (Phase H5).
+  functional as their own standalone mode; the local build's Developer
+  Console also stays exactly the simple license generator it always was
+  (there's no concept of "other stores" to manage from a single install).
+- **Not yet done**: subscription-plan limit enforcement isn't wired up yet
+  (a store can't currently be blocked from exceeding its plan's employee/
+  product/branch counts — Phase H4); the in-app notification inbox (sent
+  notifications land in the DB but stores can't read them yet), a developer
+  audit-log viewer, and the tenant-isolation test checklist for running
+  against a real project are still pending (Phase H5).
 
 ## Known limitations (by design, for this first pass)
 

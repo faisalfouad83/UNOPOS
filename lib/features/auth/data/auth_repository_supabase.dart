@@ -92,10 +92,21 @@ class SupabaseAuthRepository implements AuthRepository {
         email: SupabaseConfig.syntheticEmailFor(storeLoginId),
         password: password,
       );
-      return true;
     } on AuthException {
       return false;
     }
+
+    // Supabase Auth itself has no concept of a developer-disabled store —
+    // a correct password always succeeds there. The kill switch (Developer
+    // Console "deactivate") is enforced here, one level up: reject and sign
+    // back out rather than leave a disabled store's session live.
+    final userId = _client.auth.currentUser?.id;
+    final row = userId == null ? null : await _client.from('stores').select('is_disabled').eq('auth_user_id', userId).maybeSingle();
+    if (row != null && row['is_disabled'] == true) {
+      await _client.auth.signOut();
+      return false;
+    }
+    return true;
   }
 
   @override
