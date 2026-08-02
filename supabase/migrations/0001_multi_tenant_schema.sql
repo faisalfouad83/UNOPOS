@@ -31,28 +31,41 @@ create extension if not exists pgcrypto; -- gen_random_uuid(), crypt(), gen_salt
 -- -----------------------------------------------------------------------------
 
 -- True if the caller is a signed-in Developer (platform staff), never a store.
+--
+-- language plpgsql (not sql) is deliberate: these two functions are defined
+-- here, before developer_admins/stores exist later in this same file.
+-- Postgres validates a `language sql` function's body — including that
+-- every referenced table exists — at CREATE FUNCTION time (it's parsed
+-- immediately, like a view). `language plpgsql` bodies are opaque text at
+-- creation time and only resolved on first call, so a forward reference to
+-- a not-yet-created table is fine. Using `sql` here would fail the whole
+-- migration with "relation does not exist" before section 2 ever runs.
 create or replace function is_developer_admin()
 returns boolean
-language sql
+language plpgsql
 stable
 security definer
 set search_path = public
 as $$
-  select exists (
+begin
+  return exists (
     select 1 from developer_admins d where d.auth_user_id = auth.uid()
   );
+end;
 $$;
 
 -- The store id owned by the calling authenticated session, or null if the
 -- caller isn't a store (e.g. is a developer, or is unauthenticated).
 create or replace function current_store_id()
 returns text
-language sql
+language plpgsql
 stable
 security definer
 set search_path = public
 as $$
-  select id from stores where auth_user_id = auth.uid();
+begin
+  return (select id from stores where auth_user_id = auth.uid());
+end;
 $$;
 
 -- =============================================================================
