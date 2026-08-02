@@ -426,7 +426,7 @@ as $$
   join chart_of_accounts coa on coa.id = jl.account_id
   where jl.store_id = current_store_id()
     and (p_as_of is null or je.entry_date <= p_as_of)
-  group by coa.code;
+  group by coa.code, coa.type;
 $$;
 
 -- -----------------------------------------------------------------------------
