@@ -4,11 +4,16 @@ abstract class AuthRepository {
   /// Null if no store has been created on this install yet (first run).
   Future<StoreRecord?> getCurrentStore();
 
+  /// [activationCodeId] is optional: SaaS registration creates a store on a
+  /// free trial with no code up front (licensing happens later, separately,
+  /// via [LicensingRepository.redeemCode] or the Developer Console).
   Future<StoreRecord> createStore({
     required String storeLoginId,
     required String password,
     required String displayName,
-    required String activationCodeId,
+    String? activationCodeId,
+    String ownerName = '',
+    String phone = '',
   });
 
   Future<bool> verifyStorePassword(String storeLoginId, String password);

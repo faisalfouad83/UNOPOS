@@ -16,6 +16,8 @@ class CreateStoreScreen extends ConsumerStatefulWidget {
 class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
   final _formKey = GlobalKey<FormState>();
   final _storeIdController = TextEditingController();
+  final _ownerNameController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
   bool _submitting = false;
@@ -23,6 +25,8 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
   @override
   void dispose() {
     _storeIdController.dispose();
+    _ownerNameController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
     super.dispose();
@@ -40,7 +44,9 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
             storeLoginId: _storeIdController.text.trim(),
             password: _passwordController.text,
             displayName: _storeIdController.text.trim(),
-            activationCodeId: pendingCodeId ?? '',
+            activationCodeId: pendingCodeId,
+            ownerName: _ownerNameController.text.trim(),
+            phone: _phoneController.text.trim(),
           );
 
       if (pendingCodeId != null) {
@@ -83,6 +89,18 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
                       controller: _storeIdController,
                       decoration: InputDecoration(labelText: l10n.onboardingStoreId),
                       validator: (v) => (v == null || v.trim().isEmpty) ? l10n.errorRequired : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _ownerNameController,
+                      decoration: InputDecoration(labelText: l10n.onboardingOwnerName),
+                      validator: (v) => (v == null || v.trim().isEmpty) ? l10n.errorRequired : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(labelText: l10n.commonPhone),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(

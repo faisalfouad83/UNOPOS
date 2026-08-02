@@ -68,6 +68,14 @@
   "loginStorePasswordHint": "Enter your Store Password",
   "loginButton": "Login",
   "loginInvalidCredentials": "Incorrect store ID or password",
+  "loginCreateStoreLink": "Don't have a store yet? Create one",
+
+  "developerSignInTitle": "Developer Sign-In",
+  "developerSignInEmail": "Email",
+  "developerSignInPassword": "Password",
+
+  "actionCreateStore": "Create a New Store",
+  "onboardingOwnerName": "Owner Name",
 
   "pickAccountTitle": "Who's working?",
   "pinPadTitle": "Enter Passcode",

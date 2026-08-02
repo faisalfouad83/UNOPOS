@@ -194,6 +194,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginInvalidCredentials => 'Incorrect store ID or password';
 
   @override
+  String get loginCreateStoreLink => 'Don\'t have a store yet? Create one';
+
+  @override
+  String get developerSignInTitle => 'Developer Sign-In';
+
+  @override
+  String get developerSignInEmail => 'Email';
+
+  @override
+  String get developerSignInPassword => 'Password';
+
+  @override
+  String get actionCreateStore => 'Create a New Store';
+
+  @override
+  String get onboardingOwnerName => 'Owner Name';
+
+  @override
   String get pickAccountTitle => 'Who\'s working?';
 
   @override

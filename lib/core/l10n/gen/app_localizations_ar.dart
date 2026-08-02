@@ -192,6 +192,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginInvalidCredentials => 'معرّف المتجر أو كلمة المرور غير صحيحة';
 
   @override
+  String get loginCreateStoreLink => 'ليس لديك متجر بعد؟ أنشئ واحدًا';
+
+  @override
+  String get developerSignInTitle => 'تسجيل دخول المطوّر';
+
+  @override
+  String get developerSignInEmail => 'البريد الإلكتروني';
+
+  @override
+  String get developerSignInPassword => 'كلمة المرور';
+
+  @override
+  String get actionCreateStore => 'إنشاء متجر جديد';
+
+  @override
+  String get onboardingOwnerName => 'اسم المالك';
+
+  @override
   String get pickAccountTitle => 'من يعمل الآن؟';
 
   @override

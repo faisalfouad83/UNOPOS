@@ -59,7 +59,9 @@ class DriftAuthRepository implements AuthRepository {
     required String storeLoginId,
     required String password,
     required String displayName,
-    required String activationCodeId,
+    String? activationCodeId,
+    String ownerName = '',
+    String phone = '',
   }) async {
     final id = IdGenerator.newId();
     final now = DateTime.now();
@@ -73,6 +75,11 @@ class DriftAuthRepository implements AuthRepository {
             createdAt: now,
           ),
         );
+    // ownerName/phone aren't columns in the local schema (see
+    // core/database/app_database.dart) — Drift mode stays untouched as the
+    // foundation for a future offline-sync mode, so these are accepted for
+    // interface parity but not persisted here. The Supabase implementation
+    // does persist them.
     return StoreRecord(
       id: id,
       storeLoginId: storeLoginId,
@@ -80,6 +87,8 @@ class DriftAuthRepository implements AuthRepository {
       displayName: displayName,
       activationCodeId: activationCodeId,
       createdAt: now,
+      ownerName: ownerName,
+      phone: phone,
     );
   }
 

@@ -58,6 +58,7 @@ dependencies:
   printing: ^5.13.4
   pdf: ^3.11.1
   win32: ^5.9.0
+  supabase_flutter: ^2.8.0
 
   flutter_localizations:
     sdk: flutter

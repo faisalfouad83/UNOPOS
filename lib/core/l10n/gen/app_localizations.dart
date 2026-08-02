@@ -460,6 +460,42 @@ abstract class AppLocalizations {
   /// **'Incorrect store ID or password'**
   String get loginInvalidCredentials;
 
+  /// No description provided for @loginCreateStoreLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have a store yet? Create one'**
+  String get loginCreateStoreLink;
+
+  /// No description provided for @developerSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer Sign-In'**
+  String get developerSignInTitle;
+
+  /// No description provided for @developerSignInEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get developerSignInEmail;
+
+  /// No description provided for @developerSignInPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get developerSignInPassword;
+
+  /// No description provided for @actionCreateStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a New Store'**
+  String get actionCreateStore;
+
+  /// No description provided for @onboardingOwnerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner Name'**
+  String get onboardingOwnerName;
+
   /// No description provided for @pickAccountTitle.
   ///
   /// In en, this message translates to:

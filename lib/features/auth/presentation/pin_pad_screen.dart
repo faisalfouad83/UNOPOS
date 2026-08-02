@@ -8,6 +8,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/widgets/numeric_pin_pad.dart';
 import '../domain/session_controller.dart';
+import 'developer_signin_dialog.dart';
 
 class PinPadScreen extends ConsumerStatefulWidget {
   const PinPadScreen({super.key});
@@ -57,6 +58,13 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
         context.go(RoutePaths.home);
       case PinResult.developerGate:
         context.go(RoutePaths.developerHome);
+      case PinResult.developerGateNeedsAuth:
+        setState(() {
+          _pin = '';
+          _checking = false;
+        });
+        final signedIn = await showDeveloperSignInDialog(context, ref);
+        if (signedIn && mounted) context.go(RoutePaths.developerHome);
       case PinResult.incorrect:
         _wrongAttempts++;
         setState(() {

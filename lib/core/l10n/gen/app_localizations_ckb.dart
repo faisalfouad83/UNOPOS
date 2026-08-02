@@ -193,6 +193,24 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get loginInvalidCredentials => 'ناسنامە یان وشەی نهێنی هەڵەیە';
 
   @override
+  String get loginCreateStoreLink => 'هێشتا فرۆشگات نییە؟ یەکێک دروست بکە';
+
+  @override
+  String get developerSignInTitle => 'چوونەژوورەوەی گەشەپێدەر';
+
+  @override
+  String get developerSignInEmail => 'ئیمەیل';
+
+  @override
+  String get developerSignInPassword => 'وشەی نهێنی';
+
+  @override
+  String get actionCreateStore => 'دروستکردنی فرۆشگایەکی نوێ';
+
+  @override
+  String get onboardingOwnerName => 'ناوی خاوەن';
+
+  @override
   String get pickAccountTitle => 'کێ کار دەکات؟';
 
   @override

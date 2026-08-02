@@ -66,6 +66,14 @@
   "loginStorePasswordHint": "أدخل كلمة مرور المتجر",
   "loginButton": "تسجيل الدخول",
   "loginInvalidCredentials": "معرّف المتجر أو كلمة المرور غير صحيحة",
+  "loginCreateStoreLink": "ليس لديك متجر بعد؟ أنشئ واحدًا",
+
+  "developerSignInTitle": "تسجيل دخول المطوّر",
+  "developerSignInEmail": "البريد الإلكتروني",
+  "developerSignInPassword": "كلمة المرور",
+
+  "actionCreateStore": "إنشاء متجر جديد",
+  "onboardingOwnerName": "اسم المالك",
 
   "pickAccountTitle": "من يعمل الآن؟",
   "pinPadTitle": "أدخل الرمز السري",

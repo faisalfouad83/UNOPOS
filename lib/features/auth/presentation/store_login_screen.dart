@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/routing/route_paths.dart';
+import '../../../core/supabase/supabase_config.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../domain/session_controller.dart';
 
@@ -88,6 +89,13 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
                         ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                         : Text(l10n.loginButton),
                   ),
+                  if (kUseSupabaseBackend) ...[
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () => context.go(RoutePaths.onboardingStore),
+                      child: Text(l10n.loginCreateStoreLink),
+                    ),
+                  ],
                 ],
               ),
             ),

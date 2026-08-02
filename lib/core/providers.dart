@@ -1,9 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'database/app_database.dart';
+import 'supabase/supabase_client_provider.dart';
+import 'supabase/supabase_config.dart';
 import '../features/auth/data/auth_repository_drift.dart';
+import '../features/auth/data/auth_repository_supabase.dart';
 import '../features/auth/domain/auth_repository.dart';
 import '../features/licensing/data/licensing_repository_drift.dart';
+import '../features/licensing/data/licensing_repository_supabase.dart';
 import '../features/licensing/domain/licensing_repository.dart';
 import '../features/licensing/domain/license_gate_service.dart';
 import '../features/accounting/data/accounting_repository_drift.dart';
@@ -39,11 +43,22 @@ final databaseProvider = Provider<AppDatabase>((ref) {
   return db;
 });
 
+/// Auth + Licensing are the first two repositories cut over to Supabase
+/// (Phase H1). Every other provider below still runs on Drift until Phase
+/// H2 finishes the remaining repositories and this whole file flips at
+/// once — see supabase/migrations/0001_multi_tenant_schema.sql and the
+/// SaaS migration plan for why a partial cutover isn't done mid-phase.
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  if (kUseSupabaseBackend) {
+    return SupabaseAuthRepository(ref.watch(supabaseClientProvider));
+  }
   return DriftAuthRepository(ref.watch(databaseProvider));
 });
 
 final licensingRepositoryProvider = Provider<LicensingRepository>((ref) {
+  if (kUseSupabaseBackend) {
+    return SupabaseLicensingRepository(ref.watch(supabaseClientProvider));
+  }
   return DriftLicensingRepository(ref.watch(databaseProvider));
 });
 

@@ -66,6 +66,14 @@
   "loginStorePasswordHint": "وشەی نهێنی فرۆشگا بنووسە",
   "loginButton": "چوونەژوورەوە",
   "loginInvalidCredentials": "ناسنامە یان وشەی نهێنی هەڵەیە",
+  "loginCreateStoreLink": "هێشتا فرۆشگات نییە؟ یەکێک دروست بکە",
+
+  "developerSignInTitle": "چوونەژوورەوەی گەشەپێدەر",
+  "developerSignInEmail": "ئیمەیل",
+  "developerSignInPassword": "وشەی نهێنی",
+
+  "actionCreateStore": "دروستکردنی فرۆشگایەکی نوێ",
+  "onboardingOwnerName": "ناوی خاوەن",
 
   "pickAccountTitle": "کێ کار دەکات؟",
   "pinPadTitle": "کۆدی نهێنی بنووسە",

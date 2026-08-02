@@ -7,10 +7,12 @@ import '../../../core/providers.dart';
 import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/security/activation_code_codec.dart';
+import '../../../core/supabase/supabase_config.dart';
 import '../../../core/widgets/numeric_pin_pad.dart';
 import '../../../core/widgets/receipt_card.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../../auth/domain/session_controller.dart';
+import '../../auth/presentation/developer_signin_dialog.dart';
 
 class ActivationScreen extends ConsumerStatefulWidget {
   const ActivationScreen({super.key});
@@ -75,6 +77,11 @@ class _ActivationScreenState extends ConsumerState<ActivationScreen> {
                 if (dialogContext.mounted) Navigator.of(dialogContext).pop();
                 if (result == PinResult.developerGate && mounted) {
                   context.go(RoutePaths.developerHome);
+                } else if (result == PinResult.developerGateNeedsAuth && mounted) {
+                  // On the shared backend, 1313 only reveals the real
+                  // sign-in form — it never grants access by itself.
+                  final signedIn = await showDeveloperSignInDialog(context, ref);
+                  if (signedIn && mounted) context.go(RoutePaths.developerHome);
                 }
               },
             ),
@@ -124,57 +131,82 @@ class _ActivationScreenState extends ConsumerState<ActivationScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 36),
-                    ReceiptCard(
-                      color: scheme.surfaceContainerLowest,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            l10n.activationTitle,
-                            style: Theme.of(context).textTheme.titleLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.activationSubtitle,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: scheme.onSurface.withValues(alpha: 0.65)),
-                          ),
-                          const SizedBox(height: 24),
-                          TextField(
-                            controller: _controller,
-                            textAlign: TextAlign.center,
-                            textCapitalization: TextCapitalization.characters,
-                            style: const TextStyle(
-                              fontFamily: 'monospace',
-                              fontSize: 17,
-                              letterSpacing: 1.4,
-                              fontWeight: FontWeight.w600,
+                    if (kUseSupabaseBackend)
+                      ReceiptCard(
+                        color: scheme.surfaceContainerLowest,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: () => context.go(RoutePaths.storeLogin),
+                                child: Text(l10n.loginButton),
+                              ),
                             ),
-                            decoration: InputDecoration(
-                              labelText: l10n.activationCodeLabel,
-                              hintText: l10n.activationCodeHint,
-                              errorText: _error,
-                              prefixIcon: Icon(Icons.confirmation_number_outlined, color: scheme.secondary),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: () => context.go(RoutePaths.onboardingStore),
+                                child: Text(l10n.actionCreateStore),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton(
-                              onPressed: _submitting ? null : _activate,
-                              child: _submitting
-                                  ? const SizedBox(
-                                      width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                                  : Text(l10n.activationButton),
+                          ],
+                        ),
+                      )
+                    else
+                      ReceiptCard(
+                        color: scheme.surfaceContainerLowest,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              l10n.activationTitle,
+                              style: Theme.of(context).textTheme.titleLarge,
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.activationSubtitle,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: scheme.onSurface.withValues(alpha: 0.65)),
+                            ),
+                            const SizedBox(height: 24),
+                            TextField(
+                              controller: _controller,
+                              textAlign: TextAlign.center,
+                              textCapitalization: TextCapitalization.characters,
+                              style: const TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 17,
+                                letterSpacing: 1.4,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: l10n.activationCodeLabel,
+                                hintText: l10n.activationCodeHint,
+                                errorText: _error,
+                                prefixIcon: Icon(Icons.confirmation_number_outlined, color: scheme.secondary),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: _submitting ? null : _activate,
+                                child: _submitting
+                                    ? const SizedBox(
+                                        width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                    : Text(l10n.activationButton),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

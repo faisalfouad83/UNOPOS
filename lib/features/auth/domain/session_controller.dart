@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/magic_passcodes.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/providers.dart';
+import '../../../core/supabase/supabase_client_provider.dart';
+import '../../../core/supabase/supabase_config.dart';
 import 'auth_models.dart';
 
 class SessionState {
@@ -45,7 +48,7 @@ class SessionState {
   }
 }
 
-enum PinResult { success, incorrect, developerGate }
+enum PinResult { success, incorrect, developerGate, developerGateNeedsAuth }
 
 class SessionController extends Notifier<SessionState> {
   @override
@@ -67,6 +70,14 @@ class SessionController extends Notifier<SessionState> {
   /// falls back to verifying the PIN against the selected employee.
   Future<PinResult> submitPin(String pin, {EmployeeRecord? selectedEmployee}) async {
     if (pin == MagicPasscodes.developerGate) {
+      if (kUseSupabaseBackend) {
+        // 1313 is still the universal shortcut, but on the shared backend it
+        // must not grant developer access by itself — it only reveals the
+        // real sign-in form. Actual authorization happens in
+        // signInDeveloper() below, checked server-side by RLS against
+        // developer_admins, never by the client trusting a passcode alone.
+        return PinResult.developerGateNeedsAuth;
+      }
       state = state.copyWith(developerMode: true);
       return PinResult.developerGate;
     }
@@ -80,6 +91,31 @@ class SessionController extends Notifier<SessionState> {
       }
     }
     return PinResult.incorrect;
+  }
+
+  /// Real sign-in for the Developer Console on the shared Supabase backend,
+  /// reached via the 1313 shortcut. Signs in with Supabase Auth, then
+  /// requires the resulting account to actually be listed in
+  /// `developer_admins` (enforced server-side by RLS/`is_developer_admin()`,
+  /// not just checked here) before granting [SessionState.developerMode].
+  /// Returns false — and signs the (non-developer) account back out — on
+  /// any failure, so a valid store password can never masquerade as one.
+  Future<bool> signInDeveloper(String email, String password) async {
+    final client = ref.read(supabaseClientProvider);
+    try {
+      await client.auth.signInWithPassword(email: email, password: password);
+    } on AuthException {
+      return false;
+    }
+
+    final isDeveloper = await client.rpc('is_developer_admin') as bool? ?? false;
+    if (!isDeveloper) {
+      await client.auth.signOut();
+      return false;
+    }
+
+    state = state.copyWith(developerMode: true);
+    return true;
   }
 
   /// Used only right after onboarding creates the founding owner account, so

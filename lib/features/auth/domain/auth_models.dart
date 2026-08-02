@@ -9,6 +9,8 @@ class StoreRecord {
     this.activationCodeId,
     required this.createdAt,
     this.isActive = true,
+    this.ownerName = '',
+    this.phone = '',
   });
 
   final String id;
@@ -18,6 +20,8 @@ class StoreRecord {
   final String? activationCodeId;
   final DateTime createdAt;
   final bool isActive;
+  final String ownerName;
+  final String phone;
 }
 
 class BranchRecord {

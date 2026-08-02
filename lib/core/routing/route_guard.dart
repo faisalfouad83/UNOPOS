@@ -1,5 +1,6 @@
 import '../../features/auth/domain/session_controller.dart';
 import '../constants/roles.dart';
+import '../supabase/supabase_config.dart';
 import 'route_paths.dart';
 
 /// Central RBAC + first-run/subsequent-run flow guard. Returns the path to
@@ -51,11 +52,29 @@ class RouteGuard {
       return location == RoutePaths.developerHome ? null : RoutePaths.developerHome;
     }
 
-    if (!hasValidLicense) {
+    // The offline activation-code gate only applies to the local/Drift
+    // single-tenant build. In SaaS mode a store registers freely on a trial
+    // and licensing happens later (activation-code redemption or a
+    // Developer Console action) — it never blocks reaching onboarding.
+    if (!hasValidLicense && !kUseSupabaseBackend) {
       return location == RoutePaths.activation ? null : RoutePaths.activation;
     }
 
     if (!hasStoreOnDisk) {
+      if (kUseSupabaseBackend) {
+        // No persisted Supabase session on this device yet. That does NOT
+        // mean no store exists — unlike the local build, many stores share
+        // one backend, so this device might just need to log into an
+        // existing one. Land on the branded welcome/login surface instead
+        // of forcing straight into registration.
+        if (location == RoutePaths.activation ||
+            location == RoutePaths.storeLogin ||
+            location == RoutePaths.onboardingStore ||
+            location == RoutePaths.onboardingManager) {
+          return null;
+        }
+        return RoutePaths.activation;
+      }
       // Mid-onboarding steps are allowed to proceed; anything else bounces
       // to the start of onboarding.
       if (location == RoutePaths.onboardingStore || location == RoutePaths.onboardingManager) {

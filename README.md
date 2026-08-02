@@ -26,6 +26,44 @@ flutter run -d windows   # or -d <android-device-id>
 
 The database is a local SQLite file (via Drift) stored in the app's support directory — no server needed for now. The repository layer is written behind interfaces specifically so it can be swapped for a Supabase/Firebase-backed implementation later without touching business logic or UI.
 
+## Multi-tenant SaaS backend (Supabase) — in progress
+
+UNOPOS is being migrated to run many stores off one shared Supabase backend
+instead of one local SQLite file per install. This is a phased migration;
+**Phase H1 (foundation) is done**, later phases are not:
+
+- `supabase/migrations/0001_multi_tenant_schema.sql` — the full schema: every
+  store's data isolated by Row-Level Security (`store_id` scoped, join-based
+  policies), PIN hashes locked in a table with zero client policies (only
+  reachable through `SECURITY DEFINER` functions), store registration,
+  activation-code redemption, and employee PIN verify/create/update all as
+  server-side functions. Run this against a fresh Supabase project's SQL
+  editor before enabling Supabase mode.
+- The app defaults to the local Drift database exactly as before — nothing
+  changes unless you opt in. To run against Supabase instead:
+  ```bash
+  flutter run -d windows \
+    --dart-define=UNOPOS_USE_SUPABASE=true \
+    --dart-define=SUPABASE_URL=https://your-project.supabase.co \
+    --dart-define=SUPABASE_ANON_KEY=your-anon-key
+  ```
+  Also disable "Confirm email" in the Supabase project's Auth settings —
+  store accounts use a synthetic, never-emailed address under the hood, so
+  there's no inbox to confirm from.
+- **What's cut over so far**: store registration/login and employee PIN
+  sign-in (`AuthRepository`, `LicensingRepository`) run fully on Supabase in
+  this mode. The Developer gate (`1313`) now requires a real Supabase Auth
+  sign-in checked against a `developer_admins` table server-side, instead of
+  just a local passcode.
+- **What's still local-only even in Supabase mode** (until Phase H2):
+  inventory, POS/sales, debts, suppliers, accounting, shifts, settings,
+  audit — these still read/write the local Drift database. Don't run
+  Supabase mode in production until that phase lands; it's here so the
+  foundation can be reviewed and iterated on early.
+- Nothing about this touches the default local build — the local Drift
+  schema, its tables, and its repositories are untouched and still fully
+  functional as their own standalone mode.
+
 ## Known limitations (by design, for this first pass)
 
 - **Security of `1313`/`9090`**: these are static codes baked into every install. Fine for this local MVP; before selling commercially, make them per-store configurable or server-issued.
