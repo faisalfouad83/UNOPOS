@@ -46,6 +46,11 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
       if (store != null) {
         ref.read(sessionControllerProvider.notifier).setStore(store);
         if (mounted) context.go(RoutePaths.tilePicker);
+      } else {
+        // Password verified but no matching store row came back — surface
+        // this instead of silently sitting on the login screen with no
+        // feedback at all.
+        setState(() => _error = l10n.errorGeneric);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
