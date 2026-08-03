@@ -23,6 +23,7 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
   int _lockedSeconds = 0;
   Timer? _lockTimer;
   bool _checking = false;
+  String? _error;
 
   static const _maxAttemptsBeforeLock = 5;
   static const _lockDurationSeconds = 30;
@@ -47,9 +48,27 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
 
   Future<void> _onComplete() async {
     if (_checking || _lockedSeconds > 0) return;
-    setState(() => _checking = true);
+    setState(() {
+      _checking = true;
+      _error = null;
+    });
     final selectedEmployee = ref.read(selectedEmployeeForPinProvider);
-    final result = await ref.read(sessionControllerProvider.notifier).submitPin(_pin, selectedEmployee: selectedEmployee);
+    final PinResult result;
+    try {
+      result = await ref.read(sessionControllerProvider.notifier).submitPin(_pin, selectedEmployee: selectedEmployee);
+    } catch (e) {
+      // Without this, any server-side failure (e.g. a stale/mismatched auth
+      // session) left _checking stuck true forever — the pad looked frozen
+      // with no feedback at all, indistinguishable from a real app hang.
+      if (mounted) {
+        setState(() {
+          _pin = '';
+          _checking = false;
+          _error = '$e';
+        });
+      }
+      return;
+    }
 
     if (!mounted) return;
     switch (result) {
@@ -111,6 +130,12 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
             else if (_wrongAttempts > 0)
               Text(
                 l10n.pinPadIncorrect,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              )
+            else if (_error != null)
+              Text(
+                '${l10n.errorGeneric}\n$_error',
+                textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             const SizedBox(height: 16),

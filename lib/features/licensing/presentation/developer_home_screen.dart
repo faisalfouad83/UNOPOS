@@ -26,9 +26,9 @@ class DeveloperHomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: l10n.actionSignOut,
-            onPressed: () {
-              ref.read(sessionControllerProvider.notifier).signOutToTilePicker();
-              context.go(RoutePaths.tilePicker);
+            onPressed: () async {
+              await ref.read(sessionControllerProvider.notifier).signOutDeveloper();
+              if (context.mounted) context.go(RoutePaths.activation);
             },
           ),
         ],

@@ -146,6 +146,22 @@ class SessionController extends Notifier<SessionState> {
     state = state.copyWith(clearEmployee: true, clearDeveloperMode: true);
   }
 
+  /// Exiting the Developer Console on the shared Supabase backend: signing
+  /// in as a developer replaced the single Supabase Auth session that had
+  /// been authenticated as the store (one client, one session), so there is
+  /// no store session left to "return to" — clearing local state and
+  /// routing back to the tile picker would leave the client authenticated
+  /// as the developer while the UI pretends to be the store, breaking any
+  /// server-side call that resolves the store from auth.uid() (e.g.
+  /// verify_employee_pin). Sign out for real and require a fresh store
+  /// login instead.
+  Future<void> signOutDeveloper() async {
+    if (kUseSupabaseBackend) {
+      await ref.read(supabaseClientProvider).auth.signOut();
+    }
+    state = const SessionState();
+  }
+
   void signOutStore() {
     state = const SessionState();
   }
