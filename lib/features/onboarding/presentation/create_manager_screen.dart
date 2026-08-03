@@ -70,15 +70,24 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
     try {
       final store = _store;
       final authRepo = ref.read(authRepositoryProvider);
+      // If a previous attempt at this screen already created the branch(es)
+      // but failed on a later step (e.g. employee creation), reuse them
+      // instead of creating duplicates — retrying would otherwise trip the
+      // plan's branch-limit trigger every time.
+      final existingBranches = await authRepo.listBranches(store.id);
       String? firstBranchId;
-      for (var i = 0; i < _branchCount; i++) {
-        final branch = await authRepo.createBranch(
-          storeId: store.id,
-          name: _branches[i].name.text.trim().isEmpty ? 'Branch ${i + 1}' : _branches[i].name.text.trim(),
-          address: _branches[i].location.text.trim(),
-          isMainBranch: i == 0,
-        );
-        firstBranchId ??= branch.id;
+      if (existingBranches.isNotEmpty) {
+        firstBranchId = existingBranches.first.id;
+      } else {
+        for (var i = 0; i < _branchCount; i++) {
+          final branch = await authRepo.createBranch(
+            storeId: store.id,
+            name: _branches[i].name.text.trim().isEmpty ? 'Branch ${i + 1}' : _branches[i].name.text.trim(),
+            address: _branches[i].location.text.trim(),
+            isMainBranch: i == 0,
+          );
+          firstBranchId ??= branch.id;
+        }
       }
 
       final owner = await authRepo.createEmployee(
