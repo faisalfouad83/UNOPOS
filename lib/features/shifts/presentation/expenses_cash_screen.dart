@@ -155,9 +155,9 @@ class _ShiftDetail extends ConsumerWidget {
             final isWide = constraints.maxWidth > 720;
             final cards = [
               _StatTile(label: l10n.expensesCashOpeningCash, value: shift.openingCashFloatMinorUnits),
-              _StatTile(label: l10n.expensesCashSalesTotal, value: cashSalesTotal, accent: BrandColors.sage),
-              _StatTile(label: l10n.expensesCashTotalExpenses, value: -cashExpensesTotal, accent: BrandColors.brickRed),
-              _StatTile(label: l10n.expensesCashExpected, value: expected, accent: BrandColors.terracotta, emphasize: true),
+              _StatTile(label: l10n.expensesCashSalesTotal, value: cashSalesTotal, accent: BrandColors.silver),
+              _StatTile(label: l10n.expensesCashTotalExpenses, value: -cashExpensesTotal, accent: BrandColors.red),
+              _StatTile(label: l10n.expensesCashExpected, value: expected, accent: BrandColors.blue, emphasize: true),
             ];
             return isWide
                 ? Row(

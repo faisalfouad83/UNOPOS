@@ -88,8 +88,8 @@ class DashboardScreen extends ConsumerWidget {
                     label: l10n.debtsTitle,
                     value: Money.format(debtsTotal, currencySymbol: r'$'),
                     subtitle: l10n.debtsBalanceOwed,
-                    accent: BrandColors.sage,
-                    onAccent: BrandColors.cream,
+                    accent: BrandColors.silver,
+                    onAccent: BrandColors.paper,
                     onTap: () => context.go(RoutePaths.debts),
                   ),
                   _StatCard(

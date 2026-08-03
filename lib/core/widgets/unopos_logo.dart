@@ -1,67 +1,28 @@
 import 'package:flutter/material.dart';
 
-/// UNOPOS's mark: a price tag, not a generic storefront/cart icon — the
-/// single object most specific to "software that runs a checkout counter."
-/// Drawn with CustomPainter so it's crisp at any size and themeable, no
-/// bitmap asset needed.
+/// UNOPOS's brand mark — the actual logo artwork (the blue/silver "U+N"
+/// monogram on its navy tile), not a themed vector redraw. Every call site
+/// uses this at icon-ish sizes (22-72px), so this is the tight monogram
+/// crop, not the full lockup with the "UNOPOS" wordmark and tagline — that
+/// text would be illegible this small. It's a fixed dark tile by design, so
+/// it reads consistently as a brand badge regardless of the surrounding
+/// light/dark theme.
 class UnoposLogo extends StatelessWidget {
-  const UnoposLogo({super.key, this.size = 56, this.color, this.holeColor});
+  const UnoposLogo({super.key, this.size = 56, this.borderRadius});
 
   final double size;
-  final Color? color;
-  final Color? holeColor;
+  final double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(
-        painter: _TagPainter(
-          tagColor: color ?? scheme.primary,
-          holeColor: holeColor ?? scheme.secondary,
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius ?? size * 0.2),
+      child: Image.asset(
+        'assets/branding/unopos_icon.png',
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
       ),
     );
   }
-}
-
-class _TagPainter extends CustomPainter {
-  _TagPainter({required this.tagColor, required this.holeColor});
-
-  final Color tagColor;
-  final Color holeColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-
-    final tagPath = Path()
-      ..moveTo(w * 0.04, h * 0.5)
-      ..lineTo(w * 0.32, h * 0.09)
-      ..quadraticBezierTo(w * 0.36, h * 0.06, w * 0.42, h * 0.06)
-      ..lineTo(w * 0.86, h * 0.06)
-      ..quadraticBezierTo(w * 0.94, h * 0.06, w * 0.94, h * 0.14)
-      ..lineTo(w * 0.94, h * 0.86)
-      ..quadraticBezierTo(w * 0.94, h * 0.94, w * 0.86, h * 0.94)
-      ..lineTo(w * 0.42, h * 0.94)
-      ..quadraticBezierTo(w * 0.36, h * 0.94, w * 0.32, h * 0.91)
-      ..lineTo(w * 0.04, h * 0.5)
-      ..close();
-
-    final hole = Path()..addOval(Rect.fromCircle(center: Offset(w * 0.335, h * 0.5), radius: w * 0.075));
-
-    final combined = Path.combine(PathOperation.difference, tagPath, hole);
-
-    canvas.drawPath(combined, Paint()..color = tagColor);
-
-    // A small amber "price dot" accent, echoing a sale sticker.
-    canvas.drawCircle(Offset(w * 0.72, h * 0.32), w * 0.06, Paint()..color = holeColor);
-  }
-
-  @override
-  bool shouldRepaint(covariant _TagPainter oldDelegate) =>
-      oldDelegate.tagColor != tagColor || oldDelegate.holeColor != holeColor;
 }

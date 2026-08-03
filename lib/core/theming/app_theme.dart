@@ -1,112 +1,113 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// UNOPOS's visual identity — the "Organic" design system: a warm cream
-/// ground, a terracotta accent for primary actions, and a sage second voice,
-/// with heavily rounded (often pill-shaped) shapes throughout. Every value
-/// below is ported 1:1 from the design handoff's `organic.css` token sheet
-/// (light values, then the `[data-theme="dark"]` overrides) — see
-/// `supabase/../design_handoff_unopos_redesign/screens/organic.css` for the
-/// source of truth if these ever need to be retuned.
+/// UNOPOS's visual identity — recolored to match the UNOPOS logo (a navy
+/// tile with a blue-to-cyan "U" and a brushed-silver "N"): a deep navy
+/// ground, a vivid blue accent for primary actions, and a steel-silver
+/// second voice, echoing the mark's own two materials. Shapes and type
+/// (heavily rounded/pill, Caprasimo + Figtree) are unchanged from the prior
+/// pass — only the color tokens moved. Hex values are sampled directly from
+/// the logo artwork (`assets/branding/unopos_icon.png`) or generated as an
+/// HSL tonal ramp around that same hue, mirroring the previous token
+/// sheet's method (dark mode reuses the same nine ramp values, reversed).
 class _Brand {
   const _Brand._();
 
   // Ground + text.
-  static const Color bgLight = Color(0xFFF5EAD8);
-  static const Color surfaceLight = Color(0xFFEBDDC5);
-  static const Color textLight = Color(0xFF201E1D);
-  static const Color bgDark = Color(0xFF201C17);
-  static const Color surfaceDark = Color(0xFF2C2620);
-  static const Color textDark = Color(0xFFF3ECE0);
+  static const Color bgLight = Color(0xFFF6F8FA);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color textLight = Color(0xFF0B1220);
+  static const Color bgDark = Color(0xFF05080D);
+  static const Color surfaceDark = Color(0xFF101826);
+  static const Color textDark = Color(0xFFEDF1F5);
 
   // Neutral tonal ramp (100 lightest step of the ramp -> 900 darkest step;
   // dark mode uses the same nine hex values remapped onto the opposite
   // steps, since the ramp is a shared perceptual scale, not two palettes).
   static const List<Color> neutralLight = [
-    Color(0xFFF9F4ED),
-    Color(0xFFEEE7DB),
-    Color(0xFFDCD3C4),
-    Color(0xFFC0B6A5),
-    Color(0xFFA19786),
-    Color(0xFF82796A),
-    Color(0xFF645C50),
-    Color(0xFF474238),
-    Color(0xFF2E2B25),
+    Color(0xFFF8F9F9),
+    Color(0xFFD0DBE6),
+    Color(0xFFAABED1),
+    Color(0xFF83A1BC),
+    Color(0xFF5D84A8),
+    Color(0xFF466683),
+    Color(0xFF32485C),
+    Color(0xFF1D2A35),
+    Color(0xFF080C0F),
   ];
   static const List<Color> neutralDark = [
-    Color(0xFF2E2B25),
-    Color(0xFF474238),
-    Color(0xFF645C50),
-    Color(0xFF82796A),
-    Color(0xFFA19786),
-    Color(0xFFC0B6A5),
-    Color(0xFFDCD3C4),
-    Color(0xFFEEE7DB),
-    Color(0xFFF9F4ED),
+    Color(0xFF080C0F),
+    Color(0xFF1D2A35),
+    Color(0xFF32485C),
+    Color(0xFF466683),
+    Color(0xFF5D84A8),
+    Color(0xFF83A1BC),
+    Color(0xFFAABED1),
+    Color(0xFFD0DBE6),
+    Color(0xFFF8F9F9),
   ];
 
-  // Terracotta accent ramp (primary).
+  // Blue accent ramp (primary) — the "U" stroke's gradient.
   static const List<Color> accentLight = [
-    Color(0xFFFFF2EB),
-    Color(0xFFFFE1D0),
-    Color(0xFFFFC6A5),
-    Color(0xFFF6A06B),
-    Color(0xFFD67F48),
-    Color(0xFFB2622D),
-    Color(0xFF8C491A),
-    Color(0xFF643312),
-    Color(0xFF402310),
+    Color(0xFFEFF5F8),
+    Color(0xFFB8E5FB),
+    Color(0xFF87D3F9),
+    Color(0xFF56C1F6),
+    Color(0xFF25AFF4),
+    Color(0xFF0B95D9),
+    Color(0xFF0974A8),
+    Color(0xFF065277),
+    Color(0xFF043046),
   ];
   static const List<Color> accentDark = [
-    Color(0xFF402310),
-    Color(0xFF643312),
-    Color(0xFF8C491A),
-    Color(0xFFB2622D),
-    Color(0xFFD67F48),
-    Color(0xFFF6A06B),
-    Color(0xFFFFC6A5),
-    Color(0xFFFFE1D0),
-    Color(0xFFFFF2EB),
+    Color(0xFF043046),
+    Color(0xFF065277),
+    Color(0xFF0974A8),
+    Color(0xFF0B95D9),
+    Color(0xFF25AFF4),
+    Color(0xFF56C1F6),
+    Color(0xFF87D3F9),
+    Color(0xFFB8E5FB),
+    Color(0xFFEFF5F8),
   ];
-  static const Color accentBaseLight = Color(0xFFC67139);
-  static const Color accentBaseDark = Color(0xFFF6A06B);
+  static const Color accentBaseLight = Color(0xFF0079E4);
+  static const Color accentBaseDark = Color(0xFF00CFFD);
 
-  // Sage accent-2 ramp (secondary/tertiary — "a genuine second voice").
+  // Steel-silver accent-2 ramp (secondary/tertiary) — the "N" stroke's
+  // brushed-metal finish, "a genuine second voice" alongside the blue.
   static const List<Color> accent2Light = [
-    Color(0xFFF0FAE1),
-    Color(0xFFE1EECC),
-    Color(0xFFCCDBB2),
-    Color(0xFFAEBF92),
-    Color(0xFF8FA073),
-    Color(0xFF728157),
-    Color(0xFF56633F),
-    Color(0xFF3D472B),
-    Color(0xFF272E1B),
+    Color(0xFFF4F5F6),
+    Color(0xFFD8DCE1),
+    Color(0xFFBCC4CD),
+    Color(0xFFA1ACB8),
+    Color(0xFF8594A3),
+    Color(0xFF6A7B8D),
+    Color(0xFF566371),
+    Color(0xFF414B56),
+    Color(0xFF2C333A),
   ];
   static const List<Color> accent2Dark = [
-    Color(0xFF272E1B),
-    Color(0xFF3D472B),
-    Color(0xFF56633F),
-    Color(0xFF728157),
-    Color(0xFF8FA073),
-    Color(0xFFAEBF92),
-    Color(0xFFCCDBB2),
-    Color(0xFFE1EECC),
-    Color(0xFFF0FAE1),
+    Color(0xFF2C333A),
+    Color(0xFF414B56),
+    Color(0xFF566371),
+    Color(0xFF6A7B8D),
+    Color(0xFF8594A3),
+    Color(0xFFA1ACB8),
+    Color(0xFFBCC4CD),
+    Color(0xFFD8DCE1),
+    Color(0xFFF4F5F6),
   ];
-  static const Color accent2BaseLight = Color(0xFF7A8A5E);
-  static const Color accent2BaseDark = Color(0xFFAEBF92);
+  static const Color accent2BaseLight = Color(0xFF566371);
+  static const Color accent2BaseDark = Color(0xFFA1ACB8);
 
-  // No error color is defined by the Organic token sheet — this warm brick
-  // red is a judgment call kept from the app's original palette because it
-  // already reads as "warm", not grey, consistent with the new system's
-  // "never desaturate into greys" rule.
-  static const Color errorLight = Color(0xFFC4483B);
-  static const Color errorContainerLight = Color(0xFFF6D3CD);
-  static const Color onErrorContainerLight = Color(0xFF4A140D);
-  static const Color errorDark = Color(0xFFE0685A);
-  static const Color errorContainerDark = Color(0xFF5C231A);
-  static const Color onErrorContainerDark = Color(0xFFF6D3CD);
+  // No error color comes from the logo — a clean modern red, tuned to sit
+  // comfortably next to a cool blue palette without reading as a clash.
+  static const Color errorLight = Color(0xFFE5484D);
+  static const Color errorContainerLight = Color(0xFFFFE1E2);
+  static const Color onErrorContainerLight = Color(0xFF641623);
+  static const Color errorDark = Color(0xFFFF6369);
+  static const Color errorContainerDark = Color(0xFF5C161A);
+  static const Color onErrorContainerDark = Color(0xFFFFD9DA);
 }
 
 class AppTheme {
@@ -168,7 +169,7 @@ class AppTheme {
       tertiaryContainer: a2[0],
       onTertiaryContainer: a2[8],
       error: _Brand.errorDark,
-      onError: const Color(0xFF2B0805),
+      onError: const Color(0xFF3B0A0C),
       errorContainer: _Brand.errorContainerDark,
       onErrorContainer: _Brand.onErrorContainerDark,
       surface: _Brand.bgDark,
@@ -307,10 +308,10 @@ class AppTheme {
 /// should use Theme.of(context).colorScheme, not these directly.
 class BrandColors {
   const BrandColors._();
-  static const Color terracotta = _Brand.accentBaseLight;
-  static const Color sage = _Brand.accent2BaseLight;
-  static const Color brickRed = _Brand.errorLight;
-  static const Color cream = _Brand.bgLight;
+  static const Color blue = _Brand.accentBaseLight;
+  static const Color silver = _Brand.accent2BaseLight;
+  static const Color red = _Brand.errorLight;
+  static const Color paper = _Brand.bgLight;
   static const Color ink = _Brand.textLight;
 }
 
