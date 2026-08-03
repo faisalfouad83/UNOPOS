@@ -5,9 +5,16 @@ import '../../features/auth/domain/auth_models.dart';
 import '../../features/auth/domain/session_controller.dart';
 
 class AppBootstrapResult {
-  const AppBootstrapResult({this.store, required this.hasValidLicense});
+  const AppBootstrapResult({this.store, required this.hasValidLicense, this.hasEmployees = false});
   final StoreRecord? store;
   final bool hasValidLicense;
+
+  /// False if a store row exists but onboarding never finished creating its
+  /// first employee (owner) — e.g. the app was closed/crashed between
+  /// creating the store and creating its manager account. RouteGuard uses
+  /// this to send the user back to finish that step instead of stranding
+  /// them on a dead-end tile picker with nothing to tap.
+  final bool hasEmployees;
 }
 
 /// Reflects [AppBootstrapResult.hasValidLicense] but can also be flipped
@@ -24,10 +31,13 @@ final appBootstrapProvider = FutureProvider<AppBootstrapResult>((ref) async {
   final store = await authRepo.getCurrentStore();
   final valid = await gate.hasValidLicense(storeId: store?.id);
 
+  var hasEmployees = false;
   if (store != null) {
     ref.read(sessionControllerProvider.notifier).setStore(store);
+    final employees = await authRepo.watchEmployees(store.id).first;
+    hasEmployees = employees.isNotEmpty;
   }
   ref.read(licenseValidProvider.notifier).state = valid;
 
-  return AppBootstrapResult(store: store, hasValidLicense: valid);
+  return AppBootstrapResult(store: store, hasValidLicense: valid, hasEmployees: hasEmployees);
 });

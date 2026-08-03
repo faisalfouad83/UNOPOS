@@ -36,6 +36,7 @@ class RouteGuard {
     required String location,
     required bool hasValidLicense,
     required bool hasStoreOnDisk,
+    required bool hasEmployees,
     required SessionState session,
   }) {
     final isOnboardingRoute = location == RoutePaths.activation ||
@@ -81,6 +82,16 @@ class RouteGuard {
         return null;
       }
       return RoutePaths.onboardingStore;
+    }
+
+    // Store exists but its first employee (owner) was never created — e.g.
+    // the app closed between "create store" and "create manager". Force
+    // back to that step rather than stranding the user on a dead-end tile
+    // picker with nothing to tap. Once signInEmployeeDirectly() runs at the
+    // end of that step, session.isAuthenticated flips true and this stops
+    // applying immediately, even before hasEmployees itself is re-checked.
+    if (!hasEmployees && !session.isAuthenticated) {
+      return location == RoutePaths.onboardingManager ? null : RoutePaths.onboardingManager;
     }
 
     // Store exists and license is valid: onboarding/activation routes are

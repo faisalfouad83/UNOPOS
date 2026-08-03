@@ -12,9 +12,13 @@ import '../../auth/domain/auth_models.dart';
 import '../../auth/domain/session_controller.dart';
 
 class CreateManagerScreen extends ConsumerStatefulWidget {
-  const CreateManagerScreen({super.key, required this.store});
+  const CreateManagerScreen({super.key, this.store});
 
-  final StoreRecord store;
+  /// Null when reached via RouteGuard's redirect (store exists but
+  /// onboarding never finished) rather than direct navigation from
+  /// CreateStoreScreen — falls back to the session's store in that case,
+  /// which AppBootstrap already loaded before any redirect could run.
+  final StoreRecord? store;
 
   @override
   ConsumerState<CreateManagerScreen> createState() => _CreateManagerScreenState();
@@ -47,6 +51,11 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
     });
   }
 
+  /// [widget.store] is only populated when navigated to directly from
+  /// CreateStoreScreen; when RouteGuard redirects here instead, it falls
+  /// back to whatever AppBootstrap already loaded into the session.
+  StoreRecord get _store => widget.store ?? ref.read(sessionControllerProvider).store!;
+
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
@@ -59,11 +68,12 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
       _error = null;
     });
     try {
+      final store = _store;
       final authRepo = ref.read(authRepositoryProvider);
       String? firstBranchId;
       for (var i = 0; i < _branchCount; i++) {
         final branch = await authRepo.createBranch(
-          storeId: widget.store.id,
+          storeId: store.id,
           name: _branches[i].name.text.trim().isEmpty ? 'Branch ${i + 1}' : _branches[i].name.text.trim(),
           address: _branches[i].location.text.trim(),
           isMainBranch: i == 0,
@@ -72,7 +82,7 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
       }
 
       final owner = await authRepo.createEmployee(
-        storeId: widget.store.id,
+        storeId: store.id,
         branchId: firstBranchId,
         name: _nameController.text.trim(),
         role: StoreRole.owner.name,
@@ -80,11 +90,11 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
         phone: _phoneController.text.trim(),
       );
 
-      await ref.read(accountingRepositoryProvider).seedDefaultChartOfAccounts(widget.store.id);
-      await ref.read(settingsRepositoryProvider).ensureSettings(widget.store.id);
+      await ref.read(accountingRepositoryProvider).seedDefaultChartOfAccounts(store.id);
+      await ref.read(settingsRepositoryProvider).ensureSettings(store.id);
 
       final sessionNotifier = ref.read(sessionControllerProvider.notifier);
-      sessionNotifier.setStore(widget.store);
+      sessionNotifier.setStore(store);
       await sessionNotifier.signInEmployeeDirectly(owner);
 
       if (mounted) context.go(RoutePaths.home);

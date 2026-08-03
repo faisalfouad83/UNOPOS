@@ -47,6 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         location: state.matchedLocation,
         hasValidLicense: hasValidLicense,
         hasStoreOnDisk: session.hasStore,
+        hasEmployees: bootstrap.value?.hasEmployees ?? false,
         session: session,
       );
     },
@@ -55,7 +56,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: RoutePaths.onboardingStore, builder: (context, state) => const CreateStoreScreen()),
       GoRoute(
         path: RoutePaths.onboardingManager,
-        builder: (context, state) => CreateManagerScreen(store: state.extra as StoreRecord),
+        // extra is only passed when navigated to directly from
+        // CreateStoreScreen; when RouteGuard redirects here instead (store
+        // exists but onboarding never finished), extra is null and
+        // CreateManagerScreen falls back to the store already loaded into
+        // the session by AppBootstrap.
+        builder: (context, state) => CreateManagerScreen(store: state.extra as StoreRecord?),
       ),
       GoRoute(path: RoutePaths.storeLogin, builder: (context, state) => const StoreLoginScreen()),
       GoRoute(path: RoutePaths.tilePicker, builder: (context, state) => const TilePickerScreen()),
