@@ -23,10 +23,14 @@ class TilePickerScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.pickAccountTitle)),
       body: employeesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text(l10n.errorGeneric)),
+        // TODO(debug): shows the raw stream error instead of a generic
+        // message while diagnosing the Supabase onboarding flow — revert to
+        // l10n.errorGeneric once this is confirmed working end to end
+        // against a real project.
+        error: (e, st) => Center(child: Text('${l10n.errorGeneric}\n$e')),
         data: (employees) {
           if (employees.isEmpty) {
-            return Center(child: Text(l10n.errorGeneric));
+            return Center(child: Text('${l10n.errorGeneric}\n(no employees found for this store)'));
           }
           return Center(
             child: ConstrainedBox(
