@@ -27,6 +27,7 @@ const _allDestinations = [
   _Destination(RoutePaths.debts, Icons.receipt_long_outlined, _navDebts),
   _Destination(RoutePaths.suppliers, Icons.local_shipping_outlined, _navSuppliers),
   _Destination(RoutePaths.accounting, Icons.account_balance_outlined, _navAccounting),
+  _Destination(RoutePaths.expensesCash, Icons.savings_outlined, _navExpensesCash),
   _Destination(RoutePaths.hr, Icons.badge_outlined, _navHr),
   _Destination(RoutePaths.reports, Icons.bar_chart_outlined, _navReports),
   _Destination(RoutePaths.settings, Icons.settings_outlined, _navSettings),
@@ -38,6 +39,7 @@ String _navInventory(AppLocalizations l) => l.navInventory;
 String _navDebts(AppLocalizations l) => l.navDebts;
 String _navSuppliers(AppLocalizations l) => l.navSuppliers;
 String _navAccounting(AppLocalizations l) => l.navAccounting;
+String _navExpensesCash(AppLocalizations l) => l.navExpensesCash;
 String _navHr(AppLocalizations l) => l.navHr;
 String _navReports(AppLocalizations l) => l.navReports;
 String _navSettings(AppLocalizations l) => l.navSettings;
@@ -45,7 +47,9 @@ String _navSettings(AppLocalizations l) => l.navSettings;
 List<_Destination> _destinationsForRole(SessionRole? role) {
   switch (role) {
     case SessionRole.cashier:
-      return _allDestinations.where((d) => [RoutePaths.pos, RoutePaths.debts].contains(d.path)).toList();
+      return _allDestinations
+          .where((d) => [RoutePaths.pos, RoutePaths.debts, RoutePaths.expensesCash].contains(d.path))
+          .toList();
     case SessionRole.warehouseManager:
       return _allDestinations.where((d) => [RoutePaths.inventory].contains(d.path)).toList();
     case SessionRole.owner:

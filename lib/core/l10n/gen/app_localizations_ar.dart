@@ -242,6 +242,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navAccounting => 'المحاسبة';
 
   @override
+  String get navExpensesCash => 'المصاريف والصندوق';
+
+  @override
   String get navHr => 'الموظفون';
 
   @override
@@ -326,6 +329,35 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get posNoReturnableQuantitySelected =>
       'اختر عنصراً واحداً على الأقل للإرجاع';
+
+  @override
+  String get expensesCashTitle => 'المصاريف والصندوق';
+
+  @override
+  String get expensesCashSubtitle =>
+      'متابعة المصاريف التشغيلية والإيرادات، ومطابقة الرصيد الفعلي للصندوق';
+
+  @override
+  String get expensesCashNoOpenShift =>
+      'لا توجد وردية مفتوحة — افتح وردية لبدء متابعة الصندوق';
+
+  @override
+  String get expensesCashOpeningCash => 'الكاش الافتتاحي';
+
+  @override
+  String get expensesCashSalesTotal => 'إجمالي مبيعات الكاش';
+
+  @override
+  String get expensesCashTotalExpenses => 'إجمالي المصاريف المقتطعة';
+
+  @override
+  String get expensesCashExpected => 'الكاش المتوقع';
+
+  @override
+  String get expensesCashLog => 'سجل المصاريف';
+
+  @override
+  String get expensesCashNoExpenses => 'لا توجد مصاريف مسجلة بهذي الوردية';
 
   @override
   String get inventoryTitle => 'المخزون';

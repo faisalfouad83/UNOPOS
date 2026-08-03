@@ -556,6 +556,12 @@ abstract class AppLocalizations {
   /// **'Accounting'**
   String get navAccounting;
 
+  /// No description provided for @navExpensesCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses & Cash'**
+  String get navExpensesCash;
+
   /// No description provided for @navHr.
   ///
   /// In en, this message translates to:
@@ -723,6 +729,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select at least one item to return'**
   String get posNoReturnableQuantitySelected;
+
+  /// No description provided for @expensesCashTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses & Cash'**
+  String get expensesCashTitle;
+
+  /// No description provided for @expensesCashSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track operating expenses, revenue, and reconcile the drawer\'s actual balance'**
+  String get expensesCashSubtitle;
+
+  /// No description provided for @expensesCashNoOpenShift.
+  ///
+  /// In en, this message translates to:
+  /// **'No open shift — open one to start tracking cash'**
+  String get expensesCashNoOpenShift;
+
+  /// No description provided for @expensesCashOpeningCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening Cash'**
+  String get expensesCashOpeningCash;
+
+  /// No description provided for @expensesCashSalesTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Sales Total'**
+  String get expensesCashSalesTotal;
+
+  /// No description provided for @expensesCashTotalExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Deducted Expenses'**
+  String get expensesCashTotalExpenses;
+
+  /// No description provided for @expensesCashExpected.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Cash'**
+  String get expensesCashExpected;
+
+  /// No description provided for @expensesCashLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Log'**
+  String get expensesCashLog;
+
+  /// No description provided for @expensesCashNoExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses recorded this shift'**
+  String get expensesCashNoExpenses;
 
   /// No description provided for @inventoryTitle.
   ///

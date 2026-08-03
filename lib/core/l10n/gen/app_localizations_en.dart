@@ -244,6 +244,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navAccounting => 'Accounting';
 
   @override
+  String get navExpensesCash => 'Expenses & Cash';
+
+  @override
   String get navHr => 'Staff';
 
   @override
@@ -328,6 +331,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get posNoReturnableQuantitySelected =>
       'Select at least one item to return';
+
+  @override
+  String get expensesCashTitle => 'Expenses & Cash';
+
+  @override
+  String get expensesCashSubtitle =>
+      'Track operating expenses, revenue, and reconcile the drawer\'s actual balance';
+
+  @override
+  String get expensesCashNoOpenShift =>
+      'No open shift — open one to start tracking cash';
+
+  @override
+  String get expensesCashOpeningCash => 'Opening Cash';
+
+  @override
+  String get expensesCashSalesTotal => 'Cash Sales Total';
+
+  @override
+  String get expensesCashTotalExpenses => 'Total Deducted Expenses';
+
+  @override
+  String get expensesCashExpected => 'Expected Cash';
+
+  @override
+  String get expensesCashLog => 'Expense Log';
+
+  @override
+  String get expensesCashNoExpenses => 'No expenses recorded this shift';
 
   @override
   String get inventoryTitle => 'Inventory';

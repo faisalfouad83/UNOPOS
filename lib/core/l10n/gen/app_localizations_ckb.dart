@@ -243,6 +243,9 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get navAccounting => 'ژمێریاری';
 
   @override
+  String get navExpensesCash => 'خەرجی و سندوق';
+
+  @override
   String get navHr => 'کارمەندان';
 
   @override
@@ -326,6 +329,35 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get posNoReturnableQuantitySelected =>
       'لانیکەم یەک کاڵا هەڵبژێرە بۆ گەڕاندنەوە';
+
+  @override
+  String get expensesCashTitle => 'خەرجی و سندوق';
+
+  @override
+  String get expensesCashSubtitle =>
+      'شوێنپێی خەرجی کارگێڕی و داهات، و ڕێکخستنی باڵانسی ڕاستەقینەی سندوق';
+
+  @override
+  String get expensesCashNoOpenShift =>
+      'هیچ شیفتێکی کراوە نییە — شیفتێک بکەرەوە بۆ دەستپێکردنی شوێنپێی سندوق';
+
+  @override
+  String get expensesCashOpeningCash => 'کاشی کردنەوە';
+
+  @override
+  String get expensesCashSalesTotal => 'کۆی فرۆشتنی کاش';
+
+  @override
+  String get expensesCashTotalExpenses => 'کۆی خەرجی کەمکراوە';
+
+  @override
+  String get expensesCashExpected => 'کاشی چاوەڕوانکراو';
+
+  @override
+  String get expensesCashLog => 'تۆماری خەرجییەکان';
+
+  @override
+  String get expensesCashNoExpenses => 'هیچ خەرجییەک تۆمار نەکراوە لەم شیفتەدا';
 
   @override
   String get inventoryTitle => 'کۆگا';
