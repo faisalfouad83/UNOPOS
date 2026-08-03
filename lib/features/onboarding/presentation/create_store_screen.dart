@@ -70,6 +70,12 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go(RoutePaths.activation),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
