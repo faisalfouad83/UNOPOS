@@ -1,0 +1,7 @@
+## Copy this file to android/key.properties (same folder) and fill in your
+## real values. android/key.properties is gitignored — never commit it or
+## the .jks file, both are secrets tied to your app's identity forever.
+storePassword=REPLACE_ME
+keyPassword=REPLACE_ME
+keyAlias=upload
+storeFile=upload-keystore.jks
