@@ -134,7 +134,13 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.onboardingCreateManagerTitle)),
+      appBar: AppBar(
+        title: Text(l10n.onboardingCreateManagerTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go(RoutePaths.activation),
+        ),
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),

@@ -20,7 +20,16 @@ class TilePickerScreen extends ConsumerWidget {
         : ref.watch(_employeesStreamProvider(store.id));
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.pickAccountTitle)),
+      appBar: AppBar(
+        title: Text(l10n.pickAccountTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () async {
+            await ref.read(sessionControllerProvider.notifier).signOutStore();
+            if (context.mounted) context.go(RoutePaths.activation);
+          },
+        ),
+      ),
       body: employeesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         // TODO(debug): shows the raw stream error instead of a generic

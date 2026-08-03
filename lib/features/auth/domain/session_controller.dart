@@ -162,7 +162,15 @@ class SessionController extends Notifier<SessionState> {
     state = const SessionState();
   }
 
-  void signOutStore() {
+  /// Leaving a store entirely (not just its employee/PIN session) — used by
+  /// the tile picker's back button. Must actually sign out of Supabase, not
+  /// just clear local state, or a persisted session would silently log the
+  /// same store back in on the next app launch despite the user having
+  /// "left" it (the same class of bug fixed for signOutDeveloper above).
+  Future<void> signOutStore() async {
+    if (kUseSupabaseBackend) {
+      await ref.read(supabaseClientProvider).auth.signOut();
+    }
     state = const SessionState();
   }
 
