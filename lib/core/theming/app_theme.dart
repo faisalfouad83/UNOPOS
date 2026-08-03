@@ -1,19 +1,112 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// UNOPOS's visual identity is grounded in the till itself: a deep ledger
-/// green for trust and structure, a price-tag amber for money and calls to
-/// action, and a warm receipt-paper cream instead of a stark white — this
-/// is a tool people stand at all day, not a marketing page.
+/// UNOPOS's visual identity — the "Organic" design system: a warm cream
+/// ground, a terracotta accent for primary actions, and a sage second voice,
+/// with heavily rounded (often pill-shaped) shapes throughout. Every value
+/// below is ported 1:1 from the design handoff's `organic.css` token sheet
+/// (light values, then the `[data-theme="dark"]` overrides) — see
+/// `supabase/../design_handoff_unopos_redesign/screens/organic.css` for the
+/// source of truth if these ever need to be retuned.
 class _Brand {
   const _Brand._();
 
-  static const Color tillGreen = Color(0xFF1B4332);
-  static const Color priceAmber = Color(0xFFE8A33D);
-  static const Color freshGreen = Color(0xFF4C9A6A);
-  static const Color tagRed = Color(0xFFC4483B);
-  static const Color receiptCream = Color(0xFFF7F3EA);
-  static const Color charcoalInk = Color(0xFF12181A);
+  // Ground + text.
+  static const Color bgLight = Color(0xFFF5EAD8);
+  static const Color surfaceLight = Color(0xFFEBDDC5);
+  static const Color textLight = Color(0xFF201E1D);
+  static const Color bgDark = Color(0xFF201C17);
+  static const Color surfaceDark = Color(0xFF2C2620);
+  static const Color textDark = Color(0xFFF3ECE0);
+
+  // Neutral tonal ramp (100 lightest step of the ramp -> 900 darkest step;
+  // dark mode uses the same nine hex values remapped onto the opposite
+  // steps, since the ramp is a shared perceptual scale, not two palettes).
+  static const List<Color> neutralLight = [
+    Color(0xFFF9F4ED),
+    Color(0xFFEEE7DB),
+    Color(0xFFDCD3C4),
+    Color(0xFFC0B6A5),
+    Color(0xFFA19786),
+    Color(0xFF82796A),
+    Color(0xFF645C50),
+    Color(0xFF474238),
+    Color(0xFF2E2B25),
+  ];
+  static const List<Color> neutralDark = [
+    Color(0xFF2E2B25),
+    Color(0xFF474238),
+    Color(0xFF645C50),
+    Color(0xFF82796A),
+    Color(0xFFA19786),
+    Color(0xFFC0B6A5),
+    Color(0xFFDCD3C4),
+    Color(0xFFEEE7DB),
+    Color(0xFFF9F4ED),
+  ];
+
+  // Terracotta accent ramp (primary).
+  static const List<Color> accentLight = [
+    Color(0xFFFFF2EB),
+    Color(0xFFFFE1D0),
+    Color(0xFFFFC6A5),
+    Color(0xFFF6A06B),
+    Color(0xFFD67F48),
+    Color(0xFFB2622D),
+    Color(0xFF8C491A),
+    Color(0xFF643312),
+    Color(0xFF402310),
+  ];
+  static const List<Color> accentDark = [
+    Color(0xFF402310),
+    Color(0xFF643312),
+    Color(0xFF8C491A),
+    Color(0xFFB2622D),
+    Color(0xFFD67F48),
+    Color(0xFFF6A06B),
+    Color(0xFFFFC6A5),
+    Color(0xFFFFE1D0),
+    Color(0xFFFFF2EB),
+  ];
+  static const Color accentBaseLight = Color(0xFFC67139);
+  static const Color accentBaseDark = Color(0xFFF6A06B);
+
+  // Sage accent-2 ramp (secondary/tertiary — "a genuine second voice").
+  static const List<Color> accent2Light = [
+    Color(0xFFF0FAE1),
+    Color(0xFFE1EECC),
+    Color(0xFFCCDBB2),
+    Color(0xFFAEBF92),
+    Color(0xFF8FA073),
+    Color(0xFF728157),
+    Color(0xFF56633F),
+    Color(0xFF3D472B),
+    Color(0xFF272E1B),
+  ];
+  static const List<Color> accent2Dark = [
+    Color(0xFF272E1B),
+    Color(0xFF3D472B),
+    Color(0xFF56633F),
+    Color(0xFF728157),
+    Color(0xFF8FA073),
+    Color(0xFFAEBF92),
+    Color(0xFFCCDBB2),
+    Color(0xFFE1EECC),
+    Color(0xFFF0FAE1),
+  ];
+  static const Color accent2BaseLight = Color(0xFF7A8A5E);
+  static const Color accent2BaseDark = Color(0xFFAEBF92);
+
+  // No error color is defined by the Organic token sheet — this warm brick
+  // red is a judgment call kept from the app's original palette because it
+  // already reads as "warm", not grey, consistent with the new system's
+  // "never desaturate into greys" rule.
+  static const Color errorLight = Color(0xFFC4483B);
+  static const Color errorContainerLight = Color(0xFFF6D3CD);
+  static const Color onErrorContainerLight = Color(0xFF4A140D);
+  static const Color errorDark = Color(0xFFE0685A);
+  static const Color errorContainerDark = Color(0xFF5C231A);
+  static const Color onErrorContainerDark = Color(0xFFF6D3CD);
 }
 
 class AppTheme {
@@ -23,79 +116,105 @@ class AppTheme {
   static ThemeData dark() => _base(_darkScheme());
 
   static ColorScheme _lightScheme() {
-    final base = ColorScheme.fromSeed(seedColor: _Brand.tillGreen, brightness: Brightness.light);
+    final n = _Brand.neutralLight;
+    final a = _Brand.accentLight;
+    final a2 = _Brand.accent2Light;
+    final base = ColorScheme.fromSeed(seedColor: _Brand.accentBaseLight, brightness: Brightness.light);
     return base.copyWith(
-      primary: _Brand.tillGreen,
-      onPrimary: _Brand.receiptCream,
-      primaryContainer: const Color(0xFFCFE3D4),
-      onPrimaryContainer: const Color(0xFF082013),
-      secondary: _Brand.priceAmber,
-      onSecondary: const Color(0xFF3A2704),
-      secondaryContainer: const Color(0xFFFCE4BB),
-      onSecondaryContainer: const Color(0xFF3A2704),
-      tertiary: _Brand.freshGreen,
-      onTertiary: Colors.white,
-      error: _Brand.tagRed,
+      primary: _Brand.accentBaseLight,
+      onPrimary: _Brand.bgLight,
+      primaryContainer: a[1],
+      onPrimaryContainer: a[7],
+      secondary: _Brand.accent2BaseLight,
+      onSecondary: _Brand.bgLight,
+      secondaryContainer: a2[1],
+      onSecondaryContainer: a2[7],
+      tertiary: a2[5],
+      onTertiary: _Brand.bgLight,
+      tertiaryContainer: a2[0],
+      onTertiaryContainer: a2[8],
+      error: _Brand.errorLight,
       onError: Colors.white,
-      errorContainer: const Color(0xFFF6D3CD),
-      onErrorContainer: const Color(0xFF4A140D),
-      surface: _Brand.receiptCream,
-      onSurface: const Color(0xFF1E2420),
-      surfaceContainerLowest: Colors.white,
-      surfaceContainerLow: const Color(0xFFFBF8F1),
-      surfaceContainer: const Color(0xFFF1EBDD),
-      surfaceContainerHigh: const Color(0xFFEAE2CF),
-      surfaceContainerHighest: const Color(0xFFE3D9C2),
-      outline: const Color(0xFF8C8371),
-      outlineVariant: const Color(0xFFD8CFBB),
+      errorContainer: _Brand.errorContainerLight,
+      onErrorContainer: _Brand.onErrorContainerLight,
+      surface: _Brand.bgLight,
+      onSurface: _Brand.textLight,
+      surfaceContainerLowest: n[0],
+      surfaceContainerLow: _Brand.surfaceLight,
+      surfaceContainer: n[1],
+      surfaceContainerHigh: n[2],
+      surfaceContainerHighest: n[3],
+      outline: n[4],
+      outlineVariant: n[2],
     );
   }
 
   static ColorScheme _darkScheme() {
-    final base = ColorScheme.fromSeed(seedColor: _Brand.tillGreen, brightness: Brightness.dark);
+    final n = _Brand.neutralDark;
+    final a = _Brand.accentDark;
+    final a2 = _Brand.accent2Dark;
+    final base = ColorScheme.fromSeed(seedColor: _Brand.accentBaseDark, brightness: Brightness.dark);
     return base.copyWith(
-      primary: const Color(0xFF6FC28E),
-      onPrimary: const Color(0xFF07130C),
-      primaryContainer: const Color(0xFF20402C),
-      onPrimaryContainer: const Color(0xFFCFE3D4),
-      secondary: _Brand.priceAmber,
-      onSecondary: const Color(0xFF3A2704),
-      secondaryContainer: const Color(0xFF52400F),
-      onSecondaryContainer: const Color(0xFFFCE4BB),
-      tertiary: const Color(0xFF8FD1A8),
-      onTertiary: const Color(0xFF07130C),
-      error: const Color(0xFFE0685A),
+      primary: _Brand.accentBaseDark,
+      onPrimary: _Brand.bgDark,
+      primaryContainer: a[1],
+      onPrimaryContainer: a[7],
+      secondary: _Brand.accent2BaseDark,
+      onSecondary: _Brand.bgDark,
+      secondaryContainer: a2[1],
+      onSecondaryContainer: a2[7],
+      tertiary: a2[5],
+      onTertiary: _Brand.bgDark,
+      tertiaryContainer: a2[0],
+      onTertiaryContainer: a2[8],
+      error: _Brand.errorDark,
       onError: const Color(0xFF2B0805),
-      errorContainer: const Color(0xFF5C231A),
-      onErrorContainer: const Color(0xFFF6D3CD),
-      surface: _Brand.charcoalInk,
-      onSurface: const Color(0xFFEDEAE2),
-      surfaceContainerLowest: const Color(0xFF0B0F10),
-      surfaceContainerLow: const Color(0xFF171E20),
-      surfaceContainer: const Color(0xFF1C2426),
-      surfaceContainerHigh: const Color(0xFF26302F),
-      surfaceContainerHighest: const Color(0xFF313D3B),
-      outline: const Color(0xFF6B7573),
-      outlineVariant: const Color(0xFF394442),
+      errorContainer: _Brand.errorContainerDark,
+      onErrorContainer: _Brand.onErrorContainerDark,
+      surface: _Brand.bgDark,
+      onSurface: _Brand.textDark,
+      surfaceContainerLowest: n[0],
+      surfaceContainerLow: _Brand.surfaceDark,
+      surfaceContainer: n[1],
+      surfaceContainerHigh: n[2],
+      surfaceContainerHighest: n[3],
+      outline: n[4],
+      outlineVariant: n[2],
     );
   }
 
   static ThemeData _base(ColorScheme scheme) {
-    // Cairo reads equally well in Arabic, Kurdish Sorani, and English —
-    // one type family across every language instead of a Latin font with
-    // Arabic bolted on as an afterthought.
-    final baseTextTheme = GoogleFonts.cairoTextTheme(
+    // Figtree (body) + Caprasimo (headings/buttons) per the Organic system.
+    // Neither Google Font covers Arabic glyphs, unlike the single Cairo
+    // family used before this redesign — Flutter's text renderer falls back
+    // to the platform's Arabic-capable font per-glyph automatically, so
+    // Arabic strings still render, just no longer in the same family as the
+    // Latin type. That's a real, accepted trade-off of following the
+    // handoff's fidelity request, not an oversight.
+    final baseTextTheme = GoogleFonts.figtreeTextTheme(
       (scheme.brightness == Brightness.dark ? ThemeData.dark() : ThemeData.light()).textTheme,
     ).apply(bodyColor: scheme.onSurface, displayColor: scheme.onSurface);
 
+    final headingFamily = GoogleFonts.caprasimo().fontFamily;
+
     final textTheme = baseTextTheme.copyWith(
-      headlineLarge: baseTextTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5),
-      headlineMedium: baseTextTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.3),
-      headlineSmall: baseTextTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-      titleLarge: baseTextTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-      titleMedium: baseTextTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+      headlineLarge: baseTextTheme.headlineLarge
+          ?.copyWith(fontFamily: headingFamily, fontSize: 42, fontWeight: FontWeight.w400, letterSpacing: -0.6),
+      headlineMedium: baseTextTheme.headlineMedium
+          ?.copyWith(fontFamily: headingFamily, fontSize: 32, fontWeight: FontWeight.w400, letterSpacing: -0.45),
+      headlineSmall: baseTextTheme.headlineSmall
+          ?.copyWith(fontFamily: headingFamily, fontSize: 20, fontWeight: FontWeight.w400, letterSpacing: -0.2),
+      titleLarge: baseTextTheme.titleLarge
+          ?.copyWith(fontFamily: headingFamily, fontSize: 20, fontWeight: FontWeight.w400),
+      titleMedium: baseTextTheme.titleMedium
+          ?.copyWith(fontFamily: headingFamily, fontSize: 17, fontWeight: FontWeight.w400),
       labelLarge: baseTextTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
     );
+
+    // .btn { font-family: var(--font-heading) } — button labels use the
+    // display font, not the body font, per the token sheet.
+    final buttonTextStyle = TextStyle(fontFamily: headingFamily, fontWeight: FontWeight.w400, fontSize: 14);
+    const pillShape = StadiumBorder();
 
     return ThemeData(
       useMaterial3: true,
@@ -106,63 +225,67 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
-        titleTextStyle: textTheme.titleLarge?.copyWith(color: scheme.onSurface),
+        titleTextStyle: textTheme.headlineSmall?.copyWith(color: scheme.onSurface),
         elevation: 0,
         scrolledUnderElevation: 1,
         centerTitle: false,
       ),
       cardTheme: CardThemeData(
-        elevation: 0,
+        elevation: 1,
+        shadowColor: scheme.brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.45) : _Brand.neutralLight[8].withValues(alpha: 0.14),
         color: scheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.6)),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
         margin: EdgeInsets.zero,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size(64, 52),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          shape: pillShape,
+          textStyle: buttonTextStyle,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(64, 52),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          side: BorderSide(color: scheme.outline),
+          shape: pillShape,
+          side: BorderSide(color: scheme.outlineVariant),
+          textStyle: buttonTextStyle,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           minimumSize: const Size(48, 48),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: pillShape,
+          textStyle: buttonTextStyle,
         ),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: scheme.surfaceContainerHigh,
         side: BorderSide.none,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: pillShape,
         labelStyle: textTheme.labelLarge?.copyWith(fontSize: 13),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: scheme.surfaceContainerHigh.withValues(alpha: 0.5),
+        fillColor: scheme.surfaceContainerLow,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(999),
+          borderSide: BorderSide(color: scheme.outlineVariant),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(999),
+          borderSide: BorderSide(color: scheme.outlineVariant),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(999),
           borderSide: BorderSide(color: scheme.primary, width: 1.6),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: scheme.surfaceContainerLow,
-        selectedIconTheme: IconThemeData(color: scheme.primary),
-        selectedLabelTextStyle: TextStyle(color: scheme.primary, fontWeight: FontWeight.w700),
+        selectedIconTheme: IconThemeData(color: scheme.onPrimaryContainer),
+        selectedLabelTextStyle: TextStyle(color: scheme.onPrimaryContainer, fontWeight: FontWeight.w700),
         indicatorColor: scheme.primaryContainer,
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -173,24 +296,22 @@ class AppTheme {
       dividerTheme: DividerThemeData(color: scheme.outlineVariant, space: 1),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
 }
 
 /// Brand colors exposed for the handful of places that need to reach past
-/// the semantic ColorScheme roles for a deliberate accent (e.g. a price
-/// figure, a receipt-edge card) — everything else should use
-/// Theme.of(context).colorScheme, not these directly.
+/// the semantic ColorScheme roles for a deliberate accent — everything else
+/// should use Theme.of(context).colorScheme, not these directly.
 class BrandColors {
   const BrandColors._();
-  static const Color tillGreen = _Brand.tillGreen;
-  static const Color priceAmber = _Brand.priceAmber;
-  static const Color freshGreen = _Brand.freshGreen;
-  static const Color tagRed = _Brand.tagRed;
-  static const Color receiptCream = _Brand.receiptCream;
-  static const Color charcoalInk = _Brand.charcoalInk;
+  static const Color terracotta = _Brand.accentBaseLight;
+  static const Color sage = _Brand.accent2BaseLight;
+  static const Color brickRed = _Brand.errorLight;
+  static const Color cream = _Brand.bgLight;
+  static const Color ink = _Brand.textLight;
 }
 
 /// Breakpoint helper — POS terminals span phones, tablets, and desktop
