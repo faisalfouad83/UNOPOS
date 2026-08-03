@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
+import '../../../core/supabase/supabase_config.dart';
 import '../../../core/utils/formatters.dart';
 import '../../backup/domain/backup_models.dart';
 import '../domain/settings_models.dart';
@@ -44,7 +45,8 @@ class BackupSettingsSection extends ConsumerWidget {
   }
 
   Future<void> _restore(BuildContext context, WidgetRef ref) async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['zip']);
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: [kUseSupabaseBackend ? 'json' : 'zip']);
     final path = result?.files.single.path;
     if (path == null) return;
     if (!context.mounted) return;

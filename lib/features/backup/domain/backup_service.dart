@@ -7,7 +7,22 @@ import '../../../core/database/connection.dart';
 import 'backup_models.dart';
 import 'backup_repository.dart';
 
-class BackupService {
+/// Shared by [BackupService] (local Drift build) and SupabaseBackupService
+/// (Supabase build) so `backup_settings_section.dart` can call either
+/// without caring which backend it's talking to.
+abstract class BackupExportService {
+  Future<BackupLogRecord> performBackup({
+    required String storeId,
+    required String destinationFolderPath,
+    required BackupType type,
+  });
+
+  Future<void> restoreFromBackup(String backupPath);
+
+  Future<bool> hasBackupToday(String storeId);
+}
+
+class BackupService implements BackupExportService {
   BackupService(this._repository);
 
   final BackupRepository _repository;
@@ -19,6 +34,7 @@ class BackupService {
 
   /// Copies the live SQLite file into a zip archive inside [destinationFolderPath],
   /// timestamped, and logs the result. Returns the created backup's log record.
+  @override
   Future<BackupLogRecord> performBackup({
     required String storeId,
     required String destinationFolderPath,
@@ -61,6 +77,7 @@ class BackupService {
   /// it first, then replaces the live DB file with the restored one. The
   /// app must be restarted afterwards — an open Drift/sqlite3 connection
   /// cannot safely have its underlying file swapped out from under it.
+  @override
   Future<void> restoreFromBackup(String backupZipPath) async {
     final dbPath = await resolveDatabaseFilePath();
     final dbFile = File(dbPath);
@@ -81,6 +98,7 @@ class BackupService {
     await restoredFile.writeAsBytes(dbEntry.content as List<int>, flush: true);
   }
 
+  @override
   Future<bool> hasBackupToday(String storeId) async {
     final recent = await _repository.mostRecentSuccessfulBackup(storeId, onlyToday: true);
     return recent != null;

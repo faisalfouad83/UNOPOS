@@ -42,6 +42,7 @@ import '../features/audit/data/audit_repository_drift.dart';
 import '../features/audit/data/audit_repository_supabase.dart';
 import '../features/audit/domain/audit_repository.dart';
 import '../features/backup/domain/backup_service.dart';
+import '../features/backup/domain/backup_service_supabase.dart';
 import '../features/developer/data/developer_repository_supabase.dart';
 import '../features/developer/domain/developer_repository.dart';
 import '../features/notifications/data/notifications_repository_supabase.dart';
@@ -146,7 +147,10 @@ final auditRepositoryProvider = Provider<AuditRepository>((ref) {
   return DriftAuditRepository(ref.watch(databaseProvider));
 });
 
-final backupServiceProvider = Provider<BackupService>((ref) {
+final backupServiceProvider = Provider<BackupExportService>((ref) {
+  if (kUseSupabaseBackend) {
+    return SupabaseBackupService(ref.watch(backupRepositoryProvider), ref.watch(supabaseClientProvider));
+  }
   return BackupService(ref.watch(backupRepositoryProvider));
 });
 
