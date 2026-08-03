@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/l10n/gen/app_localizations.dart';
+import '../core/l10n/kurdish_locale_fallback.dart';
 import '../core/providers.dart';
 import '../core/routing/app_bootstrap.dart';
 import '../core/routing/app_router.dart';
@@ -99,9 +99,13 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        // Not GlobalMaterialLocalizations.delegate etc. directly — those
+        // crash the whole app the instant Kurdish ('ckb') is selected,
+        // since Flutter's own bundled translations don't cover it. See
+        // kurdish_locale_fallback.dart for why.
+        KurdishFallbackMaterialLocalizationsDelegate(),
+        KurdishFallbackWidgetsLocalizationsDelegate(),
+        KurdishFallbackCupertinoLocalizationsDelegate(),
       ],
       localeResolutionCallback: (locale, supported) {
         // Kurdish Sorani ('ckb') and Arabic both need RTL even if the
