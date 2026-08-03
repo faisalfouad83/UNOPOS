@@ -361,6 +361,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inventoryAdjustStock => 'تعديل المخزون';
 
   @override
+  String get inventoryUnit => 'الوحدة';
+
+  @override
+  String get unitPiece => 'قطعة';
+
+  @override
+  String get unitBottle => 'قنينة';
+
+  @override
+  String get unitCarton => 'كرتون';
+
+  @override
+  String get unitBox => 'صندوق';
+
+  @override
+  String get unitPack => 'عبوة';
+
+  @override
+  String get unitKilogram => 'كيلوغرام';
+
+  @override
+  String get unitLiter => 'لتر';
+
+  @override
   String get debtsTitle => 'دفتر الديون';
 
   @override

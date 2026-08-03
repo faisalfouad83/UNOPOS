@@ -6,6 +6,7 @@ import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../domain/inventory_models.dart';
+import '../domain/product_units.dart';
 import 'product_edit_dialog.dart';
 import 'qr_label_dialog.dart';
 
@@ -52,7 +53,8 @@ class ProductsTab extends ConsumerWidget {
                     return ListTile(
                       leading: const Icon(Icons.inventory_2_outlined),
                       title: Text(product.name),
-                      subtitle: Text('${product.sku} · ${Money.format(product.sellPriceMinorUnits, currencySymbol: r'$')}'),
+                      subtitle: Text(
+                          '${product.sku} · ${Money.format(product.sellPriceMinorUnits, currencySymbol: r'$')} · ${productUnitLabel(context, product.unit)}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

@@ -363,6 +363,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inventoryAdjustStock => 'Adjust Stock';
 
   @override
+  String get inventoryUnit => 'Unit';
+
+  @override
+  String get unitPiece => 'Piece';
+
+  @override
+  String get unitBottle => 'Bottle';
+
+  @override
+  String get unitCarton => 'Carton';
+
+  @override
+  String get unitBox => 'Box';
+
+  @override
+  String get unitPack => 'Pack';
+
+  @override
+  String get unitKilogram => 'Kilogram';
+
+  @override
+  String get unitLiter => 'Liter';
+
+  @override
   String get debtsTitle => 'Debt Ledger';
 
   @override

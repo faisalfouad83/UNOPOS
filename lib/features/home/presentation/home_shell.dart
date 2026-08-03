@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/constants/roles.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
@@ -97,6 +100,8 @@ class HomeShell extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const _LiveClock(),
+              const SizedBox(width: 8),
               const NotificationBell(),
               PopupMenuButton<String>(
                 onSelected: (value) {
@@ -163,6 +168,55 @@ class HomeShell extends ConsumerWidget {
                 .map((d) => NavigationDestination(icon: Icon(d.icon), label: d.labelBuilder(l10n)))
                 .toList(),
           ),
+      ],
+    );
+  }
+}
+
+/// Live clock in the account strip. Deliberately not locale-formatted (no
+/// `locale:` passed to DateFormat) — matching every other date/money
+/// formatter in the app, none of which pass one either, since the `intl`
+/// package's own locale data doesn't cover 'ckb' any more than Flutter's
+/// bundled Material locales did (see kurdish_locale_fallback.dart) and
+/// passing it here would risk the same class of crash for Kurdish users.
+class _LiveClock extends StatefulWidget {
+  const _LiveClock();
+
+  @override
+  State<_LiveClock> createState() => _LiveClockState();
+}
+
+class _LiveClockState extends State<_LiveClock> {
+  late DateTime _now;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _now = DateTime.now();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() => _now = DateTime.now());
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(DateFormat('HH:mm:ss').format(_now), style: Theme.of(context).textTheme.labelLarge),
+        Text(
+          DateFormat('EEE, MMM d').format(_now),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurface.withValues(alpha: 0.6)),
+        ),
       ],
     );
   }

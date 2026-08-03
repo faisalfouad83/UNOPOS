@@ -790,6 +790,54 @@ abstract class AppLocalizations {
   /// **'Adjust Stock'**
   String get inventoryAdjustStock;
 
+  /// No description provided for @inventoryUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get inventoryUnit;
+
+  /// No description provided for @unitPiece.
+  ///
+  /// In en, this message translates to:
+  /// **'Piece'**
+  String get unitPiece;
+
+  /// No description provided for @unitBottle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottle'**
+  String get unitBottle;
+
+  /// No description provided for @unitCarton.
+  ///
+  /// In en, this message translates to:
+  /// **'Carton'**
+  String get unitCarton;
+
+  /// No description provided for @unitBox.
+  ///
+  /// In en, this message translates to:
+  /// **'Box'**
+  String get unitBox;
+
+  /// No description provided for @unitPack.
+  ///
+  /// In en, this message translates to:
+  /// **'Pack'**
+  String get unitPack;
+
+  /// No description provided for @unitKilogram.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilogram'**
+  String get unitKilogram;
+
+  /// No description provided for @unitLiter.
+  ///
+  /// In en, this message translates to:
+  /// **'Liter'**
+  String get unitLiter;
+
   /// No description provided for @debtsTitle.
   ///
   /// In en, this message translates to:

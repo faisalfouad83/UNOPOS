@@ -361,6 +361,30 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get inventoryAdjustStock => 'ڕێکخستنی کۆگا';
 
   @override
+  String get inventoryUnit => 'یەکە';
+
+  @override
+  String get unitPiece => 'دانە';
+
+  @override
+  String get unitBottle => 'شووشە';
+
+  @override
+  String get unitCarton => 'کارتۆن';
+
+  @override
+  String get unitBox => 'قوتی';
+
+  @override
+  String get unitPack => 'پاکەت';
+
+  @override
+  String get unitKilogram => 'کیلۆگرام';
+
+  @override
+  String get unitLiter => 'لیتر';
+
+  @override
   String get debtsTitle => 'دەفتەری قەرز';
 
   @override

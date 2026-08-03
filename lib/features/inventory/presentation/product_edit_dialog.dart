@@ -9,6 +9,7 @@ import '../../../core/utils/id_generator.dart';
 import '../../../core/widgets/barcode_input_field.dart';
 import '../../auth/domain/session_controller.dart';
 import '../domain/inventory_models.dart';
+import '../domain/product_units.dart';
 
 Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {ProductRecord? existing}) async {
   final session = ref.read(sessionControllerProvider);
@@ -27,6 +28,7 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
   final priceController =
       TextEditingController(text: existing == null ? '' : Money.toMajorUnits(existing.sellPriceMinorUnits).toStringAsFixed(2));
   final reorderController = TextEditingController(text: '${existing?.reorderLevel ?? 0}');
+  String unit = existing?.unit ?? 'pcs';
   String? categoryId = existing?.categoryId;
   String? taxRateId = existing?.taxRateId ?? (taxRates.where((t) => t.isDefault).isNotEmpty ? taxRates.firstWhere((t) => t.isDefault).id : null);
 
@@ -95,6 +97,15 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(labelText: 'Reorder level'),
                 ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: unit,
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context).inventoryUnit),
+                  items: productUnitOptions
+                      .map((code) => DropdownMenuItem(value: code, child: Text(productUnitLabel(context, code))))
+                      .toList(),
+                  onChanged: (v) => setState(() => unit = v ?? unit),
+                ),
               ],
             ),
           ),
@@ -110,6 +121,7 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                 sku: skuController.text.trim(),
                 barcode: barcodeController.text.trim().isEmpty ? null : barcodeController.text.trim(),
                 name: nameController.text.trim(),
+                unit: unit,
                 taxRateId: taxRateId,
                 costPriceMinorUnits: Money.toMinorUnits(double.tryParse(costController.text) ?? 0),
                 sellPriceMinorUnits: Money.toMinorUnits(double.tryParse(priceController.text) ?? 0),
