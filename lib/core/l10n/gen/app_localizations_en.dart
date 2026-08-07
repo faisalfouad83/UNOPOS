@@ -545,6 +545,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsActivation => 'Activation';
 
   @override
+  String get settingsBranches => 'Branches';
+
+  @override
+  String get settingsAddBranch => 'Add Branch';
+
+  @override
+  String get settingsSetActiveBranch => 'Set as Active';
+
+  @override
+  String get settingsActiveBranch => 'Active branch';
+
+  @override
+  String get settingsBranchDeactivate => 'Deactivate';
+
+  @override
+  String get settingsBranchActivate => 'Reactivate';
+
+  @override
+  String get settingsBranchDeactivated => 'Deactivated';
+
+  @override
   String get settingsBackup => 'Backup & Restore';
 
   @override

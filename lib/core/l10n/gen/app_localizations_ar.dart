@@ -543,6 +543,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsActivation => 'التفعيل';
 
   @override
+  String get settingsBranches => 'الفروع';
+
+  @override
+  String get settingsAddBranch => 'إضافة فرع';
+
+  @override
+  String get settingsSetActiveBranch => 'تعيين كفرع نشط';
+
+  @override
+  String get settingsActiveBranch => 'الفرع النشط';
+
+  @override
+  String get settingsBranchDeactivate => 'تعطيل';
+
+  @override
+  String get settingsBranchActivate => 'إعادة تفعيل';
+
+  @override
+  String get settingsBranchDeactivated => 'معطّل';
+
+  @override
   String get settingsBackup => 'النسخ الاحتياطي والاستعادة';
 
   @override

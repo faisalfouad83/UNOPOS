@@ -138,6 +138,19 @@ class DriftAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> updateBranch(BranchRecord branch) async {
+    await (_db.update(_db.branches)..where((t) => t.id.equals(branch.id))).write(
+      BranchesCompanion(
+        name: Value(branch.name),
+        address: Value(branch.address),
+        phone: Value(branch.phone),
+        isMainBranch: Value(branch.isMainBranch),
+        isActive: Value(branch.isActive),
+      ),
+    );
+  }
+
+  @override
   Future<EmployeeRecord> createEmployee({
     required String storeId,
     String? branchId,

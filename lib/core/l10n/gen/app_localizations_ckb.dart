@@ -543,6 +543,27 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get settingsActivation => 'چالاککردن';
 
   @override
+  String get settingsBranches => 'لقەکان';
+
+  @override
+  String get settingsAddBranch => 'زیادکردنی لق';
+
+  @override
+  String get settingsSetActiveBranch => 'دانان وەک لقی چالاک';
+
+  @override
+  String get settingsActiveBranch => 'لقی چالاک';
+
+  @override
+  String get settingsBranchDeactivate => 'ناچالاککردن';
+
+  @override
+  String get settingsBranchActivate => 'دووبارە چالاککردنەوە';
+
+  @override
+  String get settingsBranchDeactivated => 'ناچالاک';
+
+  @override
   String get settingsBackup => 'پاشەکەوت و گەڕاندنەوە';
 
   @override

@@ -1150,6 +1150,48 @@ abstract class AppLocalizations {
   /// **'Activation'**
   String get settingsActivation;
 
+  /// No description provided for @settingsBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches'**
+  String get settingsBranches;
+
+  /// No description provided for @settingsAddBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Branch'**
+  String get settingsAddBranch;
+
+  /// No description provided for @settingsSetActiveBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as Active'**
+  String get settingsSetActiveBranch;
+
+  /// No description provided for @settingsActiveBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Active branch'**
+  String get settingsActiveBranch;
+
+  /// No description provided for @settingsBranchDeactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get settingsBranchDeactivate;
+
+  /// No description provided for @settingsBranchActivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get settingsBranchActivate;
+
+  /// No description provided for @settingsBranchDeactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivated'**
+  String get settingsBranchDeactivated;
+
   /// No description provided for @settingsBackup.
   ///
   /// In en, this message translates to:

@@ -28,6 +28,12 @@ abstract class AuthRepository {
 
   Future<List<BranchRecord>> listBranches(String storeId);
 
+  /// [isActive] false is a soft delete — branches are referenced by
+  /// employees, sales, stock, etc., so removing the row outright risks
+  /// foreign-key failures against historical data. Deactivated branches
+  /// stay in listBranches() so Settings can still show/reactivate them.
+  Future<void> updateBranch(BranchRecord branch);
+
   Future<EmployeeRecord> createEmployee({
     required String storeId,
     String? branchId,

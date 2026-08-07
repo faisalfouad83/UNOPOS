@@ -134,6 +134,17 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> updateBranch(BranchRecord branch) async {
+    await _client.from('branches').update({
+      'name': branch.name,
+      'address': branch.address,
+      'phone': branch.phone,
+      'is_main_branch': branch.isMainBranch,
+      'is_active': branch.isActive,
+    }).eq('id', branch.id);
+  }
+
+  @override
   Future<EmployeeRecord> createEmployee({
     required String storeId,
     String? branchId,

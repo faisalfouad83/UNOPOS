@@ -6,6 +6,7 @@ import '../../../core/providers.dart';
 import '../../auth/domain/session_controller.dart';
 import 'activation_settings_section.dart';
 import 'backup_settings_section.dart';
+import 'branch_settings_section.dart';
 import 'factory_reset_section.dart';
 import 'general_settings_section.dart';
 import 'printer_settings_section.dart';
@@ -35,6 +36,8 @@ class SettingsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             children: [
               GeneralSettingsSection(storeId: storeId, settings: settings),
+              const SizedBox(height: 16),
+              BranchSettingsSection(storeId: storeId),
               const SizedBox(height: 16),
               PrinterSettingsSection(settings: settings),
               const SizedBox(height: 16),
