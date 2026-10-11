@@ -843,4 +843,58 @@ class AppLocalizationsCkb extends AppLocalizations {
   String expiryExpiredCount(int count) {
     return '$count بەسەرچوون';
   }
+
+  @override
+  String get reportsToday => 'ئەمڕۆ';
+
+  @override
+  String get reportsLast7Days => '7 ڕۆژ';
+
+  @override
+  String get reportsLast30Days => '30 ڕۆژ';
+
+  @override
+  String get reportsRevenue => 'فرۆشتن';
+
+  @override
+  String get reportsProfit => 'قازانج';
+
+  @override
+  String reportsMargin(int percent) {
+    return 'ڕێژەی $percent%';
+  }
+
+  @override
+  String get reportsSalesCount => 'ژمارەی پسوڵە';
+
+  @override
+  String get reportsAverageSale => 'تێکڕای پسوڵە';
+
+  @override
+  String get reportsSalesByHour => 'فرۆشتن بەپێی کاتژمێر';
+
+  @override
+  String get reportsSalesByDay => 'فرۆشتن بەپێی ڕۆژ';
+
+  @override
+  String reportsSalesShort(int count) {
+    return '$count پسوڵە';
+  }
+
+  @override
+  String get reportsNoSales => 'هیچ فرۆشتنێک لەم ماوەیەدا نییە';
+
+  @override
+  String get reportsByPaymentMethod => 'شێوازی پارەدان';
+
+  @override
+  String get reportsTopProducts => 'زۆرترین فرۆشراو';
+
+  @override
+  String get reportsNothingLow => 'هیچ کاڵایەک لە خوار ئاستی داواکردن نییە';
+
+  @override
+  String reportsReorderAt(int level) {
+    return 'ئاستی داواکردن $level';
+  }
 }

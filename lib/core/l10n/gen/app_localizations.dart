@@ -1665,6 +1665,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} already expired'**
   String expiryExpiredCount(int count);
+
+  /// No description provided for @reportsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get reportsToday;
+
+  /// No description provided for @reportsLast7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get reportsLast7Days;
+
+  /// No description provided for @reportsLast30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get reportsLast30Days;
+
+  /// No description provided for @reportsRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get reportsRevenue;
+
+  /// No description provided for @reportsProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit'**
+  String get reportsProfit;
+
+  /// No description provided for @reportsMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% margin'**
+  String reportsMargin(int percent);
+
+  /// No description provided for @reportsSalesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get reportsSalesCount;
+
+  /// No description provided for @reportsAverageSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Average invoice'**
+  String get reportsAverageSale;
+
+  /// No description provided for @reportsSalesByHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales by hour'**
+  String get reportsSalesByHour;
+
+  /// No description provided for @reportsSalesByDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales by day'**
+  String get reportsSalesByDay;
+
+  /// No description provided for @reportsSalesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sales'**
+  String reportsSalesShort(int count);
+
+  /// No description provided for @reportsNoSales.
+  ///
+  /// In en, this message translates to:
+  /// **'No sales in this period'**
+  String get reportsNoSales;
+
+  /// No description provided for @reportsByPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'How customers paid'**
+  String get reportsByPaymentMethod;
+
+  /// No description provided for @reportsTopProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Best sellers'**
+  String get reportsTopProducts;
+
+  /// No description provided for @reportsNothingLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing below reorder level'**
+  String get reportsNothingLow;
+
+  /// No description provided for @reportsReorderAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder at {level}'**
+  String reportsReorderAt(int level);
 }
 
 class _AppLocalizationsDelegate

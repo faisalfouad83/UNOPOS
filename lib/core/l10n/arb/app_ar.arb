@@ -289,5 +289,22 @@
   "expiryNone": "لا توجد منتجات تنتهي خلال هذه الفترة",
   "expiryInDays": "{days, plural, =0{اليوم} =1{غداً} other{بعد {days} يوم}}",
   "expiryExpiredDaysAgo": "منتهي منذ {days} يوم",
-  "expiryExpiredCount": "{count} منتهية الصلاحية"
+  "expiryExpiredCount": "{count} منتهية الصلاحية",
+
+  "reportsToday": "اليوم",
+  "reportsLast7Days": "7 أيام",
+  "reportsLast30Days": "30 يوم",
+  "reportsRevenue": "المبيعات",
+  "reportsProfit": "الربح",
+  "reportsMargin": "هامش {percent}%",
+  "reportsSalesCount": "عدد الفواتير",
+  "reportsAverageSale": "متوسط الفاتورة",
+  "reportsSalesByHour": "المبيعات حسب الساعة",
+  "reportsSalesByDay": "المبيعات حسب اليوم",
+  "reportsSalesShort": "{count} فاتورة",
+  "reportsNoSales": "لا توجد مبيعات في هذه الفترة",
+  "reportsByPaymentMethod": "طرق الدفع",
+  "reportsTopProducts": "الأكثر مبيعاً",
+  "reportsNothingLow": "لا يوجد منتج تحت حد الطلب",
+  "reportsReorderAt": "حد الطلب {level}"
 }

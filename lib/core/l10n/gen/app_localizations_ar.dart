@@ -850,4 +850,58 @@ class AppLocalizationsAr extends AppLocalizations {
   String expiryExpiredCount(int count) {
     return '$count منتهية الصلاحية';
   }
+
+  @override
+  String get reportsToday => 'اليوم';
+
+  @override
+  String get reportsLast7Days => '7 أيام';
+
+  @override
+  String get reportsLast30Days => '30 يوم';
+
+  @override
+  String get reportsRevenue => 'المبيعات';
+
+  @override
+  String get reportsProfit => 'الربح';
+
+  @override
+  String reportsMargin(int percent) {
+    return 'هامش $percent%';
+  }
+
+  @override
+  String get reportsSalesCount => 'عدد الفواتير';
+
+  @override
+  String get reportsAverageSale => 'متوسط الفاتورة';
+
+  @override
+  String get reportsSalesByHour => 'المبيعات حسب الساعة';
+
+  @override
+  String get reportsSalesByDay => 'المبيعات حسب اليوم';
+
+  @override
+  String reportsSalesShort(int count) {
+    return '$count فاتورة';
+  }
+
+  @override
+  String get reportsNoSales => 'لا توجد مبيعات في هذه الفترة';
+
+  @override
+  String get reportsByPaymentMethod => 'طرق الدفع';
+
+  @override
+  String get reportsTopProducts => 'الأكثر مبيعاً';
+
+  @override
+  String get reportsNothingLow => 'لا يوجد منتج تحت حد الطلب';
+
+  @override
+  String reportsReorderAt(int level) {
+    return 'حد الطلب $level';
+  }
 }

@@ -289,5 +289,22 @@
   "expiryNone": "هیچ کاڵایەک لەم ماوەیەدا بەسەرناچێت",
   "expiryInDays": "{days, plural, =0{ئەمڕۆ} =1{سبەی} other{دوای {days} ڕۆژ}}",
   "expiryExpiredDaysAgo": "{days} ڕۆژ لەمەوبەر بەسەرچوو",
-  "expiryExpiredCount": "{count} بەسەرچوون"
+  "expiryExpiredCount": "{count} بەسەرچوون",
+
+  "reportsToday": "ئەمڕۆ",
+  "reportsLast7Days": "7 ڕۆژ",
+  "reportsLast30Days": "30 ڕۆژ",
+  "reportsRevenue": "فرۆشتن",
+  "reportsProfit": "قازانج",
+  "reportsMargin": "ڕێژەی {percent}%",
+  "reportsSalesCount": "ژمارەی پسوڵە",
+  "reportsAverageSale": "تێکڕای پسوڵە",
+  "reportsSalesByHour": "فرۆشتن بەپێی کاتژمێر",
+  "reportsSalesByDay": "فرۆشتن بەپێی ڕۆژ",
+  "reportsSalesShort": "{count} پسوڵە",
+  "reportsNoSales": "هیچ فرۆشتنێک لەم ماوەیەدا نییە",
+  "reportsByPaymentMethod": "شێوازی پارەدان",
+  "reportsTopProducts": "زۆرترین فرۆشراو",
+  "reportsNothingLow": "هیچ کاڵایەک لە خوار ئاستی داواکردن نییە",
+  "reportsReorderAt": "ئاستی داواکردن {level}"
 }

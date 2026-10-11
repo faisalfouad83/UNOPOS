@@ -311,5 +311,25 @@
   "expiryExpiredDaysAgo": "Expired {days} days ago",
   "@expiryExpiredDaysAgo": {"placeholders": {"days": {"type": "int"}}},
   "expiryExpiredCount": "{count} already expired",
-  "@expiryExpiredCount": {"placeholders": {"count": {"type": "int"}}}
+  "@expiryExpiredCount": {"placeholders": {"count": {"type": "int"}}},
+
+  "reportsToday": "Today",
+  "reportsLast7Days": "7 days",
+  "reportsLast30Days": "30 days",
+  "reportsRevenue": "Sales",
+  "reportsProfit": "Profit",
+  "reportsMargin": "{percent}% margin",
+  "@reportsMargin": {"placeholders": {"percent": {"type": "int"}}},
+  "reportsSalesCount": "Invoices",
+  "reportsAverageSale": "Average invoice",
+  "reportsSalesByHour": "Sales by hour",
+  "reportsSalesByDay": "Sales by day",
+  "reportsSalesShort": "{count} sales",
+  "@reportsSalesShort": {"placeholders": {"count": {"type": "int"}}},
+  "reportsNoSales": "No sales in this period",
+  "reportsByPaymentMethod": "How customers paid",
+  "reportsTopProducts": "Best sellers",
+  "reportsNothingLow": "Nothing below reorder level",
+  "reportsReorderAt": "Reorder at {level}",
+  "@reportsReorderAt": {"placeholders": {"level": {"type": "int"}}}
 }

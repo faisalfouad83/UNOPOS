@@ -852,4 +852,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String expiryExpiredCount(int count) {
     return '$count already expired';
   }
+
+  @override
+  String get reportsToday => 'Today';
+
+  @override
+  String get reportsLast7Days => '7 days';
+
+  @override
+  String get reportsLast30Days => '30 days';
+
+  @override
+  String get reportsRevenue => 'Sales';
+
+  @override
+  String get reportsProfit => 'Profit';
+
+  @override
+  String reportsMargin(int percent) {
+    return '$percent% margin';
+  }
+
+  @override
+  String get reportsSalesCount => 'Invoices';
+
+  @override
+  String get reportsAverageSale => 'Average invoice';
+
+  @override
+  String get reportsSalesByHour => 'Sales by hour';
+
+  @override
+  String get reportsSalesByDay => 'Sales by day';
+
+  @override
+  String reportsSalesShort(int count) {
+    return '$count sales';
+  }
+
+  @override
+  String get reportsNoSales => 'No sales in this period';
+
+  @override
+  String get reportsByPaymentMethod => 'How customers paid';
+
+  @override
+  String get reportsTopProducts => 'Best sellers';
+
+  @override
+  String get reportsNothingLow => 'Nothing below reorder level';
+
+  @override
+  String reportsReorderAt(int level) {
+    return 'Reorder at $level';
+  }
 }
