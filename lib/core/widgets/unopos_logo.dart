@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// UNOPOS's brand mark — the actual logo artwork (the blue/silver "U+N"
-/// monogram on its navy tile), not a themed vector redraw. Every call site
+/// UNOPOS's brand mark — the actual logo artwork (the charcoal-and-blue
+/// "U" with its blue dot, on a navy tile), not a themed vector redraw. Every call site
 /// uses this at icon-ish sizes (22-72px), so this is the tight monogram
 /// crop, not the full lockup with the "UNOPOS" wordmark and tagline — that
 /// text would be illegible this small. It's a fixed dark tile by design, so
