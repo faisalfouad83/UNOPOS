@@ -758,4 +758,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String importFailedRows(String rows) {
     return 'Couldn\'t save rows: $rows';
   }
+
+  @override
+  String get commonOptional => 'Optional';
+
+  @override
+  String get inventoryWholesalePrice => 'Wholesale price';
+
+  @override
+  String get inventoryExpiryDate => 'Expiry date';
+
+  @override
+  String get posWholesalePrices => 'Wholesale prices';
 }

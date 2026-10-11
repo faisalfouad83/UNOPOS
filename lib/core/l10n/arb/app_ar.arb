@@ -263,5 +263,10 @@
   "importRowProblem": "الصف {row}: {column} مفقود أو غير صالح",
   "importProductsAction": "استيراد",
   "importDone": "تم: إضافة {created} وتحديث {updated}",
-  "importFailedRows": "تعذّر حفظ الصفوف: {rows}"
+  "importFailedRows": "تعذّر حفظ الصفوف: {rows}",
+
+  "commonOptional": "اختياري",
+  "inventoryWholesalePrice": "سعر الجملة",
+  "inventoryExpiryDate": "تاريخ الانتهاء",
+  "posWholesalePrices": "أسعار الجملة"
 }

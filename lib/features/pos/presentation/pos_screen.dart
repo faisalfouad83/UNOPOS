@@ -262,6 +262,7 @@ class _ProductTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taxRates = ref.watch(taxRatesProvider(product.storeId)).value ?? const [];
+    final wholesale = ref.watch(cartControllerProvider.select((c) => c.wholesale));
     final taxRatePercent = product.taxRateId == null
         ? 0.0
         : (taxRates.where((t) => t.id == product.taxRateId).isEmpty
@@ -284,7 +285,7 @@ class _ProductTile extends ConsumerWidget {
               Text(product.name, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
               Text(
-                Money.format(product.sellPriceMinorUnits),
+                Money.format(CartLine.unitPriceFor(product, wholesale: wholesale)),
                 style: Theme.of(context).textTheme.labelLarge,
               ),
             ],
@@ -310,6 +311,18 @@ class _CartPanel extends ConsumerWidget {
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: FilterChip(
+              avatar: const Icon(Icons.local_shipping_outlined, size: 18),
+              label: Text(l10n.posWholesalePrices),
+              selected: cart.wholesale,
+              onSelected: (on) => ref.read(cartControllerProvider.notifier).setWholesale(on),
+            ),
+          ),
+        ),
         Expanded(
           child: cart.isEmpty
               ? Center(child: Text(l10n.posEmptyCart))

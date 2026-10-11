@@ -278,5 +278,10 @@
   "importDone": "Done: {created} added, {updated} updated",
   "@importDone": {"placeholders": {"created": {"type": "int"}, "updated": {"type": "int"}}},
   "importFailedRows": "Couldn't save rows: {rows}",
-  "@importFailedRows": {"placeholders": {"rows": {"type": "String"}}}
+  "@importFailedRows": {"placeholders": {"rows": {"type": "String"}}},
+
+  "commonOptional": "Optional",
+  "inventoryWholesalePrice": "Wholesale price",
+  "inventoryExpiryDate": "Expiry date",
+  "posWholesalePrices": "Wholesale prices"
 }

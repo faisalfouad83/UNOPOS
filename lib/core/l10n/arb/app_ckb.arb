@@ -263,5 +263,10 @@
   "importRowProblem": "ڕیزی {row}: {column} نییە یان هەڵەیە",
   "importProductsAction": "هێنان",
   "importDone": "تەواو: {created} زیادکرا، {updated} نوێکرایەوە",
-  "importFailedRows": "نەتوانرا ئەم ڕیزانە پاشەکەوت بکرێن: {rows}"
+  "importFailedRows": "نەتوانرا ئەم ڕیزانە پاشەکەوت بکرێن: {rows}",
+
+  "commonOptional": "ئارەزوومەندانە",
+  "inventoryWholesalePrice": "نرخی کۆ",
+  "inventoryExpiryDate": "بەرواری بەسەرچوون",
+  "posWholesalePrices": "نرخی کۆ"
 }

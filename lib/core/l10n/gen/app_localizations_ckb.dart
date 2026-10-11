@@ -755,4 +755,16 @@ class AppLocalizationsCkb extends AppLocalizations {
   String importFailedRows(String rows) {
     return 'نەتوانرا ئەم ڕیزانە پاشەکەوت بکرێن: $rows';
   }
+
+  @override
+  String get commonOptional => 'ئارەزوومەندانە';
+
+  @override
+  String get inventoryWholesalePrice => 'نرخی کۆ';
+
+  @override
+  String get inventoryExpiryDate => 'بەرواری بەسەرچوون';
+
+  @override
+  String get posWholesalePrices => 'نرخی کۆ';
 }

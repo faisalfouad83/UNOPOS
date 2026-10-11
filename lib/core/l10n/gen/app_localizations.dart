@@ -1533,6 +1533,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save rows: {rows}'**
   String importFailedRows(String rows);
+
+  /// No description provided for @commonOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get commonOptional;
+
+  /// No description provided for @inventoryWholesalePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Wholesale price'**
+  String get inventoryWholesalePrice;
+
+  /// No description provided for @inventoryExpiryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry date'**
+  String get inventoryExpiryDate;
+
+  /// No description provided for @posWholesalePrices.
+  ///
+  /// In en, this message translates to:
+  /// **'Wholesale prices'**
+  String get posWholesalePrices;
 }
 
 class _AppLocalizationsDelegate

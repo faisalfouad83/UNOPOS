@@ -25,10 +25,12 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
   final nameController = TextEditingController(text: existing?.name);
   final skuController = TextEditingController(text: existing?.sku);
   final barcodeController = TextEditingController(text: existing?.barcode);
-  final costController =
-      TextEditingController(text: existing == null ? '' : Money.toMajorUnits(existing.costPriceMinorUnits).toStringAsFixed(2));
-  final priceController =
-      TextEditingController(text: existing == null ? '' : Money.toMajorUnits(existing.sellPriceMinorUnits).toStringAsFixed(2));
+  final costController = TextEditingController(text: existing == null ? '' : Money.inputText(existing.costPriceMinorUnits));
+  final priceController = TextEditingController(text: existing == null ? '' : Money.inputText(existing.sellPriceMinorUnits));
+  final wholesaleController = TextEditingController(
+    text: existing?.wholesalePriceMinorUnits == null ? '' : Money.inputText(existing!.wholesalePriceMinorUnits!),
+  );
+  DateTime? expiryDate = existing?.expiryDate;
   final reorderController = TextEditingController(text: '${existing?.reorderLevel ?? 0}');
   String unit = existing?.unit ?? 'pcs';
   String? categoryId = existing?.categoryId;
@@ -88,6 +90,50 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                         decoration: InputDecoration(labelText: AppLocalizations.of(context).commonPrice),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: wholesaleController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context).inventoryWholesalePrice,
+                          helperText: AppLocalizations.of(context).commonOptional,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () async {
+                          final now = DateTime.now();
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: expiryDate ?? now.add(const Duration(days: 180)),
+                            firstDate: DateTime(now.year - 2),
+                            lastDate: DateTime(now.year + 15),
+                          );
+                          if (picked != null) setState(() => expiryDate = picked);
+                        },
+                        child: InputDecorator(
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.of(context).inventoryExpiryDate,
+                            helperText: AppLocalizations.of(context).commonOptional,
+                            suffixIcon: expiryDate == null
+                                ? const Icon(Icons.event)
+                                : IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () => setState(() => expiryDate = null),
+                                  ),
+                          ),
+                          child: Text(expiryDate == null ? '—' : AppDateFormat.shortDate(expiryDate!)),
+                        ),
                       ),
                     ),
                   ],
@@ -154,6 +200,13 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                 costPriceMinorUnits: Money.toMinorUnits(double.tryParse(costController.text) ?? 0),
                 sellPriceMinorUnits: Money.toMinorUnits(double.tryParse(priceController.text) ?? 0),
                 reorderLevel: int.tryParse(reorderController.text) ?? 0,
+                wholesalePriceMinorUnits: wholesaleController.text.trim().isEmpty
+                    ? null
+                    : Money.toMinorUnits(double.tryParse(wholesaleController.text) ?? 0),
+                expiryDate: expiryDate,
+                // Not editable here — carry them over instead of resetting.
+                imagePath: existing?.imagePath,
+                isActive: existing?.isActive ?? true,
               );
               if (existing == null) {
                 await repo.createProduct(record);

@@ -755,4 +755,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String importFailedRows(String rows) {
     return 'تعذّر حفظ الصفوف: $rows';
   }
+
+  @override
+  String get commonOptional => 'اختياري';
+
+  @override
+  String get inventoryWholesalePrice => 'سعر الجملة';
+
+  @override
+  String get inventoryExpiryDate => 'تاريخ الانتهاء';
+
+  @override
+  String get posWholesalePrices => 'أسعار الجملة';
 }

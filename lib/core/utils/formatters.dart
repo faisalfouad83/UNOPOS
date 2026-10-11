@@ -13,6 +13,10 @@ class Money {
 
   static double toMajorUnits(int minorAmount) => minorAmount / minorUnitsPerMajor;
 
+  /// [minorAmount] as plain text for an editable price field (no symbol or
+  /// grouping; whole numbers for zero-decimal currencies like IQD).
+  static String inputText(int minorAmount) => toMajorUnits(minorAmount).toStringAsFixed(currency.decimals);
+
   /// The store's currency, kept in sync with its Settings by the app root
   /// so every screen and receipt formats money the same way without each
   /// call site needing to look the setting up.
