@@ -993,4 +993,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get backupRestoreReopen =>
       'Close and reopen UNOPOS to load the restored data.';
+
+  @override
+  String get unitPacket => 'Packet';
+
+  @override
+  String get unitTikka => 'Tikka (piece)';
+
+  @override
+  String get unitBale => 'Bale (sack)';
+
+  @override
+  String get unitGram => 'Gram';
+
+  @override
+  String get unitMilliliter => 'Milliliter';
 }

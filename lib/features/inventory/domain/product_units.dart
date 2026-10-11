@@ -5,7 +5,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 /// Stored on [ProductRecord.unit] as a stable code (never the translated
 /// label, which changes with the app language) — 'pcs' is the existing
 /// default every product already had before this list existed.
-const productUnitOptions = ['pcs', 'bottle', 'carton', 'box', 'pack', 'kg', 'l'];
+const productUnitOptions = ['pcs', 'bottle', 'carton', 'box', 'pack', 'packet', 'tikka', 'bale', 'kg', 'g', 'l', 'ml'];
 
 String productUnitLabel(BuildContext context, String code) {
   final l10n = AppLocalizations.of(context);
@@ -15,8 +15,13 @@ String productUnitLabel(BuildContext context, String code) {
     'carton' => l10n.unitCarton,
     'box' => l10n.unitBox,
     'pack' => l10n.unitPack,
+    'packet' => l10n.unitPacket,
+    'tikka' => l10n.unitTikka,
+    'bale' => l10n.unitBale,
     'kg' => l10n.unitKilogram,
+    'g' => l10n.unitGram,
     'l' => l10n.unitLiter,
+    'ml' => l10n.unitMilliliter,
     _ => code,
   };
 }

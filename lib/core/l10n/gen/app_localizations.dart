@@ -1905,6 +1905,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close and reopen UNOPOS to load the restored data.'**
   String get backupRestoreReopen;
+
+  /// No description provided for @unitPacket.
+  ///
+  /// In en, this message translates to:
+  /// **'Packet'**
+  String get unitPacket;
+
+  /// No description provided for @unitTikka.
+  ///
+  /// In en, this message translates to:
+  /// **'Tikka (piece)'**
+  String get unitTikka;
+
+  /// No description provided for @unitBale.
+  ///
+  /// In en, this message translates to:
+  /// **'Bale (sack)'**
+  String get unitBale;
+
+  /// No description provided for @unitGram.
+  ///
+  /// In en, this message translates to:
+  /// **'Gram'**
+  String get unitGram;
+
+  /// No description provided for @unitMilliliter.
+  ///
+  /// In en, this message translates to:
+  /// **'Milliliter'**
+  String get unitMilliliter;
 }
 
 class _AppLocalizationsDelegate

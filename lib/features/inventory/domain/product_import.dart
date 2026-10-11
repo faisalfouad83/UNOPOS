@@ -75,7 +75,12 @@ class ProductImportParser {
     'bottle': 'bottle', 'قنينة': 'bottle', 'بطل': 'bottle', 'بوتڵ': 'bottle',
     'carton': 'carton', 'كارتون': 'carton', 'كرتون': 'carton', 'کارتۆن': 'carton',
     'box': 'box', 'صندوق': 'box', 'علبة': 'box', 'قوطی': 'box',
-    'pack': 'pack', 'packet': 'pack', 'باكيت': 'pack', 'رزمة': 'pack', 'پاکەت': 'pack',
+    'pack': 'pack', 'عبوة': 'pack', 'رزمة': 'pack',
+    'packet': 'packet', 'باكيت': 'packet', 'پاکەت': 'packet',
+    'tikka': 'tikka', 'تكة': 'tikka', 'تكه': 'tikka',
+    'bale': 'bale', 'بالة': 'bale', 'باله': 'bale', 'شليف': 'bale',
+    'g': 'g', 'gram': 'g', 'gm': 'g', 'غرام': 'g', 'غم': 'g', 'گرام': 'g',
+    'ml': 'ml', 'milliliter': 'ml', 'مل': 'ml', 'ملي لتر': 'ml', 'ملليلتر': 'ml', 'ملیلیتر': 'ml',
     'kg': 'kg', 'kilo': 'kg', 'كغم': 'kg', 'كيلو': 'kg', 'كيلوغرام': 'kg', 'کیلۆ': 'kg',
     'l': 'l', 'liter': 'l', 'litre': 'l', 'لتر': 'l', 'لیتر': 'l',
   };

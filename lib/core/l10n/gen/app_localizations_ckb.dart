@@ -984,4 +984,19 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get backupRestoreReopen =>
       'UNOPOS دابخە و دووبارە بیکەرەوە بۆ بارکردنی داتا گەڕێنراوەکان.';
+
+  @override
+  String get unitPacket => 'پاکێت';
+
+  @override
+  String get unitTikka => 'تکە';
+
+  @override
+  String get unitBale => 'باڵە';
+
+  @override
+  String get unitGram => 'گرام';
+
+  @override
+  String get unitMilliliter => 'میلیلیتر';
 }
