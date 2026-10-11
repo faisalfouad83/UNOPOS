@@ -268,5 +268,10 @@
   "commonOptional": "ئارەزوومەندانە",
   "inventoryWholesalePrice": "نرخی کۆ",
   "inventoryExpiryDate": "بەرواری بەسەرچوون",
-  "posWholesalePrices": "نرخی کۆ"
+  "posWholesalePrices": "نرخی کۆ",
+
+  "whatsappSendReceipt": "ناردنی پسوڵە لە واتساپ",
+  "whatsappPhone": "ژمارەی واتساپی کڕیار",
+  "whatsappSend": "کردنەوەی واتساپ",
+  "whatsappInvalidPhone": "ژمارەیەکی دروست بنووسە"
 }

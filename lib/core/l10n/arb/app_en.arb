@@ -283,5 +283,10 @@
   "commonOptional": "Optional",
   "inventoryWholesalePrice": "Wholesale price",
   "inventoryExpiryDate": "Expiry date",
-  "posWholesalePrices": "Wholesale prices"
+  "posWholesalePrices": "Wholesale prices",
+
+  "whatsappSendReceipt": "Send receipt on WhatsApp",
+  "whatsappPhone": "Customer's WhatsApp number",
+  "whatsappSend": "Open WhatsApp",
+  "whatsappInvalidPhone": "Enter a valid phone number"
 }

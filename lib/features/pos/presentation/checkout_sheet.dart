@@ -6,8 +6,9 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
-import '../../inventory/domain/inventory_repository.dart';
+import '../../printing/domain/receipt_models.dart';
 import '../../printing/presentation/sale_receipt.dart';
+import '../../printing/presentation/whatsapp_receipt_dialog.dart';
 import '../data/offline_sale_sync.dart';
 import '../../settings/domain/settings_models.dart';
 import '../domain/pos_models.dart';
@@ -119,41 +120,42 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
       ref.read(cartControllerProvider.notifier).clear();
       if (result.queuedOffline) ref.read(offlineSaleSyncProvider.notifier).refresh();
 
-      if (context.mounted) {
-        final navigator = Navigator.of(context);
-        final messenger = ScaffoldMessenger.of(context);
-        navigator.pop();
-        messenger.showSnackBar(
-          SnackBar(content: Text(result.queuedOffline ? l10n.offlineSaleSaved : l10n.posSaleCompleted)),
-        );
-      }
+      if (!context.mounted) return;
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
+      navigator.pop();
 
-      await _printReceipt(result.sale, session, inventory, l10n, receiptExtraRows);
+      final receipt = await buildSaleReceipt(
+        inventory: inventory,
+        session: session,
+        sale: result.sale,
+        settings: widget.settings,
+        l10n: l10n,
+        extraRows: receiptExtraRows,
+      );
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(result.queuedOffline ? l10n.offlineSaleSaved : l10n.posSaleCompleted),
+          duration: const Duration(seconds: 8),
+          action: SnackBarAction(
+            label: 'WhatsApp',
+            onPressed: () => showWhatsAppReceiptDialog(messenger.context, receipt),
+          ),
+        ),
+      );
+
+      await _printReceipt(receipt);
     } catch (_) {
-      setState(() => _error = l10n.errorGeneric);
+      if (mounted) setState(() => _error = l10n.errorGeneric);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
   }
 
-  Future<void> _printReceipt(
-    SaleRecord sale,
-    SessionState session,
-    InventoryRepository inventory,
-    AppLocalizations l10n,
-    List<(String, String)> extraRows,
-  ) async {
+  Future<void> _printReceipt(ReceiptDocument receipt) async {
     if (widget.settings.printerConfig.driverType == 'none') return;
     try {
-      final doc = await buildSaleReceipt(
-        inventory: inventory,
-        session: session,
-        sale: sale,
-        settings: widget.settings,
-        l10n: l10n,
-        extraRows: extraRows,
-      );
-      await printReceiptDocument(doc, widget.settings);
+      await printReceiptDocument(receipt, widget.settings);
     } catch (_) {
       // Printing failures shouldn't block the sale — it's already saved.
     }

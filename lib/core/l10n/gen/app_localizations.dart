@@ -1557,6 +1557,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wholesale prices'**
   String get posWholesalePrices;
+
+  /// No description provided for @whatsappSendReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Send receipt on WhatsApp'**
+  String get whatsappSendReceipt;
+
+  /// No description provided for @whatsappPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer\'s WhatsApp number'**
+  String get whatsappPhone;
+
+  /// No description provided for @whatsappSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WhatsApp'**
+  String get whatsappSend;
+
+  /// No description provided for @whatsappInvalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid phone number'**
+  String get whatsappInvalidPhone;
 }
 
 class _AppLocalizationsDelegate

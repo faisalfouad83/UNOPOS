@@ -268,5 +268,10 @@
   "commonOptional": "اختياري",
   "inventoryWholesalePrice": "سعر الجملة",
   "inventoryExpiryDate": "تاريخ الانتهاء",
-  "posWholesalePrices": "أسعار الجملة"
+  "posWholesalePrices": "أسعار الجملة",
+
+  "whatsappSendReceipt": "إرسال الفاتورة عبر واتساب",
+  "whatsappPhone": "رقم واتساب الزبون",
+  "whatsappSend": "فتح واتساب",
+  "whatsappInvalidPhone": "أدخل رقم هاتف صحيح"
 }

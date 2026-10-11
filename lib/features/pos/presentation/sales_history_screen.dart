@@ -6,6 +6,7 @@ import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../printing/presentation/sale_receipt.dart';
+import '../../printing/presentation/whatsapp_receipt_dialog.dart';
 import '../domain/pos_models.dart';
 import 'process_return_dialog.dart';
 
@@ -36,6 +37,25 @@ class SalesHistoryScreen extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.posPrintReceipt)));
       }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
+      }
+    }
+  }
+
+  Future<void> _sendWhatsApp(BuildContext context, WidgetRef ref, SaleRecord sale) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
+      final doc = await buildSaleReceipt(
+        inventory: ref.read(inventoryRepositoryProvider),
+        session: ref.read(sessionControllerProvider),
+        sale: sale,
+        settings: settings,
+        l10n: l10n,
+      );
+      if (context.mounted) await showWhatsAppReceiptDialog(context, doc);
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
@@ -84,6 +104,11 @@ class SalesHistoryScreen extends ConsumerWidget {
                             icon: const Icon(Icons.print_outlined),
                             tooltip: l10n.posPrintReceipt,
                             onPressed: () => _reprint(context, ref, sale),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.chat_outlined),
+                            tooltip: l10n.whatsappSendReceipt,
+                            onPressed: () => _sendWhatsApp(context, ref, sale),
                           ),
                           TextButton(
                             child: Text(l10n.posProcessReturn),

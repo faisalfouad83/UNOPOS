@@ -767,4 +767,16 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get posWholesalePrices => 'نرخی کۆ';
+
+  @override
+  String get whatsappSendReceipt => 'ناردنی پسوڵە لە واتساپ';
+
+  @override
+  String get whatsappPhone => 'ژمارەی واتساپی کڕیار';
+
+  @override
+  String get whatsappSend => 'کردنەوەی واتساپ';
+
+  @override
+  String get whatsappInvalidPhone => 'ژمارەیەکی دروست بنووسە';
 }

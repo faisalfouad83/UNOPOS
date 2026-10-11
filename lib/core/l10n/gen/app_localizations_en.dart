@@ -770,4 +770,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posWholesalePrices => 'Wholesale prices';
+
+  @override
+  String get whatsappSendReceipt => 'Send receipt on WhatsApp';
+
+  @override
+  String get whatsappPhone => 'Customer\'s WhatsApp number';
+
+  @override
+  String get whatsappSend => 'Open WhatsApp';
+
+  @override
+  String get whatsappInvalidPhone => 'Enter a valid phone number';
 }

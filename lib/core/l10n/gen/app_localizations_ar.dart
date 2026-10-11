@@ -767,4 +767,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get posWholesalePrices => 'أسعار الجملة';
+
+  @override
+  String get whatsappSendReceipt => 'إرسال الفاتورة عبر واتساب';
+
+  @override
+  String get whatsappPhone => 'رقم واتساب الزبون';
+
+  @override
+  String get whatsappSend => 'فتح واتساب';
+
+  @override
+  String get whatsappInvalidPhone => 'أدخل رقم هاتف صحيح';
 }
