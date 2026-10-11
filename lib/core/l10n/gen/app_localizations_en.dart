@@ -689,4 +689,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get receiptThankYou => 'Thank you for shopping with us!';
+
+  @override
+  String offlinePendingSales(int count) {
+    return '$count offline';
+  }
+
+  @override
+  String get offlineSaleSaved =>
+      'No internet — sale saved on this device and will be sent automatically';
 }

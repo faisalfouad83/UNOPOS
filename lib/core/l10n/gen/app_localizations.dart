@@ -1431,6 +1431,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Thank you for shopping with us!'**
   String get receiptThankYou;
+
+  /// No description provided for @offlinePendingSales.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} offline'**
+  String offlinePendingSales(int count);
+
+  /// No description provided for @offlineSaleSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet — sale saved on this device and will be sent automatically'**
+  String get offlineSaleSaved;
 }
 
 class _AppLocalizationsDelegate

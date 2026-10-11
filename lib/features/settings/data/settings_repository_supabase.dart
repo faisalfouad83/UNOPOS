@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
 import '../domain/settings_models.dart';
 import '../domain/settings_repository.dart';
 
@@ -9,6 +10,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
   SupabaseSettingsRepository(this._client);
 
   final SupabaseClient _client;
+
+  static String _cacheKey(String storeId) => 'app_settings.$storeId';
 
   AppSettingsRecord _mapRow(Map<String, dynamic> row) => AppSettingsRecord(
         storeId: row['store_id'] as String,
@@ -26,8 +29,19 @@ class SupabaseSettingsRepository implements SettingsRepository {
 
   @override
   Future<AppSettingsRecord> ensureSettings(String storeId) async {
-    final existing = await _client.from('app_settings').select().eq('store_id', storeId).maybeSingle();
-    if (existing != null) return _mapRow(existing);
+    final Map<String, dynamic>? existing;
+    try {
+      existing = await _client.from('app_settings').select().eq('store_id', storeId).maybeSingle();
+    } catch (e) {
+      // Offline: fall back to the last settings this device saw.
+      final cached = await OfflineCache.readRows(_cacheKey(storeId));
+      if (isNetworkError(e) && cached != null && cached.isNotEmpty) return _mapRow(cached.first);
+      rethrow;
+    }
+    if (existing != null) {
+      await OfflineCache.write(_cacheKey(storeId), [existing]);
+      return _mapRow(existing);
+    }
 
     // register_store() already inserts this row at store-creation time, so
     // this path is defensive-only — but two callers racing to create it
@@ -39,6 +53,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
       await _client.from('app_settings').insert({
         'id': storeId,
         'store_id': storeId,
+        'currency_code': defaults.currencyCode,
+        'currency_symbol': defaults.currencySymbol,
         'printer_config_json': jsonEncode(defaults.printerConfig.toJson()),
       });
       return defaults;
@@ -50,11 +66,10 @@ class SupabaseSettingsRepository implements SettingsRepository {
 
   @override
   Stream<AppSettingsRecord> watchSettings(String storeId) {
-    return _client
-        .from('app_settings')
-        .stream(primaryKey: ['id'])
-        .eq('store_id', storeId)
-        .map((rows) => _mapRow(rows.first));
+    return resilientRows(
+      _cacheKey(storeId),
+      () => _client.from('app_settings').stream(primaryKey: ['id']).eq('store_id', storeId),
+    ).where((rows) => rows.isNotEmpty).map((rows) => _mapRow(rows.first));
   }
 
   @override

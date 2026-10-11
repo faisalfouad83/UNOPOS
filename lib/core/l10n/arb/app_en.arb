@@ -251,5 +251,9 @@
   "receiptTendered": "Paid",
   "receiptCash": "Cash",
   "receiptCard": "Card",
-  "receiptThankYou": "Thank you for shopping with us!"
+  "receiptThankYou": "Thank you for shopping with us!",
+
+  "offlinePendingSales": "{count} offline",
+  "@offlinePendingSales": {"placeholders": {"count": {"type": "int"}}},
+  "offlineSaleSaved": "No internet — sale saved on this device and will be sent automatically"
 }

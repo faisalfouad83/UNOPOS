@@ -686,4 +686,13 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get receiptThankYou => 'سوپاس بۆ بازاڕکردنتان لەگەڵمان!';
+
+  @override
+  String offlinePendingSales(int count) {
+    return '$count چاوەڕێی ناردن';
+  }
+
+  @override
+  String get offlineSaleSaved =>
+      'ئینتەرنێت نییە — فرۆشتن لەسەر ئامێرەکە پاشەکەوت کرا و خۆکارانە دەنێردرێت';
 }

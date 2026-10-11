@@ -243,5 +243,8 @@
   "receiptTendered": "پارەی دراو",
   "receiptCash": "نەختینە",
   "receiptCard": "کارت",
-  "receiptThankYou": "سوپاس بۆ بازاڕکردنتان لەگەڵمان!"
+  "receiptThankYou": "سوپاس بۆ بازاڕکردنتان لەگەڵمان!",
+
+  "offlinePendingSales": "{count} چاوەڕێی ناردن",
+  "offlineSaleSaved": "ئینتەرنێت نییە — فرۆشتن لەسەر ئامێرەکە پاشەکەوت کرا و خۆکارانە دەنێردرێت"
 }

@@ -1,16 +1,23 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
+import '../../../core/utils/id_generator.dart';
 import '../../accounting/domain/accounting_posting_service.dart';
 import '../../debts/domain/debts_repository.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../../inventory/domain/inventory_repository.dart';
+import '../data/offline_sale_queue.dart';
 import 'pos_models.dart';
 import 'pos_repository.dart';
 
 class CheckoutResult {
-  const CheckoutResult({required this.sale, this.debtEntryId});
+  const CheckoutResult({required this.sale, this.debtEntryId, this.queuedOffline = false});
   final SaleRecord sale;
   final String? debtEntryId;
+
+  /// True when there was no connection: the sale is saved on this device
+  /// and will be sent to the server automatically once back online.
+  final bool queuedOffline;
 }
 
 /// Orchestrates everything a completed sale touches: the sale record
@@ -198,12 +205,17 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
 /// had; worth it here since Postgres offers it "for free" and this is the
 /// money/stock-critical path of a commercial product.
 class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
-  SupabaseAtomicCompleteSaleUseCase({required SupabaseClient client, required PosRepository posRepository})
-      : _client = client,
-        _posRepository = posRepository;
+  SupabaseAtomicCompleteSaleUseCase({
+    required SupabaseClient client,
+    required PosRepository posRepository,
+    required OfflineSaleQueue offlineQueue,
+  })  : _client = client,
+        _posRepository = posRepository,
+        _offlineQueue = offlineQueue;
 
   final SupabaseClient _client;
   final PosRepository _posRepository;
+  final OfflineSaleQueue _offlineQueue;
 
   @override
   Future<SaleRecord> holdSale({
@@ -242,7 +254,10 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
     String? customerNameForPayLater,
     SaleRecord? resumingHeldSale,
   }) async {
-    final json = await _client.rpc('checkout_sale', params: {
+    final clientSaleId = IdGenerator.newId();
+    final soldAt = DateTime.now();
+    final params = <String, dynamic>{
+      'p_client_sale_id': clientSaleId,
       'p_branch_id': branchId,
       'p_cashier_id': cashierId,
       'p_payment_method': paymentMethod.name,
@@ -263,7 +278,39 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       'p_change_given_minor_units': changeGivenMinorUnits,
       'p_customer_name_for_pay_later': customerNameForPayLater,
       'p_resuming_sale_id': resumingHeldSale?.id,
-    }) as Map<String, dynamic>;
+      'p_sold_at': soldAt.toUtc().toIso8601String(),
+    };
+
+    final Map<String, dynamic> json;
+    try {
+      json = await _client.rpc('checkout_sale_once', params: params) as Map<String, dynamic>;
+    } catch (e) {
+      if (!isNetworkError(e)) rethrow;
+      // No connection: keep the sale on this device and send it later. The
+      // client id makes the replay safe even if this request actually got
+      // through before the connection dropped.
+      await _offlineQueue.add(QueuedSale(clientSaleId: clientSaleId, params: params, queuedAt: soldAt));
+      return CheckoutResult(
+        sale: _provisionalSale(
+          clientSaleId: clientSaleId,
+          storeId: storeId,
+          branchId: branchId,
+          cashierId: cashierId,
+          shiftId: shiftId,
+          paymentMethod: paymentMethod,
+          lines: lines,
+          amountTenderedMinorUnits: amountTenderedMinorUnits,
+          changeGivenMinorUnits: changeGivenMinorUnits,
+          soldAt: soldAt,
+        ),
+        queuedOffline: true,
+      );
+    }
+
+    if (json['duplicate'] == true) {
+      final existing = await _posRepository.getSale(json['sale_id'] as String);
+      if (existing != null) return CheckoutResult(sale: existing);
+    }
 
     final saleJson = json['sale'] as Map<String, dynamic>;
     final sale = SaleRecord(
@@ -298,5 +345,58 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
     );
 
     return CheckoutResult(sale: sale, debtEntryId: json['debt_entry_id'] as String?);
+  }
+
+  SaleRecord _provisionalSale({
+    required String clientSaleId,
+    required String storeId,
+    required String branchId,
+    required String cashierId,
+    required String? shiftId,
+    required SalePaymentMethod paymentMethod,
+    required List<SaleLineInput> lines,
+    required int? amountTenderedMinorUnits,
+    required int? changeGivenMinorUnits,
+    required DateTime soldAt,
+  }) {
+    var subtotal = 0, discount = 0, tax = 0;
+    for (final l in lines) {
+      subtotal += l.unitPriceMinorUnits * l.quantity;
+      discount += l.discountAmountMinorUnits;
+      tax += l.taxAmountMinorUnits;
+    }
+    return SaleRecord(
+      id: clientSaleId,
+      storeId: storeId,
+      branchId: branchId,
+      // A real number is assigned when the sale reaches the server.
+      saleNumber: 'OFFLINE-${clientSaleId.substring(0, 6).toUpperCase()}',
+      status: SaleStatus.completed,
+      subtotalMinorUnits: subtotal,
+      discountTotalMinorUnits: discount,
+      taxTotalMinorUnits: tax,
+      grandTotalMinorUnits: subtotal - discount + tax,
+      paymentMethod: paymentMethod,
+      amountTenderedMinorUnits: amountTenderedMinorUnits,
+      changeGivenMinorUnits: changeGivenMinorUnits,
+      shiftId: shiftId,
+      cashierId: cashierId,
+      createdAt: soldAt,
+      completedAt: soldAt,
+      lines: [
+        for (final l in lines)
+          SaleLineRecord(
+            id: IdGenerator.newId(),
+            saleId: clientSaleId,
+            productId: l.productId,
+            quantity: l.quantity,
+            unitPriceMinorUnits: l.unitPriceMinorUnits,
+            discountAmountMinorUnits: l.discountAmountMinorUnits,
+            taxAmountMinorUnits: l.taxAmountMinorUnits,
+            lineTotalMinorUnits: l.lineTotalMinorUnits,
+            costPriceSnapshotMinorUnits: l.costPriceSnapshotMinorUnits,
+          ),
+      ],
+    );
   }
 }

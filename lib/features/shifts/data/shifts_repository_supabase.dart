@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
+
 import '../domain/shifts_models.dart';
 import '../domain/shifts_repository.dart';
 
@@ -40,13 +42,23 @@ class SupabaseShiftsRepository implements ShiftsRepository {
 
   @override
   Future<ShiftRecord?> getOpenShift(String storeId, String cashierId) async {
-    final row = await _client
-        .from('shifts')
-        .select()
-        .eq('store_id', storeId)
-        .eq('cashier_id', cashierId)
-        .eq('status', 'open')
-        .maybeSingle();
+    final cacheKey = 'open_shift.$storeId.$cashierId';
+    final Map<String, dynamic>? row;
+    try {
+      row = await _client
+          .from('shifts')
+          .select()
+          .eq('store_id', storeId)
+          .eq('cashier_id', cashierId)
+          .eq('status', 'open')
+          .maybeSingle();
+    } catch (e) {
+      // Offline: keep selling on the shift this device last saw open.
+      if (!isNetworkError(e)) rethrow;
+      final cached = await OfflineCache.readRows(cacheKey);
+      return (cached == null || cached.isEmpty) ? null : _mapRow(cached.first);
+    }
+    await OfflineCache.write(cacheKey, row == null ? <Object>[] : [row]);
     return row == null ? null : _mapRow(row);
   }
 

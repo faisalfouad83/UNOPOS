@@ -8,6 +8,7 @@ import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_repository.dart';
 import '../../printing/presentation/sale_receipt.dart';
+import '../data/offline_sale_sync.dart';
 import '../../settings/domain/settings_models.dart';
 import '../domain/pos_models.dart';
 import 'cart_controller.dart';
@@ -93,12 +94,15 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
           );
 
       ref.read(cartControllerProvider.notifier).clear();
+      if (result.queuedOffline) ref.read(offlineSaleSyncProvider.notifier).refresh();
 
       if (context.mounted) {
         final navigator = Navigator.of(context);
         final messenger = ScaffoldMessenger.of(context);
         navigator.pop();
-        messenger.showSnackBar(SnackBar(content: Text(l10n.posSaleCompleted)));
+        messenger.showSnackBar(
+          SnackBar(content: Text(result.queuedOffline ? l10n.offlineSaleSaved : l10n.posSaleCompleted)),
+        );
       }
 
       await _printReceipt(result.sale, session, inventory, l10n);

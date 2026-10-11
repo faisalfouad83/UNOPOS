@@ -17,6 +17,7 @@ import '../features/accounting/domain/accounting_posting_service.dart';
 import '../features/inventory/data/inventory_repository_drift.dart';
 import '../features/inventory/data/inventory_repository_supabase.dart';
 import '../features/inventory/domain/inventory_repository.dart';
+import '../features/pos/data/offline_sale_queue.dart';
 import '../features/pos/data/pos_repository_drift.dart';
 import '../features/pos/data/pos_repository_supabase.dart';
 import '../features/pos/domain/pos_repository.dart';
@@ -172,11 +173,14 @@ final notificationsRepositoryProvider = Provider<NotificationsRepository?>((ref)
 /// supabase/migrations/0003_checkout_rpcs.sql) instead of the Drift path's
 /// multi-repository orchestration — see complete_sale_use_case.dart's class
 /// doc for why that's a deliberate improvement, not just a port.
+final offlineSaleQueueProvider = Provider<OfflineSaleQueue>((ref) => OfflineSaleQueue());
+
 final completeSaleUseCaseProvider = Provider<CompleteSaleUseCase>((ref) {
   if (kUseSupabaseBackend) {
     return SupabaseAtomicCompleteSaleUseCase(
       client: ref.watch(supabaseClientProvider),
       posRepository: ref.watch(posRepositoryProvider),
+      offlineQueue: ref.watch(offlineSaleQueueProvider),
     );
   }
   return OrchestratedCompleteSaleUseCase(

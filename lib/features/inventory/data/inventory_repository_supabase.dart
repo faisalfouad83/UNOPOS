@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
+
 import '../domain/inventory_models.dart';
 import '../domain/inventory_repository.dart';
 
@@ -101,7 +103,8 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Stream<List<TaxRateRecord>> watchTaxRates(String storeId) {
-    return _client.from('tax_rates').stream(primaryKey: ['id']).map((rows) => rows.map(_mapTaxRate).toList());
+    return resilientRows('tax_rates.$storeId', () => _client.from('tax_rates').stream(primaryKey: ['id']))
+        .map((rows) => rows.map(_mapTaxRate).toList());
   }
 
   @override
@@ -150,7 +153,10 @@ class SupabaseInventoryRepository implements InventoryRepository {
     // .stream() supports only one server-side filter; is_active is always
     // required so it takes that slot, categoryId/searchQuery (both
     // optional) are applied client-side below.
-    return _client.from('products').stream(primaryKey: ['id']).eq('is_active', true).order('name').map((rows) {
+    return resilientRows(
+      'products.$storeId',
+      () => _client.from('products').stream(primaryKey: ['id']).eq('is_active', true).order('name'),
+    ).map((rows) {
       var filtered = rows;
       if (categoryId != null) {
         filtered = filtered.where((r) => r['category_id'] == categoryId).toList();
@@ -327,7 +333,10 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Stream<List<DiscountRecord>> watchDiscounts(String storeId) {
-    return _client.from('discounts').stream(primaryKey: ['id']).eq('is_active', true).map((rows) => rows.map(_mapDiscount).toList());
+    return resilientRows(
+      'discounts.$storeId',
+      () => _client.from('discounts').stream(primaryKey: ['id']).eq('is_active', true),
+    ).map((rows) => rows.map(_mapDiscount).toList());
   }
 
   @override

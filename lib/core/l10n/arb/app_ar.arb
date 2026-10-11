@@ -243,5 +243,8 @@
   "receiptTendered": "المدفوع",
   "receiptCash": "نقداً",
   "receiptCard": "بطاقة",
-  "receiptThankYou": "شكراً لتسوقكم معنا!"
+  "receiptThankYou": "شكراً لتسوقكم معنا!",
+
+  "offlinePendingSales": "{count} بانتظار الإرسال",
+  "offlineSaleSaved": "لا يوجد إنترنت — تم حفظ البيع على الجهاز وسيُرسل تلقائياً"
 }

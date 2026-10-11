@@ -10,6 +10,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/theming/app_theme.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/widgets/unopos_logo.dart';
+import '../../pos/presentation/offline_sync_indicator.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../notifications/presentation/notification_bell.dart';
 
@@ -104,6 +105,7 @@ class HomeShell extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const OfflineSyncIndicator(),
               const _LiveClock(),
               const SizedBox(width: 8),
               const NotificationBell(),

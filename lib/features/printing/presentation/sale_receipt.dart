@@ -1,4 +1,5 @@
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/offline/offline_cache.dart';
 import '../../../core/providers.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_repository.dart';
@@ -36,8 +37,20 @@ Future<ReceiptDocument> buildSaleReceipt({
 }) async {
   final productNames = <String, String>{};
   for (final productId in sale.lines.map((l) => l.productId).toSet()) {
-    final product = await inventory.getProduct(productId);
-    productNames[productId] = product?.name ?? productId;
+    try {
+      final product = await inventory.getProduct(productId);
+      productNames[productId] = product?.name ?? productId;
+    } catch (_) {
+      // Offline: names come from the cached product list instead.
+      productNames[productId] = productId;
+    }
+  }
+  if (productNames.entries.any((e) => e.key == e.value) && session.store != null) {
+    final cached = await OfflineCache.readRows('products.${session.store!.id}') ?? const [];
+    for (final row in cached) {
+      final id = row['id'] as String?;
+      if (id != null && productNames[id] == id) productNames[id] = row['name'] as String? ?? id;
+    }
   }
   return ReceiptTemplateBuilder.build(
     sale: sale,
