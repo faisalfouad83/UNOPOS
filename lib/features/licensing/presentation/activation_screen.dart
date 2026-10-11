@@ -8,11 +8,9 @@ import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/security/activation_code_codec.dart';
 import '../../../core/supabase/supabase_config.dart';
-import '../../../core/widgets/numeric_pin_pad.dart';
 import '../../../core/widgets/receipt_card.dart';
 import '../../../core/widgets/unopos_logo.dart';
-import '../../auth/domain/session_controller.dart';
-import '../../auth/presentation/developer_signin_dialog.dart';
+import 'developer_gate.dart';
 
 class ActivationScreen extends ConsumerStatefulWidget {
   const ActivationScreen({super.key});
@@ -57,39 +55,7 @@ class _ActivationScreenState extends ConsumerState<ActivationScreen> {
     }
   }
 
-  Future<void> _showDeveloperGate() async {
-    var pin = '';
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) => AlertDialog(
-          content: SizedBox(
-            width: 320,
-            child: NumericPinPad(
-              value: pin,
-              onChanged: (v) => setDialogState(() => pin = v),
-              onSubmit: () async {
-                // Must go through SessionController so session.developerMode
-                // actually flips to true — RouteGuard only lets the
-                // Developer console through once that flag is set, it does
-                // not react to a bare context.go() call.
-                final result = await ref.read(sessionControllerProvider.notifier).submitPin(pin);
-                if (dialogContext.mounted) Navigator.of(dialogContext).pop();
-                if (result == PinResult.developerGate && mounted) {
-                  context.go(RoutePaths.developerHome);
-                } else if (result == PinResult.developerGateNeedsAuth && mounted) {
-                  // On the shared backend, 1313 only reveals the real
-                  // sign-in form — it never grants access by itself.
-                  final signedIn = await showDeveloperSignInDialog(context, ref);
-                  if (signedIn && mounted) context.go(RoutePaths.developerHome);
-                }
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Future<void> _showDeveloperGate() => showDeveloperGate(context, ref);
 
   @override
   Widget build(BuildContext context) {

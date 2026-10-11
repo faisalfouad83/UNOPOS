@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unopos/core/supabase/supabase_config.dart';
+import 'package:unopos/core/constants/permissions.dart';
 import 'package:unopos/core/constants/roles.dart';
 import 'package:unopos/core/routing/route_guard.dart';
 import 'package:unopos/core/routing/route_paths.dart';
@@ -119,6 +120,76 @@ void main() {
         session: const SessionState(),
       );
       expect(redirect, RoutePaths.tilePicker);
+    });
+  });
+
+  group('RouteGuard.redirect — expired license', () {
+    test('a signed-in store with an expired license is locked on the renewal screen', () {
+      for (final location in [RoutePaths.home, RoutePaths.pos, RoutePaths.settings, RoutePaths.tilePicker]) {
+        final redirect = RouteGuard.redirect(
+          location: location,
+          hasValidLicense: true,
+          hasStoreOnDisk: true,
+          hasEmployees: true,
+          session: SessionState(employee: _fakeOwner),
+          licenseExpired: true,
+        );
+        expect(redirect, RoutePaths.licenseExpired, reason: location);
+      }
+    });
+
+    test('the renewal screen itself is reachable, and the developer gate still wins', () {
+      expect(
+        RouteGuard.redirect(
+          location: RoutePaths.licenseExpired,
+          hasValidLicense: true,
+          hasStoreOnDisk: true,
+          hasEmployees: true,
+          session: const SessionState(),
+          licenseExpired: true,
+        ),
+        isNull,
+      );
+      expect(
+        RouteGuard.redirect(
+          location: RoutePaths.licenseExpired,
+          hasValidLicense: true,
+          hasStoreOnDisk: true,
+          hasEmployees: true,
+          session: const SessionState(developerMode: true),
+          licenseExpired: true,
+        ),
+        RoutePaths.developerHome,
+      );
+    });
+
+    test('once renewed the app opens normally', () {
+      expect(
+        RouteGuard.redirect(
+          location: RoutePaths.home,
+          hasValidLicense: true,
+          hasStoreOnDisk: true,
+          hasEmployees: true,
+          session: SessionState(employee: _fakeOwner),
+        ),
+        isNull,
+      );
+    });
+  });
+
+  group('RouteGuard.isAllowed — employee permissions', () {
+    test('a cashier sees selling but not settings, unless granted', () {
+      const cashier = EmployeeRecord(id: 'c', storeId: 's', name: 'C', role: StoreRole.cashier, pinHash: '');
+      expect(RouteGuard.isAllowed(RoutePaths.pos, const SessionState(employee: cashier)), isTrue);
+      expect(RouteGuard.isAllowed(RoutePaths.settings, const SessionState(employee: cashier)), isFalse);
+      final granted = cashier.copyWith(customPermissions: {AppPermission.sell, AppPermission.settings});
+      expect(RouteGuard.isAllowed(RoutePaths.settings, SessionState(employee: granted)), isTrue);
+      expect(RouteGuard.isAllowed(RoutePaths.debts, SessionState(employee: granted)), isFalse);
+    });
+
+    test('the owner keeps everything even with a restricted list saved', () {
+      final owner = _fakeOwner.copyWith(customPermissions: {AppPermission.sell});
+      expect(RouteGuard.isAllowed(RoutePaths.settings, SessionState(employee: owner)), isTrue);
     });
   });
 }

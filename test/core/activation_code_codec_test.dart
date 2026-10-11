@@ -13,6 +13,17 @@ void main() {
       expect(payload.expiresAt, isNotNull);
     });
 
+    test('2-week trial expires after 14 days and keeps older tiers decodable', () {
+      final issued = DateTime.utc(2026, 1, 1);
+      final code = ActivationCodeCodec.generate(tier: LicenseTier.trial2Weeks, storeNameRef: 'Trial', issuedAt: issued);
+      final payload = ActivationCodeCodec.verifyAndDecode(code);
+      expect(payload.tier, LicenseTier.trial2Weeks);
+      expect(payload.isExpired(DateTime.utc(2026, 1, 14)), isFalse);
+      expect(payload.isExpired(DateTime.utc(2026, 1, 15)), isTrue);
+      // Tiers are encoded by index; the original five must keep theirs.
+      expect(LicenseTier.lifetime.index, 4);
+    });
+
     test('lifetime tier has no expiry', () {
       final code = ActivationCodeCodec.generate(tier: LicenseTier.lifetime, storeNameRef: 'Forever Mart');
       final payload = ActivationCodeCodec.verifyAndDecode(code);

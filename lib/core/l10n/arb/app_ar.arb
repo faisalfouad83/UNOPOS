@@ -371,5 +371,18 @@
   "customerWalkIn": "زبون نقدي عابر",
   "customersNone": "لا يوجد زبائن بعد",
   "customersTotalSales": "إجمالي المشتريات",
-  "customersOwes": "عليه دين"
+  "customersOwes": "عليه دين",
+
+  "licenseExpiredTitle": "انتهى الاشتراك",
+  "licenseExpiredOn": "انتهى في {date}",
+  "licenseExpiredHelp": "أدخل كود تفعيل جديد لمواصلة استخدام UNOPOS. بياناتك محفوظة وستجدها كما هي عند المتابعة.",
+  "activationAlreadyUsed": "لا يمكن استخدام هذا الكود (مستخدم مسبقاً أو غير موجود).",
+
+  "developerTier2Weeks": "تجربة أسبوعين",
+  "developerCodeNotActivated": "لم يُفعَّل بعد",
+  "developerCodeActivatedBy": "مُفعَّل من قِبل {store}",
+  "developerCodeActivatedOn": "تاريخ التفعيل {date}",
+  "developerCodeExpiresIn": "ينتهي بعد {days} يوم ({date})",
+  "developerCodeExpiredOn": "انتهى في {date}",
+  "developerLocalStatusNote": "النسخة المحلية: يظهر فقط التفعيل الذي تم على هذا الجهاز."
 }

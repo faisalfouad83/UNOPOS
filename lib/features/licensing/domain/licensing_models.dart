@@ -13,6 +13,7 @@ class ActivationCodeRecord {
     required this.status,
     this.redeemedByStoreId,
     this.redeemedAt,
+    this.redeemedByStoreName,
   });
 
   final String id;
@@ -24,6 +25,24 @@ class ActivationCodeRecord {
   final ActivationCodeStatus status;
   final String? redeemedByStoreId;
   final DateTime? redeemedAt;
+
+  /// Name of the store that activated it, when known.
+  final String? redeemedByStoreName;
+
+  bool get isActivated => redeemedByStoreId != null || redeemedAt != null;
+
+  ActivationCodeRecord withStoreName(String? name) => ActivationCodeRecord(
+        id: id,
+        code: code,
+        storeNameRef: storeNameRef,
+        tier: tier,
+        issuedAt: issuedAt,
+        expiresAt: expiresAt,
+        status: status,
+        redeemedByStoreId: redeemedByStoreId,
+        redeemedAt: redeemedAt,
+        redeemedByStoreName: name,
+      );
 
   int? daysRemaining([DateTime? now]) {
     if (expiresAt == null) return null;

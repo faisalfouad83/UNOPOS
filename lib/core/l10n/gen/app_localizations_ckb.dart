@@ -1087,4 +1087,50 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get customersOwes => 'قەرزدارە';
+
+  @override
+  String get licenseExpiredTitle => 'بەشداربوون بەسەرچوو';
+
+  @override
+  String licenseExpiredOn(String date) {
+    return 'لە $date بەسەرچوو';
+  }
+
+  @override
+  String get licenseExpiredHelp =>
+      'کۆدێکی چالاککردنی نوێ بنووسە بۆ بەردەوامبوون لە بەکارهێنانی UNOPOS. داتاکانت پارێزراون.';
+
+  @override
+  String get activationAlreadyUsed =>
+      'ناتوانرێت ئەم کۆدە بەکاربهێنرێت (پێشتر بەکارهاتووە یان نەدۆزرایەوە).';
+
+  @override
+  String get developerTier2Weeks => 'تاقیکردنەوەی 2 هەفتە';
+
+  @override
+  String get developerCodeNotActivated => 'هێشتا چالاک نەکراوە';
+
+  @override
+  String developerCodeActivatedBy(String store) {
+    return 'چالاککراوە لەلایەن $store';
+  }
+
+  @override
+  String developerCodeActivatedOn(String date) {
+    return 'لە $date چالاک کرا';
+  }
+
+  @override
+  String developerCodeExpiresIn(int days, String date) {
+    return 'دوای $days ڕۆژ بەسەردەچێت ($date)';
+  }
+
+  @override
+  String developerCodeExpiredOn(String date) {
+    return 'لە $date بەسەرچوو';
+  }
+
+  @override
+  String get developerLocalStatusNote =>
+      'وەشانی ناوخۆیی: تەنها چالاککردنەکانی ئەم ئامێرە پیشان دەدرێن.';
 }

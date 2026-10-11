@@ -14,6 +14,7 @@ import '../core/utils/formatters.dart';
 import '../core/widgets/unopos_logo.dart';
 import '../features/auth/domain/session_controller.dart';
 import '../features/backup/domain/auto_backup_checker.dart';
+import '../features/licensing/domain/license_watch.dart';
 import '../features/settings/domain/settings_models.dart';
 
 /// Language selection, independent of MaterialApp's own locale resolution —
@@ -107,6 +108,7 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
       WidgetsBinding.instance.addPostFrameCallback((_) => _syncSettingsOnce(storeId));
     }
 
+    ref.watch(licenseWatcherProvider);
     final storeSettings = ref.watch(currentStoreSettingsProvider).valueOrNull;
     if (storeSettings != null) {
       Money.currency = CurrencyInfo(storeSettings.currencyCode, storeSettings.currencySymbol);

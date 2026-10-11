@@ -20,4 +20,8 @@ abstract class LicensingRepository {
   /// The code currently bound to this install's store, if any (used by
   /// Settings to show days-remaining and by the app-launch expiry gate).
   Future<ActivationCodeRecord?> getActiveCodeForStore(String storeId);
+
+  /// Whether [storeId] may use the app right now, and until when (null
+  /// expiry = no end date).
+  Future<({bool licensed, DateTime? expiresAt})> licenseFor(String storeId);
 }

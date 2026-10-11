@@ -2109,6 +2109,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Owes'**
   String get customersOwes;
+
+  /// No description provided for @licenseExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription expired'**
+  String get licenseExpiredTitle;
+
+  /// No description provided for @licenseExpiredOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired on {date}'**
+  String licenseExpiredOn(String date);
+
+  /// No description provided for @licenseExpiredHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a new activation code to keep using UNOPOS. Your data is safe and will be there when you continue.'**
+  String get licenseExpiredHelp;
+
+  /// No description provided for @activationAlreadyUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'This code can\'t be used (already used or not found).'**
+  String get activationAlreadyUsed;
+
+  /// No description provided for @developerTier2Weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'2-week trial'**
+  String get developerTier2Weeks;
+
+  /// No description provided for @developerCodeNotActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not activated yet'**
+  String get developerCodeNotActivated;
+
+  /// No description provided for @developerCodeActivatedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Activated by {store}'**
+  String developerCodeActivatedBy(String store);
+
+  /// No description provided for @developerCodeActivatedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Activated on {date}'**
+  String developerCodeActivatedOn(String date);
+
+  /// No description provided for @developerCodeExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in {days} days ({date})'**
+  String developerCodeExpiresIn(int days, String date);
+
+  /// No description provided for @developerCodeExpiredOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired on {date}'**
+  String developerCodeExpiredOn(String date);
+
+  /// No description provided for @developerLocalStatusNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline version: only activations on this device are shown.'**
+  String get developerLocalStatusNote;
 }
 
 class _AppLocalizationsDelegate

@@ -371,5 +371,18 @@
   "customerWalkIn": "کڕیاری نەختی ڕێبوار",
   "customersNone": "هێشتا هیچ کڕیارێک نییە",
   "customersTotalSales": "کۆی کڕینەکان",
-  "customersOwes": "قەرزدارە"
+  "customersOwes": "قەرزدارە",
+
+  "licenseExpiredTitle": "بەشداربوون بەسەرچوو",
+  "licenseExpiredOn": "لە {date} بەسەرچوو",
+  "licenseExpiredHelp": "کۆدێکی چالاککردنی نوێ بنووسە بۆ بەردەوامبوون لە بەکارهێنانی UNOPOS. داتاکانت پارێزراون.",
+  "activationAlreadyUsed": "ناتوانرێت ئەم کۆدە بەکاربهێنرێت (پێشتر بەکارهاتووە یان نەدۆزرایەوە).",
+
+  "developerTier2Weeks": "تاقیکردنەوەی 2 هەفتە",
+  "developerCodeNotActivated": "هێشتا چالاک نەکراوە",
+  "developerCodeActivatedBy": "چالاککراوە لەلایەن {store}",
+  "developerCodeActivatedOn": "لە {date} چالاک کرا",
+  "developerCodeExpiresIn": "دوای {days} ڕۆژ بەسەردەچێت ({date})",
+  "developerCodeExpiredOn": "لە {date} بەسەرچوو",
+  "developerLocalStatusNote": "وەشانی ناوخۆیی: تەنها چالاککردنەکانی ئەم ئامێرە پیشان دەدرێن."
 }

@@ -13,7 +13,9 @@ import '../../features/auth/presentation/tile_picker_screen.dart';
 import '../../features/home/presentation/dashboard_screen.dart';
 import '../../features/home/presentation/home_shell.dart';
 import '../../features/licensing/presentation/activation_screen.dart';
+import '../../features/licensing/domain/license_watch.dart';
 import '../../features/licensing/presentation/developer_home_screen.dart';
+import '../../features/licensing/presentation/license_expired_screen.dart';
 import '../../features/onboarding/presentation/create_manager_screen.dart';
 import '../../features/onboarding/presentation/create_store_screen.dart';
 import '../../features/pos/presentation/pos_screen.dart';
@@ -31,6 +33,7 @@ class _GoRouterRefreshNotifier extends ChangeNotifier {
   _GoRouterRefreshNotifier(Ref ref) {
     ref.listen(sessionControllerProvider, (_, __) => notifyListeners());
     ref.listen(licenseValidProvider, (_, __) => notifyListeners());
+    ref.listen(licenseExpiredProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -51,6 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         hasStoreOnDisk: session.hasStore,
         hasEmployees: bootstrap.value?.hasEmployees ?? false,
         session: session,
+        licenseExpired: ref.read(licenseExpiredProvider),
       );
     },
     routes: [
@@ -69,6 +73,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: RoutePaths.tilePicker, builder: (context, state) => const TilePickerScreen()),
       GoRoute(path: RoutePaths.pinPad, builder: (context, state) => const PinPadScreen()),
       GoRoute(path: RoutePaths.developerHome, builder: (context, state) => const DeveloperHomeScreen()),
+      GoRoute(path: RoutePaths.licenseExpired, builder: (context, state) => const LicenseExpiredScreen()),
       ShellRoute(
         builder: (context, state, child) => HomeShell(currentPath: state.matchedLocation, child: child),
         routes: [

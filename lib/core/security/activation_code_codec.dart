@@ -11,7 +11,11 @@ enum LicenseTier {
   months3(days: 90),
   months6(days: 182),
   months12(days: 365),
-  lifetime(days: null);
+  lifetime(days: null),
+
+  // Appended (codes store the tier's index, so existing codes keep their
+  // meaning).
+  trial2Weeks(days: 14);
 
   const LicenseTier({required this.days});
 

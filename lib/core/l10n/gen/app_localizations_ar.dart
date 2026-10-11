@@ -1095,4 +1095,50 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get customersOwes => 'عليه دين';
+
+  @override
+  String get licenseExpiredTitle => 'انتهى الاشتراك';
+
+  @override
+  String licenseExpiredOn(String date) {
+    return 'انتهى في $date';
+  }
+
+  @override
+  String get licenseExpiredHelp =>
+      'أدخل كود تفعيل جديد لمواصلة استخدام UNOPOS. بياناتك محفوظة وستجدها كما هي عند المتابعة.';
+
+  @override
+  String get activationAlreadyUsed =>
+      'لا يمكن استخدام هذا الكود (مستخدم مسبقاً أو غير موجود).';
+
+  @override
+  String get developerTier2Weeks => 'تجربة أسبوعين';
+
+  @override
+  String get developerCodeNotActivated => 'لم يُفعَّل بعد';
+
+  @override
+  String developerCodeActivatedBy(String store) {
+    return 'مُفعَّل من قِبل $store';
+  }
+
+  @override
+  String developerCodeActivatedOn(String date) {
+    return 'تاريخ التفعيل $date';
+  }
+
+  @override
+  String developerCodeExpiresIn(int days, String date) {
+    return 'ينتهي بعد $days يوم ($date)';
+  }
+
+  @override
+  String developerCodeExpiredOn(String date) {
+    return 'انتهى في $date';
+  }
+
+  @override
+  String get developerLocalStatusNote =>
+      'النسخة المحلية: يظهر فقط التفعيل الذي تم على هذا الجهاز.';
 }

@@ -5,10 +5,11 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/security/activation_code_codec.dart';
-import '../../licensing/domain/licensing_models.dart';
+import '../../../core/utils/formatters.dart';
+import '../../licensing/domain/license_watch.dart';
 
-final _activeCodeProvider = FutureProvider.autoDispose.family<ActivationCodeRecord?, String>((ref, storeId) {
-  return ref.watch(licensingRepositoryProvider).getActiveCodeForStore(storeId);
+final _licenseProvider = FutureProvider.autoDispose.family<({bool licensed, DateTime? expiresAt}), String>((ref, storeId) {
+  return ref.watch(licensingRepositoryProvider).licenseFor(storeId);
 });
 
 class ActivationSettingsSection extends ConsumerStatefulWidget {
@@ -39,20 +40,23 @@ class _ActivationSettingsSectionState extends ConsumerState<ActivationSettingsSe
       }
       await ref.read(licensingRepositoryProvider).redeemCode(record.id, widget.storeId);
       ref.read(licenseValidProvider.notifier).state = true;
-      ref.invalidate(_activeCodeProvider(widget.storeId));
+      ref.invalidate(_licenseProvider(widget.storeId));
+      await ref.read(licenseRefresherProvider)();
       setState(() {
         _error = null;
         _codeController.clear();
       });
     } on ActivationCodeException {
       setState(() => _error = l10n.activationInvalid);
+    } catch (_) {
+      setState(() => _error = l10n.activationAlreadyUsed);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final codeAsync = ref.watch(_activeCodeProvider(widget.storeId));
+    final licenseAsync = ref.watch(_licenseProvider(widget.storeId));
 
     return Card(
       child: Padding(
@@ -62,14 +66,18 @@ class _ActivationSettingsSectionState extends ConsumerState<ActivationSettingsSe
           children: [
             Text(l10n.settingsActivation, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            codeAsync.when(
+            licenseAsync.when(
               loading: () => const CircularProgressIndicator(),
               error: (e, st) => Text(l10n.errorGeneric),
-              data: (code) {
-                if (code == null) return Text(l10n.activationInvalid);
-                final days = code.daysRemaining();
+              data: (license) {
+                if (!license.licensed) return Text(l10n.licenseExpiredTitle);
+                final expiresAt = license.expiresAt;
+                if (expiresAt == null) {
+                  return Text(l10n.activationLifetime, style: Theme.of(context).textTheme.bodyLarge);
+                }
+                final days = (expiresAt.difference(DateTime.now()).inHours / 24).ceil();
                 return Text(
-                  days == null ? l10n.activationLifetime : l10n.activationDaysRemaining(days),
+                  '${l10n.activationDaysRemaining(days)} (${AppDateFormat.shortDate(expiresAt)})',
                   style: Theme.of(context).textTheme.bodyLarge,
                 );
               },

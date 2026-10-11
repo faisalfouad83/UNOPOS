@@ -53,7 +53,12 @@ class SupabaseLicensingRepository implements LicensingRepository {
   @override
   Future<List<ActivationCodeRecord>> listRecentCodes({int limit = 50}) async {
     final rows = await _client.from('activation_codes').select().order('issued_at', ascending: false).limit(limit);
-    return (rows as List).cast<Map<String, dynamic>>().map(_mapRow).toList();
+    final codes = (rows as List).cast<Map<String, dynamic>>().map(_mapRow).toList();
+    final storeIds = codes.map((c) => c.redeemedByStoreId).whereType<String>().toSet().toList();
+    if (storeIds.isEmpty) return codes;
+    final stores = await _client.from('stores').select('id, display_name').inFilter('id', storeIds);
+    final names = {for (final s in (stores as List).cast<Map<String, dynamic>>()) s['id'] as String: s['display_name'] as String};
+    return [for (final c in codes) c.withStoreName(names[c.redeemedByStoreId])];
   }
 
   @override
@@ -82,6 +87,17 @@ class SupabaseLicensingRepository implements LicensingRepository {
     // client-supplied id. activationCodeId here is the raw code string (see
     // class doc) produced by validateCode above.
     await _client.rpc('redeem_activation_code', params: {'p_code': activationCodeId});
+  }
+
+  /// A cloud store runs on its trial until its first code is redeemed, then
+  /// on that code; either way `stores.expires_at` is the end date (null =
+  /// no end date — e.g. stores created before trials were introduced).
+  @override
+  Future<({bool licensed, DateTime? expiresAt})> licenseFor(String storeId) async {
+    final row = await _client.from('stores').select('expires_at').eq('id', storeId).maybeSingle();
+    if (row == null) return (licensed: false, expiresAt: null);
+    final expiresAt = row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String);
+    return (licensed: expiresAt == null || DateTime.now().isBefore(expiresAt), expiresAt: expiresAt);
   }
 
   @override

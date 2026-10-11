@@ -60,7 +60,9 @@ class DriftLicensingRepository implements LicensingRepository {
           ..orderBy([(t) => OrderingTerm.desc(t.issuedAt)])
           ..limit(limit))
         .get();
-    return rows.map(_mapRow).toList();
+    final stores = await _db.select(_db.stores).get();
+    final names = {for (final s in stores) s.id: s.displayName};
+    return [for (final r in rows) _mapRow(r).withStoreName(names[r.redeemedByStoreId])];
   }
 
   @override
@@ -114,6 +116,13 @@ class DriftLicensingRepository implements LicensingRepository {
         redeemedAt: Value(DateTime.now()),
       ),
     );
+  }
+
+  @override
+  Future<({bool licensed, DateTime? expiresAt})> licenseFor(String storeId) async {
+    final code = await getActiveCodeForStore(storeId);
+    if (code == null) return (licensed: false, expiresAt: null);
+    return (licensed: !code.isExpired(), expiresAt: code.expiresAt);
   }
 
   @override

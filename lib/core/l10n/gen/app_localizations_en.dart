@@ -1096,4 +1096,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customersOwes => 'Owes';
+
+  @override
+  String get licenseExpiredTitle => 'Subscription expired';
+
+  @override
+  String licenseExpiredOn(String date) {
+    return 'Expired on $date';
+  }
+
+  @override
+  String get licenseExpiredHelp =>
+      'Enter a new activation code to keep using UNOPOS. Your data is safe and will be there when you continue.';
+
+  @override
+  String get activationAlreadyUsed =>
+      'This code can\'t be used (already used or not found).';
+
+  @override
+  String get developerTier2Weeks => '2-week trial';
+
+  @override
+  String get developerCodeNotActivated => 'Not activated yet';
+
+  @override
+  String developerCodeActivatedBy(String store) {
+    return 'Activated by $store';
+  }
+
+  @override
+  String developerCodeActivatedOn(String date) {
+    return 'Activated on $date';
+  }
+
+  @override
+  String developerCodeExpiresIn(int days, String date) {
+    return 'Expires in $days days ($date)';
+  }
+
+  @override
+  String developerCodeExpiredOn(String date) {
+    return 'Expired on $date';
+  }
+
+  @override
+  String get developerLocalStatusNote =>
+      'Offline version: only activations on this device are shown.';
 }

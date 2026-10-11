@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/security/activation_code_codec.dart';
+import '../../../core/supabase/supabase_config.dart';
 import '../../../core/utils/formatters.dart';
 import '../domain/licensing_models.dart';
 
@@ -21,7 +22,7 @@ class LicenseConsole extends ConsumerStatefulWidget {
 
 class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
   final _storeNameController = TextEditingController();
-  LicenseTier _tier = LicenseTier.trial1Month;
+  LicenseTier _tier = LicenseTier.trial2Weeks;
   String? _lastGeneratedCode;
   List<ActivationCodeRecord> _recent = [];
 
@@ -56,12 +57,23 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
     }
   }
 
+  /// Shortest first, so the trial options lead.
+  static const _tierOrder = [
+    LicenseTier.trial2Weeks,
+    LicenseTier.trial1Month,
+    LicenseTier.months3,
+    LicenseTier.months6,
+    LicenseTier.months12,
+    LicenseTier.lifetime,
+  ];
+
   static String tierLabel(AppLocalizations l10n, LicenseTier tier) => switch (tier) {
         LicenseTier.trial1Month => l10n.developerTier1Month,
         LicenseTier.months3 => l10n.developerTier3Months,
         LicenseTier.months6 => l10n.developerTier6Months,
         LicenseTier.months12 => l10n.developerTier12Months,
         LicenseTier.lifetime => l10n.developerTierLifetime,
+        LicenseTier.trial2Weeks => l10n.developerTier2Weeks,
       };
 
   @override
@@ -91,7 +103,7 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: LicenseTier.values.map((tier) {
+                      children: _tierOrder.map((tier) {
                         return ChoiceChip(
                           label: Text(tierLabel(l10n, tier)),
                           selected: _tier == tier,
@@ -118,19 +130,62 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
             const SizedBox(height: 24),
             Text(l10n.developerRecentCodes, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            ..._recent.map((code) => Card(
-                  child: ListTile(
-                    title: Text(code.code, style: const TextStyle(fontFamily: 'monospace', fontSize: 13)),
-                    subtitle: Text(
-                      '${code.storeNameRef} · ${tierLabel(l10n, code.tier)} · ${code.status.name}',
-                    ),
-                    trailing: Text(
-                      code.expiresAt == null ? l10n.activationLifetime : AppDateFormat.shortDate(code.expiresAt!),
-                    ),
-                  ),
-                )),
+            if (!kUseSupabaseBackend)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(l10n.developerLocalStatusNote, style: Theme.of(context).textTheme.bodySmall),
+              ),
+            ..._recent.map((code) => _CodeTile(code: code)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// One issued code: who it's for, whether it has been activated (and by
+/// which store), and how long until it expires — counted from when it was
+/// issued, whether or not it has been activated yet.
+class _CodeTile extends StatelessWidget {
+  const _CodeTile({required this.code});
+  final ActivationCodeRecord code;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final days = code.daysRemaining();
+    final expired = code.isExpired();
+    final activated = code.isActivated;
+
+    final (statusText, statusColor, statusIcon) = activated
+        ? (
+            l10n.developerCodeActivatedBy(code.redeemedByStoreName ?? code.storeNameRef),
+            Colors.green.shade700,
+            Icons.check_circle_outline,
+          )
+        : (l10n.developerCodeNotActivated, Colors.orange.shade800, Icons.hourglass_empty);
+    final expiryText = code.expiresAt == null
+        ? l10n.activationLifetime
+        : expired
+            ? l10n.developerCodeExpiredOn(AppDateFormat.shortDate(code.expiresAt!))
+            : l10n.developerCodeExpiresIn(days ?? 0, AppDateFormat.shortDate(code.expiresAt!));
+
+    return Card(
+      child: ListTile(
+        leading: Icon(statusIcon, color: statusColor),
+        title: Text('${code.storeNameRef} · ${_LicenseConsoleState.tierLabel(l10n, code.tier)}'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(statusText, style: TextStyle(color: statusColor, fontWeight: FontWeight.w600)),
+            if (activated && code.redeemedAt != null)
+              Text(l10n.developerCodeActivatedOn(AppDateFormat.shortDate(code.redeemedAt!))),
+            Text(expiryText, style: TextStyle(color: expired ? theme.colorScheme.error : null)),
+            SelectableText(code.code, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+          ],
+        ),
+        isThreeLine: true,
       ),
     );
   }

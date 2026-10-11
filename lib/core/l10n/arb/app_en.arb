@@ -401,5 +401,23 @@
   "customerWalkIn": "Walk-in customer (cash)",
   "customersNone": "No customers yet",
   "customersTotalSales": "Total purchases",
-  "customersOwes": "Owes"
+  "customersOwes": "Owes",
+
+  "licenseExpiredTitle": "Subscription expired",
+  "licenseExpiredOn": "Expired on {date}",
+  "@licenseExpiredOn": {"placeholders": {"date": {"type": "String"}}},
+  "licenseExpiredHelp": "Enter a new activation code to keep using UNOPOS. Your data is safe and will be there when you continue.",
+  "activationAlreadyUsed": "This code can't be used (already used or not found).",
+
+  "developerTier2Weeks": "2-week trial",
+  "developerCodeNotActivated": "Not activated yet",
+  "developerCodeActivatedBy": "Activated by {store}",
+  "@developerCodeActivatedBy": {"placeholders": {"store": {"type": "String"}}},
+  "developerCodeActivatedOn": "Activated on {date}",
+  "@developerCodeActivatedOn": {"placeholders": {"date": {"type": "String"}}},
+  "developerCodeExpiresIn": "Expires in {days} days ({date})",
+  "@developerCodeExpiresIn": {"placeholders": {"days": {"type": "int"}, "date": {"type": "String"}}},
+  "developerCodeExpiredOn": "Expired on {date}",
+  "@developerCodeExpiredOn": {"placeholders": {"date": {"type": "String"}}},
+  "developerLocalStatusNote": "Offline version: only activations on this device are shown."
 }

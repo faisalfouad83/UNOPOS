@@ -41,6 +41,7 @@ class RouteGuard {
     required bool hasStoreOnDisk,
     required bool hasEmployees,
     required SessionState session,
+    bool licenseExpired = false,
   }) {
     final isOnboardingRoute = location == RoutePaths.activation ||
         location == RoutePaths.onboardingStore ||
@@ -54,6 +55,12 @@ class RouteGuard {
     // activation screen.
     if (session.developerMode) {
       return location == RoutePaths.developerHome ? null : RoutePaths.developerHome;
+    }
+
+    // A store whose activation code (or trial) has run out is locked on one
+    // screen until a new code is entered — both builds.
+    if (hasStoreOnDisk && (licenseExpired || (!hasValidLicense && !kUseSupabaseBackend))) {
+      return location == RoutePaths.licenseExpired ? null : RoutePaths.licenseExpired;
     }
 
     // The offline activation-code gate only applies to the local/Drift
