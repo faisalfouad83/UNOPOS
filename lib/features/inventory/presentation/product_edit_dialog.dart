@@ -8,8 +8,10 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/utils/id_generator.dart';
 import '../../../core/widgets/barcode_input_field.dart';
 import '../../auth/domain/session_controller.dart';
+import '../domain/barcode_generator.dart';
 import '../domain/inventory_models.dart';
 import '../domain/product_units.dart';
+import 'qr_label_dialog.dart';
 
 Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {ProductRecord? existing}) async {
   final session = ref.read(sessionControllerProvider);
@@ -31,6 +33,7 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
   String unit = existing?.unit ?? 'pcs';
   String? categoryId = existing?.categoryId;
   String? taxRateId = existing?.taxRateId ?? (taxRates.where((t) => t.isDefault).isNotEmpty ? taxRates.firstWhere((t) => t.isDefault).id : null);
+  ProductRecord? savedWithGeneratedBarcode;
 
   await showDialog<void>(
     context: context,
@@ -47,7 +50,26 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                 const SizedBox(height: 12),
                 TextField(controller: skuController, decoration: const InputDecoration(labelText: 'SKU')),
                 const SizedBox(height: 12),
-                BarcodeInputField(controller: barcodeController, label: AppLocalizations.of(context).inventoryBarcode),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: BarcodeInputField(
+                        controller: barcodeController,
+                        label: AppLocalizations.of(context).inventoryBarcode,
+                        helperText: AppLocalizations.of(context).inventoryBarcodeAutoHint,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.auto_awesome),
+                      tooltip: AppLocalizations.of(context).inventoryGenerateBarcode,
+                      onPressed: () async {
+                        final code = await BarcodeGenerator.newUniqueBarcode(repo, session.store!.id);
+                        setState(() => barcodeController.text = code);
+                      },
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -114,12 +136,18 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
           TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(AppLocalizations.of(context).actionCancel)),
           FilledButton(
             onPressed: () async {
+              // A product with no barcode gets an in-store one generated so
+              // it can still be labelled and scanned; a blank SKU reuses it.
+              var barcode = barcodeController.text.trim();
+              final generated = barcode.isEmpty;
+              if (generated) barcode = await BarcodeGenerator.newUniqueBarcode(repo, session.store!.id);
+              final sku = skuController.text.trim().isEmpty ? barcode : skuController.text.trim();
               final record = ProductRecord(
                 id: existing?.id ?? IdGenerator.newId(),
                 storeId: session.store!.id,
                 categoryId: categoryId,
-                sku: skuController.text.trim(),
-                barcode: barcodeController.text.trim().isEmpty ? null : barcodeController.text.trim(),
+                sku: sku,
+                barcode: barcode,
                 name: nameController.text.trim(),
                 unit: unit,
                 taxRateId: taxRateId,
@@ -132,6 +160,7 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
               } else {
                 await repo.updateProduct(record);
               }
+              if (generated) savedWithGeneratedBarcode = record;
               if (context.mounted) Navigator.of(context).pop();
             },
             child: Text(AppLocalizations.of(context).actionSave),
@@ -140,4 +169,11 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
       ),
     ),
   );
+
+  // Offer the label straight away so a freshly generated code can be
+  // printed and stuck on the product.
+  final generatedFor = savedWithGeneratedBarcode;
+  if (generatedFor != null && context.mounted) {
+    await showQrLabelDialog(context, ref, generatedFor);
+  }
 }

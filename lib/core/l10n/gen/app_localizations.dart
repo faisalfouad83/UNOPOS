@@ -832,6 +832,36 @@ abstract class AppLocalizations {
   /// **'Barcode'**
   String get inventoryBarcode;
 
+  /// No description provided for @inventoryGenerateBarcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate barcode'**
+  String get inventoryGenerateBarcode;
+
+  /// No description provided for @inventoryBarcodeAutoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to generate one automatically'**
+  String get inventoryBarcodeAutoHint;
+
+  /// No description provided for @inventoryPrintLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Print label'**
+  String get inventoryPrintLabel;
+
+  /// No description provided for @inventoryGenerateMissingBarcodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate barcodes for products without one'**
+  String get inventoryGenerateMissingBarcodes;
+
+  /// No description provided for @inventoryBarcodesGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated {count} barcodes'**
+  String inventoryBarcodesGenerated(int count);
+
   /// No description provided for @inventoryTransferStock.
   ///
   /// In en, this message translates to:

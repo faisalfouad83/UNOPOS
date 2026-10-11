@@ -33,9 +33,21 @@ class ProductsTab extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
-            child: TextField(
-              decoration: InputDecoration(prefixIcon: const Icon(Icons.search), hintText: l10n.actionSearch),
-              onChanged: (v) => ref.read(_productsSearchProvider.notifier).state = v,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(prefixIcon: const Icon(Icons.search), hintText: l10n.actionSearch),
+                    onChanged: (v) => ref.read(_productsSearchProvider.notifier).state = v,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.auto_awesome),
+                  tooltip: l10n.inventoryGenerateMissingBarcodes,
+                  onPressed: () => _generateMissingBarcodes(context, ref, storeId),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -61,7 +73,7 @@ class ProductsTab extends ConsumerWidget {
                           IconButton(
                             icon: const Icon(Icons.qr_code_2),
                             tooltip: l10n.inventoryGenerateQr,
-                            onPressed: () => showQrLabelDialog(context, product),
+                            onPressed: () => showQrLabelDialog(context, ref, product),
                           ),
                           IconButton(
                             icon: const Icon(Icons.edit_outlined),
@@ -83,5 +95,21 @@ class ProductsTab extends ConsumerWidget {
         label: Text(l10n.inventoryAddProduct),
       ),
     );
+  }
+}
+
+/// Back-fills an in-store barcode for every product that doesn't have one
+/// yet, so older products can be labelled too.
+Future<void> _generateMissingBarcodes(BuildContext context, WidgetRef ref, String storeId) async {
+  final l10n = AppLocalizations.of(context);
+  final products = await ref.read(inventoryRepositoryProvider).watchProducts(storeId).first;
+  var count = 0;
+  for (final product in products) {
+    if (product.barcode?.isNotEmpty ?? false) continue;
+    await assignGeneratedBarcode(ref, product);
+    count++;
+  }
+  if (context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.inventoryBarcodesGenerated(count))));
   }
 }

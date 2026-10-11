@@ -386,6 +386,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inventoryBarcode => 'Barcode';
 
   @override
+  String get inventoryGenerateBarcode => 'Generate barcode';
+
+  @override
+  String get inventoryBarcodeAutoHint =>
+      'Leave empty to generate one automatically';
+
+  @override
+  String get inventoryPrintLabel => 'Print label';
+
+  @override
+  String get inventoryGenerateMissingBarcodes =>
+      'Generate barcodes for products without one';
+
+  @override
+  String inventoryBarcodesGenerated(int count) {
+    return 'Generated $count barcodes';
+  }
+
+  @override
   String get inventoryTransferStock => 'Transfer Stock';
 
   @override

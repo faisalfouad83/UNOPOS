@@ -51,6 +51,22 @@ class ProductRecord {
   final int reorderLevel;
   final String? imagePath;
   final bool isActive;
+
+  ProductRecord copyWith({String? sku, String? barcode}) => ProductRecord(
+        id: id,
+        storeId: storeId,
+        categoryId: categoryId,
+        sku: sku ?? this.sku,
+        barcode: barcode ?? this.barcode,
+        name: name,
+        unit: unit,
+        costPriceMinorUnits: costPriceMinorUnits,
+        sellPriceMinorUnits: sellPriceMinorUnits,
+        taxRateId: taxRateId,
+        reorderLevel: reorderLevel,
+        imagePath: imagePath,
+        isActive: isActive,
+      );
 }
 
 class StockItemRecord {

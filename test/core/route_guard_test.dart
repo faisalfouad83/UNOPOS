@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:unopos/core/supabase/supabase_config.dart';
 import 'package:unopos/core/constants/roles.dart';
 import 'package:unopos/core/routing/route_guard.dart';
 import 'package:unopos/core/routing/route_paths.dart';
@@ -69,7 +70,9 @@ void main() {
         hasEmployees: false,
         session: const SessionState(),
       );
-      expect(redirect, RoutePaths.onboardingStore);
+      // On the shared backend this device may just need to log into an
+      // existing store, so it lands on the welcome/login screen instead.
+      expect(redirect, kUseSupabaseBackend ? RoutePaths.activation : RoutePaths.onboardingStore);
     });
   });
 

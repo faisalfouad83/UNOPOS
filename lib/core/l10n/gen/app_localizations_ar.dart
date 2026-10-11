@@ -384,6 +384,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inventoryBarcode => 'الباركود';
 
   @override
+  String get inventoryGenerateBarcode => 'توليد باركود';
+
+  @override
+  String get inventoryBarcodeAutoHint => 'اتركه فارغاً ليتم توليده تلقائياً';
+
+  @override
+  String get inventoryPrintLabel => 'طباعة ملصق';
+
+  @override
+  String get inventoryGenerateMissingBarcodes =>
+      'توليد باركود للمنتجات التي لا تملك باركود';
+
+  @override
+  String inventoryBarcodesGenerated(int count) {
+    return 'تم توليد $count باركود';
+  }
+
+  @override
   String get inventoryTransferStock => 'نقل المخزون';
 
   @override

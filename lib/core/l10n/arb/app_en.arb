@@ -138,6 +138,16 @@
   "inventoryLowStock": "Low Stock",
   "inventoryGenerateQr": "Generate QR Code",
   "inventoryBarcode": "Barcode",
+  "inventoryGenerateBarcode": "Generate barcode",
+  "inventoryBarcodeAutoHint": "Leave empty to generate one automatically",
+  "inventoryPrintLabel": "Print label",
+  "inventoryGenerateMissingBarcodes": "Generate barcodes for products without one",
+  "inventoryBarcodesGenerated": "Generated {count} barcodes",
+  "@inventoryBarcodesGenerated": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "inventoryTransferStock": "Transfer Stock",
   "inventoryPurchaseOrders": "Purchase Orders",
   "inventoryAdjustStock": "Adjust Stock",

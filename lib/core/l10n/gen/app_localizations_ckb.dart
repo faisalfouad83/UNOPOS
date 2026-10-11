@@ -384,6 +384,24 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get inventoryBarcode => 'بارکۆد';
 
   @override
+  String get inventoryGenerateBarcode => 'دروستکردنی بارکۆد';
+
+  @override
+  String get inventoryBarcodeAutoHint => 'بەتاڵی بهێڵەرەوە بۆ دروستکردنی خۆکار';
+
+  @override
+  String get inventoryPrintLabel => 'چاپکردنی لیبڵ';
+
+  @override
+  String get inventoryGenerateMissingBarcodes =>
+      'دروستکردنی بارکۆد بۆ ئەو کاڵایانەی نییانە';
+
+  @override
+  String inventoryBarcodesGenerated(int count) {
+    return '$count بارکۆد دروستکرا';
+  }
+
+  @override
   String get inventoryTransferStock => 'گواستنەوەی کۆگا';
 
   @override
