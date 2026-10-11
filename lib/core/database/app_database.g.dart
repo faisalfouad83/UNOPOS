@@ -7698,6 +7698,18 @@ class $CustomersTable extends Customers
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _loyaltyPointsMeta = const VerificationMeta(
+    'loyaltyPoints',
+  );
+  @override
+  late final GeneratedColumn<int> loyaltyPoints = GeneratedColumn<int>(
+    'loyalty_points',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7706,6 +7718,7 @@ class $CustomersTable extends Customers
     phone,
     address,
     createdAt,
+    loyaltyPoints,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7760,6 +7773,15 @@ class $CustomersTable extends Customers
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('loyalty_points')) {
+      context.handle(
+        _loyaltyPointsMeta,
+        loyaltyPoints.isAcceptableOrUnknown(
+          data['loyalty_points']!,
+          _loyaltyPointsMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -7793,6 +7815,10 @@ class $CustomersTable extends Customers
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      loyaltyPoints: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}loyalty_points'],
+      )!,
     );
   }
 
@@ -7809,6 +7835,7 @@ class Customer extends DataClass implements Insertable<Customer> {
   final String? phone;
   final String? address;
   final DateTime createdAt;
+  final int loyaltyPoints;
   const Customer({
     required this.id,
     required this.storeId,
@@ -7816,6 +7843,7 @@ class Customer extends DataClass implements Insertable<Customer> {
     this.phone,
     this.address,
     required this.createdAt,
+    required this.loyaltyPoints,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7830,6 +7858,7 @@ class Customer extends DataClass implements Insertable<Customer> {
       map['address'] = Variable<String>(address);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['loyalty_points'] = Variable<int>(loyaltyPoints);
     return map;
   }
 
@@ -7845,6 +7874,7 @@ class Customer extends DataClass implements Insertable<Customer> {
           ? const Value.absent()
           : Value(address),
       createdAt: Value(createdAt),
+      loyaltyPoints: Value(loyaltyPoints),
     );
   }
 
@@ -7860,6 +7890,7 @@ class Customer extends DataClass implements Insertable<Customer> {
       phone: serializer.fromJson<String?>(json['phone']),
       address: serializer.fromJson<String?>(json['address']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      loyaltyPoints: serializer.fromJson<int>(json['loyaltyPoints']),
     );
   }
   @override
@@ -7872,6 +7903,7 @@ class Customer extends DataClass implements Insertable<Customer> {
       'phone': serializer.toJson<String?>(phone),
       'address': serializer.toJson<String?>(address),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'loyaltyPoints': serializer.toJson<int>(loyaltyPoints),
     };
   }
 
@@ -7882,6 +7914,7 @@ class Customer extends DataClass implements Insertable<Customer> {
     Value<String?> phone = const Value.absent(),
     Value<String?> address = const Value.absent(),
     DateTime? createdAt,
+    int? loyaltyPoints,
   }) => Customer(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -7889,6 +7922,7 @@ class Customer extends DataClass implements Insertable<Customer> {
     phone: phone.present ? phone.value : this.phone,
     address: address.present ? address.value : this.address,
     createdAt: createdAt ?? this.createdAt,
+    loyaltyPoints: loyaltyPoints ?? this.loyaltyPoints,
   );
   Customer copyWithCompanion(CustomersCompanion data) {
     return Customer(
@@ -7898,6 +7932,9 @@ class Customer extends DataClass implements Insertable<Customer> {
       phone: data.phone.present ? data.phone.value : this.phone,
       address: data.address.present ? data.address.value : this.address,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      loyaltyPoints: data.loyaltyPoints.present
+          ? data.loyaltyPoints.value
+          : this.loyaltyPoints,
     );
   }
 
@@ -7909,13 +7946,15 @@ class Customer extends DataClass implements Insertable<Customer> {
           ..write('name: $name, ')
           ..write('phone: $phone, ')
           ..write('address: $address, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('loyaltyPoints: $loyaltyPoints')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, storeId, name, phone, address, createdAt);
+  int get hashCode =>
+      Object.hash(id, storeId, name, phone, address, createdAt, loyaltyPoints);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -7925,7 +7964,8 @@ class Customer extends DataClass implements Insertable<Customer> {
           other.name == this.name &&
           other.phone == this.phone &&
           other.address == this.address &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.loyaltyPoints == this.loyaltyPoints);
 }
 
 class CustomersCompanion extends UpdateCompanion<Customer> {
@@ -7935,6 +7975,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
   final Value<String?> phone;
   final Value<String?> address;
   final Value<DateTime> createdAt;
+  final Value<int> loyaltyPoints;
   final Value<int> rowid;
   const CustomersCompanion({
     this.id = const Value.absent(),
@@ -7943,6 +7984,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
     this.phone = const Value.absent(),
     this.address = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.loyaltyPoints = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CustomersCompanion.insert({
@@ -7952,6 +7994,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
     this.phone = const Value.absent(),
     this.address = const Value.absent(),
     required DateTime createdAt,
+    this.loyaltyPoints = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId),
@@ -7964,6 +8007,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
     Expression<String>? phone,
     Expression<String>? address,
     Expression<DateTime>? createdAt,
+    Expression<int>? loyaltyPoints,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -7973,6 +8017,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
       if (phone != null) 'phone': phone,
       if (address != null) 'address': address,
       if (createdAt != null) 'created_at': createdAt,
+      if (loyaltyPoints != null) 'loyalty_points': loyaltyPoints,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -7984,6 +8029,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
     Value<String?>? phone,
     Value<String?>? address,
     Value<DateTime>? createdAt,
+    Value<int>? loyaltyPoints,
     Value<int>? rowid,
   }) {
     return CustomersCompanion(
@@ -7993,6 +8039,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
       phone: phone ?? this.phone,
       address: address ?? this.address,
       createdAt: createdAt ?? this.createdAt,
+      loyaltyPoints: loyaltyPoints ?? this.loyaltyPoints,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -8018,6 +8065,9 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (loyaltyPoints.present) {
+      map['loyalty_points'] = Variable<int>(loyaltyPoints.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -8033,6 +8083,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
           ..write('phone: $phone, ')
           ..write('address: $address, ')
           ..write('createdAt: $createdAt, ')
+          ..write('loyaltyPoints: $loyaltyPoints, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -15573,6 +15624,29 @@ class $AppSettingsTableTable extends AppSettingsTable
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _loyaltySpendPerPointMinorMeta =
+      const VerificationMeta('loyaltySpendPerPointMinor');
+  @override
+  late final GeneratedColumn<int> loyaltySpendPerPointMinor =
+      GeneratedColumn<int>(
+        'loyalty_spend_per_point_minor',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      );
+  static const VerificationMeta _loyaltyPointValueMinorMeta =
+      const VerificationMeta('loyaltyPointValueMinor');
+  @override
+  late final GeneratedColumn<int> loyaltyPointValueMinor = GeneratedColumn<int>(
+    'loyalty_point_value_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -15588,6 +15662,8 @@ class $AppSettingsTableTable extends AppSettingsTable
     autoBackupFolderPath,
     lowStockThresholdDefault,
     usdExchangeRate,
+    loyaltySpendPerPointMinor,
+    loyaltyPointValueMinor,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -15710,6 +15786,24 @@ class $AppSettingsTableTable extends AppSettingsTable
         ),
       );
     }
+    if (data.containsKey('loyalty_spend_per_point_minor')) {
+      context.handle(
+        _loyaltySpendPerPointMinorMeta,
+        loyaltySpendPerPointMinor.isAcceptableOrUnknown(
+          data['loyalty_spend_per_point_minor']!,
+          _loyaltySpendPerPointMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('loyalty_point_value_minor')) {
+      context.handle(
+        _loyaltyPointValueMinorMeta,
+        loyaltyPointValueMinor.isAcceptableOrUnknown(
+          data['loyalty_point_value_minor']!,
+          _loyaltyPointValueMinorMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -15771,6 +15865,14 @@ class $AppSettingsTableTable extends AppSettingsTable
         DriftSqlType.double,
         data['${effectivePrefix}usd_exchange_rate'],
       )!,
+      loyaltySpendPerPointMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}loyalty_spend_per_point_minor'],
+      )!,
+      loyaltyPointValueMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}loyalty_point_value_minor'],
+      )!,
     );
   }
 
@@ -15799,6 +15901,12 @@ class AppSettingsTableData extends DataClass
 
   /// Iraqi dinars per US dollar; 0 = not set (dual-currency display off).
   final double usdExchangeRate;
+
+  /// Loyalty: spend this much (minor units) to earn one point; 0 = off.
+  final int loyaltySpendPerPointMinor;
+
+  /// Loyalty: what one point is worth when redeemed (minor units).
+  final int loyaltyPointValueMinor;
   const AppSettingsTableData({
     required this.id,
     required this.storeId,
@@ -15813,6 +15921,8 @@ class AppSettingsTableData extends DataClass
     this.autoBackupFolderPath,
     required this.lowStockThresholdDefault,
     required this.usdExchangeRate,
+    required this.loyaltySpendPerPointMinor,
+    required this.loyaltyPointValueMinor,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -15834,6 +15944,10 @@ class AppSettingsTableData extends DataClass
       lowStockThresholdDefault,
     );
     map['usd_exchange_rate'] = Variable<double>(usdExchangeRate);
+    map['loyalty_spend_per_point_minor'] = Variable<int>(
+      loyaltySpendPerPointMinor,
+    );
+    map['loyalty_point_value_minor'] = Variable<int>(loyaltyPointValueMinor);
     return map;
   }
 
@@ -15854,6 +15968,8 @@ class AppSettingsTableData extends DataClass
           : Value(autoBackupFolderPath),
       lowStockThresholdDefault: Value(lowStockThresholdDefault),
       usdExchangeRate: Value(usdExchangeRate),
+      loyaltySpendPerPointMinor: Value(loyaltySpendPerPointMinor),
+      loyaltyPointValueMinor: Value(loyaltyPointValueMinor),
     );
   }
 
@@ -15884,6 +16000,12 @@ class AppSettingsTableData extends DataClass
         json['lowStockThresholdDefault'],
       ),
       usdExchangeRate: serializer.fromJson<double>(json['usdExchangeRate']),
+      loyaltySpendPerPointMinor: serializer.fromJson<int>(
+        json['loyaltySpendPerPointMinor'],
+      ),
+      loyaltyPointValueMinor: serializer.fromJson<int>(
+        json['loyaltyPointValueMinor'],
+      ),
     );
   }
   @override
@@ -15905,6 +16027,10 @@ class AppSettingsTableData extends DataClass
         lowStockThresholdDefault,
       ),
       'usdExchangeRate': serializer.toJson<double>(usdExchangeRate),
+      'loyaltySpendPerPointMinor': serializer.toJson<int>(
+        loyaltySpendPerPointMinor,
+      ),
+      'loyaltyPointValueMinor': serializer.toJson<int>(loyaltyPointValueMinor),
     };
   }
 
@@ -15922,6 +16048,8 @@ class AppSettingsTableData extends DataClass
     Value<String?> autoBackupFolderPath = const Value.absent(),
     int? lowStockThresholdDefault,
     double? usdExchangeRate,
+    int? loyaltySpendPerPointMinor,
+    int? loyaltyPointValueMinor,
   }) => AppSettingsTableData(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -15939,6 +16067,10 @@ class AppSettingsTableData extends DataClass
     lowStockThresholdDefault:
         lowStockThresholdDefault ?? this.lowStockThresholdDefault,
     usdExchangeRate: usdExchangeRate ?? this.usdExchangeRate,
+    loyaltySpendPerPointMinor:
+        loyaltySpendPerPointMinor ?? this.loyaltySpendPerPointMinor,
+    loyaltyPointValueMinor:
+        loyaltyPointValueMinor ?? this.loyaltyPointValueMinor,
   );
   AppSettingsTableData copyWithCompanion(AppSettingsTableCompanion data) {
     return AppSettingsTableData(
@@ -15975,6 +16107,12 @@ class AppSettingsTableData extends DataClass
       usdExchangeRate: data.usdExchangeRate.present
           ? data.usdExchangeRate.value
           : this.usdExchangeRate,
+      loyaltySpendPerPointMinor: data.loyaltySpendPerPointMinor.present
+          ? data.loyaltySpendPerPointMinor.value
+          : this.loyaltySpendPerPointMinor,
+      loyaltyPointValueMinor: data.loyaltyPointValueMinor.present
+          ? data.loyaltyPointValueMinor.value
+          : this.loyaltyPointValueMinor,
     );
   }
 
@@ -15993,7 +16131,9 @@ class AppSettingsTableData extends DataClass
           ..write('autoBackupTimeOfDay: $autoBackupTimeOfDay, ')
           ..write('autoBackupFolderPath: $autoBackupFolderPath, ')
           ..write('lowStockThresholdDefault: $lowStockThresholdDefault, ')
-          ..write('usdExchangeRate: $usdExchangeRate')
+          ..write('usdExchangeRate: $usdExchangeRate, ')
+          ..write('loyaltySpendPerPointMinor: $loyaltySpendPerPointMinor, ')
+          ..write('loyaltyPointValueMinor: $loyaltyPointValueMinor')
           ..write(')'))
         .toString();
   }
@@ -16013,6 +16153,8 @@ class AppSettingsTableData extends DataClass
     autoBackupFolderPath,
     lowStockThresholdDefault,
     usdExchangeRate,
+    loyaltySpendPerPointMinor,
+    loyaltyPointValueMinor,
   );
   @override
   bool operator ==(Object other) =>
@@ -16030,7 +16172,9 @@ class AppSettingsTableData extends DataClass
           other.autoBackupTimeOfDay == this.autoBackupTimeOfDay &&
           other.autoBackupFolderPath == this.autoBackupFolderPath &&
           other.lowStockThresholdDefault == this.lowStockThresholdDefault &&
-          other.usdExchangeRate == this.usdExchangeRate);
+          other.usdExchangeRate == this.usdExchangeRate &&
+          other.loyaltySpendPerPointMinor == this.loyaltySpendPerPointMinor &&
+          other.loyaltyPointValueMinor == this.loyaltyPointValueMinor);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
@@ -16047,6 +16191,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
   final Value<String?> autoBackupFolderPath;
   final Value<int> lowStockThresholdDefault;
   final Value<double> usdExchangeRate;
+  final Value<int> loyaltySpendPerPointMinor;
+  final Value<int> loyaltyPointValueMinor;
   final Value<int> rowid;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
@@ -16062,6 +16208,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.autoBackupFolderPath = const Value.absent(),
     this.lowStockThresholdDefault = const Value.absent(),
     this.usdExchangeRate = const Value.absent(),
+    this.loyaltySpendPerPointMinor = const Value.absent(),
+    this.loyaltyPointValueMinor = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
@@ -16078,6 +16226,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.autoBackupFolderPath = const Value.absent(),
     this.lowStockThresholdDefault = const Value.absent(),
     this.usdExchangeRate = const Value.absent(),
+    this.loyaltySpendPerPointMinor = const Value.absent(),
+    this.loyaltyPointValueMinor = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId);
@@ -16095,6 +16245,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Expression<String>? autoBackupFolderPath,
     Expression<int>? lowStockThresholdDefault,
     Expression<double>? usdExchangeRate,
+    Expression<int>? loyaltySpendPerPointMinor,
+    Expression<int>? loyaltyPointValueMinor,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -16115,6 +16267,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
       if (lowStockThresholdDefault != null)
         'low_stock_threshold_default': lowStockThresholdDefault,
       if (usdExchangeRate != null) 'usd_exchange_rate': usdExchangeRate,
+      if (loyaltySpendPerPointMinor != null)
+        'loyalty_spend_per_point_minor': loyaltySpendPerPointMinor,
+      if (loyaltyPointValueMinor != null)
+        'loyalty_point_value_minor': loyaltyPointValueMinor,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -16133,6 +16289,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Value<String?>? autoBackupFolderPath,
     Value<int>? lowStockThresholdDefault,
     Value<double>? usdExchangeRate,
+    Value<int>? loyaltySpendPerPointMinor,
+    Value<int>? loyaltyPointValueMinor,
     Value<int>? rowid,
   }) {
     return AppSettingsTableCompanion(
@@ -16151,6 +16309,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
       lowStockThresholdDefault:
           lowStockThresholdDefault ?? this.lowStockThresholdDefault,
       usdExchangeRate: usdExchangeRate ?? this.usdExchangeRate,
+      loyaltySpendPerPointMinor:
+          loyaltySpendPerPointMinor ?? this.loyaltySpendPerPointMinor,
+      loyaltyPointValueMinor:
+          loyaltyPointValueMinor ?? this.loyaltyPointValueMinor,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -16205,6 +16367,16 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     if (usdExchangeRate.present) {
       map['usd_exchange_rate'] = Variable<double>(usdExchangeRate.value);
     }
+    if (loyaltySpendPerPointMinor.present) {
+      map['loyalty_spend_per_point_minor'] = Variable<int>(
+        loyaltySpendPerPointMinor.value,
+      );
+    }
+    if (loyaltyPointValueMinor.present) {
+      map['loyalty_point_value_minor'] = Variable<int>(
+        loyaltyPointValueMinor.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -16227,6 +16399,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
           ..write('autoBackupFolderPath: $autoBackupFolderPath, ')
           ..write('lowStockThresholdDefault: $lowStockThresholdDefault, ')
           ..write('usdExchangeRate: $usdExchangeRate, ')
+          ..write('loyaltySpendPerPointMinor: $loyaltySpendPerPointMinor, ')
+          ..write('loyaltyPointValueMinor: $loyaltyPointValueMinor, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -21199,6 +21373,7 @@ typedef $$CustomersTableCreateCompanionBuilder =
       Value<String?> phone,
       Value<String?> address,
       required DateTime createdAt,
+      Value<int> loyaltyPoints,
       Value<int> rowid,
     });
 typedef $$CustomersTableUpdateCompanionBuilder =
@@ -21209,6 +21384,7 @@ typedef $$CustomersTableUpdateCompanionBuilder =
       Value<String?> phone,
       Value<String?> address,
       Value<DateTime> createdAt,
+      Value<int> loyaltyPoints,
       Value<int> rowid,
     });
 
@@ -21248,6 +21424,11 @@ class $$CustomersTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get loyaltyPoints => $composableBuilder(
+    column: $table.loyaltyPoints,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -21290,6 +21471,11 @@ class $$CustomersTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get loyaltyPoints => $composableBuilder(
+    column: $table.loyaltyPoints,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CustomersTableAnnotationComposer
@@ -21318,6 +21504,11 @@ class $$CustomersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get loyaltyPoints => $composableBuilder(
+    column: $table.loyaltyPoints,
+    builder: (column) => column,
+  );
 }
 
 class $$CustomersTableTableManager
@@ -21354,6 +21545,7 @@ class $$CustomersTableTableManager
                 Value<String?> phone = const Value.absent(),
                 Value<String?> address = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<int> loyaltyPoints = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CustomersCompanion(
                 id: id,
@@ -21362,6 +21554,7 @@ class $$CustomersTableTableManager
                 phone: phone,
                 address: address,
                 createdAt: createdAt,
+                loyaltyPoints: loyaltyPoints,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -21372,6 +21565,7 @@ class $$CustomersTableTableManager
                 Value<String?> phone = const Value.absent(),
                 Value<String?> address = const Value.absent(),
                 required DateTime createdAt,
+                Value<int> loyaltyPoints = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CustomersCompanion.insert(
                 id: id,
@@ -21380,6 +21574,7 @@ class $$CustomersTableTableManager
                 phone: phone,
                 address: address,
                 createdAt: createdAt,
+                loyaltyPoints: loyaltyPoints,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -24956,6 +25151,8 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder =
       Value<String?> autoBackupFolderPath,
       Value<int> lowStockThresholdDefault,
       Value<double> usdExchangeRate,
+      Value<int> loyaltySpendPerPointMinor,
+      Value<int> loyaltyPointValueMinor,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder =
@@ -24973,6 +25170,8 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder =
       Value<String?> autoBackupFolderPath,
       Value<int> lowStockThresholdDefault,
       Value<double> usdExchangeRate,
+      Value<int> loyaltySpendPerPointMinor,
+      Value<int> loyaltyPointValueMinor,
       Value<int> rowid,
     });
 
@@ -25047,6 +25246,16 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<double> get usdExchangeRate => $composableBuilder(
     column: $table.usdExchangeRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get loyaltySpendPerPointMinor => $composableBuilder(
+    column: $table.loyaltySpendPerPointMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get loyaltyPointValueMinor => $composableBuilder(
+    column: $table.loyaltyPointValueMinor,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -25124,6 +25333,16 @@ class $$AppSettingsTableTableOrderingComposer
     column: $table.usdExchangeRate,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get loyaltySpendPerPointMinor => $composableBuilder(
+    column: $table.loyaltySpendPerPointMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get loyaltyPointValueMinor => $composableBuilder(
+    column: $table.loyaltyPointValueMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -25193,6 +25412,16 @@ class $$AppSettingsTableTableAnnotationComposer
     column: $table.usdExchangeRate,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get loyaltySpendPerPointMinor => $composableBuilder(
+    column: $table.loyaltySpendPerPointMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get loyaltyPointValueMinor => $composableBuilder(
+    column: $table.loyaltyPointValueMinor,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableTableManager
@@ -25245,6 +25474,8 @@ class $$AppSettingsTableTableTableManager
                 Value<String?> autoBackupFolderPath = const Value.absent(),
                 Value<int> lowStockThresholdDefault = const Value.absent(),
                 Value<double> usdExchangeRate = const Value.absent(),
+                Value<int> loyaltySpendPerPointMinor = const Value.absent(),
+                Value<int> loyaltyPointValueMinor = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion(
                 id: id,
@@ -25260,6 +25491,8 @@ class $$AppSettingsTableTableTableManager
                 autoBackupFolderPath: autoBackupFolderPath,
                 lowStockThresholdDefault: lowStockThresholdDefault,
                 usdExchangeRate: usdExchangeRate,
+                loyaltySpendPerPointMinor: loyaltySpendPerPointMinor,
+                loyaltyPointValueMinor: loyaltyPointValueMinor,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -25277,6 +25510,8 @@ class $$AppSettingsTableTableTableManager
                 Value<String?> autoBackupFolderPath = const Value.absent(),
                 Value<int> lowStockThresholdDefault = const Value.absent(),
                 Value<double> usdExchangeRate = const Value.absent(),
+                Value<int> loyaltySpendPerPointMinor = const Value.absent(),
+                Value<int> loyaltyPointValueMinor = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion.insert(
                 id: id,
@@ -25292,6 +25527,8 @@ class $$AppSettingsTableTableTableManager
                 autoBackupFolderPath: autoBackupFolderPath,
                 lowStockThresholdDefault: lowStockThresholdDefault,
                 usdExchangeRate: usdExchangeRate,
+                loyaltySpendPerPointMinor: loyaltySpendPerPointMinor,
+                loyaltyPointValueMinor: loyaltyPointValueMinor,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

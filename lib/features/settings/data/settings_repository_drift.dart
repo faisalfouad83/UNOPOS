@@ -24,6 +24,8 @@ class DriftSettingsRepository implements SettingsRepository {
         autoBackupFolderPath: row.autoBackupFolderPath,
         lowStockThresholdDefault: row.lowStockThresholdDefault,
         usdExchangeRate: row.usdExchangeRate,
+        loyaltySpendPerPointMinor: row.loyaltySpendPerPointMinor,
+        loyaltyPointValueMinor: row.loyaltyPointValueMinor,
       );
 
   @override
@@ -67,6 +69,8 @@ class DriftSettingsRepository implements SettingsRepository {
         autoBackupFolderPath: Value(settings.autoBackupFolderPath),
         lowStockThresholdDefault: Value(settings.lowStockThresholdDefault),
         usdExchangeRate: Value(settings.usdExchangeRate),
+        loyaltySpendPerPointMinor: Value(settings.loyaltySpendPerPointMinor),
+        loyaltyPointValueMinor: Value(settings.loyaltyPointValueMinor),
       ),
     );
   }

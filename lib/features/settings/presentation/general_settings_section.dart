@@ -114,6 +114,42 @@ class GeneralSettingsSection extends ConsumerWidget {
               onFieldSubmitted: (value) =>
                   _update(ref, settings.copyWith(usdExchangeRate: double.tryParse(value) ?? 0)),
             ),
+            const SizedBox(height: 20),
+            Text(l10n.loyaltyTitle, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(l10n.loyaltySettingsHelp, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    initialValue: settings.loyaltySpendPerPointMinor > 0
+                        ? Money.inputText(settings.loyaltySpendPerPointMinor)
+                        : '',
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                    decoration: InputDecoration(labelText: l10n.loyaltySpendPerPoint),
+                    onFieldSubmitted: (value) => _update(
+                      ref,
+                      settings.copyWith(loyaltySpendPerPointMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    initialValue: settings.loyaltyPointValueMinor > 0 ? Money.inputText(settings.loyaltyPointValueMinor) : '',
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                    decoration: InputDecoration(labelText: l10n.loyaltyPointValue),
+                    onFieldSubmitted: (value) => _update(
+                      ref,
+                      settings.copyWith(loyaltyPointValueMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

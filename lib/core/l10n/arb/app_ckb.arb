@@ -306,5 +306,20 @@
   "reportsByPaymentMethod": "شێوازی پارەدان",
   "reportsTopProducts": "زۆرترین فرۆشراو",
   "reportsNothingLow": "هیچ کاڵایەک لە خوار ئاستی داواکردن نییە",
-  "reportsReorderAt": "ئاستی داواکردن {level}"
+  "reportsReorderAt": "ئاستی داواکردن {level}",
+
+  "loyaltyTitle": "خاڵی دڵسۆزی",
+  "loyaltySettingsHelp": "کڕیار بۆ هەر بڕێکی خوارەوە کە خەرجی دەکات خاڵێک وەردەگرێت، و دەتوانێت خاڵەکان وەک داشکاندن بەکاربهێنێت. بەتاڵی بهێڵەرەوە بۆ ڕاگرتن.",
+  "loyaltySpendPerPoint": "بڕ بەرامبەر 1 خاڵ",
+  "loyaltyPointValue": "نرخی 1 خاڵ",
+  "loyaltyNoCustomer": "بێ کڕیار (خاڵی دڵسۆزی)",
+  "loyaltyChooseCustomer": "هەڵبژاردنی کڕیار",
+  "loyaltyNewCustomer": "کڕیاری نوێ",
+  "loyaltyNoMatches": "هیچ کڕیارێک نەدۆزرایەوە",
+  "loyaltyPointsBalance": "{points} خاڵ",
+  "loyaltyUsePoints": "بەکارهێنانی خاڵ (تا {max})",
+  "loyaltyPointWorth": "1 خاڵ = {value}",
+  "loyaltyPointsRedeemed": "خاڵی بەکارهاتوو",
+  "loyaltyPointsEarned": "خاڵی بەدەستهاتوو",
+  "loyaltyBalance": "کۆی خاڵەکان"
 }

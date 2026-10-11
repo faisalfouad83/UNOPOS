@@ -26,6 +26,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
         autoBackupFolderPath: row['auto_backup_folder_path'] as String?,
         lowStockThresholdDefault: (row['low_stock_threshold_default'] as num).toInt(),
         usdExchangeRate: (row['usd_exchange_rate'] as num?)?.toDouble() ?? 0,
+        loyaltySpendPerPointMinor: (row['loyalty_spend_per_point_minor'] as num?)?.toInt() ?? 0,
+        loyaltyPointValueMinor: (row['loyalty_point_value_minor'] as num?)?.toInt() ?? 0,
       );
 
   @override
@@ -87,6 +89,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
       'auto_backup_folder_path': settings.autoBackupFolderPath,
       'low_stock_threshold_default': settings.lowStockThresholdDefault,
       'usd_exchange_rate': settings.usdExchangeRate,
+      'loyalty_spend_per_point_minor': settings.loyaltySpendPerPointMinor,
+      'loyalty_point_value_minor': settings.loyaltyPointValueMinor,
     }).eq('store_id', settings.storeId);
   }
 }

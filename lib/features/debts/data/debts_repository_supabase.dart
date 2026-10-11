@@ -14,6 +14,7 @@ class SupabaseDebtsRepository implements DebtsRepository {
         name: row['name'] as String,
         phone: row['phone'] as String?,
         address: row['address'] as String?,
+        loyaltyPoints: (row['loyalty_points'] as num?)?.toInt() ?? 0,
       );
 
   DebtLedgerEntryRecord _mapEntry(Map<String, dynamic> row) => DebtLedgerEntryRecord(
@@ -60,6 +61,15 @@ class SupabaseDebtsRepository implements DebtsRepository {
   Future<CustomerRecord?> findCustomerByName(String storeId, String name) async {
     final row = await _client.from('customers').select().eq('store_id', storeId).eq('name', name).maybeSingle();
     return row == null ? null : _mapCustomer(row);
+  }
+
+  @override
+  Future<void> adjustLoyaltyPoints(String customerId, int delta) async {
+    // Shared-backend checkouts adjust points inside checkout_sale_once;
+    // this is only for manual corrections.
+    final row = await _client.from('customers').select('loyalty_points').eq('id', customerId).single();
+    final current = (row['loyalty_points'] as num?)?.toInt() ?? 0;
+    await _client.from('customers').update({'loyalty_points': current + delta}).eq('id', customerId);
   }
 
   @override

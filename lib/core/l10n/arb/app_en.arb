@@ -331,5 +331,23 @@
   "reportsTopProducts": "Best sellers",
   "reportsNothingLow": "Nothing below reorder level",
   "reportsReorderAt": "Reorder at {level}",
-  "@reportsReorderAt": {"placeholders": {"level": {"type": "int"}}}
+  "@reportsReorderAt": {"placeholders": {"level": {"type": "int"}}},
+
+  "loyaltyTitle": "Loyalty points",
+  "loyaltySettingsHelp": "Customers earn 1 point for every amount below they spend, and can spend points as a discount. Leave empty to turn loyalty off.",
+  "loyaltySpendPerPoint": "Spend for 1 point",
+  "loyaltyPointValue": "Value of 1 point",
+  "loyaltyNoCustomer": "No customer (loyalty points)",
+  "loyaltyChooseCustomer": "Choose customer",
+  "loyaltyNewCustomer": "New customer",
+  "loyaltyNoMatches": "No customers found",
+  "loyaltyPointsBalance": "{points} pts",
+  "@loyaltyPointsBalance": {"placeholders": {"points": {"type": "int"}}},
+  "loyaltyUsePoints": "Use points (up to {max})",
+  "@loyaltyUsePoints": {"placeholders": {"max": {"type": "int"}}},
+  "loyaltyPointWorth": "1 point = {value}",
+  "@loyaltyPointWorth": {"placeholders": {"value": {"type": "String"}}},
+  "loyaltyPointsRedeemed": "Points used",
+  "loyaltyPointsEarned": "Points earned",
+  "loyaltyBalance": "Points balance"
 }

@@ -7,13 +7,25 @@ import '../../debts/domain/debts_repository.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../../inventory/domain/inventory_repository.dart';
 import '../data/offline_sale_queue.dart';
+import 'loyalty.dart';
 import 'pos_models.dart';
 import 'pos_repository.dart';
 
 class CheckoutResult {
-  const CheckoutResult({required this.sale, this.debtEntryId, this.queuedOffline = false});
+  const CheckoutResult({
+    required this.sale,
+    this.debtEntryId,
+    this.queuedOffline = false,
+    this.loyaltyPointsEarned,
+    this.loyaltyBalance,
+  });
   final SaleRecord sale;
   final String? debtEntryId;
+
+  /// Points the loyalty customer earned on this sale, and their balance
+  /// afterwards (balance unknown for a sale queued offline).
+  final int? loyaltyPointsEarned;
+  final int? loyaltyBalance;
 
   /// True when there was no connection: the sale is saved on this device
   /// and will be sent to the server automatically once back online.
@@ -198,7 +210,25 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
     );
 
     final finalSale = await _posRepository.getSale(sale.id);
-    return CheckoutResult(sale: finalSale ?? sale, debtEntryId: debtEntryId);
+
+    int? earned, balance;
+    final loyaltyCustomerId = extras['loyalty_customer_id'] as String?;
+    if (loyaltyCustomerId != null) {
+      final redeemed = (extras['points_redeemed'] as int?) ?? 0;
+      earned = Loyalty.pointsEarned(
+        (finalSale ?? sale).grandTotalMinorUnits,
+        (extras['loyalty_spend_per_point_minor'] as int?) ?? 0,
+      );
+      await _debtsRepository.adjustLoyaltyPoints(loyaltyCustomerId, earned - redeemed);
+      final customers = await _debtsRepository.watchCustomers(storeId).first;
+      balance = customers.where((c) => c.id == loyaltyCustomerId).firstOrNull?.loyaltyPoints;
+    }
+    return CheckoutResult(
+      sale: finalSale ?? sale,
+      debtEntryId: debtEntryId,
+      loyaltyPointsEarned: earned,
+      loyaltyBalance: balance,
+    );
   }
 }
 
@@ -296,20 +326,28 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       // client id makes the replay safe even if this request actually got
       // through before the connection dropped.
       await _offlineQueue.add(QueuedSale(clientSaleId: clientSaleId, params: params, queuedAt: soldAt));
+      final provisional = _provisionalSale(
+        clientSaleId: clientSaleId,
+        storeId: storeId,
+        branchId: branchId,
+        cashierId: cashierId,
+        shiftId: shiftId,
+        paymentMethod: paymentMethod,
+        lines: lines,
+        amountTenderedMinorUnits: amountTenderedMinorUnits,
+        changeGivenMinorUnits: changeGivenMinorUnits,
+        soldAt: soldAt,
+      );
       return CheckoutResult(
-        sale: _provisionalSale(
-          clientSaleId: clientSaleId,
-          storeId: storeId,
-          branchId: branchId,
-          cashierId: cashierId,
-          shiftId: shiftId,
-          paymentMethod: paymentMethod,
-          lines: lines,
-          amountTenderedMinorUnits: amountTenderedMinorUnits,
-          changeGivenMinorUnits: changeGivenMinorUnits,
-          soldAt: soldAt,
-        ),
+        sale: provisional,
         queuedOffline: true,
+        // Estimated; the server credits the points when the sale syncs.
+        loyaltyPointsEarned: extras['loyalty_customer_id'] == null
+            ? null
+            : Loyalty.pointsEarned(
+                provisional.grandTotalMinorUnits,
+                (extras['loyalty_spend_per_point_minor'] as int?) ?? 0,
+              ),
       );
     }
 
@@ -317,6 +355,7 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       final existing = await _posRepository.getSale(json['sale_id'] as String);
       if (existing != null) return CheckoutResult(sale: existing);
     }
+    final loyalty = json['loyalty'] as Map<String, dynamic>?;
 
     final saleJson = json['sale'] as Map<String, dynamic>;
     final sale = SaleRecord(
@@ -350,7 +389,12 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
           )).toList(),
     );
 
-    return CheckoutResult(sale: sale, debtEntryId: json['debt_entry_id'] as String?);
+    return CheckoutResult(
+      sale: sale,
+      debtEntryId: json['debt_entry_id'] as String?,
+      loyaltyPointsEarned: (loyalty?['earned'] as num?)?.toInt(),
+      loyaltyBalance: (loyalty?['balance'] as num?)?.toInt(),
+    );
   }
 
   SaleRecord _provisionalSale({

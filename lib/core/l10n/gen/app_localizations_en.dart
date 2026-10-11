@@ -906,4 +906,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String reportsReorderAt(int level) {
     return 'Reorder at $level';
   }
+
+  @override
+  String get loyaltyTitle => 'Loyalty points';
+
+  @override
+  String get loyaltySettingsHelp =>
+      'Customers earn 1 point for every amount below they spend, and can spend points as a discount. Leave empty to turn loyalty off.';
+
+  @override
+  String get loyaltySpendPerPoint => 'Spend for 1 point';
+
+  @override
+  String get loyaltyPointValue => 'Value of 1 point';
+
+  @override
+  String get loyaltyNoCustomer => 'No customer (loyalty points)';
+
+  @override
+  String get loyaltyChooseCustomer => 'Choose customer';
+
+  @override
+  String get loyaltyNewCustomer => 'New customer';
+
+  @override
+  String get loyaltyNoMatches => 'No customers found';
+
+  @override
+  String loyaltyPointsBalance(int points) {
+    return '$points pts';
+  }
+
+  @override
+  String loyaltyUsePoints(int max) {
+    return 'Use points (up to $max)';
+  }
+
+  @override
+  String loyaltyPointWorth(String value) {
+    return '1 point = $value';
+  }
+
+  @override
+  String get loyaltyPointsRedeemed => 'Points used';
+
+  @override
+  String get loyaltyPointsEarned => 'Points earned';
+
+  @override
+  String get loyaltyBalance => 'Points balance';
 }

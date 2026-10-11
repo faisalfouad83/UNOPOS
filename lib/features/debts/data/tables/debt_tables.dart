@@ -7,6 +7,7 @@ class Customers extends Table {
   TextColumn get phone => text().nullable()();
   TextColumn get address => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
+  IntColumn get loyaltyPoints => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

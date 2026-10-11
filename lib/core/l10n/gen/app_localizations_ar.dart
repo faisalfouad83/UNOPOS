@@ -904,4 +904,53 @@ class AppLocalizationsAr extends AppLocalizations {
   String reportsReorderAt(int level) {
     return 'حد الطلب $level';
   }
+
+  @override
+  String get loyaltyTitle => 'نقاط الولاء';
+
+  @override
+  String get loyaltySettingsHelp =>
+      'يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم. اتركه فارغاً لإيقاف النقاط.';
+
+  @override
+  String get loyaltySpendPerPoint => 'المبلغ مقابل نقطة واحدة';
+
+  @override
+  String get loyaltyPointValue => 'قيمة النقطة الواحدة';
+
+  @override
+  String get loyaltyNoCustomer => 'بدون زبون (نقاط الولاء)';
+
+  @override
+  String get loyaltyChooseCustomer => 'اختيار زبون';
+
+  @override
+  String get loyaltyNewCustomer => 'زبون جديد';
+
+  @override
+  String get loyaltyNoMatches => 'لا يوجد زبائن مطابقون';
+
+  @override
+  String loyaltyPointsBalance(int points) {
+    return '$points نقطة';
+  }
+
+  @override
+  String loyaltyUsePoints(int max) {
+    return 'استخدام النقاط (حتى $max)';
+  }
+
+  @override
+  String loyaltyPointWorth(String value) {
+    return 'النقطة = $value';
+  }
+
+  @override
+  String get loyaltyPointsRedeemed => 'نقاط مستخدمة';
+
+  @override
+  String get loyaltyPointsEarned => 'نقاط مكتسبة';
+
+  @override
+  String get loyaltyBalance => 'رصيد النقاط';
 }

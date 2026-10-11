@@ -21,6 +21,12 @@ class AppSettingsTable extends Table {
   /// Iraqi dinars per US dollar; 0 = not set (dual-currency display off).
   RealColumn get usdExchangeRate => real().withDefault(const Constant(0))();
 
+  /// Loyalty: spend this much (minor units) to earn one point; 0 = off.
+  IntColumn get loyaltySpendPerPointMinor => integer().withDefault(const Constant(0))();
+
+  /// Loyalty: what one point is worth when redeemed (minor units).
+  IntColumn get loyaltyPointValueMinor => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

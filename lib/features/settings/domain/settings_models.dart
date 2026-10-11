@@ -56,6 +56,8 @@ class AppSettingsRecord {
     this.autoBackupFolderPath,
     this.lowStockThresholdDefault = 5,
     this.usdExchangeRate = 0,
+    this.loyaltySpendPerPointMinor = 0,
+    this.loyaltyPointValueMinor = 0,
   });
 
   final String storeId;
@@ -73,6 +75,14 @@ class AppSettingsRecord {
   /// Iraqi dinars per US dollar; 0 when not set.
   final double usdExchangeRate;
 
+  /// Spend this much (minor units) to earn one loyalty point; 0 = loyalty off.
+  final int loyaltySpendPerPointMinor;
+
+  /// What one point is worth when redeemed (minor units); 0 = can't redeem.
+  final int loyaltyPointValueMinor;
+
+  bool get loyaltyEnabled => loyaltySpendPerPointMinor > 0;
+
   AppSettingsRecord copyWith({
     String? defaultLanguage,
     AppThemeMode? themeMode,
@@ -85,6 +95,8 @@ class AppSettingsRecord {
     String? autoBackupFolderPath,
     int? lowStockThresholdDefault,
     double? usdExchangeRate,
+    int? loyaltySpendPerPointMinor,
+    int? loyaltyPointValueMinor,
   }) =>
       AppSettingsRecord(
         storeId: storeId,
@@ -99,5 +111,7 @@ class AppSettingsRecord {
         autoBackupFolderPath: autoBackupFolderPath ?? this.autoBackupFolderPath,
         lowStockThresholdDefault: lowStockThresholdDefault ?? this.lowStockThresholdDefault,
         usdExchangeRate: usdExchangeRate ?? this.usdExchangeRate,
+        loyaltySpendPerPointMinor: loyaltySpendPerPointMinor ?? this.loyaltySpendPerPointMinor,
+        loyaltyPointValueMinor: loyaltyPointValueMinor ?? this.loyaltyPointValueMinor,
       );
 }

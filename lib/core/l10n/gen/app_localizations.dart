@@ -1761,6 +1761,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reorder at {level}'**
   String reportsReorderAt(int level);
+
+  /// No description provided for @loyaltyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyalty points'**
+  String get loyaltyTitle;
+
+  /// No description provided for @loyaltySettingsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers earn 1 point for every amount below they spend, and can spend points as a discount. Leave empty to turn loyalty off.'**
+  String get loyaltySettingsHelp;
+
+  /// No description provided for @loyaltySpendPerPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Spend for 1 point'**
+  String get loyaltySpendPerPoint;
+
+  /// No description provided for @loyaltyPointValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Value of 1 point'**
+  String get loyaltyPointValue;
+
+  /// No description provided for @loyaltyNoCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'No customer (loyalty points)'**
+  String get loyaltyNoCustomer;
+
+  /// No description provided for @loyaltyChooseCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose customer'**
+  String get loyaltyChooseCustomer;
+
+  /// No description provided for @loyaltyNewCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'New customer'**
+  String get loyaltyNewCustomer;
+
+  /// No description provided for @loyaltyNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers found'**
+  String get loyaltyNoMatches;
+
+  /// No description provided for @loyaltyPointsBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts'**
+  String loyaltyPointsBalance(int points);
+
+  /// No description provided for @loyaltyUsePoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Use points (up to {max})'**
+  String loyaltyUsePoints(int max);
+
+  /// No description provided for @loyaltyPointWorth.
+  ///
+  /// In en, this message translates to:
+  /// **'1 point = {value}'**
+  String loyaltyPointWorth(String value);
+
+  /// No description provided for @loyaltyPointsRedeemed.
+  ///
+  /// In en, this message translates to:
+  /// **'Points used'**
+  String get loyaltyPointsRedeemed;
+
+  /// No description provided for @loyaltyPointsEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Points earned'**
+  String get loyaltyPointsEarned;
+
+  /// No description provided for @loyaltyBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Points balance'**
+  String get loyaltyBalance;
 }
 
 class _AppLocalizationsDelegate

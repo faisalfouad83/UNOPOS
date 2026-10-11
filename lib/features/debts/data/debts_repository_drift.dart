@@ -11,7 +11,14 @@ class DriftDebtsRepository implements DebtsRepository {
   final AppDatabase _db;
 
   CustomerRecord _mapCustomer(Customer row) =>
-      CustomerRecord(id: row.id, storeId: row.storeId, name: row.name, phone: row.phone, address: row.address);
+      CustomerRecord(
+        id: row.id,
+        storeId: row.storeId,
+        name: row.name,
+        phone: row.phone,
+        address: row.address,
+        loyaltyPoints: row.loyaltyPoints,
+      );
 
   DebtLedgerEntryRecord _mapEntry(DebtLedgerEntry row) => DebtLedgerEntryRecord(
         id: row.id,
@@ -68,6 +75,14 @@ class DriftDebtsRepository implements DebtsRepository {
           ..where((t) => t.storeId.equals(storeId) & t.name.equals(name)))
         .getSingleOrNull();
     return row == null ? null : _mapCustomer(row);
+  }
+
+  @override
+  Future<void> adjustLoyaltyPoints(String customerId, int delta) async {
+    await _db.customStatement(
+      'UPDATE customers SET loyalty_points = loyalty_points + ? WHERE id = ?',
+      [delta, customerId],
+    );
   }
 
   @override

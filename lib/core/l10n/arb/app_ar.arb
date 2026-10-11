@@ -306,5 +306,20 @@
   "reportsByPaymentMethod": "طرق الدفع",
   "reportsTopProducts": "الأكثر مبيعاً",
   "reportsNothingLow": "لا يوجد منتج تحت حد الطلب",
-  "reportsReorderAt": "حد الطلب {level}"
+  "reportsReorderAt": "حد الطلب {level}",
+
+  "loyaltyTitle": "نقاط الولاء",
+  "loyaltySettingsHelp": "يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم. اتركه فارغاً لإيقاف النقاط.",
+  "loyaltySpendPerPoint": "المبلغ مقابل نقطة واحدة",
+  "loyaltyPointValue": "قيمة النقطة الواحدة",
+  "loyaltyNoCustomer": "بدون زبون (نقاط الولاء)",
+  "loyaltyChooseCustomer": "اختيار زبون",
+  "loyaltyNewCustomer": "زبون جديد",
+  "loyaltyNoMatches": "لا يوجد زبائن مطابقون",
+  "loyaltyPointsBalance": "{points} نقطة",
+  "loyaltyUsePoints": "استخدام النقاط (حتى {max})",
+  "loyaltyPointWorth": "النقطة = {value}",
+  "loyaltyPointsRedeemed": "نقاط مستخدمة",
+  "loyaltyPointsEarned": "نقاط مكتسبة",
+  "loyaltyBalance": "رصيد النقاط"
 }

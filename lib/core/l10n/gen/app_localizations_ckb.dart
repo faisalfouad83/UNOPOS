@@ -897,4 +897,53 @@ class AppLocalizationsCkb extends AppLocalizations {
   String reportsReorderAt(int level) {
     return 'ئاستی داواکردن $level';
   }
+
+  @override
+  String get loyaltyTitle => 'خاڵی دڵسۆزی';
+
+  @override
+  String get loyaltySettingsHelp =>
+      'کڕیار بۆ هەر بڕێکی خوارەوە کە خەرجی دەکات خاڵێک وەردەگرێت، و دەتوانێت خاڵەکان وەک داشکاندن بەکاربهێنێت. بەتاڵی بهێڵەرەوە بۆ ڕاگرتن.';
+
+  @override
+  String get loyaltySpendPerPoint => 'بڕ بەرامبەر 1 خاڵ';
+
+  @override
+  String get loyaltyPointValue => 'نرخی 1 خاڵ';
+
+  @override
+  String get loyaltyNoCustomer => 'بێ کڕیار (خاڵی دڵسۆزی)';
+
+  @override
+  String get loyaltyChooseCustomer => 'هەڵبژاردنی کڕیار';
+
+  @override
+  String get loyaltyNewCustomer => 'کڕیاری نوێ';
+
+  @override
+  String get loyaltyNoMatches => 'هیچ کڕیارێک نەدۆزرایەوە';
+
+  @override
+  String loyaltyPointsBalance(int points) {
+    return '$points خاڵ';
+  }
+
+  @override
+  String loyaltyUsePoints(int max) {
+    return 'بەکارهێنانی خاڵ (تا $max)';
+  }
+
+  @override
+  String loyaltyPointWorth(String value) {
+    return '1 خاڵ = $value';
+  }
+
+  @override
+  String get loyaltyPointsRedeemed => 'خاڵی بەکارهاتوو';
+
+  @override
+  String get loyaltyPointsEarned => 'خاڵی بەدەستهاتوو';
+
+  @override
+  String get loyaltyBalance => 'کۆی خاڵەکان';
 }

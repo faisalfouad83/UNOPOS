@@ -5,12 +5,14 @@ class CustomerRecord {
     required this.name,
     this.phone,
     this.address,
+    this.loyaltyPoints = 0,
   });
   final String id;
   final String storeId;
   final String name;
   final String? phone;
   final String? address;
+  final int loyaltyPoints;
 }
 
 enum DebtStatus { open, partiallyPaid, paid }
