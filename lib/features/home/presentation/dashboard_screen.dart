@@ -10,6 +10,8 @@ import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../debts/domain/debts_models.dart';
 import '../../inventory/domain/inventory_models.dart';
+import '../../inventory/domain/product_expiry.dart';
+import '../../inventory/presentation/expiry_screen.dart';
 import '../../pos/domain/pos_models.dart';
 
 typedef _BranchKey = ({String storeId, String branchId});
@@ -23,6 +25,10 @@ final _todaysSalesForDashboardProvider = StreamProvider.autoDispose.family<List<
 final _dashboardOpenDebtsProvider =
     StreamProvider.autoDispose.family<List<DebtLedgerEntryRecord>, String>((ref, storeId) {
   return ref.watch(debtsRepositoryProvider).watchOpenDebts(storeId);
+});
+
+final _dashboardProductsProvider = StreamProvider.autoDispose.family<List<ProductRecord>, String>((ref, storeId) {
+  return ref.watch(inventoryRepositoryProvider).watchProducts(storeId);
 });
 
 final _dashboardLowStockProvider = StreamProvider.autoDispose.family<List<ProductRecord>, _BranchKey>((ref, key) {
@@ -52,6 +58,9 @@ class DashboardScreen extends ConsumerWidget {
     final debtsTotal =
         (debtsAsync?.value ?? const <DebtLedgerEntryRecord>[]).fold<int>(0, (s, d) => s + d.balanceRemainingMinorUnits);
     final lowStockCount = lowStockAsync?.value?.length ?? 0;
+    final products = storeId == null ? const <ProductRecord>[] : ref.watch(_dashboardProductsProvider(storeId)).value ?? const [];
+    final nearExpiry = productsNearExpiry(products);
+    final expiredCount = nearExpiry.where((p) => expiryStatusOf(p) == ExpiryStatus.expired).length;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navDashboard)),
@@ -100,6 +109,15 @@ class DashboardScreen extends ConsumerWidget {
                     accent: scheme.error,
                     onAccent: scheme.onError,
                     onTap: () => context.go(RoutePaths.inventory),
+                  ),
+                  _StatCard(
+                    icon: Icons.event_busy_outlined,
+                    label: l10n.expiryTitle,
+                    value: '${nearExpiry.length}',
+                    subtitle: expiredCount > 0 ? l10n.expiryExpiredCount(expiredCount) : l10n.expiryWithinDays(30),
+                    accent: Colors.orange.shade800,
+                    onAccent: Colors.white,
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ExpiryScreen())),
                   ),
                 ];
 

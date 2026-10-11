@@ -282,5 +282,12 @@
   "debtsSalesCount": "{count} پسوڵە",
   "debtsDaysOutstanding": "{days} ڕۆژ",
   "debtsSendReminder": "ناردنی بیرخستنەوە لە واتساپ",
-  "debtsReminderMessage": "سڵاو {name}، بیرخستنەوەیەکی دۆستانەیە لە {store} کە بڕی ماوەی قەرزەکەت {amount}ە. سوپاس!"
+  "debtsReminderMessage": "سڵاو {name}، بیرخستنەوەیەکی دۆستانەیە لە {store} کە بڕی ماوەی قەرزەکەت {amount}ە. سوپاس!",
+
+  "expiryTitle": "نزیک لە بەسەرچوون",
+  "expiryWithinDays": "لە ماوەی {days} ڕۆژ",
+  "expiryNone": "هیچ کاڵایەک لەم ماوەیەدا بەسەرناچێت",
+  "expiryInDays": "{days, plural, =0{ئەمڕۆ} =1{سبەی} other{دوای {days} ڕۆژ}}",
+  "expiryExpiredDaysAgo": "{days} ڕۆژ لەمەوبەر بەسەرچوو",
+  "expiryExpiredCount": "{count} بەسەرچوون"
 }

@@ -817,4 +817,37 @@ class AppLocalizationsAr extends AppLocalizations {
   String debtsReminderMessage(String name, String store, String amount) {
     return 'مرحباً $name، نود تذكيركم بأن المبلغ المتبقي عليكم لدى $store هو $amount. شكراً لكم!';
   }
+
+  @override
+  String get expiryTitle => 'قريبة الانتهاء';
+
+  @override
+  String expiryWithinDays(int days) {
+    return 'خلال $days يوم';
+  }
+
+  @override
+  String get expiryNone => 'لا توجد منتجات تنتهي خلال هذه الفترة';
+
+  @override
+  String expiryInDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'بعد $days يوم',
+      one: 'غداً',
+      zero: 'اليوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiryExpiredDaysAgo(int days) {
+    return 'منتهي منذ $days يوم';
+  }
+
+  @override
+  String expiryExpiredCount(int count) {
+    return '$count منتهية الصلاحية';
+  }
 }

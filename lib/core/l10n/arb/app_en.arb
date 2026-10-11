@@ -300,5 +300,16 @@
   "@debtsDaysOutstanding": {"placeholders": {"days": {"type": "int"}}},
   "debtsSendReminder": "Send WhatsApp reminder",
   "debtsReminderMessage": "Hello {name}, this is a friendly reminder from {store} that your outstanding balance is {amount}. Thank you!",
-  "@debtsReminderMessage": {"placeholders": {"name": {"type": "String"}, "store": {"type": "String"}, "amount": {"type": "String"}}}
+  "@debtsReminderMessage": {"placeholders": {"name": {"type": "String"}, "store": {"type": "String"}, "amount": {"type": "String"}}},
+
+  "expiryTitle": "Expiring soon",
+  "expiryWithinDays": "Within {days} days",
+  "@expiryWithinDays": {"placeholders": {"days": {"type": "int"}}},
+  "expiryNone": "Nothing is expiring in this period",
+  "expiryInDays": "{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}}",
+  "@expiryInDays": {"placeholders": {"days": {"type": "int"}}},
+  "expiryExpiredDaysAgo": "Expired {days} days ago",
+  "@expiryExpiredDaysAgo": {"placeholders": {"days": {"type": "int"}}},
+  "expiryExpiredCount": "{count} already expired",
+  "@expiryExpiredCount": {"placeholders": {"count": {"type": "int"}}}
 }

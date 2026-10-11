@@ -6,6 +6,7 @@ import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../domain/inventory_models.dart';
+import '../domain/product_expiry.dart';
 import '../domain/product_units.dart';
 import 'product_edit_dialog.dart';
 import 'product_import_dialog.dart';
@@ -68,8 +69,13 @@ class ProductsTab extends ConsumerWidget {
                   itemCount: products.length,
                   itemBuilder: (context, index) {
                     final product = products[index];
+                    final expiry = expiryStatusOf(product);
                     return ListTile(
-                      leading: const Icon(Icons.inventory_2_outlined),
+                      leading: switch (expiry) {
+                        ExpiryStatus.expired => Icon(Icons.dangerous_outlined, color: Theme.of(context).colorScheme.error),
+                        ExpiryStatus.soon => Icon(Icons.schedule, color: Colors.orange.shade800),
+                        _ => const Icon(Icons.inventory_2_outlined),
+                      },
                       title: Text(product.name),
                       subtitle: Text(
                           '${product.sku} · ${Money.format(product.sellPriceMinorUnits)} · ${productUnitLabel(context, product.unit)}'),

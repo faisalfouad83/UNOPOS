@@ -810,4 +810,37 @@ class AppLocalizationsCkb extends AppLocalizations {
   String debtsReminderMessage(String name, String store, String amount) {
     return 'سڵاو $name، بیرخستنەوەیەکی دۆستانەیە لە $store کە بڕی ماوەی قەرزەکەت $amountە. سوپاس!';
   }
+
+  @override
+  String get expiryTitle => 'نزیک لە بەسەرچوون';
+
+  @override
+  String expiryWithinDays(int days) {
+    return 'لە ماوەی $days ڕۆژ';
+  }
+
+  @override
+  String get expiryNone => 'هیچ کاڵایەک لەم ماوەیەدا بەسەرناچێت';
+
+  @override
+  String expiryInDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'دوای $days ڕۆژ',
+      one: 'سبەی',
+      zero: 'ئەمڕۆ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiryExpiredDaysAgo(int days) {
+    return '$days ڕۆژ لەمەوبەر بەسەرچوو';
+  }
+
+  @override
+  String expiryExpiredCount(int count) {
+    return '$count بەسەرچوون';
+  }
 }

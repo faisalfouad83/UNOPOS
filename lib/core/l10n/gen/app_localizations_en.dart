@@ -819,4 +819,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String debtsReminderMessage(String name, String store, String amount) {
     return 'Hello $name, this is a friendly reminder from $store that your outstanding balance is $amount. Thank you!';
   }
+
+  @override
+  String get expiryTitle => 'Expiring soon';
+
+  @override
+  String expiryWithinDays(int days) {
+    return 'Within $days days';
+  }
+
+  @override
+  String get expiryNone => 'Nothing is expiring in this period';
+
+  @override
+  String expiryInDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'In $days days',
+      one: 'Tomorrow',
+      zero: 'Today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiryExpiredDaysAgo(int days) {
+    return 'Expired $days days ago';
+  }
+
+  @override
+  String expiryExpiredCount(int count) {
+    return '$count already expired';
+  }
 }

@@ -1629,6 +1629,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hello {name}, this is a friendly reminder from {store} that your outstanding balance is {amount}. Thank you!'**
   String debtsReminderMessage(String name, String store, String amount);
+
+  /// No description provided for @expiryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring soon'**
+  String get expiryTitle;
+
+  /// No description provided for @expiryWithinDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {days} days'**
+  String expiryWithinDays(int days);
+
+  /// No description provided for @expiryNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is expiring in this period'**
+  String get expiryNone;
+
+  /// No description provided for @expiryInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}}'**
+  String expiryInDays(int days);
+
+  /// No description provided for @expiryExpiredDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired {days} days ago'**
+  String expiryExpiredDaysAgo(int days);
+
+  /// No description provided for @expiryExpiredCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} already expired'**
+  String expiryExpiredCount(int count);
 }
 
 class _AppLocalizationsDelegate
