@@ -647,4 +647,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorInsufficientStock => 'الكمية المتوفرة في المخزون غير كافية';
+
+  @override
+  String get settingsCurrency => 'العملة';
+
+  @override
+  String get currencyIqd => 'دينار عراقي (IQD)';
+
+  @override
+  String get currencyUsd => 'دولار أمريكي (USD)';
+
+  @override
+  String get receiptSale => 'فاتورة';
+
+  @override
+  String get receiptCashier => 'الكاشير';
+
+  @override
+  String get receiptCustomer => 'الزبون';
+
+  @override
+  String get receiptSubtotal => 'المجموع الفرعي';
+
+  @override
+  String get receiptTax => 'الضريبة';
+
+  @override
+  String get receiptPayment => 'طريقة الدفع';
+
+  @override
+  String get receiptTendered => 'المدفوع';
+
+  @override
+  String get receiptCash => 'نقداً';
+
+  @override
+  String get receiptCard => 'بطاقة';
+
+  @override
+  String get receiptThankYou => 'شكراً لتسوقكم معنا!';
 }

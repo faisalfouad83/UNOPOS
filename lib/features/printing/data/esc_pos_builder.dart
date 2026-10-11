@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import '../../../core/utils/formatters.dart';
 
 import '../domain/receipt_models.dart';
 
@@ -94,11 +95,11 @@ class EscPosBuilder {
 
     b
       ..align(EscPosAlign.left)
-      ..text('Sale: ${doc.saleNumber}')
+      ..text('${doc.labels.sale}: ${doc.saleNumber}')
       ..text(_formatDateTime(doc.dateTime))
-      ..text('Cashier: ${doc.cashierName}');
+      ..text('${doc.labels.cashier}: ${doc.cashierName}');
     if (doc.customerName != null && doc.customerName!.isNotEmpty) {
-      b.text('Customer: ${doc.customerName}');
+      b.text('${doc.labels.customer}: ${doc.customerName}');
     }
     b.divider(paperWidthChars);
 
@@ -112,31 +113,31 @@ class EscPosBuilder {
     }
     b.divider(paperWidthChars);
 
-    b.text(twoColumn('Subtotal', _money(doc.subtotalMinorUnits, doc.currencySymbol), paperWidthChars));
+    b.text(twoColumn(doc.labels.subtotal, _money(doc.subtotalMinorUnits, doc.currencySymbol), paperWidthChars));
     if (doc.discountTotalMinorUnits > 0) {
-      b.text(twoColumn('Discount', '-${_money(doc.discountTotalMinorUnits, doc.currencySymbol)}', paperWidthChars));
+      b.text(twoColumn(doc.labels.discount, '-${_money(doc.discountTotalMinorUnits, doc.currencySymbol)}', paperWidthChars));
     }
     if (doc.taxTotalMinorUnits > 0) {
-      b.text(twoColumn('Tax', _money(doc.taxTotalMinorUnits, doc.currencySymbol), paperWidthChars));
+      b.text(twoColumn(doc.labels.tax, _money(doc.taxTotalMinorUnits, doc.currencySymbol), paperWidthChars));
     }
     b
       ..bold(true)
-      ..text(twoColumn('TOTAL', _money(doc.grandTotalMinorUnits, doc.currencySymbol), paperWidthChars))
+      ..text(twoColumn(doc.labels.total, _money(doc.grandTotalMinorUnits, doc.currencySymbol), paperWidthChars))
       ..bold(false);
 
-    b.text(twoColumn('Payment', doc.paymentMethodLabel, paperWidthChars));
+    b.text(twoColumn(doc.labels.payment, doc.paymentMethodLabel, paperWidthChars));
     if (doc.amountTenderedMinorUnits != null) {
-      b.text(twoColumn('Tendered', _money(doc.amountTenderedMinorUnits!, doc.currencySymbol), paperWidthChars));
+      b.text(twoColumn(doc.labels.tendered, _money(doc.amountTenderedMinorUnits!, doc.currencySymbol), paperWidthChars));
     }
     if (doc.changeGivenMinorUnits != null && doc.changeGivenMinorUnits! > 0) {
-      b.text(twoColumn('Change', _money(doc.changeGivenMinorUnits!, doc.currencySymbol), paperWidthChars));
+      b.text(twoColumn(doc.labels.change, _money(doc.changeGivenMinorUnits!, doc.currencySymbol), paperWidthChars));
     }
     if (doc.isPayLater) {
       b
         ..feed()
         ..align(EscPosAlign.center)
         ..bold(true)
-        ..text('*** ON ACCOUNT / PAY LATER ***')
+        ..text(doc.labels.payLaterBanner)
         ..bold(false);
     }
 
@@ -150,7 +151,12 @@ class EscPosBuilder {
     return b.build();
   }
 
-  static String _money(int minorUnits, String symbol) => '$symbol${(minorUnits / 100).toStringAsFixed(2)}';
+  // Raw ESC/POS text goes through a single-byte code page, so a non-ASCII
+  // symbol (د.ع) would print as garbage — fall back to the currency code.
+  static String _money(int minorUnits, String symbol) => Money.format(
+        minorUnits,
+        currencySymbol: RegExp(r'^[\x20-\x7E]*$').hasMatch(symbol) ? symbol : Money.currency.code,
+      );
 
   static String _formatDateTime(DateTime dt) {
     String two(int n) => n.toString().padLeft(2, '0');

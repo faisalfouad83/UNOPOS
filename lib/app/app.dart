@@ -6,7 +6,9 @@ import '../core/l10n/kurdish_locale_fallback.dart';
 import '../core/providers.dart';
 import '../core/routing/app_bootstrap.dart';
 import '../core/routing/app_router.dart';
+import '../core/store_settings_provider.dart';
 import '../core/theming/app_theme.dart';
+import '../core/utils/formatters.dart';
 import '../core/widgets/unopos_logo.dart';
 import '../features/backup/domain/auto_backup_checker.dart';
 import '../features/settings/domain/settings_models.dart';
@@ -85,6 +87,11 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
     final storeId = bootstrap.value?.store?.id;
     if (storeId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _syncSettingsOnce(storeId));
+    }
+
+    final storeSettings = ref.watch(currentStoreSettingsProvider).valueOrNull;
+    if (storeSettings != null) {
+      Money.currency = CurrencyInfo(storeSettings.currencyCode, storeSettings.currencySymbol);
     }
 
     final router = ref.watch(routerProvider);

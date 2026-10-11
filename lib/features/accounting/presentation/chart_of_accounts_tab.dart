@@ -46,7 +46,7 @@ class ChartOfAccountsTab extends ConsumerWidget {
                 return ListTile(
                   dense: true,
                   title: Text('${account.code} · ${account.name}'),
-                  trailing: Text(Money.format(balance, currencySymbol: r'$')),
+                  trailing: Text(Money.format(balance)),
                 );
               }).toList(),
             );

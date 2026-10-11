@@ -236,5 +236,20 @@
   "errorGeneric": "Something went wrong. Please try again",
   "errorRequired": "This field is required",
   "errorNoConnection": "No connection to printer",
-  "errorInsufficientStock": "Not enough stock available"
+  "errorInsufficientStock": "Not enough stock available",
+
+  "settingsCurrency": "Currency",
+  "currencyIqd": "Iraqi Dinar (IQD)",
+  "currencyUsd": "US Dollar (USD)",
+
+  "receiptSale": "Sale",
+  "receiptCashier": "Cashier",
+  "receiptCustomer": "Customer",
+  "receiptSubtotal": "Subtotal",
+  "receiptTax": "Tax",
+  "receiptPayment": "Payment",
+  "receiptTendered": "Paid",
+  "receiptCash": "Cash",
+  "receiptCard": "Card",
+  "receiptThankYou": "Thank you for shopping with us!"
 }

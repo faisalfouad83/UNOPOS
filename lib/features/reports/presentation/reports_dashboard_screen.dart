@@ -180,7 +180,7 @@ class _TopProductsCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(child: Text(productNames[entry.key] ?? entry.key, overflow: TextOverflow.ellipsis)),
-                        Text(Money.format(entry.value, currencySymbol: r'$')),
+                        Text(Money.format(entry.value)),
                       ],
                     ),
                     const SizedBox(height: 4),

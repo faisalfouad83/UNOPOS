@@ -35,15 +35,15 @@ class JournalTab extends ConsumerWidget {
             return ExpansionTile(
               title: Text('${entry.referenceType.name} · ${entry.memo}'),
               subtitle: Text(AppDateFormat.dateTime(entry.entryDate)),
-              trailing: Text(Money.format(total, currencySymbol: r'$')),
+              trailing: Text(Money.format(total)),
               children: entry.lines
                   .map((line) => ListTile(
                         dense: true,
                         title: Text(line.accountCode),
                         trailing: Text(
                           line.debitMinorUnits > 0
-                              ? 'Dr ${Money.format(line.debitMinorUnits, currencySymbol: r'$')}'
-                              : 'Cr ${Money.format(line.creditMinorUnits, currencySymbol: r'$')}',
+                              ? 'Dr ${Money.format(line.debitMinorUnits)}'
+                              : 'Cr ${Money.format(line.creditMinorUnits)}',
                         ),
                       ))
                   .toList(),

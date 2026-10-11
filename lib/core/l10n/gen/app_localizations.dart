@@ -1353,6 +1353,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not enough stock available'**
   String get errorInsufficientStock;
+
+  /// No description provided for @settingsCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get settingsCurrency;
+
+  /// No description provided for @currencyIqd.
+  ///
+  /// In en, this message translates to:
+  /// **'Iraqi Dinar (IQD)'**
+  String get currencyIqd;
+
+  /// No description provided for @currencyUsd.
+  ///
+  /// In en, this message translates to:
+  /// **'US Dollar (USD)'**
+  String get currencyUsd;
+
+  /// No description provided for @receiptSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get receiptSale;
+
+  /// No description provided for @receiptCashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier'**
+  String get receiptCashier;
+
+  /// No description provided for @receiptCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get receiptCustomer;
+
+  /// No description provided for @receiptSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get receiptSubtotal;
+
+  /// No description provided for @receiptTax.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get receiptTax;
+
+  /// No description provided for @receiptPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get receiptPayment;
+
+  /// No description provided for @receiptTendered.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get receiptTendered;
+
+  /// No description provided for @receiptCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get receiptCash;
+
+  /// No description provided for @receiptCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get receiptCard;
+
+  /// No description provided for @receiptThankYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for shopping with us!'**
+  String get receiptThankYou;
 }
 
 class _AppLocalizationsDelegate

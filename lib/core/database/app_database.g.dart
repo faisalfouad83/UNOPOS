@@ -15351,7 +15351,7 @@ class $AppSettingsTableTable extends AppSettingsTable
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultValue: const Constant('USD'),
+    defaultValue: const Constant('IQD'),
   );
   static const VerificationMeta _currencySymbolMeta = const VerificationMeta(
     'currencySymbol',
@@ -15363,7 +15363,7 @@ class $AppSettingsTableTable extends AppSettingsTable
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultValue: const Constant('\$'),
+    defaultValue: const Constant('د.ع'),
   );
   static const VerificationMeta _defaultVatRatePercentMeta =
       const VerificationMeta('defaultVatRatePercent');

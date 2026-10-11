@@ -650,4 +650,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorInsufficientStock => 'Not enough stock available';
+
+  @override
+  String get settingsCurrency => 'Currency';
+
+  @override
+  String get currencyIqd => 'Iraqi Dinar (IQD)';
+
+  @override
+  String get currencyUsd => 'US Dollar (USD)';
+
+  @override
+  String get receiptSale => 'Sale';
+
+  @override
+  String get receiptCashier => 'Cashier';
+
+  @override
+  String get receiptCustomer => 'Customer';
+
+  @override
+  String get receiptSubtotal => 'Subtotal';
+
+  @override
+  String get receiptTax => 'Tax';
+
+  @override
+  String get receiptPayment => 'Payment';
+
+  @override
+  String get receiptTendered => 'Paid';
+
+  @override
+  String get receiptCash => 'Cash';
+
+  @override
+  String get receiptCard => 'Card';
+
+  @override
+  String get receiptThankYou => 'Thank you for shopping with us!';
 }

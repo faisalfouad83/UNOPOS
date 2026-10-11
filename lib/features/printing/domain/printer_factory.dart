@@ -11,7 +11,7 @@ class PrinterFactory {
   static PrinterService create(String driverType, {int paperWidthMm = 58}) {
     final paperWidthChars = paperWidthMm >= 80 ? 48 : 32;
     return switch (driverType) {
-      'network' => NetworkPrinterDriver(paperWidthChars: paperWidthChars),
+      'network' => NetworkPrinterDriver(paperWidthChars: paperWidthChars, paperWidthMm: paperWidthMm),
       'usb' => UsbPrinterDriver(),
       'bluetooth' => BluetoothPrinterDriver(),
       'windowsSystem' => WindowsSystemPrinterDriver(paperWidthMm: paperWidthMm),

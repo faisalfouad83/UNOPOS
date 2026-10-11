@@ -46,7 +46,7 @@ class HrScreen extends ConsumerWidget {
                 leading: CircleAvatar(child: Text(employee.name.isNotEmpty ? employee.name[0].toUpperCase() : '?')),
                 title: Text(employee.name),
                 subtitle: Text(
-                  '$roleLabel · ${employee.phone} · ${l10n.hrSalary}: ${Money.format(employee.salaryMinorUnits, currencySymbol: r'$')}',
+                  '$roleLabel · ${employee.phone} · ${l10n.hrSalary}: ${Money.format(employee.salaryMinorUnits)}',
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,

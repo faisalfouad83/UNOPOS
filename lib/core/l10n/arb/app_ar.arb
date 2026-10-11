@@ -228,5 +228,20 @@
   "errorGeneric": "حدث خطأ ما. الرجاء المحاولة مجدداً",
   "errorRequired": "هذا الحقل مطلوب",
   "errorNoConnection": "لا يوجد اتصال بالطابعة",
-  "errorInsufficientStock": "الكمية المتوفرة في المخزون غير كافية"
+  "errorInsufficientStock": "الكمية المتوفرة في المخزون غير كافية",
+
+  "settingsCurrency": "العملة",
+  "currencyIqd": "دينار عراقي (IQD)",
+  "currencyUsd": "دولار أمريكي (USD)",
+
+  "receiptSale": "فاتورة",
+  "receiptCashier": "الكاشير",
+  "receiptCustomer": "الزبون",
+  "receiptSubtotal": "المجموع الفرعي",
+  "receiptTax": "الضريبة",
+  "receiptPayment": "طريقة الدفع",
+  "receiptTendered": "المدفوع",
+  "receiptCash": "نقداً",
+  "receiptCard": "بطاقة",
+  "receiptThankYou": "شكراً لتسوقكم معنا!"
 }

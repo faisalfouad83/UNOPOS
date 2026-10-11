@@ -15,6 +15,7 @@ class ReceiptTemplateBuilder {
     String? customerName,
     required String currencySymbol,
     String footerText = 'Thank you for shopping with us!',
+    ReceiptLabels labels = const ReceiptLabels(),
   }) {
     return ReceiptDocument(
       storeName: storeName,
@@ -38,9 +39,9 @@ class ReceiptTemplateBuilder {
       taxTotalMinorUnits: sale.taxTotalMinorUnits,
       grandTotalMinorUnits: sale.grandTotalMinorUnits,
       paymentMethodLabel: switch (sale.paymentMethod) {
-        SalePaymentMethod.cash => 'Cash',
-        SalePaymentMethod.card => 'Card',
-        SalePaymentMethod.payLater => 'Pay Later',
+        SalePaymentMethod.cash => labels.cash,
+        SalePaymentMethod.card => labels.card,
+        SalePaymentMethod.payLater => labels.payLater,
         null => '-',
       },
       amountTenderedMinorUnits: sale.amountTenderedMinorUnits,
@@ -48,6 +49,7 @@ class ReceiptTemplateBuilder {
       isPayLater: sale.paymentMethod == SalePaymentMethod.payLater,
       currencySymbol: currencySymbol,
       footerText: footerText,
+      labels: labels,
     );
   }
 }

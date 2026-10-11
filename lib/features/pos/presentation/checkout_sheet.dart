@@ -6,7 +6,8 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
-import '../../printing/domain/receipt_template_builder.dart';
+import '../../inventory/domain/inventory_repository.dart';
+import '../../printing/presentation/sale_receipt.dart';
 import '../../settings/domain/settings_models.dart';
 import '../domain/pos_models.dart';
 import 'cart_controller.dart';
@@ -58,6 +59,9 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
       _error = null;
     });
 
+    // Read before the sheet closes — the receipt prints afterwards.
+    final inventory = ref.read(inventoryRepositoryProvider);
+
     try {
       int? tendered;
       int? change;
@@ -97,7 +101,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
         messenger.showSnackBar(SnackBar(content: Text(l10n.posSaleCompleted)));
       }
 
-      await _printReceipt(result.sale, session);
+      await _printReceipt(result.sale, session, inventory, l10n);
     } catch (_) {
       setState(() => _error = l10n.errorGeneric);
     } finally {
@@ -105,30 +109,17 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
     }
   }
 
-  Future<void> _printReceipt(SaleRecord sale, SessionState session) async {
+  Future<void> _printReceipt(SaleRecord sale, SessionState session, InventoryRepository inventory, AppLocalizations l10n) async {
     if (widget.settings.printerConfig.driverType == 'none') return;
     try {
-      final productNames = <String, String>{
-        for (final l in sale.lines) l.productId: l.productId,
-      };
-      final doc = ReceiptTemplateBuilder.build(
+      final doc = await buildSaleReceipt(
+        inventory: inventory,
+        session: session,
         sale: sale,
-        productNamesById: productNames,
-        storeName: session.store?.displayName ?? '',
-        branchName: '',
-        cashierName: session.employee?.name ?? '',
-        currencySymbol: widget.settings.currencySymbol,
+        settings: widget.settings,
+        l10n: l10n,
       );
-      final printer = buildPrinterService(
-        widget.settings.printerConfig.driverType,
-        paperWidthMm: widget.settings.printerConfig.paperWidthMm,
-      );
-      final address = widget.settings.printerConfig.connectionAddress;
-      if (address != null && address.isNotEmpty) {
-        await printer.connect(address);
-      }
-      await printer.printReceipt(doc);
-      await printer.disconnect();
+      await printReceiptDocument(doc, widget.settings);
     } catch (_) {
       // Printing failures shouldn't block the sale — it's already saved.
     }

@@ -36,7 +36,7 @@ class PurchaseOrdersTab extends ConsumerWidget {
             itemBuilder: (context, index) {
               final po = orders[index];
               return ListTile(
-                title: Text('PO ${po.id.substring(0, 8)} · ${Money.format(po.totalCostMinorUnits, currencySymbol: r'$')}'),
+                title: Text('PO ${po.id.substring(0, 8)} · ${Money.format(po.totalCostMinorUnits)}'),
                 subtitle: Text(po.status),
                 trailing: po.status == 'received'
                     ? const Icon(Icons.check_circle, color: Colors.green)

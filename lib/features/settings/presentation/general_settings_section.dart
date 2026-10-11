@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
+import '../../../core/utils/formatters.dart';
 import '../domain/settings_models.dart';
 
 class GeneralSettingsSection extends ConsumerWidget {
@@ -73,10 +74,18 @@ class GeneralSettingsSection extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    initialValue: settings.currencySymbol,
-                    decoration: const InputDecoration(labelText: 'Currency symbol'),
-                    onFieldSubmitted: (value) => _update(ref, settings.copyWith(currencySymbol: value)),
+                  child: DropdownButtonFormField<String>(
+                    initialValue: settings.currencyCode == CurrencyInfo.usd.code ? CurrencyInfo.usd.code : CurrencyInfo.iqd.code,
+                    decoration: InputDecoration(labelText: l10n.settingsCurrency),
+                    items: [
+                      DropdownMenuItem(value: CurrencyInfo.iqd.code, child: Text(l10n.currencyIqd)),
+                      DropdownMenuItem(value: CurrencyInfo.usd.code, child: Text(l10n.currencyUsd)),
+                    ],
+                    onChanged: (value) {
+                      final currency = value == CurrencyInfo.usd.code ? CurrencyInfo.usd : CurrencyInfo.iqd;
+                      Money.currency = currency;
+                      _update(ref, settings.copyWith(currencyCode: currency.code, currencySymbol: currency.symbol));
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),

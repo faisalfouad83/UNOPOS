@@ -8,6 +8,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
+import '../../printing/data/pdf_fonts.dart';
 import '../domain/barcode_generator.dart';
 import '../domain/inventory_models.dart';
 
@@ -50,7 +51,7 @@ Future<void> showQrLabelDialog(BuildContext context, WidgetRef ref, ProductRecor
               const SizedBox(height: 12),
               Text(payload, style: const TextStyle(fontFamily: 'monospace')),
               const SizedBox(height: 4),
-              Text(Money.format(current.sellPriceMinorUnits, currencySymbol: r'$')),
+              Text(Money.format(current.sellPriceMinorUnits)),
               if (!hasBarcode) ...[
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
@@ -125,7 +126,7 @@ class _BarcodePainter extends CustomPainter {
 }
 
 Future<void> _printLabel(ProductRecord product, String payload) async {
-  final doc = pw.Document();
+  final doc = pw.Document(theme: await PdfFonts.theme());
   final symbology = _symbologyFor(payload);
 
   final pw.Widget code;
@@ -149,9 +150,10 @@ Future<void> _printLabel(ProductRecord product, String payload) async {
       build: (context) => pw.Column(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text(product.name, style: const pw.TextStyle(fontSize: 7), maxLines: 1),
+          pw.Text(product.name,
+              style: const pw.TextStyle(fontSize: 7), maxLines: 1, textDirection: PdfFonts.directionFor(product.name)),
           code,
-          pw.Text(Money.format(product.sellPriceMinorUnits, currencySymbol: r'$'),
+          pw.Text(Money.format(product.sellPriceMinorUnits),
               style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
         ],
       ),

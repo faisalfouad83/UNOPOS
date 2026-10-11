@@ -184,7 +184,7 @@ class _ShiftDetail extends ConsumerWidget {
                 title: Text(e.memo.isEmpty ? l10n.accountingAddExpense : e.memo),
                 subtitle: Text(AppDateFormat.dateTime(e.entryDate)),
                 trailing: Text(
-                  Money.format(entryAmount(e), currencySymbol: r'$'),
+                  Money.format(entryAmount(e)),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.error),
                 ),
               ),
@@ -214,7 +214,7 @@ class _StatTile extends StatelessWidget {
             Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurface.withValues(alpha: 0.65))),
             const SizedBox(height: 8),
             Text(
-              Money.format(value, currencySymbol: r'$'),
+              Money.format(value),
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: emphasize ? (accent ?? scheme.primary) : null,
                   ),

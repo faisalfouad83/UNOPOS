@@ -228,5 +228,20 @@
   "errorGeneric": "هەڵەیەک ڕوویدا. تکایە دووبارە هەوڵبدەرەوە",
   "errorRequired": "ئەم خانەیە پێویستە",
   "errorNoConnection": "پەیوەندی بە چاپکەرەوە نییە",
-  "errorInsufficientStock": "بڕی کۆگا کافی نییە"
+  "errorInsufficientStock": "بڕی کۆگا کافی نییە",
+
+  "settingsCurrency": "دراو",
+  "currencyIqd": "دیناری عێراقی (IQD)",
+  "currencyUsd": "دۆلاری ئەمریکی (USD)",
+
+  "receiptSale": "پسوڵە",
+  "receiptCashier": "کاشێر",
+  "receiptCustomer": "کڕیار",
+  "receiptSubtotal": "کۆی لاوەکی",
+  "receiptTax": "باج",
+  "receiptPayment": "شێوازی پارەدان",
+  "receiptTendered": "پارەی دراو",
+  "receiptCash": "نەختینە",
+  "receiptCard": "کارت",
+  "receiptThankYou": "سوپاس بۆ بازاڕکردنتان لەگەڵمان!"
 }

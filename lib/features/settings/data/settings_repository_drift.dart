@@ -36,6 +36,8 @@ class DriftSettingsRepository implements SettingsRepository {
           AppSettingsTableCompanion.insert(
             id: storeId,
             storeId: storeId,
+            currencyCode: Value(defaults.currencyCode),
+            currencySymbol: Value(defaults.currencySymbol),
             printerConfigJson: Value(jsonEncode(defaults.printerConfig.toJson())),
           ),
         );

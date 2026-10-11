@@ -24,7 +24,7 @@ Future<void> showSupplierPaymentDialog(BuildContext context, WidgetRef ref, Supp
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('${l10n.suppliersBalanceOwed}: ${Money.format(balanceOwed, currencySymbol: r'$')}'),
+            Text('${l10n.suppliersBalanceOwed}: ${Money.format(balanceOwed)}'),
             const SizedBox(height: 12),
             TextField(
               controller: controller,

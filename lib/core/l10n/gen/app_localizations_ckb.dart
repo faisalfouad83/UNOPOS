@@ -647,4 +647,43 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get errorInsufficientStock => 'بڕی کۆگا کافی نییە';
+
+  @override
+  String get settingsCurrency => 'دراو';
+
+  @override
+  String get currencyIqd => 'دیناری عێراقی (IQD)';
+
+  @override
+  String get currencyUsd => 'دۆلاری ئەمریکی (USD)';
+
+  @override
+  String get receiptSale => 'پسوڵە';
+
+  @override
+  String get receiptCashier => 'کاشێر';
+
+  @override
+  String get receiptCustomer => 'کڕیار';
+
+  @override
+  String get receiptSubtotal => 'کۆی لاوەکی';
+
+  @override
+  String get receiptTax => 'باج';
+
+  @override
+  String get receiptPayment => 'شێوازی پارەدان';
+
+  @override
+  String get receiptTendered => 'پارەی دراو';
+
+  @override
+  String get receiptCash => 'نەختینە';
+
+  @override
+  String get receiptCard => 'کارت';
+
+  @override
+  String get receiptThankYou => 'سوپاس بۆ بازاڕکردنتان لەگەڵمان!';
 }

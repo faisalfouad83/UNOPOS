@@ -56,7 +56,7 @@ class DebtsScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      Money.format(entry.balanceRemainingMinorUnits, currencySymbol: r'$'),
+                      Money.format(entry.balanceRemainingMinorUnits),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     TextButton(

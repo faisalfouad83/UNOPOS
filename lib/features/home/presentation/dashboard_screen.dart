@@ -77,7 +77,7 @@ class DashboardScreen extends ConsumerWidget {
                   _StatCard(
                     icon: Icons.point_of_sale_outlined,
                     label: l10n.navSales,
-                    value: Money.format(todaysTotal, currencySymbol: r'$'),
+                    value: Money.format(todaysTotal),
                     subtitle: '${todaysSales.length} sale(s) today',
                     accent: scheme.primary,
                     onAccent: scheme.onPrimary,
@@ -86,7 +86,7 @@ class DashboardScreen extends ConsumerWidget {
                   _StatCard(
                     icon: Icons.receipt_long_outlined,
                     label: l10n.debtsTitle,
-                    value: Money.format(debtsTotal, currencySymbol: r'$'),
+                    value: Money.format(debtsTotal),
                     subtitle: l10n.debtsBalanceOwed,
                     accent: BrandColors.silver,
                     onAccent: BrandColors.paper,

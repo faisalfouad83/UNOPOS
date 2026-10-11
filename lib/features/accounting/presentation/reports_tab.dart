@@ -101,7 +101,7 @@ class ReportsTab extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: style),
-          Text(Money.format(minorUnits, currencySymbol: r'$'), style: style),
+          Text(Money.format(minorUnits), style: style),
         ],
       ),
     );

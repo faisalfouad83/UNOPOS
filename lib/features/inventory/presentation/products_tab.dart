@@ -66,7 +66,7 @@ class ProductsTab extends ConsumerWidget {
                       leading: const Icon(Icons.inventory_2_outlined),
                       title: Text(product.name),
                       subtitle: Text(
-                          '${product.sku} · ${Money.format(product.sellPriceMinorUnits, currencySymbol: r'$')} · ${productUnitLabel(context, product.unit)}'),
+                          '${product.sku} · ${Money.format(product.sellPriceMinorUnits)} · ${productUnitLabel(context, product.unit)}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

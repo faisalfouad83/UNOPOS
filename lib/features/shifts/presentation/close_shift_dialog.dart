@@ -34,7 +34,7 @@ Future<void> showCloseShiftDialog(BuildContext context, WidgetRef ref, ShiftReco
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${l10n.commonAmount} (${l10n.commonStatus}: ${Money.format(expected, currencySymbol: r'$')})'),
+          Text('${l10n.commonAmount} (${l10n.commonStatus}: ${Money.format(expected)})'),
           const SizedBox(height: 12),
           TextField(
             controller: controller,

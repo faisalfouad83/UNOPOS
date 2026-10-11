@@ -6,8 +6,8 @@ class AppSettingsTable extends Table {
   TextColumn get storeId => text()();
   TextColumn get defaultLanguage => text().withDefault(const Constant('en'))(); // en/ar/ckb
   TextColumn get themeMode => text().withDefault(const Constant('system'))(); // light/dark/system
-  TextColumn get currencyCode => text().withDefault(const Constant('USD'))();
-  TextColumn get currencySymbol => text().withDefault(const Constant('\$'))();
+  TextColumn get currencyCode => text().withDefault(const Constant('IQD'))();
+  TextColumn get currencySymbol => text().withDefault(const Constant('د.ع'))();
   RealColumn get defaultVatRatePercent => real().withDefault(const Constant(0))();
 
   /// JSON-encoded PrinterConfig (driver type + connection details + paper width).

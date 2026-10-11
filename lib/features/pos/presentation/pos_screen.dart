@@ -128,7 +128,7 @@ class _HeldSalesButton extends ConsumerWidget {
             if (heldSales.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(l10n.posEmptyCart)),
             ...heldSales.map((sale) => ListTile(
                   title: Text((sale.holdLabel?.isNotEmpty ?? false) ? sale.holdLabel! : sale.saleNumber),
-                  subtitle: Text(Money.format(sale.grandTotalMinorUnits, currencySymbol: r'$')),
+                  subtitle: Text(Money.format(sale.grandTotalMinorUnits)),
                   trailing: TextButton(
                     child: Text(l10n.posResumeSale),
                     onPressed: () async {
@@ -283,7 +283,7 @@ class _ProductTile extends ConsumerWidget {
               Text(product.name, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
               Text(
-                Money.format(product.sellPriceMinorUnits, currencySymbol: r'$'),
+                Money.format(product.sellPriceMinorUnits),
                 style: Theme.of(context).textTheme.labelLarge,
               ),
             ],
@@ -327,8 +327,8 @@ class _CartPanel extends ConsumerWidget {
                       ),
                       subtitle: Text(
                         line.discountAmountMinorUnits > 0
-                            ? '${Money.format(line.unitPriceMinorUnits, currencySymbol: r'$')} · -${Money.format(line.discountAmountMinorUnits, currencySymbol: r'$')}'
-                            : Money.format(line.unitPriceMinorUnits, currencySymbol: r'$'),
+                            ? '${Money.format(line.unitPriceMinorUnits)} · -${Money.format(line.discountAmountMinorUnits)}'
+                            : Money.format(line.unitPriceMinorUnits),
                       ),
                       trailing: SizedBox(
                         width: 96,
@@ -340,7 +340,7 @@ class _CartPanel extends ConsumerWidget {
                               onPressed: () =>
                                   ref.read(cartControllerProvider.notifier).setQuantity(line.product.id, line.quantity + 1),
                             ),
-                            Text(Money.format(line.lineTotalMinorUnits, currencySymbol: r'$')),
+                            Text(Money.format(line.lineTotalMinorUnits)),
                           ],
                         ),
                       ),
@@ -359,7 +359,7 @@ class _CartPanel extends ConsumerWidget {
                 children: [
                   Text(l10n.commonTotal, style: Theme.of(context).textTheme.titleMedium),
                   Text(
-                    Money.format(cart.grandTotalMinorUnits, currencySymbol: r'$'),
+                    Money.format(cart.grandTotalMinorUnits),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ],
@@ -438,7 +438,7 @@ Future<void> _showLineDiscountDialog(BuildContext context, WidgetRef ref, CartLi
             ),
           ...discounts.map((d) => ListTile(
                 title: Text(d.name),
-                subtitle: Text(d.type == DiscountType.percentOff ? '${d.value}%' : Money.format(d.value, currencySymbol: r'$')),
+                subtitle: Text(d.type == DiscountType.percentOff ? '${d.value}%' : Money.format(d.value)),
                 onTap: () {
                   ref
                       .read(cartControllerProvider.notifier)

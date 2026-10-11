@@ -98,7 +98,7 @@ class DiscountsSection extends ConsumerWidget {
                           contentPadding: EdgeInsets.zero,
                           title: Text(d.name),
                           trailing: Text(
-                            d.type == DiscountType.percentOff ? '${d.value}%' : Money.format(d.value, currencySymbol: r'$'),
+                            d.type == DiscountType.percentOff ? '${d.value}%' : Money.format(d.value),
                           ),
                         ))
                     .toList(),

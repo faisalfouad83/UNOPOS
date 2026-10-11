@@ -55,7 +55,7 @@ class SuppliersScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${l10n.suppliersBalanceOwed}: ${Money.format(balance, currencySymbol: r'$')}',
+                        '${l10n.suppliersBalanceOwed}: ${Money.format(balance)}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       if (balance > 0)

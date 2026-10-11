@@ -5,7 +5,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
-import '../../printing/domain/receipt_template_builder.dart';
+import '../../printing/presentation/sale_receipt.dart';
 import '../domain/pos_models.dart';
 import 'process_return_dialog.dart';
 
@@ -23,28 +23,16 @@ class SalesHistoryScreen extends ConsumerWidget {
 
   Future<void> _reprint(BuildContext context, WidgetRef ref, SaleRecord sale) async {
     final l10n = AppLocalizations.of(context);
-    final session = ref.read(sessionControllerProvider);
     try {
       final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
-      final productNames = <String, String>{for (final l in sale.lines) l.productId: l.productId};
-      final doc = ReceiptTemplateBuilder.build(
+      final doc = await buildSaleReceipt(
+        inventory: ref.read(inventoryRepositoryProvider),
+        session: ref.read(sessionControllerProvider),
         sale: sale,
-        productNamesById: productNames,
-        storeName: session.store?.displayName ?? '',
-        branchName: '',
-        cashierName: session.employee?.name ?? '',
-        currencySymbol: settings.currencySymbol,
+        settings: settings,
+        l10n: l10n,
       );
-      final printer = buildPrinterService(
-        settings.printerConfig.driverType,
-        paperWidthMm: settings.printerConfig.paperWidthMm,
-      );
-      final address = settings.printerConfig.connectionAddress;
-      if (address != null && address.isNotEmpty) {
-        await printer.connect(address);
-      }
-      await printer.printReceipt(doc);
-      await printer.disconnect();
+      await printReceiptDocument(doc, settings);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.posPrintReceipt)));
       }
@@ -85,7 +73,7 @@ class SalesHistoryScreen extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final sale = filtered[index];
                     return ListTile(
-                      title: Text('${sale.saleNumber} · ${Money.format(sale.grandTotalMinorUnits, currencySymbol: r'$')}'),
+                      title: Text('${sale.saleNumber} · ${Money.format(sale.grandTotalMinorUnits)}'),
                       subtitle: Text(
                         '${sale.paymentMethod?.name ?? ''} · ${AppDateFormat.dateTime(sale.completedAt ?? sale.createdAt)}',
                       ),

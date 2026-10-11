@@ -26,7 +26,7 @@ Future<void> showRecordDebtPaymentDialog(BuildContext context, WidgetRef ref, De
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('${l10n.debtsBalanceOwed}: ${Money.format(entry.balanceRemainingMinorUnits, currencySymbol: r'$')}'),
+            Text('${l10n.debtsBalanceOwed}: ${Money.format(entry.balanceRemainingMinorUnits)}'),
             const SizedBox(height: 12),
             TextField(
               controller: controller,
