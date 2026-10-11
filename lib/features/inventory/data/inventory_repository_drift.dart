@@ -35,6 +35,8 @@ class DriftInventoryRepository implements InventoryRepository {
         reorderLevel: row.reorderLevel,
         imagePath: row.imagePath,
         isActive: row.isActive,
+        wholesalePriceMinorUnits: row.wholesalePriceMinorUnits,
+        expiryDate: row.expiryDate,
       );
 
   StockItemRecord _mapStockItem(StockItem row) => StockItemRecord(
@@ -108,6 +110,8 @@ class DriftInventoryRepository implements InventoryRepository {
             reorderLevel: Value(product.reorderLevel),
             imagePath: Value(product.imagePath),
             createdAt: DateTime.now(),
+            wholesalePriceMinorUnits: Value(product.wholesalePriceMinorUnits),
+            expiryDate: Value(product.expiryDate),
           ),
         );
     return ProductRecord(
@@ -123,6 +127,8 @@ class DriftInventoryRepository implements InventoryRepository {
       taxRateId: product.taxRateId,
       reorderLevel: product.reorderLevel,
       imagePath: product.imagePath,
+      wholesalePriceMinorUnits: product.wholesalePriceMinorUnits,
+      expiryDate: product.expiryDate,
     );
   }
 
@@ -141,6 +147,8 @@ class DriftInventoryRepository implements InventoryRepository {
         reorderLevel: Value(product.reorderLevel),
         imagePath: Value(product.imagePath),
         isActive: Value(product.isActive),
+        wholesalePriceMinorUnits: Value(product.wholesalePriceMinorUnits),
+        expiryDate: Value(product.expiryDate),
       ),
     );
   }

@@ -3170,6 +3170,28 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _wholesalePriceMinorUnitsMeta =
+      const VerificationMeta('wholesalePriceMinorUnits');
+  @override
+  late final GeneratedColumn<int> wholesalePriceMinorUnits =
+      GeneratedColumn<int>(
+        'wholesale_price_minor_units',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _expiryDateMeta = const VerificationMeta(
+    'expiryDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> expiryDate = GeneratedColumn<DateTime>(
+    'expiry_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3186,6 +3208,8 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     imagePath,
     isActive,
     createdAt,
+    wholesalePriceMinorUnits,
+    expiryDate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3299,6 +3323,21 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('wholesale_price_minor_units')) {
+      context.handle(
+        _wholesalePriceMinorUnitsMeta,
+        wholesalePriceMinorUnits.isAcceptableOrUnknown(
+          data['wholesale_price_minor_units']!,
+          _wholesalePriceMinorUnitsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('expiry_date')) {
+      context.handle(
+        _expiryDateMeta,
+        expiryDate.isAcceptableOrUnknown(data['expiry_date']!, _expiryDateMeta),
+      );
+    }
     return context;
   }
 
@@ -3364,6 +3403,14 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      wholesalePriceMinorUnits: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}wholesale_price_minor_units'],
+      ),
+      expiryDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}expiry_date'],
+      ),
     );
   }
 
@@ -3388,6 +3435,12 @@ class Product extends DataClass implements Insertable<Product> {
   final String? imagePath;
   final bool isActive;
   final DateTime createdAt;
+
+  /// Optional second, lower price for wholesale customers.
+  final int? wholesalePriceMinorUnits;
+
+  /// Optional best-before date, for near-expiry alerts.
+  final DateTime? expiryDate;
   const Product({
     required this.id,
     required this.storeId,
@@ -3403,6 +3456,8 @@ class Product extends DataClass implements Insertable<Product> {
     this.imagePath,
     required this.isActive,
     required this.createdAt,
+    this.wholesalePriceMinorUnits,
+    this.expiryDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3429,6 +3484,14 @@ class Product extends DataClass implements Insertable<Product> {
     }
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || wholesalePriceMinorUnits != null) {
+      map['wholesale_price_minor_units'] = Variable<int>(
+        wholesalePriceMinorUnits,
+      );
+    }
+    if (!nullToAbsent || expiryDate != null) {
+      map['expiry_date'] = Variable<DateTime>(expiryDate);
+    }
     return map;
   }
 
@@ -3456,6 +3519,12 @@ class Product extends DataClass implements Insertable<Product> {
           : Value(imagePath),
       isActive: Value(isActive),
       createdAt: Value(createdAt),
+      wholesalePriceMinorUnits: wholesalePriceMinorUnits == null && nullToAbsent
+          ? const Value.absent()
+          : Value(wholesalePriceMinorUnits),
+      expiryDate: expiryDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expiryDate),
     );
   }
 
@@ -3483,6 +3552,10 @@ class Product extends DataClass implements Insertable<Product> {
       imagePath: serializer.fromJson<String?>(json['imagePath']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      wholesalePriceMinorUnits: serializer.fromJson<int?>(
+        json['wholesalePriceMinorUnits'],
+      ),
+      expiryDate: serializer.fromJson<DateTime?>(json['expiryDate']),
     );
   }
   @override
@@ -3503,6 +3576,10 @@ class Product extends DataClass implements Insertable<Product> {
       'imagePath': serializer.toJson<String?>(imagePath),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'wholesalePriceMinorUnits': serializer.toJson<int?>(
+        wholesalePriceMinorUnits,
+      ),
+      'expiryDate': serializer.toJson<DateTime?>(expiryDate),
     };
   }
 
@@ -3521,6 +3598,8 @@ class Product extends DataClass implements Insertable<Product> {
     Value<String?> imagePath = const Value.absent(),
     bool? isActive,
     DateTime? createdAt,
+    Value<int?> wholesalePriceMinorUnits = const Value.absent(),
+    Value<DateTime?> expiryDate = const Value.absent(),
   }) => Product(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -3536,6 +3615,10 @@ class Product extends DataClass implements Insertable<Product> {
     imagePath: imagePath.present ? imagePath.value : this.imagePath,
     isActive: isActive ?? this.isActive,
     createdAt: createdAt ?? this.createdAt,
+    wholesalePriceMinorUnits: wholesalePriceMinorUnits.present
+        ? wholesalePriceMinorUnits.value
+        : this.wholesalePriceMinorUnits,
+    expiryDate: expiryDate.present ? expiryDate.value : this.expiryDate,
   );
   Product copyWithCompanion(ProductsCompanion data) {
     return Product(
@@ -3561,6 +3644,12 @@ class Product extends DataClass implements Insertable<Product> {
       imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      wholesalePriceMinorUnits: data.wholesalePriceMinorUnits.present
+          ? data.wholesalePriceMinorUnits.value
+          : this.wholesalePriceMinorUnits,
+      expiryDate: data.expiryDate.present
+          ? data.expiryDate.value
+          : this.expiryDate,
     );
   }
 
@@ -3580,7 +3669,9 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('reorderLevel: $reorderLevel, ')
           ..write('imagePath: $imagePath, ')
           ..write('isActive: $isActive, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('wholesalePriceMinorUnits: $wholesalePriceMinorUnits, ')
+          ..write('expiryDate: $expiryDate')
           ..write(')'))
         .toString();
   }
@@ -3601,6 +3692,8 @@ class Product extends DataClass implements Insertable<Product> {
     imagePath,
     isActive,
     createdAt,
+    wholesalePriceMinorUnits,
+    expiryDate,
   );
   @override
   bool operator ==(Object other) =>
@@ -3619,7 +3712,9 @@ class Product extends DataClass implements Insertable<Product> {
           other.reorderLevel == this.reorderLevel &&
           other.imagePath == this.imagePath &&
           other.isActive == this.isActive &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.wholesalePriceMinorUnits == this.wholesalePriceMinorUnits &&
+          other.expiryDate == this.expiryDate);
 }
 
 class ProductsCompanion extends UpdateCompanion<Product> {
@@ -3637,6 +3732,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<String?> imagePath;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
+  final Value<int?> wholesalePriceMinorUnits;
+  final Value<DateTime?> expiryDate;
   final Value<int> rowid;
   const ProductsCompanion({
     this.id = const Value.absent(),
@@ -3653,6 +3750,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.imagePath = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.wholesalePriceMinorUnits = const Value.absent(),
+    this.expiryDate = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ProductsCompanion.insert({
@@ -3670,6 +3769,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.imagePath = const Value.absent(),
     this.isActive = const Value.absent(),
     required DateTime createdAt,
+    this.wholesalePriceMinorUnits = const Value.absent(),
+    this.expiryDate = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId),
@@ -3691,6 +3792,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<String>? imagePath,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
+    Expression<int>? wholesalePriceMinorUnits,
+    Expression<DateTime>? expiryDate,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3710,6 +3813,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (imagePath != null) 'image_path': imagePath,
       if (isActive != null) 'is_active': isActive,
       if (createdAt != null) 'created_at': createdAt,
+      if (wholesalePriceMinorUnits != null)
+        'wholesale_price_minor_units': wholesalePriceMinorUnits,
+      if (expiryDate != null) 'expiry_date': expiryDate,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3729,6 +3835,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Value<String?>? imagePath,
     Value<bool>? isActive,
     Value<DateTime>? createdAt,
+    Value<int?>? wholesalePriceMinorUnits,
+    Value<DateTime?>? expiryDate,
     Value<int>? rowid,
   }) {
     return ProductsCompanion(
@@ -3746,6 +3854,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       imagePath: imagePath ?? this.imagePath,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+      wholesalePriceMinorUnits:
+          wholesalePriceMinorUnits ?? this.wholesalePriceMinorUnits,
+      expiryDate: expiryDate ?? this.expiryDate,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3795,6 +3906,14 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (wholesalePriceMinorUnits.present) {
+      map['wholesale_price_minor_units'] = Variable<int>(
+        wholesalePriceMinorUnits.value,
+      );
+    }
+    if (expiryDate.present) {
+      map['expiry_date'] = Variable<DateTime>(expiryDate.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3818,6 +3937,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('imagePath: $imagePath, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
+          ..write('wholesalePriceMinorUnits: $wholesalePriceMinorUnits, ')
+          ..write('expiryDate: $expiryDate, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -18803,6 +18924,8 @@ typedef $$ProductsTableCreateCompanionBuilder =
       Value<String?> imagePath,
       Value<bool> isActive,
       required DateTime createdAt,
+      Value<int?> wholesalePriceMinorUnits,
+      Value<DateTime?> expiryDate,
       Value<int> rowid,
     });
 typedef $$ProductsTableUpdateCompanionBuilder =
@@ -18821,6 +18944,8 @@ typedef $$ProductsTableUpdateCompanionBuilder =
       Value<String?> imagePath,
       Value<bool> isActive,
       Value<DateTime> createdAt,
+      Value<int?> wholesalePriceMinorUnits,
+      Value<DateTime?> expiryDate,
       Value<int> rowid,
     });
 
@@ -18900,6 +19025,16 @@ class $$ProductsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get wholesalePriceMinorUnits => $composableBuilder(
+    column: $table.wholesalePriceMinorUnits,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get expiryDate => $composableBuilder(
+    column: $table.expiryDate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -18982,6 +19117,16 @@ class $$ProductsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get wholesalePriceMinorUnits => $composableBuilder(
+    column: $table.wholesalePriceMinorUnits,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get expiryDate => $composableBuilder(
+    column: $table.expiryDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProductsTableAnnotationComposer
@@ -19042,6 +19187,16 @@ class $$ProductsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get wholesalePriceMinorUnits => $composableBuilder(
+    column: $table.wholesalePriceMinorUnits,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get expiryDate => $composableBuilder(
+    column: $table.expiryDate,
+    builder: (column) => column,
+  );
 }
 
 class $$ProductsTableTableManager
@@ -19086,6 +19241,8 @@ class $$ProductsTableTableManager
                 Value<String?> imagePath = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<int?> wholesalePriceMinorUnits = const Value.absent(),
+                Value<DateTime?> expiryDate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProductsCompanion(
                 id: id,
@@ -19102,6 +19259,8 @@ class $$ProductsTableTableManager
                 imagePath: imagePath,
                 isActive: isActive,
                 createdAt: createdAt,
+                wholesalePriceMinorUnits: wholesalePriceMinorUnits,
+                expiryDate: expiryDate,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -19120,6 +19279,8 @@ class $$ProductsTableTableManager
                 Value<String?> imagePath = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 required DateTime createdAt,
+                Value<int?> wholesalePriceMinorUnits = const Value.absent(),
+                Value<DateTime?> expiryDate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProductsCompanion.insert(
                 id: id,
@@ -19136,6 +19297,8 @@ class $$ProductsTableTableManager
                 imagePath: imagePath,
                 isActive: isActive,
                 createdAt: createdAt,
+                wholesalePriceMinorUnits: wholesalePriceMinorUnits,
+                expiryDate: expiryDate,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

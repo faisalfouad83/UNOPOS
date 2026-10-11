@@ -1461,6 +1461,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paid in {currency}'**
   String posPaidIn(String currency);
+
+  /// No description provided for @importProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import products from Excel'**
+  String get importProductsTitle;
+
+  /// No description provided for @importProductsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use an Excel (.xlsx) or CSV file whose first row has the column names. Name and selling price are required; cost, wholesale price, barcode, category, unit, quantity and expiry date are optional. Products whose barcode already exists are updated.'**
+  String get importProductsHelp;
+
+  /// No description provided for @importDownloadTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Download template'**
+  String get importDownloadTemplate;
+
+  /// No description provided for @importChooseFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get importChooseFile;
+
+  /// No description provided for @importTemplateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Template saved'**
+  String get importTemplateSaved;
+
+  /// No description provided for @importReadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read this file. Save it as .xlsx or .csv and try again.'**
+  String get importReadFailed;
+
+  /// No description provided for @importRowsReady.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} products ready to import'**
+  String importRowsReady(int count);
+
+  /// No description provided for @importMissingColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'The file has no \"{column}\" column'**
+  String importMissingColumn(String column);
+
+  /// No description provided for @importRowProblem.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: missing or invalid {column}'**
+  String importRowProblem(int row, String column);
+
+  /// No description provided for @importProductsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importProductsAction;
+
+  /// No description provided for @importDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done: {created} added, {updated} updated'**
+  String importDone(int created, int updated);
+
+  /// No description provided for @importFailedRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save rows: {rows}'**
+  String importFailedRows(String rows);
 }
 
 class _AppLocalizationsDelegate

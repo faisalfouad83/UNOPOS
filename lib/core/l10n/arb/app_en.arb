@@ -260,5 +260,23 @@
   "settingsExchangeRate": "Dollar exchange rate",
   "settingsExchangeRateHint": "Dinars per 1 US dollar. Leave empty to hide dollar prices.",
   "posPaidIn": "Paid in {currency}",
-  "@posPaidIn": {"placeholders": {"currency": {"type": "String"}}}
+  "@posPaidIn": {"placeholders": {"currency": {"type": "String"}}},
+
+  "importProductsTitle": "Import products from Excel",
+  "importProductsHelp": "Use an Excel (.xlsx) or CSV file whose first row has the column names. Name and selling price are required; cost, wholesale price, barcode, category, unit, quantity and expiry date are optional. Products whose barcode already exists are updated.",
+  "importDownloadTemplate": "Download template",
+  "importChooseFile": "Choose file",
+  "importTemplateSaved": "Template saved",
+  "importReadFailed": "Couldn't read this file. Save it as .xlsx or .csv and try again.",
+  "importRowsReady": "{count} products ready to import",
+  "@importRowsReady": {"placeholders": {"count": {"type": "int"}}},
+  "importMissingColumn": "The file has no \"{column}\" column",
+  "@importMissingColumn": {"placeholders": {"column": {"type": "String"}}},
+  "importRowProblem": "Row {row}: missing or invalid {column}",
+  "@importRowProblem": {"placeholders": {"row": {"type": "int"}, "column": {"type": "String"}}},
+  "importProductsAction": "Import",
+  "importDone": "Done: {created} added, {updated} updated",
+  "@importDone": {"placeholders": {"created": {"type": "int"}, "updated": {"type": "int"}}},
+  "importFailedRows": "Couldn't save rows: {rows}",
+  "@importFailedRows": {"placeholders": {"rows": {"type": "String"}}}
 }

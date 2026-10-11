@@ -707,4 +707,52 @@ class AppLocalizationsCkb extends AppLocalizations {
   String posPaidIn(String currency) {
     return 'دراوە بە $currency';
   }
+
+  @override
+  String get importProductsTitle => 'هێنانی کاڵا لە Excel';
+
+  @override
+  String get importProductsHelp =>
+      'فایلێکی Excel (.xlsx) یان CSV بەکاربهێنە کە ڕیزی یەکەمی ناوی ستوونەکانی تێدایە. ناو و نرخی فرۆشتن پێویستن؛ تێچوو، نرخی کۆ، بارکۆد، پۆل، یەکە، بڕ و بەرواری بەسەرچوون ئارەزوومەندانەن. ئەو کاڵایانەی بارکۆدیان هەیە نوێ دەکرێنەوە.';
+
+  @override
+  String get importDownloadTemplate => 'داگرتنی نموونە';
+
+  @override
+  String get importChooseFile => 'هەڵبژاردنی فایل';
+
+  @override
+  String get importTemplateSaved => 'نموونەکە پاشەکەوت کرا';
+
+  @override
+  String get importReadFailed =>
+      'نەتوانرا فایلەکە بخوێنرێتەوە. وەک ‎.xlsx یان ‎.csv پاشەکەوتی بکە و دووبارە هەوڵبدەرەوە.';
+
+  @override
+  String importRowsReady(int count) {
+    return '$count کاڵا ئامادەی هێنانن';
+  }
+
+  @override
+  String importMissingColumn(String column) {
+    return 'فایلەکە ستوونی \"$column\"ی نییە';
+  }
+
+  @override
+  String importRowProblem(int row, String column) {
+    return 'ڕیزی $row: $column نییە یان هەڵەیە';
+  }
+
+  @override
+  String get importProductsAction => 'هێنان';
+
+  @override
+  String importDone(int created, int updated) {
+    return 'تەواو: $created زیادکرا، $updated نوێکرایەوە';
+  }
+
+  @override
+  String importFailedRows(String rows) {
+    return 'نەتوانرا ئەم ڕیزانە پاشەکەوت بکرێن: $rows';
+  }
 }

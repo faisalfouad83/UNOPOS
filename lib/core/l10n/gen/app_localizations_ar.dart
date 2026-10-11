@@ -707,4 +707,52 @@ class AppLocalizationsAr extends AppLocalizations {
   String posPaidIn(String currency) {
     return 'مدفوع بـ $currency';
   }
+
+  @override
+  String get importProductsTitle => 'استيراد المنتجات من Excel';
+
+  @override
+  String get importProductsHelp =>
+      'استخدم ملف Excel (.xlsx) أو CSV يحتوي الصف الأول فيه على أسماء الأعمدة. الاسم وسعر البيع مطلوبان؛ أما الكلفة وسعر الجملة والباركود والفئة والوحدة والكمية وتاريخ الانتهاء فاختيارية. المنتجات التي يوجد باركودها مسبقاً يتم تحديثها.';
+
+  @override
+  String get importDownloadTemplate => 'تنزيل نموذج';
+
+  @override
+  String get importChooseFile => 'اختيار ملف';
+
+  @override
+  String get importTemplateSaved => 'تم حفظ النموذج';
+
+  @override
+  String get importReadFailed =>
+      'تعذّرت قراءة الملف. احفظه بصيغة ‎.xlsx أو ‎.csv وحاول مجدداً.';
+
+  @override
+  String importRowsReady(int count) {
+    return '$count منتج جاهز للاستيراد';
+  }
+
+  @override
+  String importMissingColumn(String column) {
+    return 'الملف لا يحتوي على عمود \"$column\"';
+  }
+
+  @override
+  String importRowProblem(int row, String column) {
+    return 'الصف $row: $column مفقود أو غير صالح';
+  }
+
+  @override
+  String get importProductsAction => 'استيراد';
+
+  @override
+  String importDone(int created, int updated) {
+    return 'تم: إضافة $created وتحديث $updated';
+  }
+
+  @override
+  String importFailedRows(String rows) {
+    return 'تعذّر حفظ الصفوف: $rows';
+  }
 }

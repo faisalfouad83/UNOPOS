@@ -710,4 +710,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String posPaidIn(String currency) {
     return 'Paid in $currency';
   }
+
+  @override
+  String get importProductsTitle => 'Import products from Excel';
+
+  @override
+  String get importProductsHelp =>
+      'Use an Excel (.xlsx) or CSV file whose first row has the column names. Name and selling price are required; cost, wholesale price, barcode, category, unit, quantity and expiry date are optional. Products whose barcode already exists are updated.';
+
+  @override
+  String get importDownloadTemplate => 'Download template';
+
+  @override
+  String get importChooseFile => 'Choose file';
+
+  @override
+  String get importTemplateSaved => 'Template saved';
+
+  @override
+  String get importReadFailed =>
+      'Couldn\'t read this file. Save it as .xlsx or .csv and try again.';
+
+  @override
+  String importRowsReady(int count) {
+    return '$count products ready to import';
+  }
+
+  @override
+  String importMissingColumn(String column) {
+    return 'The file has no \"$column\" column';
+  }
+
+  @override
+  String importRowProblem(int row, String column) {
+    return 'Row $row: missing or invalid $column';
+  }
+
+  @override
+  String get importProductsAction => 'Import';
+
+  @override
+  String importDone(int created, int updated) {
+    return 'Done: $created added, $updated updated';
+  }
+
+  @override
+  String importFailedRows(String rows) {
+    return 'Couldn\'t save rows: $rows';
+  }
 }

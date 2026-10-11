@@ -37,6 +37,12 @@ class Products extends Table {
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
 
+  /// Optional second, lower price for wholesale customers.
+  IntColumn get wholesalePriceMinorUnits => integer().nullable()();
+
+  /// Optional best-before date, for near-expiry alerts.
+  DateTimeColumn get expiryDate => dateTime().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

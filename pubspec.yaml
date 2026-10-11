@@ -60,6 +60,8 @@ dependencies:
   win32: ^5.9.0
   supabase_flutter: ^2.8.0
 
+  excel: ^4.0.6
+
   flutter_localizations:
     sdk: flutter
 

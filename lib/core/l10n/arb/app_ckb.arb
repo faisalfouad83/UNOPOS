@@ -250,5 +250,18 @@
 
   "settingsExchangeRate": "نرخی دۆلار",
   "settingsExchangeRateHint": "چەند دینار بەرامبەر 1 دۆلار. بەتاڵی بهێڵەرەوە بۆ شاردنەوەی نرخی دۆلار.",
-  "posPaidIn": "دراوە بە {currency}"
+  "posPaidIn": "دراوە بە {currency}",
+
+  "importProductsTitle": "هێنانی کاڵا لە Excel",
+  "importProductsHelp": "فایلێکی Excel (.xlsx) یان CSV بەکاربهێنە کە ڕیزی یەکەمی ناوی ستوونەکانی تێدایە. ناو و نرخی فرۆشتن پێویستن؛ تێچوو، نرخی کۆ، بارکۆد، پۆل، یەکە، بڕ و بەرواری بەسەرچوون ئارەزوومەندانەن. ئەو کاڵایانەی بارکۆدیان هەیە نوێ دەکرێنەوە.",
+  "importDownloadTemplate": "داگرتنی نموونە",
+  "importChooseFile": "هەڵبژاردنی فایل",
+  "importTemplateSaved": "نموونەکە پاشەکەوت کرا",
+  "importReadFailed": "نەتوانرا فایلەکە بخوێنرێتەوە. وەک ‎.xlsx یان ‎.csv پاشەکەوتی بکە و دووبارە هەوڵبدەرەوە.",
+  "importRowsReady": "{count} کاڵا ئامادەی هێنانن",
+  "importMissingColumn": "فایلەکە ستوونی \"{column}\"ی نییە",
+  "importRowProblem": "ڕیزی {row}: {column} نییە یان هەڵەیە",
+  "importProductsAction": "هێنان",
+  "importDone": "تەواو: {created} زیادکرا، {updated} نوێکرایەوە",
+  "importFailedRows": "نەتوانرا ئەم ڕیزانە پاشەکەوت بکرێن: {rows}"
 }

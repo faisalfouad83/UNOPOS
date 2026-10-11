@@ -8,6 +8,7 @@ import '../../auth/domain/session_controller.dart';
 import '../domain/inventory_models.dart';
 import '../domain/product_units.dart';
 import 'product_edit_dialog.dart';
+import 'product_import_dialog.dart';
 import 'qr_label_dialog.dart';
 
 final _productsSearchProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -46,6 +47,11 @@ class ProductsTab extends ConsumerWidget {
                   icon: const Icon(Icons.auto_awesome),
                   tooltip: l10n.inventoryGenerateMissingBarcodes,
                   onPressed: () => _generateMissingBarcodes(context, ref, storeId),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.upload_file),
+                  tooltip: l10n.importProductsTitle,
+                  onPressed: () => showProductImportDialog(context, ref),
                 ),
               ],
             ),

@@ -36,6 +36,8 @@ class ProductRecord {
     this.reorderLevel = 0,
     this.imagePath,
     this.isActive = true,
+    this.wholesalePriceMinorUnits,
+    this.expiryDate,
   });
 
   final String id;
@@ -52,6 +54,12 @@ class ProductRecord {
   final String? imagePath;
   final bool isActive;
 
+  /// Price for wholesale customers; null when the product has none.
+  final int? wholesalePriceMinorUnits;
+
+  /// Best-before date; null when the product doesn't expire.
+  final DateTime? expiryDate;
+
   ProductRecord copyWith({String? sku, String? barcode}) => ProductRecord(
         id: id,
         storeId: storeId,
@@ -66,6 +74,8 @@ class ProductRecord {
         reorderLevel: reorderLevel,
         imagePath: imagePath,
         isActive: isActive,
+        wholesalePriceMinorUnits: wholesalePriceMinorUnits,
+        expiryDate: expiryDate,
       );
 }
 

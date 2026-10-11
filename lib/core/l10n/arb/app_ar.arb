@@ -250,5 +250,18 @@
 
   "settingsExchangeRate": "سعر صرف الدولار",
   "settingsExchangeRateHint": "كم دينار مقابل 1 دولار. اتركه فارغاً لإخفاء أسعار الدولار.",
-  "posPaidIn": "مدفوع بـ {currency}"
+  "posPaidIn": "مدفوع بـ {currency}",
+
+  "importProductsTitle": "استيراد المنتجات من Excel",
+  "importProductsHelp": "استخدم ملف Excel (.xlsx) أو CSV يحتوي الصف الأول فيه على أسماء الأعمدة. الاسم وسعر البيع مطلوبان؛ أما الكلفة وسعر الجملة والباركود والفئة والوحدة والكمية وتاريخ الانتهاء فاختيارية. المنتجات التي يوجد باركودها مسبقاً يتم تحديثها.",
+  "importDownloadTemplate": "تنزيل نموذج",
+  "importChooseFile": "اختيار ملف",
+  "importTemplateSaved": "تم حفظ النموذج",
+  "importReadFailed": "تعذّرت قراءة الملف. احفظه بصيغة ‎.xlsx أو ‎.csv وحاول مجدداً.",
+  "importRowsReady": "{count} منتج جاهز للاستيراد",
+  "importMissingColumn": "الملف لا يحتوي على عمود \"{column}\"",
+  "importRowProblem": "الصف {row}: {column} مفقود أو غير صالح",
+  "importProductsAction": "استيراد",
+  "importDone": "تم: إضافة {created} وتحديث {updated}",
+  "importFailedRows": "تعذّر حفظ الصفوف: {rows}"
 }

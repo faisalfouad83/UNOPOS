@@ -39,7 +39,13 @@ class SupabaseInventoryRepository implements InventoryRepository {
         reorderLevel: (row['reorder_level'] as num?)?.toInt() ?? 0,
         imagePath: row['image_path'] as String?,
         isActive: row['is_active'] as bool? ?? true,
+        wholesalePriceMinorUnits: (row['wholesale_price_minor_units'] as num?)?.toInt(),
+        expiryDate: row['expiry_date'] == null ? null : DateTime.parse(row['expiry_date'] as String),
       );
+
+  static String? _dateOnly(DateTime? d) => d == null
+      ? null
+      : '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   StockItemRecord _mapStockItem(Map<String, dynamic> row) => StockItemRecord(
         id: row['id'] as String,
@@ -122,6 +128,8 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'tax_rate_id': product.taxRateId,
       'reorder_level': product.reorderLevel,
       'image_path': product.imagePath,
+      'wholesale_price_minor_units': product.wholesalePriceMinorUnits,
+      'expiry_date': _dateOnly(product.expiryDate),
     }).select().single();
     return _mapProduct(row);
   }
@@ -140,6 +148,8 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'reorder_level': product.reorderLevel,
       'image_path': product.imagePath,
       'is_active': product.isActive,
+      'wholesale_price_minor_units': product.wholesalePriceMinorUnits,
+      'expiry_date': _dateOnly(product.expiryDate),
     }).eq('id', product.id);
   }
 
