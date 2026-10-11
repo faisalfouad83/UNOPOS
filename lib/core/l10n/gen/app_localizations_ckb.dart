@@ -779,4 +779,35 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get whatsappInvalidPhone => 'ژمارەیەکی دروست بنووسە';
+
+  @override
+  String get posCustomerPhone => 'ژمارەی کڕیار';
+
+  @override
+  String get posCustomerPhoneHint =>
+      'ئارەزوومەندانە — بۆ بیرخستنەوەی پارەدان لە واتساپ';
+
+  @override
+  String get debtsNone => 'هیچ قەرزێک نییە';
+
+  @override
+  String get debtsTotalOutstanding => 'کۆی قەرزەکان';
+
+  @override
+  String debtsSalesCount(int count) {
+    return '$count پسوڵە';
+  }
+
+  @override
+  String debtsDaysOutstanding(int days) {
+    return '$days ڕۆژ';
+  }
+
+  @override
+  String get debtsSendReminder => 'ناردنی بیرخستنەوە لە واتساپ';
+
+  @override
+  String debtsReminderMessage(String name, String store, String amount) {
+    return 'سڵاو $name، بیرخستنەوەیەکی دۆستانەیە لە $store کە بڕی ماوەی قەرزەکەت $amountە. سوپاس!';
+  }
 }

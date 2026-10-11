@@ -273,5 +273,14 @@
   "whatsappSendReceipt": "ناردنی پسوڵە لە واتساپ",
   "whatsappPhone": "ژمارەی واتساپی کڕیار",
   "whatsappSend": "کردنەوەی واتساپ",
-  "whatsappInvalidPhone": "ژمارەیەکی دروست بنووسە"
+  "whatsappInvalidPhone": "ژمارەیەکی دروست بنووسە",
+
+  "posCustomerPhone": "ژمارەی کڕیار",
+  "posCustomerPhoneHint": "ئارەزوومەندانە — بۆ بیرخستنەوەی پارەدان لە واتساپ",
+  "debtsNone": "هیچ قەرزێک نییە",
+  "debtsTotalOutstanding": "کۆی قەرزەکان",
+  "debtsSalesCount": "{count} پسوڵە",
+  "debtsDaysOutstanding": "{days} ڕۆژ",
+  "debtsSendReminder": "ناردنی بیرخستنەوە لە واتساپ",
+  "debtsReminderMessage": "سڵاو {name}، بیرخستنەوەیەکی دۆستانەیە لە {store} کە بڕی ماوەی قەرزەکەت {amount}ە. سوپاس!"
 }

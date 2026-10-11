@@ -1581,6 +1581,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid phone number'**
   String get whatsappInvalidPhone;
+
+  /// No description provided for @posCustomerPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer phone'**
+  String get posCustomerPhone;
+
+  /// No description provided for @posCustomerPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — for WhatsApp payment reminders'**
+  String get posCustomerPhoneHint;
+
+  /// No description provided for @debtsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No outstanding debts'**
+  String get debtsNone;
+
+  /// No description provided for @debtsTotalOutstanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Total outstanding'**
+  String get debtsTotalOutstanding;
+
+  /// No description provided for @debtsSalesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 sale} other{{count} sales}}'**
+  String debtsSalesCount(int count);
+
+  /// No description provided for @debtsDaysOutstanding.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String debtsDaysOutstanding(int days);
+
+  /// No description provided for @debtsSendReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Send WhatsApp reminder'**
+  String get debtsSendReminder;
+
+  /// No description provided for @debtsReminderMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello {name}, this is a friendly reminder from {store} that your outstanding balance is {amount}. Thank you!'**
+  String debtsReminderMessage(String name, String store, String amount);
 }
 
 class _AppLocalizationsDelegate

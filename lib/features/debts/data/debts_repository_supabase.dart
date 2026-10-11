@@ -63,6 +63,11 @@ class SupabaseDebtsRepository implements DebtsRepository {
   }
 
   @override
+  Future<void> updateCustomerPhone(String customerId, String? phone) async {
+    await _client.from('customers').update({'phone': phone}).eq('id', customerId);
+  }
+
+  @override
   Future<DebtLedgerEntryRecord> createDebtEntry({
     required String storeId,
     required String branchId,

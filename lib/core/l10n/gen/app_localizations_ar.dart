@@ -779,4 +779,42 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get whatsappInvalidPhone => 'أدخل رقم هاتف صحيح';
+
+  @override
+  String get posCustomerPhone => 'هاتف الزبون';
+
+  @override
+  String get posCustomerPhoneHint => 'اختياري — لتذكيره بالدفع عبر واتساب';
+
+  @override
+  String get debtsNone => 'لا توجد ديون مستحقة';
+
+  @override
+  String get debtsTotalOutstanding => 'إجمالي الديون';
+
+  @override
+  String debtsSalesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فاتورة',
+      few: '$count فواتير',
+      two: 'فاتورتان',
+      one: 'فاتورة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String debtsDaysOutstanding(int days) {
+    return 'منذ $days يوم';
+  }
+
+  @override
+  String get debtsSendReminder => 'إرسال تذكير عبر واتساب';
+
+  @override
+  String debtsReminderMessage(String name, String store, String amount) {
+    return 'مرحباً $name، نود تذكيركم بأن المبلغ المتبقي عليكم لدى $store هو $amount. شكراً لكم!';
+  }
 }

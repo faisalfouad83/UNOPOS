@@ -288,5 +288,17 @@
   "whatsappSendReceipt": "Send receipt on WhatsApp",
   "whatsappPhone": "Customer's WhatsApp number",
   "whatsappSend": "Open WhatsApp",
-  "whatsappInvalidPhone": "Enter a valid phone number"
+  "whatsappInvalidPhone": "Enter a valid phone number",
+
+  "posCustomerPhone": "Customer phone",
+  "posCustomerPhoneHint": "Optional — for WhatsApp payment reminders",
+  "debtsNone": "No outstanding debts",
+  "debtsTotalOutstanding": "Total outstanding",
+  "debtsSalesCount": "{count, plural, =1{1 sale} other{{count} sales}}",
+  "@debtsSalesCount": {"placeholders": {"count": {"type": "int"}}},
+  "debtsDaysOutstanding": "{days} days",
+  "@debtsDaysOutstanding": {"placeholders": {"days": {"type": "int"}}},
+  "debtsSendReminder": "Send WhatsApp reminder",
+  "debtsReminderMessage": "Hello {name}, this is a friendly reminder from {store} that your outstanding balance is {amount}. Thank you!",
+  "@debtsReminderMessage": {"placeholders": {"name": {"type": "String"}, "store": {"type": "String"}, "amount": {"type": "String"}}}
 }

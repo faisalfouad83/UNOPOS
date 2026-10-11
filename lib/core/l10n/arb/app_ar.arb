@@ -273,5 +273,14 @@
   "whatsappSendReceipt": "إرسال الفاتورة عبر واتساب",
   "whatsappPhone": "رقم واتساب الزبون",
   "whatsappSend": "فتح واتساب",
-  "whatsappInvalidPhone": "أدخل رقم هاتف صحيح"
+  "whatsappInvalidPhone": "أدخل رقم هاتف صحيح",
+
+  "posCustomerPhone": "هاتف الزبون",
+  "posCustomerPhoneHint": "اختياري — لتذكيره بالدفع عبر واتساب",
+  "debtsNone": "لا توجد ديون مستحقة",
+  "debtsTotalOutstanding": "إجمالي الديون",
+  "debtsSalesCount": "{count, plural, =1{فاتورة واحدة} =2{فاتورتان} few{{count} فواتير} other{{count} فاتورة}}",
+  "debtsDaysOutstanding": "منذ {days} يوم",
+  "debtsSendReminder": "إرسال تذكير عبر واتساب",
+  "debtsReminderMessage": "مرحباً {name}، نود تذكيركم بأن المبلغ المتبقي عليكم لدى {store} هو {amount}. شكراً لكم!"
 }

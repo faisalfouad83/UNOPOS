@@ -39,6 +39,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
   _PayMethod _method = _PayMethod.cash;
   final _tenderedController = TextEditingController();
   final _customerNameController = TextEditingController();
+  final _customerPhoneController = TextEditingController();
   bool _submitting = false;
   String? _error;
 
@@ -58,6 +59,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
   void dispose() {
     _tenderedController.dispose();
     _customerNameController.dispose();
+    _customerPhoneController.dispose();
     super.dispose();
   }
 
@@ -114,7 +116,11 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
             changeGivenMinorUnits: change,
             customerNameForPayLater: _method == _PayMethod.payLater ? _customerNameController.text : null,
             resumingHeldSale: cart.resumingHeldSale,
-            extras: foreignPayment ? foreignExtras : const {},
+            extras: {
+              if (foreignPayment) ...foreignExtras,
+              if (_method == _PayMethod.payLater && _customerPhoneController.text.trim().isNotEmpty)
+                'customer_phone': _customerPhoneController.text.trim(),
+            },
           );
 
       ref.read(cartControllerProvider.notifier).clear();
@@ -235,12 +241,23 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
               '${l10n.posChangeDue}: ${Money.format(change > 0 ? change : 0, currencySymbol: widget.settings.currencySymbol)}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-          ] else if (_method == _PayMethod.payLater)
+          ] else if (_method == _PayMethod.payLater) ...[
             TextField(
               controller: _customerNameController,
               autofocus: true,
               decoration: InputDecoration(labelText: l10n.posCustomerName, errorText: _error),
-            )
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _customerPhoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: l10n.posCustomerPhone,
+                helperText: l10n.posCustomerPhoneHint,
+                prefixIcon: const Icon(Icons.phone),
+              ),
+            ),
+          ]
           else if (_error != null)
             Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
           const SizedBox(height: 20),

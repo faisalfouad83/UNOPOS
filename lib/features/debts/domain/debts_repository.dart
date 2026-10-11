@@ -4,6 +4,7 @@ abstract class DebtsRepository {
   Future<CustomerRecord> createCustomer(String storeId, String name, {String? phone, String? address});
   Stream<List<CustomerRecord>> watchCustomers(String storeId);
   Future<CustomerRecord?> findCustomerByName(String storeId, String name);
+  Future<void> updateCustomerPhone(String customerId, String? phone);
 
   Future<DebtLedgerEntryRecord> createDebtEntry({
     required String storeId,

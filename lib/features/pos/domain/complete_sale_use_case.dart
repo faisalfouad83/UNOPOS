@@ -175,6 +175,8 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
       final name = (customerNameForPayLater ?? '').trim();
       var customer = name.isEmpty ? null : await _debtsRepository.findCustomerByName(storeId, name);
       customer ??= await _debtsRepository.createCustomer(storeId, name.isEmpty ? 'Walk-in customer' : name);
+      final phone = (extras['customer_phone'] as String?)?.trim();
+      if (phone != null && phone.isNotEmpty) await _debtsRepository.updateCustomerPhone(customer.id, phone);
       final debtEntry = await _debtsRepository.createDebtEntry(
         storeId: storeId,
         branchId: branchId,

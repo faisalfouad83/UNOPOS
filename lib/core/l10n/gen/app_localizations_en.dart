@@ -782,4 +782,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whatsappInvalidPhone => 'Enter a valid phone number';
+
+  @override
+  String get posCustomerPhone => 'Customer phone';
+
+  @override
+  String get posCustomerPhoneHint =>
+      'Optional — for WhatsApp payment reminders';
+
+  @override
+  String get debtsNone => 'No outstanding debts';
+
+  @override
+  String get debtsTotalOutstanding => 'Total outstanding';
+
+  @override
+  String debtsSalesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sales',
+      one: '1 sale',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String debtsDaysOutstanding(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get debtsSendReminder => 'Send WhatsApp reminder';
+
+  @override
+  String debtsReminderMessage(String name, String store, String amount) {
+    return 'Hello $name, this is a friendly reminder from $store that your outstanding balance is $amount. Thank you!';
+  }
 }
