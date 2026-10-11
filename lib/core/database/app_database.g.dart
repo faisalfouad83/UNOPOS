@@ -15440,6 +15440,18 @@ class $AppSettingsTableTable extends AppSettingsTable
         requiredDuringInsert: false,
         defaultValue: const Constant(5),
       );
+  static const VerificationMeta _usdExchangeRateMeta = const VerificationMeta(
+    'usdExchangeRate',
+  );
+  @override
+  late final GeneratedColumn<double> usdExchangeRate = GeneratedColumn<double>(
+    'usd_exchange_rate',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -15454,6 +15466,7 @@ class $AppSettingsTableTable extends AppSettingsTable
     autoBackupTimeOfDay,
     autoBackupFolderPath,
     lowStockThresholdDefault,
+    usdExchangeRate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -15567,6 +15580,15 @@ class $AppSettingsTableTable extends AppSettingsTable
         ),
       );
     }
+    if (data.containsKey('usd_exchange_rate')) {
+      context.handle(
+        _usdExchangeRateMeta,
+        usdExchangeRate.isAcceptableOrUnknown(
+          data['usd_exchange_rate']!,
+          _usdExchangeRateMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -15624,6 +15646,10 @@ class $AppSettingsTableTable extends AppSettingsTable
         DriftSqlType.int,
         data['${effectivePrefix}low_stock_threshold_default'],
       )!,
+      usdExchangeRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}usd_exchange_rate'],
+      )!,
     );
   }
 
@@ -15649,6 +15675,9 @@ class AppSettingsTableData extends DataClass
   final String autoBackupTimeOfDay;
   final String? autoBackupFolderPath;
   final int lowStockThresholdDefault;
+
+  /// Iraqi dinars per US dollar; 0 = not set (dual-currency display off).
+  final double usdExchangeRate;
   const AppSettingsTableData({
     required this.id,
     required this.storeId,
@@ -15662,6 +15691,7 @@ class AppSettingsTableData extends DataClass
     required this.autoBackupTimeOfDay,
     this.autoBackupFolderPath,
     required this.lowStockThresholdDefault,
+    required this.usdExchangeRate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -15682,6 +15712,7 @@ class AppSettingsTableData extends DataClass
     map['low_stock_threshold_default'] = Variable<int>(
       lowStockThresholdDefault,
     );
+    map['usd_exchange_rate'] = Variable<double>(usdExchangeRate);
     return map;
   }
 
@@ -15701,6 +15732,7 @@ class AppSettingsTableData extends DataClass
           ? const Value.absent()
           : Value(autoBackupFolderPath),
       lowStockThresholdDefault: Value(lowStockThresholdDefault),
+      usdExchangeRate: Value(usdExchangeRate),
     );
   }
 
@@ -15730,6 +15762,7 @@ class AppSettingsTableData extends DataClass
       lowStockThresholdDefault: serializer.fromJson<int>(
         json['lowStockThresholdDefault'],
       ),
+      usdExchangeRate: serializer.fromJson<double>(json['usdExchangeRate']),
     );
   }
   @override
@@ -15750,6 +15783,7 @@ class AppSettingsTableData extends DataClass
       'lowStockThresholdDefault': serializer.toJson<int>(
         lowStockThresholdDefault,
       ),
+      'usdExchangeRate': serializer.toJson<double>(usdExchangeRate),
     };
   }
 
@@ -15766,6 +15800,7 @@ class AppSettingsTableData extends DataClass
     String? autoBackupTimeOfDay,
     Value<String?> autoBackupFolderPath = const Value.absent(),
     int? lowStockThresholdDefault,
+    double? usdExchangeRate,
   }) => AppSettingsTableData(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -15782,6 +15817,7 @@ class AppSettingsTableData extends DataClass
         : this.autoBackupFolderPath,
     lowStockThresholdDefault:
         lowStockThresholdDefault ?? this.lowStockThresholdDefault,
+    usdExchangeRate: usdExchangeRate ?? this.usdExchangeRate,
   );
   AppSettingsTableData copyWithCompanion(AppSettingsTableCompanion data) {
     return AppSettingsTableData(
@@ -15815,6 +15851,9 @@ class AppSettingsTableData extends DataClass
       lowStockThresholdDefault: data.lowStockThresholdDefault.present
           ? data.lowStockThresholdDefault.value
           : this.lowStockThresholdDefault,
+      usdExchangeRate: data.usdExchangeRate.present
+          ? data.usdExchangeRate.value
+          : this.usdExchangeRate,
     );
   }
 
@@ -15832,7 +15871,8 @@ class AppSettingsTableData extends DataClass
           ..write('autoBackupEnabled: $autoBackupEnabled, ')
           ..write('autoBackupTimeOfDay: $autoBackupTimeOfDay, ')
           ..write('autoBackupFolderPath: $autoBackupFolderPath, ')
-          ..write('lowStockThresholdDefault: $lowStockThresholdDefault')
+          ..write('lowStockThresholdDefault: $lowStockThresholdDefault, ')
+          ..write('usdExchangeRate: $usdExchangeRate')
           ..write(')'))
         .toString();
   }
@@ -15851,6 +15891,7 @@ class AppSettingsTableData extends DataClass
     autoBackupTimeOfDay,
     autoBackupFolderPath,
     lowStockThresholdDefault,
+    usdExchangeRate,
   );
   @override
   bool operator ==(Object other) =>
@@ -15867,7 +15908,8 @@ class AppSettingsTableData extends DataClass
           other.autoBackupEnabled == this.autoBackupEnabled &&
           other.autoBackupTimeOfDay == this.autoBackupTimeOfDay &&
           other.autoBackupFolderPath == this.autoBackupFolderPath &&
-          other.lowStockThresholdDefault == this.lowStockThresholdDefault);
+          other.lowStockThresholdDefault == this.lowStockThresholdDefault &&
+          other.usdExchangeRate == this.usdExchangeRate);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
@@ -15883,6 +15925,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
   final Value<String> autoBackupTimeOfDay;
   final Value<String?> autoBackupFolderPath;
   final Value<int> lowStockThresholdDefault;
+  final Value<double> usdExchangeRate;
   final Value<int> rowid;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
@@ -15897,6 +15940,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.autoBackupTimeOfDay = const Value.absent(),
     this.autoBackupFolderPath = const Value.absent(),
     this.lowStockThresholdDefault = const Value.absent(),
+    this.usdExchangeRate = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
@@ -15912,6 +15956,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.autoBackupTimeOfDay = const Value.absent(),
     this.autoBackupFolderPath = const Value.absent(),
     this.lowStockThresholdDefault = const Value.absent(),
+    this.usdExchangeRate = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId);
@@ -15928,6 +15973,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Expression<String>? autoBackupTimeOfDay,
     Expression<String>? autoBackupFolderPath,
     Expression<int>? lowStockThresholdDefault,
+    Expression<double>? usdExchangeRate,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -15947,6 +15993,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
         'auto_backup_folder_path': autoBackupFolderPath,
       if (lowStockThresholdDefault != null)
         'low_stock_threshold_default': lowStockThresholdDefault,
+      if (usdExchangeRate != null) 'usd_exchange_rate': usdExchangeRate,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -15964,6 +16011,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Value<String>? autoBackupTimeOfDay,
     Value<String?>? autoBackupFolderPath,
     Value<int>? lowStockThresholdDefault,
+    Value<double>? usdExchangeRate,
     Value<int>? rowid,
   }) {
     return AppSettingsTableCompanion(
@@ -15981,6 +16029,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
       autoBackupFolderPath: autoBackupFolderPath ?? this.autoBackupFolderPath,
       lowStockThresholdDefault:
           lowStockThresholdDefault ?? this.lowStockThresholdDefault,
+      usdExchangeRate: usdExchangeRate ?? this.usdExchangeRate,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -16032,6 +16081,9 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
         lowStockThresholdDefault.value,
       );
     }
+    if (usdExchangeRate.present) {
+      map['usd_exchange_rate'] = Variable<double>(usdExchangeRate.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -16053,6 +16105,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
           ..write('autoBackupTimeOfDay: $autoBackupTimeOfDay, ')
           ..write('autoBackupFolderPath: $autoBackupFolderPath, ')
           ..write('lowStockThresholdDefault: $lowStockThresholdDefault, ')
+          ..write('usdExchangeRate: $usdExchangeRate, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -24739,6 +24792,7 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder =
       Value<String> autoBackupTimeOfDay,
       Value<String?> autoBackupFolderPath,
       Value<int> lowStockThresholdDefault,
+      Value<double> usdExchangeRate,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder =
@@ -24755,6 +24809,7 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder =
       Value<String> autoBackupTimeOfDay,
       Value<String?> autoBackupFolderPath,
       Value<int> lowStockThresholdDefault,
+      Value<double> usdExchangeRate,
       Value<int> rowid,
     });
 
@@ -24824,6 +24879,11 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<int> get lowStockThresholdDefault => $composableBuilder(
     column: $table.lowStockThresholdDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get usdExchangeRate => $composableBuilder(
+    column: $table.usdExchangeRate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -24896,6 +24956,11 @@ class $$AppSettingsTableTableOrderingComposer
     column: $table.lowStockThresholdDefault,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get usdExchangeRate => $composableBuilder(
+    column: $table.usdExchangeRate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -24960,6 +25025,11 @@ class $$AppSettingsTableTableAnnotationComposer
     column: $table.lowStockThresholdDefault,
     builder: (column) => column,
   );
+
+  GeneratedColumn<double> get usdExchangeRate => $composableBuilder(
+    column: $table.usdExchangeRate,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableTableManager
@@ -25011,6 +25081,7 @@ class $$AppSettingsTableTableTableManager
                 Value<String> autoBackupTimeOfDay = const Value.absent(),
                 Value<String?> autoBackupFolderPath = const Value.absent(),
                 Value<int> lowStockThresholdDefault = const Value.absent(),
+                Value<double> usdExchangeRate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion(
                 id: id,
@@ -25025,6 +25096,7 @@ class $$AppSettingsTableTableTableManager
                 autoBackupTimeOfDay: autoBackupTimeOfDay,
                 autoBackupFolderPath: autoBackupFolderPath,
                 lowStockThresholdDefault: lowStockThresholdDefault,
+                usdExchangeRate: usdExchangeRate,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -25041,6 +25113,7 @@ class $$AppSettingsTableTableTableManager
                 Value<String> autoBackupTimeOfDay = const Value.absent(),
                 Value<String?> autoBackupFolderPath = const Value.absent(),
                 Value<int> lowStockThresholdDefault = const Value.absent(),
+                Value<double> usdExchangeRate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion.insert(
                 id: id,
@@ -25055,6 +25128,7 @@ class $$AppSettingsTableTableTableManager
                 autoBackupTimeOfDay: autoBackupTimeOfDay,
                 autoBackupFolderPath: autoBackupFolderPath,
                 lowStockThresholdDefault: lowStockThresholdDefault,
+                usdExchangeRate: usdExchangeRate,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

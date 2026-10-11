@@ -16,6 +16,7 @@ class ReceiptTemplateBuilder {
     required String currencySymbol,
     String footerText = 'Thank you for shopping with us!',
     ReceiptLabels labels = const ReceiptLabels(),
+    List<(String, String)> extraRows = const [],
   }) {
     return ReceiptDocument(
       storeName: storeName,
@@ -50,6 +51,7 @@ class ReceiptTemplateBuilder {
       currencySymbol: currencySymbol,
       footerText: footerText,
       labels: labels,
+      extraRows: extraRows,
     );
   }
 }

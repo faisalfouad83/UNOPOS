@@ -23,6 +23,7 @@ class DriftSettingsRepository implements SettingsRepository {
         autoBackupTimeOfDay: row.autoBackupTimeOfDay,
         autoBackupFolderPath: row.autoBackupFolderPath,
         lowStockThresholdDefault: row.lowStockThresholdDefault,
+        usdExchangeRate: row.usdExchangeRate,
       );
 
   @override
@@ -65,6 +66,7 @@ class DriftSettingsRepository implements SettingsRepository {
         autoBackupTimeOfDay: Value(settings.autoBackupTimeOfDay),
         autoBackupFolderPath: Value(settings.autoBackupFolderPath),
         lowStockThresholdDefault: Value(settings.lowStockThresholdDefault),
+        usdExchangeRate: Value(settings.usdExchangeRate),
       ),
     );
   }

@@ -18,6 +18,9 @@ class AppSettingsTable extends Table {
   TextColumn get autoBackupFolderPath => text().nullable()();
   IntColumn get lowStockThresholdDefault => integer().withDefault(const Constant(5))();
 
+  /// Iraqi dinars per US dollar; 0 = not set (dual-currency display off).
+  RealColumn get usdExchangeRate => real().withDefault(const Constant(0))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

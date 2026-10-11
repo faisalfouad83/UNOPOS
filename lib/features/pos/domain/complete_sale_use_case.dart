@@ -53,6 +53,7 @@ abstract class CompleteSaleUseCase {
     int? changeGivenMinorUnits,
     String? customerNameForPayLater,
     SaleRecord? resumingHeldSale,
+    Map<String, dynamic> extras = const {},
   });
 }
 
@@ -111,6 +112,7 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
     int? changeGivenMinorUnits,
     String? customerNameForPayLater,
     SaleRecord? resumingHeldSale,
+    Map<String, dynamic> extras = const {},
   }) async {
     final sale = resumingHeldSale ??
         await _posRepository.createSale(
@@ -253,6 +255,7 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
     int? changeGivenMinorUnits,
     String? customerNameForPayLater,
     SaleRecord? resumingHeldSale,
+    Map<String, dynamic> extras = const {},
   }) async {
     final clientSaleId = IdGenerator.newId();
     final soldAt = DateTime.now();
@@ -279,6 +282,7 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       'p_customer_name_for_pay_later': customerNameForPayLater,
       'p_resuming_sale_id': resumingHeldSale?.id,
       'p_sold_at': soldAt.toUtc().toIso8601String(),
+      'p_extras': extras,
     };
 
     final Map<String, dynamic> json;

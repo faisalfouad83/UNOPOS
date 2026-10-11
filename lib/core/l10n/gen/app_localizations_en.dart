@@ -698,4 +698,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get offlineSaleSaved =>
       'No internet — sale saved on this device and will be sent automatically';
+
+  @override
+  String get settingsExchangeRate => 'Dollar exchange rate';
+
+  @override
+  String get settingsExchangeRateHint =>
+      'Dinars per 1 US dollar. Leave empty to hide dollar prices.';
+
+  @override
+  String posPaidIn(String currency) {
+    return 'Paid in $currency';
+  }
 }

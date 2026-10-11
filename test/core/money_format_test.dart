@@ -20,4 +20,18 @@ void main() {
     Money.currency = CurrencyInfo.iqd;
     expect(Money.format(1000), '10 د.ع');
   });
+
+  test('exchange rate converts dollars to dinars and back', () {
+    const rate = ExchangeRate(storeCurrency: CurrencyInfo.iqd, iqdPerUsd: 1500);
+    expect(rate.foreign.code, 'USD');
+    expect(rate.toStore(2000), 3000000); // $20 -> 30,000 IQD
+    expect(rate.toForeign(3000000), 2000);
+    expect(rate.label, '1 USD = 1,500 IQD');
+  });
+
+  test('a dollar store converts dinars the other way', () {
+    const rate = ExchangeRate(storeCurrency: CurrencyInfo.usd, iqdPerUsd: 1500);
+    expect(rate.foreign.code, 'IQD');
+    expect(rate.toStore(1500000), 1000); // 15,000 IQD -> $10
+  });
 }

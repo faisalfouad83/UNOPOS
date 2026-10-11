@@ -695,4 +695,16 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get offlineSaleSaved =>
       'لا يوجد إنترنت — تم حفظ البيع على الجهاز وسيُرسل تلقائياً';
+
+  @override
+  String get settingsExchangeRate => 'سعر صرف الدولار';
+
+  @override
+  String get settingsExchangeRateHint =>
+      'كم دينار مقابل 1 دولار. اتركه فارغاً لإخفاء أسعار الدولار.';
+
+  @override
+  String posPaidIn(String currency) {
+    return 'مدفوع بـ $currency';
+  }
 }

@@ -1443,6 +1443,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No internet — sale saved on this device and will be sent automatically'**
   String get offlineSaleSaved;
+
+  /// No description provided for @settingsExchangeRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Dollar exchange rate'**
+  String get settingsExchangeRate;
+
+  /// No description provided for @settingsExchangeRateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinars per 1 US dollar. Leave empty to hide dollar prices.'**
+  String get settingsExchangeRateHint;
+
+  /// No description provided for @posPaidIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid in {currency}'**
+  String posPaidIn(String currency);
 }
 
 class _AppLocalizationsDelegate

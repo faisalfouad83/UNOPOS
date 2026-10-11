@@ -70,6 +70,7 @@ class ReceiptPdf {
             row(labels.payment, doc.paymentMethodLabel),
             if (doc.amountTenderedMinorUnits != null) row(labels.tendered, money(doc.amountTenderedMinorUnits!)),
             if ((doc.changeGivenMinorUnits ?? 0) > 0) row(labels.change, money(doc.changeGivenMinorUnits!)),
+            for (final (label, value) in doc.extraRows) row(label, value),
             if (doc.isPayLater) ...[
               pw.SizedBox(height: 4),
               pw.Center(

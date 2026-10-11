@@ -101,6 +101,19 @@ class GeneralSettingsSection extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            TextFormField(
+              initialValue: settings.usdExchangeRate > 0 ? settings.usdExchangeRate.toStringAsFixed(0) : '',
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,4}'))],
+              decoration: InputDecoration(
+                labelText: l10n.settingsExchangeRate,
+                helperText: l10n.settingsExchangeRateHint,
+                suffixText: 'IQD / 1 USD',
+              ),
+              onFieldSubmitted: (value) =>
+                  _update(ref, settings.copyWith(usdExchangeRate: double.tryParse(value) ?? 0)),
+            ),
           ],
         ),
       ),

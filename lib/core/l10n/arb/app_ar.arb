@@ -246,5 +246,9 @@
   "receiptThankYou": "شكراً لتسوقكم معنا!",
 
   "offlinePendingSales": "{count} بانتظار الإرسال",
-  "offlineSaleSaved": "لا يوجد إنترنت — تم حفظ البيع على الجهاز وسيُرسل تلقائياً"
+  "offlineSaleSaved": "لا يوجد إنترنت — تم حفظ البيع على الجهاز وسيُرسل تلقائياً",
+
+  "settingsExchangeRate": "سعر صرف الدولار",
+  "settingsExchangeRateHint": "كم دينار مقابل 1 دولار. اتركه فارغاً لإخفاء أسعار الدولار.",
+  "posPaidIn": "مدفوع بـ {currency}"
 }

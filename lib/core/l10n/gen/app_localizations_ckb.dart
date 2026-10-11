@@ -695,4 +695,16 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get offlineSaleSaved =>
       'ئینتەرنێت نییە — فرۆشتن لەسەر ئامێرەکە پاشەکەوت کرا و خۆکارانە دەنێردرێت';
+
+  @override
+  String get settingsExchangeRate => 'نرخی دۆلار';
+
+  @override
+  String get settingsExchangeRateHint =>
+      'چەند دینار بەرامبەر 1 دۆلار. بەتاڵی بهێڵەرەوە بۆ شاردنەوەی نرخی دۆلار.';
+
+  @override
+  String posPaidIn(String currency) {
+    return 'دراوە بە $currency';
+  }
 }

@@ -255,5 +255,10 @@
 
   "offlinePendingSales": "{count} offline",
   "@offlinePendingSales": {"placeholders": {"count": {"type": "int"}}},
-  "offlineSaleSaved": "No internet — sale saved on this device and will be sent automatically"
+  "offlineSaleSaved": "No internet — sale saved on this device and will be sent automatically",
+
+  "settingsExchangeRate": "Dollar exchange rate",
+  "settingsExchangeRateHint": "Dinars per 1 US dollar. Leave empty to hide dollar prices.",
+  "posPaidIn": "Paid in {currency}",
+  "@posPaidIn": {"placeholders": {"currency": {"type": "String"}}}
 }

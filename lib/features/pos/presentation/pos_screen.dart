@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
+import '../../../core/store_settings_provider.dart';
 import '../../../core/theming/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
@@ -302,6 +303,10 @@ class _CartPanel extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final cart = ref.watch(cartControllerProvider);
     final session = ref.watch(sessionControllerProvider);
+    final storeSettings = ref.watch(currentStoreSettingsProvider).valueOrNull;
+    final rate = storeSettings == null
+        ? null
+        : ExchangeRate(storeCurrency: Money.currency, iqdPerUsd: storeSettings.usdExchangeRate);
 
     return Column(
       children: [
@@ -364,6 +369,14 @@ class _CartPanel extends ConsumerWidget {
                   ),
                 ],
               ),
+              if (rate != null && rate.isSet && cart.grandTotalMinorUnits > 0)
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Text(
+                    '≈ ${rate.foreign.format(rate.toForeign(cart.grandTotalMinorUnits))}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
               const SizedBox(height: 12),
               Row(
                 children: [

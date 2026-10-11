@@ -132,6 +132,9 @@ class EscPosBuilder {
     if (doc.changeGivenMinorUnits != null && doc.changeGivenMinorUnits! > 0) {
       b.text(twoColumn(doc.labels.change, _money(doc.changeGivenMinorUnits!, doc.currencySymbol), paperWidthChars));
     }
+    for (final (label, value) in doc.extraRows) {
+      b.text(twoColumn(label, value, paperWidthChars));
+    }
     if (doc.isPayLater) {
       b
         ..feed()

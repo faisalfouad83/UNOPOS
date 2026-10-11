@@ -25,6 +25,7 @@ class SupabaseSettingsRepository implements SettingsRepository {
         autoBackupTimeOfDay: row['auto_backup_time_of_day'] as String,
         autoBackupFolderPath: row['auto_backup_folder_path'] as String?,
         lowStockThresholdDefault: (row['low_stock_threshold_default'] as num).toInt(),
+        usdExchangeRate: (row['usd_exchange_rate'] as num?)?.toDouble() ?? 0,
       );
 
   @override
@@ -85,6 +86,7 @@ class SupabaseSettingsRepository implements SettingsRepository {
       'auto_backup_time_of_day': settings.autoBackupTimeOfDay,
       'auto_backup_folder_path': settings.autoBackupFolderPath,
       'low_stock_threshold_default': settings.lowStockThresholdDefault,
+      'usd_exchange_rate': settings.usdExchangeRate,
     }).eq('store_id', settings.storeId);
   }
 }

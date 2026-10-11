@@ -34,6 +34,7 @@ Future<ReceiptDocument> buildSaleReceipt({
   required SaleRecord sale,
   required AppSettingsRecord settings,
   required AppLocalizations l10n,
+  List<(String, String)> extraRows = const [],
 }) async {
   final productNames = <String, String>{};
   for (final productId in sale.lines.map((l) => l.productId).toSet()) {
@@ -61,6 +62,7 @@ Future<ReceiptDocument> buildSaleReceipt({
     currencySymbol: settings.currencySymbol,
     footerText: l10n.receiptThankYou,
     labels: receiptLabelsFor(l10n),
+    extraRows: extraRows,
   );
 }
 

@@ -72,6 +72,7 @@ class ReceiptDocument {
     required this.currencySymbol,
     this.footerText = 'Thank you!',
     this.labels = const ReceiptLabels(),
+    this.extraRows = const [],
   });
 
   final String storeName;
@@ -95,6 +96,10 @@ class ReceiptDocument {
   final String footerText;
   final ReceiptLabels labels;
 
+  /// Additional label/value rows printed after the payment details (e.g.
+  /// the amount paid in a foreign currency and the rate used).
+  final List<(String, String)> extraRows;
+
   /// Every piece of text the receipt prints, for deciding whether it can go
   /// out as plain printer text or needs rendering (e.g. Arabic).
   Iterable<String> get allText sync* {
@@ -115,5 +120,9 @@ class ReceiptDocument {
     yield labels.subtotal;
     yield labels.total;
     yield labels.payLaterBanner;
+    for (final (label, value) in extraRows) {
+      yield label;
+      yield value;
+    }
   }
 }

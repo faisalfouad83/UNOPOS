@@ -41,6 +41,18 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
   bool _submitting = false;
   String? _error;
 
+  /// Cash handed over in the other currency of the IQD/USD pair.
+  bool _payInForeign = false;
+
+  ExchangeRate get _rate => ExchangeRate(storeCurrency: Money.currency, iqdPerUsd: widget.settings.usdExchangeRate);
+
+  /// What was typed into the tendered field, in minor units of whichever
+  /// currency it was entered in.
+  int get _enteredMinor => Money.toMinorUnits(double.tryParse(_tenderedController.text) ?? 0);
+
+  /// The tendered amount in the store's currency.
+  int get _tenderedInStoreCurrency => _payInForeign ? _rate.toStore(_enteredMinor) : _enteredMinor;
+
   @override
   void dispose() {
     _tenderedController.dispose();
@@ -67,13 +79,23 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
       int? tendered;
       int? change;
       if (_method == _PayMethod.cash) {
-        tendered = Money.toMinorUnits(double.tryParse(_tenderedController.text) ?? 0);
+        tendered = _tenderedInStoreCurrency;
         if (tendered < cart.grandTotalMinorUnits) {
           setState(() => _error = l10n.errorRequired);
           return;
         }
         change = tendered - cart.grandTotalMinorUnits;
       }
+
+      final foreignPayment = _method == _PayMethod.cash && _payInForeign && _rate.isSet;
+      final foreignExtras = <String, dynamic>{
+        'paid_currency': _rate.foreign.code,
+        'exchange_rate': _rate.iqdPerUsd,
+        'foreign_tendered_minor_units': _enteredMinor,
+      };
+      final receiptExtraRows = foreignPayment
+          ? [(l10n.posPaidIn(_rate.foreign.code), '${_rate.foreign.format(_enteredMinor)} · ${_rate.label}')]
+          : const <(String, String)>[];
 
       final paymentMethod = switch (_method) {
         _PayMethod.cash => SalePaymentMethod.cash,
@@ -91,6 +113,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
             changeGivenMinorUnits: change,
             customerNameForPayLater: _method == _PayMethod.payLater ? _customerNameController.text : null,
             resumingHeldSale: cart.resumingHeldSale,
+            extras: foreignPayment ? foreignExtras : const {},
           );
 
       ref.read(cartControllerProvider.notifier).clear();
@@ -105,7 +128,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
         );
       }
 
-      await _printReceipt(result.sale, session, inventory, l10n);
+      await _printReceipt(result.sale, session, inventory, l10n, receiptExtraRows);
     } catch (_) {
       setState(() => _error = l10n.errorGeneric);
     } finally {
@@ -113,7 +136,13 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
     }
   }
 
-  Future<void> _printReceipt(SaleRecord sale, SessionState session, InventoryRepository inventory, AppLocalizations l10n) async {
+  Future<void> _printReceipt(
+    SaleRecord sale,
+    SessionState session,
+    InventoryRepository inventory,
+    AppLocalizations l10n,
+    List<(String, String)> extraRows,
+  ) async {
     if (widget.settings.printerConfig.driverType == 'none') return;
     try {
       final doc = await buildSaleReceipt(
@@ -122,6 +151,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
         sale: sale,
         settings: widget.settings,
         l10n: l10n,
+        extraRows: extraRows,
       );
       await printReceiptDocument(doc, widget.settings);
     } catch (_) {
@@ -133,7 +163,8 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final cart = ref.watch(cartControllerProvider);
-    final tendered = Money.toMinorUnits(double.tryParse(_tenderedController.text) ?? 0);
+    final rate = _rate;
+    final tendered = _tenderedInStoreCurrency;
     final change = tendered - cart.grandTotalMinorUnits;
 
     return Padding(
@@ -153,6 +184,11 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
             Money.format(cart.grandTotalMinorUnits, currencySymbol: widget.settings.currencySymbol),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
+          if (rate.isSet)
+            Text(
+              '≈ ${rate.foreign.format(rate.toForeign(cart.grandTotalMinorUnits))}  ·  ${rate.label}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           const SizedBox(height: 16),
           SegmentedButton<_PayMethod>(
             segments: [
@@ -165,12 +201,31 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
           ),
           const SizedBox(height: 16),
           if (_method == _PayMethod.cash) ...[
+            if (rate.isSet) ...[
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment(value: false, label: Text(Money.currency.code)),
+                  ButtonSegment(value: true, label: Text(rate.foreign.code)),
+                ],
+                selected: {_payInForeign},
+                onSelectionChanged: (s) => setState(() {
+                  _payInForeign = s.first;
+                  _tenderedController.clear();
+                }),
+              ),
+              const SizedBox(height: 12),
+            ],
             TextField(
               controller: _tenderedController,
               autofocus: true,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-              decoration: InputDecoration(labelText: l10n.posAmountTendered, errorText: _error),
+              decoration: InputDecoration(
+                labelText: l10n.posAmountTendered,
+                suffixText: _payInForeign ? rate.foreign.code : Money.currency.code,
+                helperText: _payInForeign && _enteredMinor > 0 ? '= ${Money.format(tendered)}' : null,
+                errorText: _error,
+              ),
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 8),

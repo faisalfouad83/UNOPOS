@@ -54,6 +54,32 @@ class CurrencyInfo {
   }
 }
 
+/// Converts between the store's currency and the other one of the
+/// IQD/USD pair, at [iqdPerUsd] dinars to the dollar. Amounts are in minor
+/// units (×100) on both sides, like everywhere else.
+class ExchangeRate {
+  const ExchangeRate({required this.storeCurrency, required this.iqdPerUsd});
+
+  final CurrencyInfo storeCurrency;
+  final double iqdPerUsd;
+
+  bool get isSet => iqdPerUsd > 0;
+
+  bool get _storeIsIqd => storeCurrency.code.toUpperCase() == 'IQD';
+
+  /// The currency customers may also pay in.
+  CurrencyInfo get foreign => _storeIsIqd ? CurrencyInfo.usd : CurrencyInfo.iqd;
+
+  int toStore(int foreignMinor) =>
+      (_storeIsIqd ? foreignMinor * iqdPerUsd : foreignMinor / iqdPerUsd).round();
+
+  int toForeign(int storeMinor) =>
+      (_storeIsIqd ? storeMinor / iqdPerUsd : storeMinor * iqdPerUsd).round();
+
+  /// e.g. "1 USD = 1,500 IQD".
+  String get label => '1 USD = ${NumberFormat('#,##0.##', 'en').format(iqdPerUsd)} IQD';
+}
+
 class AppDateFormat {
   const AppDateFormat._();
 

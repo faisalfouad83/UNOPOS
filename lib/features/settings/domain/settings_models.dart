@@ -55,6 +55,7 @@ class AppSettingsRecord {
     this.autoBackupTimeOfDay = '22:00',
     this.autoBackupFolderPath,
     this.lowStockThresholdDefault = 5,
+    this.usdExchangeRate = 0,
   });
 
   final String storeId;
@@ -69,6 +70,9 @@ class AppSettingsRecord {
   final String? autoBackupFolderPath;
   final int lowStockThresholdDefault;
 
+  /// Iraqi dinars per US dollar; 0 when not set.
+  final double usdExchangeRate;
+
   AppSettingsRecord copyWith({
     String? defaultLanguage,
     AppThemeMode? themeMode,
@@ -80,6 +84,7 @@ class AppSettingsRecord {
     String? autoBackupTimeOfDay,
     String? autoBackupFolderPath,
     int? lowStockThresholdDefault,
+    double? usdExchangeRate,
   }) =>
       AppSettingsRecord(
         storeId: storeId,
@@ -93,5 +98,6 @@ class AppSettingsRecord {
         autoBackupTimeOfDay: autoBackupTimeOfDay ?? this.autoBackupTimeOfDay,
         autoBackupFolderPath: autoBackupFolderPath ?? this.autoBackupFolderPath,
         lowStockThresholdDefault: lowStockThresholdDefault ?? this.lowStockThresholdDefault,
+        usdExchangeRate: usdExchangeRate ?? this.usdExchangeRate,
       );
 }
