@@ -384,5 +384,7 @@
   "developerCodeActivatedOn": "لە {date} چالاک کرا",
   "developerCodeExpiresIn": "دوای {days} ڕۆژ بەسەردەچێت ({date})",
   "developerCodeExpiredOn": "لە {date} بەسەرچوو",
-  "developerLocalStatusNote": "وەشانی ناوخۆیی: تەنها چالاککردنەکانی ئەم ئامێرە پیشان دەدرێن."
+  "developerLocalStatusNote": "وەشانی ناوخۆیی: تەنها چالاککردنەکانی ئەم ئامێرە پیشان دەدرێن.",
+
+  "roleDeveloper": "گەشەپێدەر"
 }

@@ -1133,4 +1133,7 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get developerLocalStatusNote =>
       'وەشانی ناوخۆیی: تەنها چالاککردنەکانی ئەم ئامێرە پیشان دەدرێن.';
+
+  @override
+  String get roleDeveloper => 'گەشەپێدەر';
 }

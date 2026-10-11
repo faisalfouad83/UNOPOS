@@ -2175,6 +2175,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Offline version: only activations on this device are shown.'**
   String get developerLocalStatusNote;
+
+  /// No description provided for @roleDeveloper.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer'**
+  String get roleDeveloper;
 }
 
 class _AppLocalizationsDelegate

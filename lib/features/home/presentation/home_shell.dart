@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../app/app.dart';
+import '../../../core/constants/roles.dart';
+import '../../../core/providers.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/theming/app_theme.dart';
 import '../../../core/routing/route_guard.dart';
@@ -99,6 +102,7 @@ class HomeShell extends ConsumerWidget {
               const OfflineSyncIndicator(),
               const _LiveClock(),
               const SizedBox(width: 8),
+              const _LanguageMenu(),
               const NotificationBell(),
               PopupMenuButton<String>(
                 onSelected: (value) {
@@ -110,7 +114,7 @@ class HomeShell extends ConsumerWidget {
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     enabled: false,
-                    child: Text('${session.employee?.name ?? ''} · ${session.role?.name ?? ''}'),
+                    child: Text('${session.employee?.name ?? ''} · ${roleLabel(l10n, session.role)}'),
                   ),
                   PopupMenuItem(value: 'signOut', child: Text(l10n.actionSignOut)),
                 ],
@@ -124,7 +128,20 @@ class HomeShell extends ConsumerWidget {
                         style: const TextStyle(fontSize: 12),
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(session.employee?.name ?? '', style: Theme.of(context).textTheme.labelMedium),
+                        Text(
+                          roleLabel(l10n, session.role),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                        ),
+                      ],
+                    ),
                     const Icon(Icons.arrow_drop_down),
                   ],
                 ),
@@ -214,6 +231,45 @@ class _LiveClockState extends State<_LiveClock> {
           DateFormat('EEE, MMM d').format(_now),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurface.withValues(alpha: 0.6)),
         ),
+      ],
+    );
+  }
+}
+
+/// The account's role in the store's language (shown beside the account).
+String roleLabel(AppLocalizations l10n, SessionRole? role) => switch (role) {
+      SessionRole.owner => l10n.hrRoleOwner,
+      SessionRole.manager => l10n.hrRoleManager,
+      SessionRole.cashier => l10n.hrRoleCashier,
+      SessionRole.warehouseManager => l10n.hrRoleWarehouseManager,
+      SessionRole.developer => l10n.roleDeveloper,
+      null => '',
+    };
+
+/// Switch the app language from the top bar; saved as the store's language.
+class _LanguageMenu extends ConsumerWidget {
+  const _LanguageMenu();
+
+  static const _languages = [('ar', 'العربية'), ('en', 'English'), ('ckb', 'کوردی')];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final current = ref.watch(appLocaleProvider).languageCode;
+    return PopupMenuButton<String>(
+      tooltip: l10n.settingsLanguage,
+      icon: const Icon(Icons.translate),
+      onSelected: (code) async {
+        ref.read(appLocaleProvider.notifier).state = Locale(code);
+        final storeId = ref.read(sessionControllerProvider).store?.id;
+        if (storeId == null) return;
+        final repo = ref.read(settingsRepositoryProvider);
+        final settings = await repo.ensureSettings(storeId);
+        await repo.updateSettings(settings.copyWith(defaultLanguage: code));
+      },
+      itemBuilder: (context) => [
+        for (final (code, name) in _languages)
+          CheckedPopupMenuItem(value: code, checked: code == current, child: Text(name)),
       ],
     );
   }

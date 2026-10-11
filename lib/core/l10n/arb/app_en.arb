@@ -419,5 +419,7 @@
   "@developerCodeExpiresIn": {"placeholders": {"days": {"type": "int"}, "date": {"type": "String"}}},
   "developerCodeExpiredOn": "Expired on {date}",
   "@developerCodeExpiredOn": {"placeholders": {"date": {"type": "String"}}},
-  "developerLocalStatusNote": "Offline version: only activations on this device are shown."
+  "developerLocalStatusNote": "Offline version: only activations on this device are shown.",
+
+  "roleDeveloper": "Developer"
 }

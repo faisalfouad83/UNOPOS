@@ -384,5 +384,7 @@
   "developerCodeActivatedOn": "تاريخ التفعيل {date}",
   "developerCodeExpiresIn": "ينتهي بعد {days} يوم ({date})",
   "developerCodeExpiredOn": "انتهى في {date}",
-  "developerLocalStatusNote": "النسخة المحلية: يظهر فقط التفعيل الذي تم على هذا الجهاز."
+  "developerLocalStatusNote": "النسخة المحلية: يظهر فقط التفعيل الذي تم على هذا الجهاز.",
+
+  "roleDeveloper": "المطوّر"
 }

@@ -1142,4 +1142,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get developerLocalStatusNote =>
       'Offline version: only activations on this device are shown.';
+
+  @override
+  String get roleDeveloper => 'Developer';
 }

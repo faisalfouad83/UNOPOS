@@ -1141,4 +1141,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get developerLocalStatusNote =>
       'النسخة المحلية: يظهر فقط التفعيل الذي تم على هذا الجهاز.';
+
+  @override
+  String get roleDeveloper => 'المطوّر';
 }
