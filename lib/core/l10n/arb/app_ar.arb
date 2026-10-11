@@ -321,5 +321,16 @@
   "loyaltyPointWorth": "النقطة = {value}",
   "loyaltyPointsRedeemed": "نقاط مستخدمة",
   "loyaltyPointsEarned": "نقاط مكتسبة",
-  "loyaltyBalance": "رصيد النقاط"
+  "loyaltyBalance": "رصيد النقاط",
+
+  "backupNoFolder": "لم يتم اختيار مجلد — النسخ التلقائي يُحفظ في مجلد مستندات التطبيق",
+  "backupChooseFolder": "اختيار مجلد",
+  "backupAutoHelp": "مرة يومياً، في أي وقت يكون التطبيق مفتوحاً بعد الساعة {time}. يتم الاحتفاظ بآخر {keep} نسخة تلقائية.",
+  "backupTime": "وقت النسخ: {time}",
+  "backupTypeAutomatic": "تلقائي",
+  "backupTypeManual": "يدوي",
+  "backupRestoreWarningLocal": "سيتم استبدال كل البيانات الحالية على هذا الجهاز بالنسخة الاحتياطية. هل تريد المتابعة؟",
+  "backupRestoreWarningCloud": "ستُعاد السجلات الموجودة في النسخة إلى بيانات المتجر السحابية وتستبدل نسخها الحالية. ما أُضيف بعد النسخة يبقى كما هو. هل تريد المتابعة؟",
+  "backupRestoreDone": "تمت الاستعادة",
+  "backupRestoreReopen": "أغلق UNOPOS وافتحه من جديد لتحميل البيانات المستعادة."
 }

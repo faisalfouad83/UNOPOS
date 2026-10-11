@@ -321,5 +321,16 @@
   "loyaltyPointWorth": "1 خاڵ = {value}",
   "loyaltyPointsRedeemed": "خاڵی بەکارهاتوو",
   "loyaltyPointsEarned": "خاڵی بەدەستهاتوو",
-  "loyaltyBalance": "کۆی خاڵەکان"
+  "loyaltyBalance": "کۆی خاڵەکان",
+
+  "backupNoFolder": "هیچ بوخچەیەک هەڵنەبژێردراوە — پاڵپشتی خۆکار لە بوخچەی بەڵگەنامەکانی ئەپ پاشەکەوت دەکرێت",
+  "backupChooseFolder": "هەڵبژاردنی بوخچە",
+  "backupAutoHelp": "ڕۆژانە جارێک، هەر کاتێک ئەپەکە کراوە بێت دوای کاتژمێر {time}. دوایین {keep} پاڵپشتی خۆکار هەڵدەگیرێن.",
+  "backupTime": "کاتی پاڵپشتی: {time}",
+  "backupTypeAutomatic": "خۆکار",
+  "backupTypeManual": "دەستی",
+  "backupRestoreWarningLocal": "هەموو داتاکانی ئێستای ئەم ئامێرە بە پاڵپشتییەکە دەگۆڕدرێن. بەردەوام دەبیت؟",
+  "backupRestoreWarningCloud": "تۆمارەکانی ناو پاڵپشتییەکە دەگەڕێنرێنەوە بۆ داتای هەوری فرۆشگاکە و وەشانی ئێستایان دەگۆڕن. ئەوەی دوای پاڵپشتییەکە زیادکراوە دەمێنێتەوە. بەردەوام دەبیت؟",
+  "backupRestoreDone": "گەڕاندنەوە تەواو بوو",
+  "backupRestoreReopen": "UNOPOS دابخە و دووبارە بیکەرەوە بۆ بارکردنی داتا گەڕێنراوەکان."
 }

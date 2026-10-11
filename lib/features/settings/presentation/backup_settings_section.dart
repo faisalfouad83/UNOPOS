@@ -6,6 +6,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../../../core/utils/formatters.dart';
+import '../../backup/domain/auto_backup_checker.dart';
 import '../../backup/domain/backup_models.dart';
 import '../domain/settings_models.dart';
 
@@ -55,7 +56,9 @@ class BackupSettingsSection extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context).settingsRestore),
-        content: const Text('This will replace all current data with the backup. The app must be restarted afterwards. Continue?'),
+        content: Text(kUseSupabaseBackend
+            ? AppLocalizations.of(context).backupRestoreWarningCloud
+            : AppLocalizations.of(context).backupRestoreWarningLocal),
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(AppLocalizations.of(context).actionCancel)),
           FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(AppLocalizations.of(context).actionConfirm)),
@@ -70,9 +73,14 @@ class BackupSettingsSection extends ConsumerWidget {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title: const Text('Restore complete'),
-          content: const Text('Please close and reopen UNOPOS now to load the restored data.'),
-          actions: [FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK'))],
+          title: Text(AppLocalizations.of(context).backupRestoreDone),
+          content: Text(AppLocalizations.of(context).backupRestoreReopen),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(AppLocalizations.of(context).actionClose),
+            ),
+          ],
         ),
       );
     }
@@ -91,13 +99,13 @@ class BackupSettingsSection extends ConsumerWidget {
           children: [
             Text(l10n.settingsBackup, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            Text(settings.autoBackupFolderPath ?? 'No backup folder chosen', style: Theme.of(context).textTheme.bodySmall),
+            Text(settings.autoBackupFolderPath ?? l10n.backupNoFolder, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                OutlinedButton(onPressed: () => _pickFolder(ref), child: const Text('Choose folder')),
+                OutlinedButton(onPressed: () => _pickFolder(ref), child: Text(l10n.backupChooseFolder)),
                 FilledButton(onPressed: () => _backupNow(context, ref), child: Text(l10n.settingsBackupNow)),
                 OutlinedButton(onPressed: () => _restore(context, ref), child: Text(l10n.settingsRestore)),
               ],
@@ -106,7 +114,7 @@ class BackupSettingsSection extends ConsumerWidget {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(l10n.settingsAutoBackup),
-              subtitle: Text('Runs once the app is open past ${settings.autoBackupTimeOfDay} each day'),
+              subtitle: Text(l10n.backupAutoHelp(settings.autoBackupTimeOfDay, AutoBackupChecker.keepAutomaticBackups)),
               value: settings.autoBackupEnabled,
               onChanged: (v) => ref.read(settingsRepositoryProvider).updateSettings(settings.copyWith(autoBackupEnabled: v)),
             ),
@@ -118,7 +126,7 @@ class BackupSettingsSection extends ConsumerWidget {
                   final formatted = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
                   await ref.read(settingsRepositoryProvider).updateSettings(settings.copyWith(autoBackupTimeOfDay: formatted));
                 },
-                child: Text('Backup time: ${settings.autoBackupTimeOfDay}'),
+                child: Text(l10n.backupTime(settings.autoBackupTimeOfDay)),
               ),
             const SizedBox(height: 8),
             historyAsync.when(
@@ -135,7 +143,7 @@ class BackupSettingsSection extends ConsumerWidget {
                       color: h.status == BackupStatus.success ? Colors.green : Theme.of(context).colorScheme.error,
                     ),
                     title: Text(AppDateFormat.dateTime(h.createdAt)),
-                    subtitle: Text(h.type.name),
+                    subtitle: Text(h.type == BackupType.automatic ? l10n.backupTypeAutomatic : l10n.backupTypeManual),
                   );
                 }).toList(),
               ),

@@ -1845,6 +1845,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Points balance'**
   String get loyaltyBalance;
+
+  /// No description provided for @backupNoFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup folder chosen — automatic backups go to the app\'s documents folder'**
+  String get backupNoFolder;
+
+  /// No description provided for @backupChooseFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose folder'**
+  String get backupChooseFolder;
+
+  /// No description provided for @backupAutoHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Once a day, any time the app is open at or after {time}. The last {keep} automatic backups are kept.'**
+  String backupAutoHelp(String time, int keep);
+
+  /// No description provided for @backupTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup time: {time}'**
+  String backupTime(String time);
+
+  /// No description provided for @backupTypeAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get backupTypeAutomatic;
+
+  /// No description provided for @backupTypeManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get backupTypeManual;
+
+  /// No description provided for @backupRestoreWarningLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces all current data on this device with the backup. Continue?'**
+  String get backupRestoreWarningLocal;
+
+  /// No description provided for @backupRestoreWarningCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Records in the backup are written back to the store\'s cloud data, overwriting their current versions. Anything added since the backup is kept. Continue?'**
+  String get backupRestoreWarningCloud;
+
+  /// No description provided for @backupRestoreDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore complete'**
+  String get backupRestoreDone;
+
+  /// No description provided for @backupRestoreReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Close and reopen UNOPOS to load the restored data.'**
+  String get backupRestoreReopen;
 }
 
 class _AppLocalizationsDelegate

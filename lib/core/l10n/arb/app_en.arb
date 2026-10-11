@@ -349,5 +349,18 @@
   "@loyaltyPointWorth": {"placeholders": {"value": {"type": "String"}}},
   "loyaltyPointsRedeemed": "Points used",
   "loyaltyPointsEarned": "Points earned",
-  "loyaltyBalance": "Points balance"
+  "loyaltyBalance": "Points balance",
+
+  "backupNoFolder": "No backup folder chosen — automatic backups go to the app's documents folder",
+  "backupChooseFolder": "Choose folder",
+  "backupAutoHelp": "Once a day, any time the app is open at or after {time}. The last {keep} automatic backups are kept.",
+  "@backupAutoHelp": {"placeholders": {"time": {"type": "String"}, "keep": {"type": "int"}}},
+  "backupTime": "Backup time: {time}",
+  "@backupTime": {"placeholders": {"time": {"type": "String"}}},
+  "backupTypeAutomatic": "Automatic",
+  "backupTypeManual": "Manual",
+  "backupRestoreWarningLocal": "This replaces all current data on this device with the backup. Continue?",
+  "backupRestoreWarningCloud": "Records in the backup are written back to the store's cloud data, overwriting their current versions. Anything added since the backup is kept. Continue?",
+  "backupRestoreDone": "Restore complete",
+  "backupRestoreReopen": "Close and reopen UNOPOS to load the restored data."
 }

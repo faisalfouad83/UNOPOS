@@ -36,6 +36,7 @@ const _backupTables = [
   'sale_return_lines',
   'debt_ledger_entries',
   'debt_payments',
+  'loyalty_transactions',
   'purchase_orders',
   'purchase_order_lines',
   'stock_transfers',
@@ -74,8 +75,7 @@ class SupabaseBackupService implements BackupExportService {
     try {
       final tables = <String, List<Map<String, dynamic>>>{};
       for (final table in _backupTables) {
-        final rows = await _client.from(table).select();
-        tables[table] = List<Map<String, dynamic>>.from(rows as List);
+        tables[table] = await _allRows(table, storeId);
       }
 
       final payload = {
@@ -85,7 +85,10 @@ class SupabaseBackupService implements BackupExportService {
         'tables': tables,
       };
 
-      final jsonPath = p.join(destinationFolderPath, 'unopos_backup_${_timestampSuffix(DateTime.now())}.json');
+      final jsonPath = p.join(
+        destinationFolderPath,
+        '${backupFilePrefix(type)}${_timestampSuffix(DateTime.now())}.json',
+      );
       final jsonFile = File(jsonPath);
       await jsonFile.writeAsString(jsonEncode(payload));
 
@@ -107,6 +110,20 @@ class SupabaseBackupService implements BackupExportService {
         errorMessage: e.toString(),
       );
     }
+  }
+
+  /// Every row of [table] for this store. The API returns at most 1000 rows
+  /// per request, so larger tables are read page by page (in id order, so
+  /// pages don't overlap or skip rows).
+  Future<List<Map<String, dynamic>>> _allRows(String table, String storeId) async {
+    const pageSize = 1000;
+    final rows = <Map<String, dynamic>>[];
+    for (var from = 0;; from += pageSize) {
+      final page = await _client.from(table).select().eq('store_id', storeId).order('id').range(from, from + pageSize - 1);
+      rows.addAll(List<Map<String, dynamic>>.from(page as List));
+      if ((page as List).length < pageSize) break;
+    }
+    return rows;
   }
 
   /// Upserts every row back into its table, in the same dependency-safe

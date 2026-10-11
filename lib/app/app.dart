@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,6 +12,7 @@ import '../core/store_settings_provider.dart';
 import '../core/theming/app_theme.dart';
 import '../core/utils/formatters.dart';
 import '../core/widgets/unopos_logo.dart';
+import '../features/auth/domain/session_controller.dart';
 import '../features/backup/domain/auto_backup_checker.dart';
 import '../features/settings/domain/settings_models.dart';
 
@@ -30,14 +33,21 @@ class UnoposApp extends ConsumerStatefulWidget {
 class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserver {
   bool _settingsSynced = false;
 
+  /// Re-checks whether the daily automatic backup is due while the app
+  /// stays open (a till is often left running all day).
+  Timer? _autoBackupTimer;
+  bool _autoBackupRunning = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _autoBackupTimer = Timer.periodic(const Duration(minutes: 15), (_) => _runAutoBackupCheck());
   }
 
   @override
   void dispose() {
+    _autoBackupTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -64,9 +74,17 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
   }
 
   Future<void> _runAutoBackupCheck() async {
-    final storeId = ref.read(appBootstrapProvider).value?.store?.id;
-    if (storeId == null) return;
-    await AutoBackupChecker(ref).checkAndRunIfDue(storeId);
+    final storeId = ref.read(sessionControllerProvider).store?.id ?? ref.read(appBootstrapProvider).value?.store?.id;
+    if (storeId == null || _autoBackupRunning) return;
+    _autoBackupRunning = true;
+    try {
+      await AutoBackupChecker(ref).checkAndRunIfDue(storeId);
+    } catch (_) {
+      // A failed automatic backup is logged by the backup service; never
+      // let it disturb the till.
+    } finally {
+      _autoBackupRunning = false;
+    }
   }
 
   @override

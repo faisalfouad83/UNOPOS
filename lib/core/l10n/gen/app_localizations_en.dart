@@ -955,4 +955,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loyaltyBalance => 'Points balance';
+
+  @override
+  String get backupNoFolder =>
+      'No backup folder chosen — automatic backups go to the app\'s documents folder';
+
+  @override
+  String get backupChooseFolder => 'Choose folder';
+
+  @override
+  String backupAutoHelp(String time, int keep) {
+    return 'Once a day, any time the app is open at or after $time. The last $keep automatic backups are kept.';
+  }
+
+  @override
+  String backupTime(String time) {
+    return 'Backup time: $time';
+  }
+
+  @override
+  String get backupTypeAutomatic => 'Automatic';
+
+  @override
+  String get backupTypeManual => 'Manual';
+
+  @override
+  String get backupRestoreWarningLocal =>
+      'This replaces all current data on this device with the backup. Continue?';
+
+  @override
+  String get backupRestoreWarningCloud =>
+      'Records in the backup are written back to the store\'s cloud data, overwriting their current versions. Anything added since the backup is kept. Continue?';
+
+  @override
+  String get backupRestoreDone => 'Restore complete';
+
+  @override
+  String get backupRestoreReopen =>
+      'Close and reopen UNOPOS to load the restored data.';
 }

@@ -10,6 +10,27 @@ import 'backup_repository.dart';
 /// Shared by [BackupService] (local Drift build) and SupabaseBackupService
 /// (Supabase build) so `backup_settings_section.dart` can call either
 /// without caring which backend it's talking to.
+/// Automatic backups get their own prefix so old ones can be pruned without
+/// ever touching backups someone made by hand.
+String backupFilePrefix(BackupType type) => type == BackupType.automatic ? 'unopos_backup_auto_' : 'unopos_backup_';
+
+/// Deletes all but the newest [keep] automatic backups in [folderPath].
+/// File names end in a sortable timestamp, so name order is age order.
+Future<void> pruneAutomaticBackups(String folderPath, {int keep = 14}) async {
+  final dir = Directory(folderPath);
+  if (!await dir.exists()) return;
+  final prefix = backupFilePrefix(BackupType.automatic);
+  final files = await dir
+      .list()
+      .where((e) => e is File && p.basename(e.path).startsWith(prefix))
+      .cast<File>()
+      .toList();
+  files.sort((a, b) => p.basename(b.path).compareTo(p.basename(a.path)));
+  for (final old in files.skip(keep)) {
+    await old.delete();
+  }
+}
+
 abstract class BackupExportService {
   Future<BackupLogRecord> performBackup({
     required String storeId,
@@ -47,7 +68,7 @@ class BackupService implements BackupExportService {
         throw StateError('Database file not found at $dbPath');
       }
 
-      final zipPath = p.join(destinationFolderPath, 'unopos_backup_${_timestampSuffix(DateTime.now())}.zip');
+      final zipPath = p.join(destinationFolderPath, '${backupFilePrefix(type)}${_timestampSuffix(DateTime.now())}.zip');
       final encoder = ZipFileEncoder();
       encoder.create(zipPath);
       await encoder.addFile(dbFile, 'unopos.sqlite');

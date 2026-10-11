@@ -946,4 +946,42 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get loyaltyBalance => 'کۆی خاڵەکان';
+
+  @override
+  String get backupNoFolder =>
+      'هیچ بوخچەیەک هەڵنەبژێردراوە — پاڵپشتی خۆکار لە بوخچەی بەڵگەنامەکانی ئەپ پاشەکەوت دەکرێت';
+
+  @override
+  String get backupChooseFolder => 'هەڵبژاردنی بوخچە';
+
+  @override
+  String backupAutoHelp(String time, int keep) {
+    return 'ڕۆژانە جارێک، هەر کاتێک ئەپەکە کراوە بێت دوای کاتژمێر $time. دوایین $keep پاڵپشتی خۆکار هەڵدەگیرێن.';
+  }
+
+  @override
+  String backupTime(String time) {
+    return 'کاتی پاڵپشتی: $time';
+  }
+
+  @override
+  String get backupTypeAutomatic => 'خۆکار';
+
+  @override
+  String get backupTypeManual => 'دەستی';
+
+  @override
+  String get backupRestoreWarningLocal =>
+      'هەموو داتاکانی ئێستای ئەم ئامێرە بە پاڵپشتییەکە دەگۆڕدرێن. بەردەوام دەبیت؟';
+
+  @override
+  String get backupRestoreWarningCloud =>
+      'تۆمارەکانی ناو پاڵپشتییەکە دەگەڕێنرێنەوە بۆ داتای هەوری فرۆشگاکە و وەشانی ئێستایان دەگۆڕن. ئەوەی دوای پاڵپشتییەکە زیادکراوە دەمێنێتەوە. بەردەوام دەبیت؟';
+
+  @override
+  String get backupRestoreDone => 'گەڕاندنەوە تەواو بوو';
+
+  @override
+  String get backupRestoreReopen =>
+      'UNOPOS دابخە و دووبارە بیکەرەوە بۆ بارکردنی داتا گەڕێنراوەکان.';
 }

@@ -953,4 +953,42 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loyaltyBalance => 'رصيد النقاط';
+
+  @override
+  String get backupNoFolder =>
+      'لم يتم اختيار مجلد — النسخ التلقائي يُحفظ في مجلد مستندات التطبيق';
+
+  @override
+  String get backupChooseFolder => 'اختيار مجلد';
+
+  @override
+  String backupAutoHelp(String time, int keep) {
+    return 'مرة يومياً، في أي وقت يكون التطبيق مفتوحاً بعد الساعة $time. يتم الاحتفاظ بآخر $keep نسخة تلقائية.';
+  }
+
+  @override
+  String backupTime(String time) {
+    return 'وقت النسخ: $time';
+  }
+
+  @override
+  String get backupTypeAutomatic => 'تلقائي';
+
+  @override
+  String get backupTypeManual => 'يدوي';
+
+  @override
+  String get backupRestoreWarningLocal =>
+      'سيتم استبدال كل البيانات الحالية على هذا الجهاز بالنسخة الاحتياطية. هل تريد المتابعة؟';
+
+  @override
+  String get backupRestoreWarningCloud =>
+      'ستُعاد السجلات الموجودة في النسخة إلى بيانات المتجر السحابية وتستبدل نسخها الحالية. ما أُضيف بعد النسخة يبقى كما هو. هل تريد المتابعة؟';
+
+  @override
+  String get backupRestoreDone => 'تمت الاستعادة';
+
+  @override
+  String get backupRestoreReopen =>
+      'أغلق UNOPOS وافتحه من جديد لتحميل البيانات المستعادة.';
 }
