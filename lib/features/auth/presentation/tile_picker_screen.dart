@@ -36,10 +36,10 @@ class TilePickerScreen extends ConsumerWidget {
         // message while diagnosing the Supabase onboarding flow — revert to
         // l10n.errorGeneric once this is confirmed working end to end
         // against a real project.
-        error: (e, st) => Center(child: Text('${l10n.errorGeneric}\n$e')),
+        error: (e, st) => Center(child: Text(l10n.errorWithDetails('$e'))),
         data: (employees) {
           if (employees.isEmpty) {
-            return Center(child: Text('${l10n.errorGeneric}\n(no employees found for this store)'));
+            return Center(child: Text(l10n.tilePickerNoEmployees));
           }
           return Center(
             child: ConstrainedBox(

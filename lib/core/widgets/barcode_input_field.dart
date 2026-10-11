@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../core/l10n/l10n_ext.dart';
+
 /// A text field for barcode/SKU entry that doubles as a barcode reader in
 /// two ways: (1) a camera-scan button (Android, via mobile_scanner) and
 /// (2) natively working as a "keyboard wedge" target — most USB/Bluetooth
@@ -40,7 +42,7 @@ class BarcodeInputField extends StatelessWidget {
         helperText: helperText,
         suffixIcon: IconButton(
           icon: const Icon(Icons.qr_code_scanner),
-          tooltip: 'Scan',
+          tooltip: context.l10n.barcodeScan,
           onPressed: () => _scanWithCamera(context),
         ),
       ),
@@ -60,7 +62,7 @@ class _CameraScanScreenState extends State<_CameraScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan barcode')),
+      appBar: AppBar(title: Text(context.l10n.barcodeScanTitle)),
       body: MobileScanner(
         onDetect: (capture) {
           if (_handled) return;

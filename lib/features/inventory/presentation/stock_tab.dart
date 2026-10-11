@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../auth/domain/session_controller.dart';
@@ -58,11 +59,11 @@ class StockTab extends ConsumerWidget {
                     ),
                     ...pendingTransfers.map((transfer) => ListTile(
                           leading: const Icon(Icons.swap_horiz),
-                          title: Text('${transfer.lines.length} item(s)'),
-                          subtitle: Text(transfer.toBranchId == branchId ? 'Incoming' : 'Outgoing'),
+                          title: Text(context.l10n.transferItemCount(transfer.lines.length)),
+                          subtitle: Text(transfer.toBranchId == branchId ? context.l10n.transferIncoming : context.l10n.transferOutgoing),
                           trailing: transfer.toBranchId == branchId
                               ? TextButton(
-                                  child: const Text('Receive'),
+                                  child: Text(context.l10n.actionReceive),
                                   onPressed: () => ref
                                       .read(inventoryRepositoryProvider)
                                       .receiveStockTransfer(transfer.id, session.employee?.id ?? ''),

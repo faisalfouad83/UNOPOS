@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/constants/default_chart_of_accounts.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
@@ -59,20 +60,20 @@ class ReportsTab extends ConsumerWidget {
       children: [
         Text(l10n.accountingProfitLoss, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
-        _row(context, 'Revenue', revenue),
-        _row(context, 'COGS', -cogs),
-        _row(context, 'Expenses', -expenses),
+        _row(context, context.l10n.acctRevenue, revenue),
+        _row(context, context.l10n.acctCogs, -cogs),
+        _row(context, context.l10n.acctExpenses, -expenses),
         const Divider(),
-        _row(context, 'Net Income', netIncome, bold: true),
+        _row(context, context.l10n.acctNetIncome, netIncome, bold: true),
         const SizedBox(height: 24),
         Text(l10n.accountingBalanceSheet, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
-        _row(context, 'Assets', assets),
-        _row(context, 'Liabilities', liabilities),
+        _row(context, context.l10n.acctAssets, assets),
+        _row(context, context.l10n.acctLiabilities, liabilities),
         _row(context, "Equity (posted)", equity),
         const SizedBox(height: 4),
         Text(
-          'Note: current-period net income rolls into equity only once a period-close entry is posted (not yet automated).',
+          context.l10n.acctNetIncomeNote,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 24),
@@ -80,10 +81,10 @@ class ReportsTab extends ConsumerWidget {
         const SizedBox(height: 8),
         ...accounts.map((a) => _row(context, '${a.code} ${a.name}', balances[a.code] ?? 0)),
         const Divider(),
-        _row(context, 'Debit-normal total', totalDebitNormal),
-        _row(context, 'Credit-normal total', totalCreditNormal),
+        _row(context, context.l10n.acctDebitTotal, totalDebitNormal),
+        _row(context, context.l10n.acctCreditTotal, totalCreditNormal),
         Text(
-          totalDebitNormal == totalCreditNormal ? 'Books balance ✓' : 'Books do NOT balance — investigate',
+          totalDebitNormal == totalCreditNormal ? context.l10n.acctBalanced : context.l10n.acctNotBalanced,
           style: TextStyle(
             color: totalDebitNormal == totalCreditNormal ? Colors.green : Theme.of(context).colorScheme.error,
             fontWeight: FontWeight.bold,

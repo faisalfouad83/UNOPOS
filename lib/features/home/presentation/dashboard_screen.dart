@@ -1,3 +1,4 @@
+import 'home_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -77,7 +78,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${session.employee?.name ?? ''} · ${session.role?.name ?? ''}',
+              '${session.employee?.name ?? ''} · ${roleLabel(l10n, session.role)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurface.withValues(alpha: 0.6)),
             ),
             const SizedBox(height: 24),
@@ -89,7 +90,7 @@ class DashboardScreen extends ConsumerWidget {
                     icon: Icons.point_of_sale_outlined,
                     label: l10n.navSales,
                     value: Money.format(todaysTotal),
-                    subtitle: '${todaysSales.length} sale(s) today',
+                    subtitle: l10n.dashboardSalesToday(todaysSales.length),
                     accent: scheme.primary,
                     onAccent: scheme.onPrimary,
                     onTap: () => context.go(RoutePaths.pos),

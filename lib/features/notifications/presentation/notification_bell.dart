@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/providers.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../domain/notification_models.dart';
@@ -23,7 +24,7 @@ class NotificationBell extends ConsumerWidget {
     final unread = notificationsAsync.value?.where((n) => !n.isRead).length ?? 0;
 
     return IconButton(
-      tooltip: 'Notifications',
+      tooltip: context.l10n.notificationsTitle,
       onPressed: () => _showInbox(context, ref),
       icon: Badge(
         label: Text('$unread'),
@@ -44,10 +45,10 @@ class NotificationBell extends ConsumerWidget {
           final notificationsAsync = ref.watch(_myNotificationsProvider);
           return notificationsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Center(child: Text('Error: $e')),
+            error: (e, st) => Center(child: Text(context.l10n.errorWithDetails('$e'))),
             data: (notifications) {
               if (notifications.isEmpty) {
-                return const Center(child: Text('No notifications'));
+                return Center(child: Text(context.l10n.notificationsNone));
               }
               return ListView.builder(
                 controller: scrollController,

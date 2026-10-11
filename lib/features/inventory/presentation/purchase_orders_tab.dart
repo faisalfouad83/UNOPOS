@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -36,12 +37,12 @@ class PurchaseOrdersTab extends ConsumerWidget {
             itemBuilder: (context, index) {
               final po = orders[index];
               return ListTile(
-                title: Text('PO ${po.id.substring(0, 8)} · ${Money.format(po.totalCostMinorUnits)}'),
+                title: Text('${context.l10n.poShort} ${po.id.substring(0, 8)} · ${Money.format(po.totalCostMinorUnits)}'),
                 subtitle: Text(po.status),
                 trailing: po.status == 'received'
                     ? const Icon(Icons.check_circle, color: Colors.green)
                     : TextButton(
-                        child: const Text('Receive'),
+                        child: Text(context.l10n.actionReceive),
                         onPressed: () async {
                           final result = await ref.read(inventoryRepositoryProvider).receivePurchaseOrder(po.id, session.employee?.id ?? '');
                           await ref.read(suppliersRepositoryProvider).recordTransaction(
@@ -80,7 +81,7 @@ class PurchaseOrdersTab extends ConsumerWidget {
     final suppliers = await ref.read(suppliersRepositoryProvider).watchSuppliers(storeId).first;
     if (!context.mounted) return;
     if (suppliers.isEmpty || products.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Add a supplier and at least one product first')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.poNeedSupplierAndProduct)));
       return;
     }
 
@@ -91,7 +92,7 @@ class PurchaseOrdersTab extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('New Purchase Order'),
+          title: Text(context.l10n.poNew),
           content: SizedBox(
             width: 480,
             child: SingleChildScrollView(
@@ -102,7 +103,7 @@ class PurchaseOrdersTab extends ConsumerWidget {
                     initialValue: supplierId,
                     items: suppliers.map((s) => DropdownMenuItem(value: s.id, child: Text(s.name))).toList(),
                     onChanged: (v) => setState(() => supplierId = v),
-                    decoration: const InputDecoration(labelText: 'Supplier'),
+                    decoration: InputDecoration(labelText: context.l10n.poSupplier),
                   ),
                   const SizedBox(height: 12),
                   ...lines.map((line) => Padding(
@@ -116,7 +117,7 @@ class PurchaseOrdersTab extends ConsumerWidget {
                                 controller: line.$2,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                decoration: const InputDecoration(labelText: 'Qty'),
+                                decoration: InputDecoration(labelText: context.l10n.commonQuantity),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -126,14 +127,14 @@ class PurchaseOrdersTab extends ConsumerWidget {
                                 controller: line.$3,
                                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                                decoration: const InputDecoration(labelText: 'Cost'),
+                                decoration: InputDecoration(labelText: context.l10n.inventoryCostPrice),
                               ),
                             ),
                           ],
                         ),
                       )),
                   DropdownButton<ProductRecord>(
-                    hint: const Text('Add product line'),
+                    hint: Text(context.l10n.addProductLine),
                     items: products.map((p) => DropdownMenuItem(value: p, child: Text(p.name))).toList(),
                     onChanged: (p) {
                       if (p == null) return;
@@ -151,7 +152,7 @@ class PurchaseOrdersTab extends ConsumerWidget {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(context.l10n.actionCancel)),
             FilledButton(
               onPressed: supplierId == null || lines.isEmpty
                   ? null
@@ -171,7 +172,7 @@ class PurchaseOrdersTab extends ConsumerWidget {
                           );
                       if (context.mounted) Navigator.of(context).pop();
                     },
-              child: const Text('Create'),
+              child: Text(context.l10n.actionCreate),
             ),
           ],
         ),

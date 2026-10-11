@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import 'catalog_tab.dart';
 import 'products_tab.dart';
@@ -23,7 +24,7 @@ class InventoryScreen extends StatelessWidget {
               Tab(text: l10n.inventoryProducts),
               Tab(text: l10n.inventoryStockLevel),
               Tab(text: l10n.inventoryPurchaseOrders),
-              const Tab(text: 'Catalog'),
+              Tab(text: context.l10n.inventoryCatalog),
             ],
           ),
         ),

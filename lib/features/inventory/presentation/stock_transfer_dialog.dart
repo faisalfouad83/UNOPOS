@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../auth/domain/auth_models.dart';
@@ -19,7 +20,7 @@ Future<void> showCreateStockTransferDialog(BuildContext context, WidgetRef ref) 
   if (!context.mounted) return;
 
   if (otherBranches.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This store only has one branch — nothing to transfer to')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.transferOneBranchOnly)));
     return;
   }
   if (products.isEmpty) return;
@@ -40,7 +41,7 @@ Future<void> showCreateStockTransferDialog(BuildContext context, WidgetRef ref) 
               children: [
                 DropdownButtonFormField<BranchRecord>(
                   initialValue: toBranch,
-                  decoration: const InputDecoration(labelText: 'To branch'),
+                  decoration: InputDecoration(labelText: context.l10n.transferToBranch),
                   items: otherBranches.map((b) => DropdownMenuItem(value: b, child: Text(b.name))).toList(),
                   onChanged: (v) => setState(() => toBranch = v ?? toBranch),
                 ),
@@ -67,7 +68,7 @@ Future<void> showCreateStockTransferDialog(BuildContext context, WidgetRef ref) 
                       ),
                     )),
                 DropdownButton<ProductRecord>(
-                  hint: const Text('Add product line'),
+                  hint: Text(context.l10n.addProductLine),
                   items: products.map((p) => DropdownMenuItem(value: p, child: Text(p.name))).toList(),
                   onChanged: (p) {
                     if (p == null) return;

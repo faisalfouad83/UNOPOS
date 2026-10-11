@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import 'add_expense_dialog.dart';
 import 'chart_of_accounts_tab.dart';
@@ -20,7 +21,7 @@ class AccountingScreen extends ConsumerWidget {
           title: Text(l10n.accountingTitle),
           bottom: TabBar(
             tabs: [
-              Tab(text: 'Reports'),
+              Tab(text: context.l10n.navReports),
               Tab(text: l10n.accountingJournal),
               Tab(text: l10n.accountingChartOfAccounts),
             ],

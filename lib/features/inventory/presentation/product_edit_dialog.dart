@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -50,7 +51,7 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
               children: [
                 TextField(controller: nameController, decoration: InputDecoration(labelText: AppLocalizations.of(context).commonName)),
                 const SizedBox(height: 12),
-                TextField(controller: skuController, decoration: const InputDecoration(labelText: 'SKU')),
+                TextField(controller: skuController, decoration: InputDecoration(labelText: context.l10n.inventorySku)),
                 const SizedBox(height: 12),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +81,7 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                         controller: costController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                        decoration: const InputDecoration(labelText: 'Cost price'),
+                        decoration: InputDecoration(labelText: context.l10n.inventoryCostPrice),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -151,9 +152,9 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String?>(
                   initialValue: taxRateId,
-                  decoration: const InputDecoration(labelText: 'Tax rate'),
+                  decoration: InputDecoration(labelText: context.l10n.taxRate),
                   items: [
-                    const DropdownMenuItem(value: null, child: Text('None')),
+                    DropdownMenuItem(value: null, child: Text(context.l10n.commonNone)),
                     ...taxRates.map((t) => DropdownMenuItem(value: t.id, child: Text('${t.name} (${t.ratePercent}%)'))),
                   ],
                   onChanged: (v) => setState(() => taxRateId = v),
@@ -163,7 +164,7 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
                   controller: reorderController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(labelText: 'Reorder level'),
+                  decoration: InputDecoration(labelText: context.l10n.inventoryReorderLevel),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(

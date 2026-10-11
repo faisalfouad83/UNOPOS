@@ -1,6 +1,8 @@
+import 'account_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -39,13 +41,13 @@ class ChartOfAccountsTab extends ConsumerWidget {
         return ListView(
           children: grouped.entries.map((group) {
             return ExpansionTile(
-              title: Text(group.key.toUpperCase(), style: Theme.of(context).textTheme.titleSmall),
+              title: Text(accountTypeLabel(context.l10n, group.key), style: Theme.of(context).textTheme.titleSmall),
               initiallyExpanded: true,
               children: group.value.map((account) {
                 final balance = balances[account.code] ?? 0;
                 return ListTile(
                   dense: true,
-                  title: Text('${account.code} · ${account.name}'),
+                  title: Text('${account.code} · ${accountLabel(context.l10n, account.code, account.name)}'),
                   trailing: Text(Money.format(balance)),
                 );
               }).toList(),

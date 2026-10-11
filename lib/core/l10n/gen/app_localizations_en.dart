@@ -1242,4 +1242,501 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get expensesUntyped =>
       'Older expenses without a type aren\'t included.';
+
+  @override
+  String get devStores => 'Stores';
+
+  @override
+  String get devPlans => 'Plans';
+
+  @override
+  String get devLicenses => 'Licenses';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get devAuditLog => 'Audit log';
+
+  @override
+  String errorWithDetails(String details) {
+    return 'Something went wrong: $details';
+  }
+
+  @override
+  String devEditPlanLimits(String plan) {
+    return 'Edit limits: $plan';
+  }
+
+  @override
+  String get devMaxEmployees => 'Max employees';
+
+  @override
+  String get devMaxBranches => 'Max branches';
+
+  @override
+  String get devMaxProducts => 'Max products';
+
+  @override
+  String get devMaxUsers => 'Max users';
+
+  @override
+  String get devMaxWarehouses => 'Max warehouses';
+
+  @override
+  String get devMaxStorage => 'Max storage (MB)';
+
+  @override
+  String get devMaxDailyTransactions => 'Max sales per day';
+
+  @override
+  String devPlanSummary(
+    int employees,
+    int branches,
+    int products,
+    int daily,
+    int storage,
+  ) {
+    return 'Employees: $employees · Branches: $branches · Products: $products · Daily sales: $daily · Storage: $storage MB';
+  }
+
+  @override
+  String get devTotalStores => 'Total stores';
+
+  @override
+  String get devOnTrial => 'On trial';
+
+  @override
+  String get devActiveSubscriptions => 'Active subscriptions';
+
+  @override
+  String get devExpired => 'Expired';
+
+  @override
+  String get devDisabled => 'Disabled';
+
+  @override
+  String get devSuspended => 'Suspended';
+
+  @override
+  String get devNoStores => 'No stores yet';
+
+  @override
+  String get commonDone => 'Done';
+
+  @override
+  String get devEditStore => 'Edit store';
+
+  @override
+  String get devOwnerName => 'Owner';
+
+  @override
+  String get devChangePlan => 'Change plan';
+
+  @override
+  String get devResetStorePassword => 'Reset store password';
+
+  @override
+  String get devNewPassword => 'New password';
+
+  @override
+  String get devReset => 'Reset';
+
+  @override
+  String get devPasswordWasReset => 'Password reset';
+
+  @override
+  String get devSubscriptionExtended => 'Subscription extended';
+
+  @override
+  String get devGenerateAssignLicense => 'Generate and assign a code';
+
+  @override
+  String devLicenseAssigned(String code) {
+    return 'Assigned: $code';
+  }
+
+  @override
+  String get devLicenseKey => 'License';
+
+  @override
+  String get devExpires => 'Expires';
+
+  @override
+  String get devNever => 'never';
+
+  @override
+  String get devEnable => 'Enable';
+
+  @override
+  String get devDisable => 'Disable';
+
+  @override
+  String get devSuspend => 'Suspend';
+
+  @override
+  String get devUnsuspend => 'Resume';
+
+  @override
+  String get devExtendSubscription => 'Extend subscription';
+
+  @override
+  String get devGenerateLicense => 'Generate code';
+
+  @override
+  String get devResetPassword => 'Reset password';
+
+  @override
+  String get devDeleteStore => 'Delete store';
+
+  @override
+  String devDeleteStoreWarning(String store) {
+    return 'This permanently deletes \"$store\" and ALL of its data (sales, inventory, accounting — everything). This cannot be undone.';
+  }
+
+  @override
+  String get devNotificationSent => 'Notification sent';
+
+  @override
+  String get devTitle => 'Title';
+
+  @override
+  String get devMessage => 'Message';
+
+  @override
+  String get devTarget => 'Send to';
+
+  @override
+  String get devAllStores => 'All stores';
+
+  @override
+  String get devNoAuditEntries => 'No actions logged yet';
+
+  @override
+  String get devStatusActive => 'Active';
+
+  @override
+  String get devStatusTrial => 'Trial';
+
+  @override
+  String get devStatusPending => 'Pending';
+
+  @override
+  String get devStatusRevoked => 'Revoked';
+
+  @override
+  String get acctRevenue => 'Revenue';
+
+  @override
+  String get acctCogs => 'Cost of goods sold';
+
+  @override
+  String get acctExpenses => 'Expenses';
+
+  @override
+  String get acctNetIncome => 'Net income';
+
+  @override
+  String get acctAssets => 'Assets';
+
+  @override
+  String get acctLiabilities => 'Liabilities';
+
+  @override
+  String get acctEquity => 'Equity';
+
+  @override
+  String get acctNetIncomeNote =>
+      'Note: this period\'s net income moves into equity only once a period-close entry is posted (not automated yet).';
+
+  @override
+  String get acctDebitTotal => 'Debit-side total';
+
+  @override
+  String get acctCreditTotal => 'Credit-side total';
+
+  @override
+  String get acctBalanced => 'Books balance ✓';
+
+  @override
+  String get acctNotBalanced => 'Books do NOT balance — check entries';
+
+  @override
+  String get acctDebit => 'Debit';
+
+  @override
+  String get acctCredit => 'Credit';
+
+  @override
+  String get acctRevenueType => 'Revenue';
+
+  @override
+  String get inventoryCatalog => 'Catalog';
+
+  @override
+  String get discountPercentOff => '% off';
+
+  @override
+  String get discountAmountOff => 'Amount off';
+
+  @override
+  String get discountsTitle => 'Saved discounts';
+
+  @override
+  String get taxRatePercent => 'Rate %';
+
+  @override
+  String get taxDefaultForNew => 'Default for new products';
+
+  @override
+  String get taxRatesTitle => 'Tax rates';
+
+  @override
+  String get taxDefault => 'default';
+
+  @override
+  String get taxRate => 'Tax rate';
+
+  @override
+  String get transferIncoming => 'Incoming';
+
+  @override
+  String get transferOutgoing => 'Outgoing';
+
+  @override
+  String get transferOneBranchOnly =>
+      'This store has only one branch — there\'s nowhere to transfer to.';
+
+  @override
+  String get transferToBranch => 'To branch';
+
+  @override
+  String get addProductLine => 'Add a product';
+
+  @override
+  String get actionReceive => 'Receive';
+
+  @override
+  String get actionCreate => 'Create';
+
+  @override
+  String get poShort => 'PO';
+
+  @override
+  String get poNew => 'New purchase order';
+
+  @override
+  String get poSupplier => 'Supplier';
+
+  @override
+  String get poNeedSupplierAndProduct =>
+      'Add a supplier and at least one product first.';
+
+  @override
+  String get commonNone => 'None';
+
+  @override
+  String get inventorySku => 'Product code (SKU)';
+
+  @override
+  String get inventoryCostPrice => 'Cost price';
+
+  @override
+  String get inventoryReorderLevel => 'Reorder level';
+
+  @override
+  String get printerType => 'Printer type';
+
+  @override
+  String get printerNetwork => 'Network / Wi-Fi thermal (ESC/POS)';
+
+  @override
+  String get printerUsb => 'USB thermal';
+
+  @override
+  String get printerBluetooth => 'Bluetooth thermal';
+
+  @override
+  String get printerSystem => 'Windows system printer';
+
+  @override
+  String get printerPaperWidth => 'Paper width';
+
+  @override
+  String get printerTestOk => 'Connected';
+
+  @override
+  String get printerTestFailed => 'Couldn\'t connect';
+
+  @override
+  String get printerTestConnection => 'Test connection';
+
+  @override
+  String get settingsDefaultVat => 'Default VAT %';
+
+  @override
+  String get factoryResetDone => 'Reset complete';
+
+  @override
+  String get factoryResetDoneHelp =>
+      'All data has been erased. Close and reopen UNOPOS to start fresh.';
+
+  @override
+  String get notificationsNone => 'No notifications';
+
+  @override
+  String get hrDeactivate => 'Deactivate';
+
+  @override
+  String get shiftCountedCash => 'Cash counted in the drawer';
+
+  @override
+  String get supplierContactPerson => 'Contact person';
+
+  @override
+  String get barcodeScan => 'Scan';
+
+  @override
+  String get barcodeScanTitle => 'Scan barcode';
+
+  @override
+  String get tilePickerNoEmployees => 'No employees found for this store.';
+
+  @override
+  String dashboardSalesToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sales today',
+      one: '1 sale today',
+      zero: 'No sales today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get journalSale => 'Sale';
+
+  @override
+  String get journalPurchase => 'Purchase';
+
+  @override
+  String get journalSupplierPayment => 'Supplier payment';
+
+  @override
+  String get journalDebtPayment => 'Debt payment';
+
+  @override
+  String get journalExpense => 'Expense';
+
+  @override
+  String get journalReturn => 'Return';
+
+  @override
+  String get journalAdjustment => 'Adjustment';
+
+  @override
+  String get journalManual => 'Manual entry';
+
+  @override
+  String get journalOpeningBalance => 'Opening balance';
+
+  @override
+  String get acctTypeCogs => 'Cost of sales';
+
+  @override
+  String get account1000 => 'Cash on hand';
+
+  @override
+  String get account1010 => 'Bank account';
+
+  @override
+  String get account1100 => 'Customer debts (receivable)';
+
+  @override
+  String get account1200 => 'Inventory';
+
+  @override
+  String get account2000 => 'Supplier debts (payable)';
+
+  @override
+  String get account2100 => 'VAT / sales tax payable';
+
+  @override
+  String get account3000 => 'Owner\'s equity';
+
+  @override
+  String get account3100 => 'Retained earnings';
+
+  @override
+  String get account4000 => 'Sales revenue';
+
+  @override
+  String get account4100 => 'Sales returns';
+
+  @override
+  String get account4200 => 'Discounts given';
+
+  @override
+  String get account5000 => 'Cost of goods sold';
+
+  @override
+  String get account6000 => 'Rent';
+
+  @override
+  String get account6010 => 'Utilities';
+
+  @override
+  String get account6020 => 'Salaries and wages';
+
+  @override
+  String get account6030 => 'Supplies';
+
+  @override
+  String get account6040 => 'General expenses';
+
+  @override
+  String get account6050 => 'Card processing fees';
+
+  @override
+  String get account6060 => 'Inventory shrinkage';
+
+  @override
+  String transferItemCount(int count) {
+    return '$count item(s)';
+  }
+
+  @override
+  String get memoCashSale => 'Cash sale';
+
+  @override
+  String get memoCardSale => 'Card sale';
+
+  @override
+  String get memoPayLaterSale => 'Pay-later sale (on account)';
+
+  @override
+  String get memoDebtPayment => 'Customer debt payment received';
+
+  @override
+  String get memoPurchasePaid => 'Supplier purchase (paid)';
+
+  @override
+  String get memoPurchaseCredit => 'Supplier purchase (on credit)';
+
+  @override
+  String get memoSupplierPayment => 'Payment to supplier';
+
+  @override
+  String get memoSaleReturn => 'Sale return / refund';
+
+  @override
+  String get memoShrinkage => 'Stock shrinkage / adjustment';
+
+  @override
+  String get printerAddressNetwork =>
+      'IP address:port (e.g. 192.168.1.50:9100)';
+
+  @override
+  String get printerAddressGeneric => 'Connection address';
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -34,14 +35,14 @@ Future<void> showCloseShiftDialog(BuildContext context, WidgetRef ref, ShiftReco
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${l10n.commonAmount} (${l10n.commonStatus}: ${Money.format(expected)})'),
+          Text('${l10n.expensesCashExpected}: ${Money.format(expected)}'),
           const SizedBox(height: 12),
           TextField(
             controller: controller,
             autofocus: true,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-            decoration: const InputDecoration(labelText: 'Counted cash'),
+            decoration: InputDecoration(labelText: context.l10n.shiftCountedCash),
           ),
         ],
       ),

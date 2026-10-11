@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/constants/magic_passcodes.dart';
 import '../../../core/database/connection.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
@@ -65,9 +66,9 @@ class FactoryResetSection extends ConsumerWidget {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title: const Text('Reset complete'),
-          content: const Text('All data has been erased. Please close and reopen UNOPOS to start fresh.'),
-          actions: [FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK'))],
+          title: Text(context.l10n.factoryResetDone),
+          content: Text(context.l10n.factoryResetDoneHelp),
+          actions: [FilledButton(onPressed: () => Navigator.of(context).pop(), child: Text(context.l10n.actionClose))],
         ),
       );
     }

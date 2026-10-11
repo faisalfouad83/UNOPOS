@@ -67,14 +67,6 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
     LicenseTier.lifetime,
   ];
 
-  static String tierLabel(AppLocalizations l10n, LicenseTier tier) => switch (tier) {
-        LicenseTier.trial1Month => l10n.developerTier1Month,
-        LicenseTier.months3 => l10n.developerTier3Months,
-        LicenseTier.months6 => l10n.developerTier6Months,
-        LicenseTier.months12 => l10n.developerTier12Months,
-        LicenseTier.lifetime => l10n.developerTierLifetime,
-        LicenseTier.trial2Weeks => l10n.developerTier2Weeks,
-      };
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +97,7 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
                       runSpacing: 8,
                       children: _tierOrder.map((tier) {
                         return ChoiceChip(
-                          label: Text(tierLabel(l10n, tier)),
+                          label: Text(licenseTierLabel(l10n, tier)),
                           selected: _tier == tier,
                           onSelected: (_) => setState(() => _tier = tier),
                         );
@@ -174,7 +166,7 @@ class _CodeTile extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: Icon(statusIcon, color: statusColor),
-        title: Text('${code.storeNameRef} · ${_LicenseConsoleState.tierLabel(l10n, code.tier)}'),
+        title: Text('${code.storeNameRef} · ${licenseTierLabel(l10n, code.tier)}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -190,3 +182,12 @@ class _CodeTile extends StatelessWidget {
     );
   }
 }
+
+String licenseTierLabel(AppLocalizations l10n, LicenseTier tier) => switch (tier) {
+      LicenseTier.trial1Month => l10n.developerTier1Month,
+      LicenseTier.months3 => l10n.developerTier3Months,
+      LicenseTier.months6 => l10n.developerTier6Months,
+      LicenseTier.months12 => l10n.developerTier12Months,
+      LicenseTier.lifetime => l10n.developerTierLifetime,
+      LicenseTier.trial2Weeks => l10n.developerTier2Weeks,
+    };

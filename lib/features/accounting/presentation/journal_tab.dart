@@ -1,6 +1,8 @@
+import 'account_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -33,7 +35,7 @@ class JournalTab extends ConsumerWidget {
             final entry = entries[index];
             final total = entry.lines.fold<int>(0, (s, l) => s + l.debitMinorUnits);
             return ExpansionTile(
-              title: Text('${entry.referenceType.name} · ${entry.memo}'),
+              title: Text('${journalReferenceLabel(context.l10n, entry.referenceType)} · ${journalMemoLabel(context.l10n, entry.memo)}'),
               subtitle: Text(AppDateFormat.dateTime(entry.entryDate)),
               trailing: Text(Money.format(total)),
               children: entry.lines
@@ -42,8 +44,8 @@ class JournalTab extends ConsumerWidget {
                         title: Text(line.accountCode),
                         trailing: Text(
                           line.debitMinorUnits > 0
-                              ? 'Dr ${Money.format(line.debitMinorUnits)}'
-                              : 'Cr ${Money.format(line.creditMinorUnits)}',
+                              ? '${context.l10n.acctDebit} ${Money.format(line.debitMinorUnits)}'
+                              : '${context.l10n.acctCredit} ${Money.format(line.creditMinorUnits)}',
                         ),
                       ))
                   .toList(),

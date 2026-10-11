@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../app/app.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
@@ -96,7 +97,7 @@ class GeneralSettingsSection extends ConsumerWidget {
                     initialValue: settings.defaultVatRatePercent.toString(),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                    decoration: const InputDecoration(labelText: 'Default VAT %'),
+                    decoration: InputDecoration(labelText: context.l10n.settingsDefaultVat),
                     onFieldSubmitted: (value) =>
                         _update(ref, settings.copyWith(defaultVatRatePercent: double.tryParse(value) ?? 0)),
                   ),

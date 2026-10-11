@@ -1240,4 +1240,503 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get expensesUntyped => 'المصاريف القديمة بدون نوع غير محسوبة هنا.';
+
+  @override
+  String get devStores => 'المتاجر';
+
+  @override
+  String get devPlans => 'الخطط';
+
+  @override
+  String get devLicenses => 'التراخيص';
+
+  @override
+  String get notificationsTitle => 'الإشعارات';
+
+  @override
+  String get devAuditLog => 'سجل العمليات';
+
+  @override
+  String errorWithDetails(String details) {
+    return 'حدث خطأ: $details';
+  }
+
+  @override
+  String devEditPlanLimits(String plan) {
+    return 'تعديل حدود الخطة: $plan';
+  }
+
+  @override
+  String get devMaxEmployees => 'أقصى عدد للموظفين';
+
+  @override
+  String get devMaxBranches => 'أقصى عدد للفروع';
+
+  @override
+  String get devMaxProducts => 'أقصى عدد للمنتجات';
+
+  @override
+  String get devMaxUsers => 'أقصى عدد للمستخدمين';
+
+  @override
+  String get devMaxWarehouses => 'أقصى عدد للمخازن';
+
+  @override
+  String get devMaxStorage => 'أقصى مساحة تخزين (ميغابايت)';
+
+  @override
+  String get devMaxDailyTransactions => 'أقصى عدد مبيعات يومياً';
+
+  @override
+  String devPlanSummary(
+    int employees,
+    int branches,
+    int products,
+    int daily,
+    int storage,
+  ) {
+    return 'الموظفون: $employees · الفروع: $branches · المنتجات: $products · المبيعات اليومية: $daily · التخزين: $storage ميغابايت';
+  }
+
+  @override
+  String get devTotalStores => 'إجمالي المتاجر';
+
+  @override
+  String get devOnTrial => 'تجريبي';
+
+  @override
+  String get devActiveSubscriptions => 'اشتراكات فعالة';
+
+  @override
+  String get devExpired => 'منتهية';
+
+  @override
+  String get devDisabled => 'معطّل';
+
+  @override
+  String get devSuspended => 'موقوف';
+
+  @override
+  String get devNoStores => 'لا توجد متاجر بعد';
+
+  @override
+  String get commonDone => 'تم';
+
+  @override
+  String get devEditStore => 'تعديل المتجر';
+
+  @override
+  String get devOwnerName => 'المالك';
+
+  @override
+  String get devChangePlan => 'تغيير الخطة';
+
+  @override
+  String get devResetStorePassword => 'إعادة تعيين كلمة مرور المتجر';
+
+  @override
+  String get devNewPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get devReset => 'إعادة تعيين';
+
+  @override
+  String get devPasswordWasReset => 'تمت إعادة تعيين كلمة المرور';
+
+  @override
+  String get devSubscriptionExtended => 'تم تمديد الاشتراك';
+
+  @override
+  String get devGenerateAssignLicense => 'توليد كود وتعيينه للمتجر';
+
+  @override
+  String devLicenseAssigned(String code) {
+    return 'تم التعيين: $code';
+  }
+
+  @override
+  String get devLicenseKey => 'الترخيص';
+
+  @override
+  String get devExpires => 'ينتهي';
+
+  @override
+  String get devNever => 'لا ينتهي';
+
+  @override
+  String get devEnable => 'تفعيل';
+
+  @override
+  String get devDisable => 'تعطيل';
+
+  @override
+  String get devSuspend => 'إيقاف مؤقت';
+
+  @override
+  String get devUnsuspend => 'استئناف';
+
+  @override
+  String get devExtendSubscription => 'تمديد الاشتراك';
+
+  @override
+  String get devGenerateLicense => 'توليد كود';
+
+  @override
+  String get devResetPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get devDeleteStore => 'حذف المتجر';
+
+  @override
+  String devDeleteStoreWarning(String store) {
+    return 'سيتم حذف \"$store\" نهائياً مع جميع بياناته (المبيعات والمخزون والحسابات — كل شيء). لا يمكن التراجع عن ذلك.';
+  }
+
+  @override
+  String get devNotificationSent => 'تم إرسال الإشعار';
+
+  @override
+  String get devTitle => 'العنوان';
+
+  @override
+  String get devMessage => 'الرسالة';
+
+  @override
+  String get devTarget => 'إرسال إلى';
+
+  @override
+  String get devAllStores => 'كل المتاجر';
+
+  @override
+  String get devNoAuditEntries => 'لا توجد عمليات مسجلة بعد';
+
+  @override
+  String get devStatusActive => 'فعّال';
+
+  @override
+  String get devStatusTrial => 'تجريبي';
+
+  @override
+  String get devStatusPending => 'قيد الانتظار';
+
+  @override
+  String get devStatusRevoked => 'ملغى';
+
+  @override
+  String get acctRevenue => 'الإيرادات';
+
+  @override
+  String get acctCogs => 'كلفة البضاعة المباعة';
+
+  @override
+  String get acctExpenses => 'المصاريف';
+
+  @override
+  String get acctNetIncome => 'صافي الربح';
+
+  @override
+  String get acctAssets => 'الأصول';
+
+  @override
+  String get acctLiabilities => 'الالتزامات';
+
+  @override
+  String get acctEquity => 'حقوق الملكية';
+
+  @override
+  String get acctNetIncomeNote =>
+      'ملاحظة: صافي ربح الفترة الحالية لا يُضاف إلى حقوق الملكية إلا بعد تسجيل قيد إقفال الفترة (غير مؤتمت بعد).';
+
+  @override
+  String get acctDebitTotal => 'مجموع الجانب المدين';
+
+  @override
+  String get acctCreditTotal => 'مجموع الجانب الدائن';
+
+  @override
+  String get acctBalanced => 'الحسابات متوازنة ✓';
+
+  @override
+  String get acctNotBalanced => 'الحسابات غير متوازنة — راجع القيود';
+
+  @override
+  String get acctDebit => 'مدين';
+
+  @override
+  String get acctCredit => 'دائن';
+
+  @override
+  String get acctRevenueType => 'الإيرادات';
+
+  @override
+  String get inventoryCatalog => 'الأصناف';
+
+  @override
+  String get discountPercentOff => 'خصم %';
+
+  @override
+  String get discountAmountOff => 'خصم بمبلغ';
+
+  @override
+  String get discountsTitle => 'الخصومات المحفوظة';
+
+  @override
+  String get taxRatePercent => 'النسبة %';
+
+  @override
+  String get taxDefaultForNew => 'افتراضي للمنتجات الجديدة';
+
+  @override
+  String get taxRatesTitle => 'نسب الضريبة';
+
+  @override
+  String get taxDefault => 'افتراضي';
+
+  @override
+  String get taxRate => 'نسبة الضريبة';
+
+  @override
+  String get transferIncoming => 'وارد';
+
+  @override
+  String get transferOutgoing => 'صادر';
+
+  @override
+  String get transferOneBranchOnly =>
+      'هذا المتجر لديه فرع واحد فقط — لا يوجد فرع للتحويل إليه.';
+
+  @override
+  String get transferToBranch => 'إلى الفرع';
+
+  @override
+  String get addProductLine => 'إضافة منتج';
+
+  @override
+  String get actionReceive => 'استلام';
+
+  @override
+  String get actionCreate => 'إنشاء';
+
+  @override
+  String get poShort => 'طلب شراء';
+
+  @override
+  String get poNew => 'طلب شراء جديد';
+
+  @override
+  String get poSupplier => 'المورد';
+
+  @override
+  String get poNeedSupplierAndProduct =>
+      'أضف مورداً ومنتجاً واحداً على الأقل أولاً.';
+
+  @override
+  String get commonNone => 'بدون';
+
+  @override
+  String get inventorySku => 'رمز المنتج (SKU)';
+
+  @override
+  String get inventoryCostPrice => 'سعر الكلفة';
+
+  @override
+  String get inventoryReorderLevel => 'حد إعادة الطلب';
+
+  @override
+  String get printerType => 'نوع الطابعة';
+
+  @override
+  String get printerNetwork => 'طابعة حرارية شبكة / واي فاي (ESC/POS)';
+
+  @override
+  String get printerUsb => 'طابعة حرارية USB';
+
+  @override
+  String get printerBluetooth => 'طابعة حرارية بلوتوث';
+
+  @override
+  String get printerSystem => 'طابعة النظام (ويندوز)';
+
+  @override
+  String get printerPaperWidth => 'عرض الورق';
+
+  @override
+  String get printerTestOk => 'متصلة';
+
+  @override
+  String get printerTestFailed => 'تعذّر الاتصال';
+
+  @override
+  String get printerTestConnection => 'اختبار الاتصال';
+
+  @override
+  String get settingsDefaultVat => 'ضريبة القيمة المضافة الافتراضية %';
+
+  @override
+  String get factoryResetDone => 'تمت إعادة الضبط';
+
+  @override
+  String get factoryResetDoneHelp =>
+      'تم مسح جميع البيانات. أغلق UNOPOS وافتحه من جديد للبدء من الصفر.';
+
+  @override
+  String get notificationsNone => 'لا توجد إشعارات';
+
+  @override
+  String get hrDeactivate => 'إيقاف الحساب';
+
+  @override
+  String get shiftCountedCash => 'النقد المعدود في الصندوق';
+
+  @override
+  String get supplierContactPerson => 'الشخص المسؤول';
+
+  @override
+  String get barcodeScan => 'مسح';
+
+  @override
+  String get barcodeScanTitle => 'مسح الباركود';
+
+  @override
+  String get tilePickerNoEmployees => 'لا يوجد موظفون لهذا المتجر.';
+
+  @override
+  String dashboardSalesToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فاتورة اليوم',
+      few: '$count فواتير اليوم',
+      two: 'فاتورتان اليوم',
+      one: 'فاتورة واحدة اليوم',
+      zero: 'لا مبيعات اليوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get journalSale => 'بيع';
+
+  @override
+  String get journalPurchase => 'شراء';
+
+  @override
+  String get journalSupplierPayment => 'دفعة لمورد';
+
+  @override
+  String get journalDebtPayment => 'تسديد دين';
+
+  @override
+  String get journalExpense => 'مصروف';
+
+  @override
+  String get journalReturn => 'إرجاع';
+
+  @override
+  String get journalAdjustment => 'تسوية';
+
+  @override
+  String get journalManual => 'قيد يدوي';
+
+  @override
+  String get journalOpeningBalance => 'رصيد افتتاحي';
+
+  @override
+  String get acctTypeCogs => 'كلفة المبيعات';
+
+  @override
+  String get account1000 => 'النقد في الصندوق';
+
+  @override
+  String get account1010 => 'الحساب المصرفي';
+
+  @override
+  String get account1100 => 'ديون الزبائن (مدينون)';
+
+  @override
+  String get account1200 => 'المخزون';
+
+  @override
+  String get account2000 => 'ديون الموردين (دائنون)';
+
+  @override
+  String get account2100 => 'ضريبة المبيعات المستحقة';
+
+  @override
+  String get account3000 => 'رأس مال المالك';
+
+  @override
+  String get account3100 => 'الأرباح المحتجزة';
+
+  @override
+  String get account4000 => 'إيرادات المبيعات';
+
+  @override
+  String get account4100 => 'مرتجعات المبيعات';
+
+  @override
+  String get account4200 => 'الخصومات الممنوحة';
+
+  @override
+  String get account5000 => 'كلفة البضاعة المباعة';
+
+  @override
+  String get account6000 => 'الإيجار';
+
+  @override
+  String get account6010 => 'الخدمات (كهرباء، ماء، إنترنت)';
+
+  @override
+  String get account6020 => 'الرواتب والأجور';
+
+  @override
+  String get account6030 => 'المستلزمات';
+
+  @override
+  String get account6040 => 'مصاريف عامة';
+
+  @override
+  String get account6050 => 'رسوم البطاقات';
+
+  @override
+  String get account6060 => 'نقص المخزون';
+
+  @override
+  String transferItemCount(int count) {
+    return '$count مادة';
+  }
+
+  @override
+  String get memoCashSale => 'بيع نقدي';
+
+  @override
+  String get memoCardSale => 'بيع بالبطاقة';
+
+  @override
+  String get memoPayLaterSale => 'بيع بالآجل (على الحساب)';
+
+  @override
+  String get memoDebtPayment => 'استلام دفعة دين من زبون';
+
+  @override
+  String get memoPurchasePaid => 'شراء من مورد (مدفوع)';
+
+  @override
+  String get memoPurchaseCredit => 'شراء من مورد (بالآجل)';
+
+  @override
+  String get memoSupplierPayment => 'دفعة إلى مورد';
+
+  @override
+  String get memoSaleReturn => 'مرتجع مبيعات / استرداد';
+
+  @override
+  String get memoShrinkage => 'نقص مخزون / تسوية';
+
+  @override
+  String get printerAddressNetwork =>
+      'عنوان IP:المنفذ (مثال 192.168.1.50:9100)';
+
+  @override
+  String get printerAddressGeneric => 'عنوان الاتصال';
 }

@@ -1,3 +1,4 @@
+import '../../accounting/presentation/account_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -97,7 +98,7 @@ class SalesHistoryScreen extends ConsumerWidget {
                     return ListTile(
                       title: Text('${sale.saleNumber} · ${Money.format(sale.grandTotalMinorUnits)}'),
                       subtitle: Text(
-                        '${sale.paymentMethod?.name ?? ''} · ${AppDateFormat.dateTime(sale.completedAt ?? sale.createdAt)}',
+                        '${paymentMethodLabel(l10n, sale.paymentMethod)} · ${AppDateFormat.dateTime(sale.completedAt ?? sale.createdAt)}',
                       ),
                       trailing: Wrap(
                         spacing: 4,

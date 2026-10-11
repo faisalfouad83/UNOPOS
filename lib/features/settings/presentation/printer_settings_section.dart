@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../domain/settings_models.dart';
@@ -36,21 +37,21 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.settingsPrinter, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: config.driverType,
-              decoration: const InputDecoration(labelText: 'Printer type'),
-              items: const [
-                DropdownMenuItem(value: 'none', child: Text('None')),
-                DropdownMenuItem(value: 'network', child: Text('Network / WiFi (ESC-POS)')),
-                DropdownMenuItem(value: 'usb', child: Text('USB thermal')),
-                DropdownMenuItem(value: 'bluetooth', child: Text('Bluetooth thermal')),
-                DropdownMenuItem(value: 'windowsSystem', child: Text('Windows system printer')),
+              decoration: InputDecoration(labelText: context.l10n.printerType),
+              items: [
+                DropdownMenuItem(value: 'none', child: Text(context.l10n.commonNone)),
+                DropdownMenuItem(value: 'network', child: Text(context.l10n.printerNetwork)),
+                DropdownMenuItem(value: 'usb', child: Text(context.l10n.printerUsb)),
+                DropdownMenuItem(value: 'bluetooth', child: Text(context.l10n.printerBluetooth)),
+                DropdownMenuItem(value: 'windowsSystem', child: Text(context.l10n.printerSystem)),
               ],
               onChanged: (value) => _save(config.copyWith(driverType: value)),
             ),
@@ -59,7 +60,7 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
               TextField(
                 controller: _addressController,
                 decoration: InputDecoration(
-                  labelText: config.driverType == 'network' ? 'IP address:port (e.g. 192.168.1.50:9100)' : 'Connection address',
+                  labelText: config.driverType == 'network' ? context.l10n.printerAddressNetwork : context.l10n.printerAddressGeneric,
                 ),
                 onSubmitted: (v) => _save(config.copyWith(connectionAddress: v)),
               ),
@@ -67,7 +68,7 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
               initialValue: config.paperWidthMm,
-              decoration: const InputDecoration(labelText: 'Paper width'),
+              decoration: InputDecoration(labelText: context.l10n.printerPaperWidth),
               items: const [
                 DropdownMenuItem(value: 58, child: Text('58mm')),
                 DropdownMenuItem(value: 80, child: Text('80mm')),
@@ -81,9 +82,9 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
                   onPressed: () async {
                     final printer = buildPrinterService(config.driverType, paperWidthMm: config.paperWidthMm);
                     final ok = await printer.testConnection(_addressController.text);
-                    setState(() => _testResult = ok ? 'OK' : 'Failed');
+                    setState(() => _testResult = ok ? context.l10n.printerTestOk : context.l10n.printerTestFailed);
                   },
-                  child: const Text('Test connection'),
+                  child: Text(context.l10n.printerTestConnection),
                 ),
                 if (_testResult != null) ...[
                   const SizedBox(width: 12),

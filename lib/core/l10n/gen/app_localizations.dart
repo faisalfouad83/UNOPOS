@@ -2373,6 +2373,942 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Older expenses without a type aren\'t included.'**
   String get expensesUntyped;
+
+  /// No description provided for @devStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores'**
+  String get devStores;
+
+  /// No description provided for @devPlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans'**
+  String get devPlans;
+
+  /// No description provided for @devLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses'**
+  String get devLicenses;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @devAuditLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit log'**
+  String get devAuditLog;
+
+  /// No description provided for @errorWithDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong: {details}'**
+  String errorWithDetails(String details);
+
+  /// No description provided for @devEditPlanLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit limits: {plan}'**
+  String devEditPlanLimits(String plan);
+
+  /// No description provided for @devMaxEmployees.
+  ///
+  /// In en, this message translates to:
+  /// **'Max employees'**
+  String get devMaxEmployees;
+
+  /// No description provided for @devMaxBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Max branches'**
+  String get devMaxBranches;
+
+  /// No description provided for @devMaxProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Max products'**
+  String get devMaxProducts;
+
+  /// No description provided for @devMaxUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Max users'**
+  String get devMaxUsers;
+
+  /// No description provided for @devMaxWarehouses.
+  ///
+  /// In en, this message translates to:
+  /// **'Max warehouses'**
+  String get devMaxWarehouses;
+
+  /// No description provided for @devMaxStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Max storage (MB)'**
+  String get devMaxStorage;
+
+  /// No description provided for @devMaxDailyTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Max sales per day'**
+  String get devMaxDailyTransactions;
+
+  /// No description provided for @devPlanSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Employees: {employees} · Branches: {branches} · Products: {products} · Daily sales: {daily} · Storage: {storage} MB'**
+  String devPlanSummary(
+    int employees,
+    int branches,
+    int products,
+    int daily,
+    int storage,
+  );
+
+  /// No description provided for @devTotalStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Total stores'**
+  String get devTotalStores;
+
+  /// No description provided for @devOnTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'On trial'**
+  String get devOnTrial;
+
+  /// No description provided for @devActiveSubscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Active subscriptions'**
+  String get devActiveSubscriptions;
+
+  /// No description provided for @devExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get devExpired;
+
+  /// No description provided for @devDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get devDisabled;
+
+  /// No description provided for @devSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get devSuspended;
+
+  /// No description provided for @devNoStores.
+  ///
+  /// In en, this message translates to:
+  /// **'No stores yet'**
+  String get devNoStores;
+
+  /// No description provided for @commonDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get commonDone;
+
+  /// No description provided for @devEditStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit store'**
+  String get devEditStore;
+
+  /// No description provided for @devOwnerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get devOwnerName;
+
+  /// No description provided for @devChangePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Change plan'**
+  String get devChangePlan;
+
+  /// No description provided for @devResetStorePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset store password'**
+  String get devResetStorePassword;
+
+  /// No description provided for @devNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get devNewPassword;
+
+  /// No description provided for @devReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get devReset;
+
+  /// No description provided for @devPasswordWasReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset'**
+  String get devPasswordWasReset;
+
+  /// No description provided for @devSubscriptionExtended.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription extended'**
+  String get devSubscriptionExtended;
+
+  /// No description provided for @devGenerateAssignLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate and assign a code'**
+  String get devGenerateAssignLicense;
+
+  /// No description provided for @devLicenseAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned: {code}'**
+  String devLicenseAssigned(String code);
+
+  /// No description provided for @devLicenseKey.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get devLicenseKey;
+
+  /// No description provided for @devExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get devExpires;
+
+  /// No description provided for @devNever.
+  ///
+  /// In en, this message translates to:
+  /// **'never'**
+  String get devNever;
+
+  /// No description provided for @devEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get devEnable;
+
+  /// No description provided for @devDisable.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable'**
+  String get devDisable;
+
+  /// No description provided for @devSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend'**
+  String get devSuspend;
+
+  /// No description provided for @devUnsuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get devUnsuspend;
+
+  /// No description provided for @devExtendSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Extend subscription'**
+  String get devExtendSubscription;
+
+  /// No description provided for @devGenerateLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate code'**
+  String get devGenerateLicense;
+
+  /// No description provided for @devResetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get devResetPassword;
+
+  /// No description provided for @devDeleteStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete store'**
+  String get devDeleteStore;
+
+  /// No description provided for @devDeleteStoreWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes \"{store}\" and ALL of its data (sales, inventory, accounting — everything). This cannot be undone.'**
+  String devDeleteStoreWarning(String store);
+
+  /// No description provided for @devNotificationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent'**
+  String get devNotificationSent;
+
+  /// No description provided for @devTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get devTitle;
+
+  /// No description provided for @devMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get devMessage;
+
+  /// No description provided for @devTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to'**
+  String get devTarget;
+
+  /// No description provided for @devAllStores.
+  ///
+  /// In en, this message translates to:
+  /// **'All stores'**
+  String get devAllStores;
+
+  /// No description provided for @devNoAuditEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No actions logged yet'**
+  String get devNoAuditEntries;
+
+  /// No description provided for @devStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get devStatusActive;
+
+  /// No description provided for @devStatusTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial'**
+  String get devStatusTrial;
+
+  /// No description provided for @devStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get devStatusPending;
+
+  /// No description provided for @devStatusRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get devStatusRevoked;
+
+  /// No description provided for @acctRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get acctRevenue;
+
+  /// No description provided for @acctCogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost of goods sold'**
+  String get acctCogs;
+
+  /// No description provided for @acctExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get acctExpenses;
+
+  /// No description provided for @acctNetIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Net income'**
+  String get acctNetIncome;
+
+  /// No description provided for @acctAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Assets'**
+  String get acctAssets;
+
+  /// No description provided for @acctLiabilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Liabilities'**
+  String get acctLiabilities;
+
+  /// No description provided for @acctEquity.
+  ///
+  /// In en, this message translates to:
+  /// **'Equity'**
+  String get acctEquity;
+
+  /// No description provided for @acctNetIncomeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: this period\'s net income moves into equity only once a period-close entry is posted (not automated yet).'**
+  String get acctNetIncomeNote;
+
+  /// No description provided for @acctDebitTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit-side total'**
+  String get acctDebitTotal;
+
+  /// No description provided for @acctCreditTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit-side total'**
+  String get acctCreditTotal;
+
+  /// No description provided for @acctBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Books balance ✓'**
+  String get acctBalanced;
+
+  /// No description provided for @acctNotBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Books do NOT balance — check entries'**
+  String get acctNotBalanced;
+
+  /// No description provided for @acctDebit.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit'**
+  String get acctDebit;
+
+  /// No description provided for @acctCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit'**
+  String get acctCredit;
+
+  /// No description provided for @acctRevenueType.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get acctRevenueType;
+
+  /// No description provided for @inventoryCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog'**
+  String get inventoryCatalog;
+
+  /// No description provided for @discountPercentOff.
+  ///
+  /// In en, this message translates to:
+  /// **'% off'**
+  String get discountPercentOff;
+
+  /// No description provided for @discountAmountOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount off'**
+  String get discountAmountOff;
+
+  /// No description provided for @discountsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved discounts'**
+  String get discountsTitle;
+
+  /// No description provided for @taxRatePercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate %'**
+  String get taxRatePercent;
+
+  /// No description provided for @taxDefaultForNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Default for new products'**
+  String get taxDefaultForNew;
+
+  /// No description provided for @taxRatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax rates'**
+  String get taxRatesTitle;
+
+  /// No description provided for @taxDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'default'**
+  String get taxDefault;
+
+  /// No description provided for @taxRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax rate'**
+  String get taxRate;
+
+  /// No description provided for @transferIncoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get transferIncoming;
+
+  /// No description provided for @transferOutgoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Outgoing'**
+  String get transferOutgoing;
+
+  /// No description provided for @transferOneBranchOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'This store has only one branch — there\'s nowhere to transfer to.'**
+  String get transferOneBranchOnly;
+
+  /// No description provided for @transferToBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'To branch'**
+  String get transferToBranch;
+
+  /// No description provided for @addProductLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a product'**
+  String get addProductLine;
+
+  /// No description provided for @actionReceive.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get actionReceive;
+
+  /// No description provided for @actionCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get actionCreate;
+
+  /// No description provided for @poShort.
+  ///
+  /// In en, this message translates to:
+  /// **'PO'**
+  String get poShort;
+
+  /// No description provided for @poNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New purchase order'**
+  String get poNew;
+
+  /// No description provided for @poSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get poSupplier;
+
+  /// No description provided for @poNeedSupplierAndProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a supplier and at least one product first.'**
+  String get poNeedSupplierAndProduct;
+
+  /// No description provided for @commonNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get commonNone;
+
+  /// No description provided for @inventorySku.
+  ///
+  /// In en, this message translates to:
+  /// **'Product code (SKU)'**
+  String get inventorySku;
+
+  /// No description provided for @inventoryCostPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost price'**
+  String get inventoryCostPrice;
+
+  /// No description provided for @inventoryReorderLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder level'**
+  String get inventoryReorderLevel;
+
+  /// No description provided for @printerType.
+  ///
+  /// In en, this message translates to:
+  /// **'Printer type'**
+  String get printerType;
+
+  /// No description provided for @printerNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Network / Wi-Fi thermal (ESC/POS)'**
+  String get printerNetwork;
+
+  /// No description provided for @printerUsb.
+  ///
+  /// In en, this message translates to:
+  /// **'USB thermal'**
+  String get printerUsb;
+
+  /// No description provided for @printerBluetooth.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth thermal'**
+  String get printerBluetooth;
+
+  /// No description provided for @printerSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Windows system printer'**
+  String get printerSystem;
+
+  /// No description provided for @printerPaperWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper width'**
+  String get printerPaperWidth;
+
+  /// No description provided for @printerTestOk.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get printerTestOk;
+
+  /// No description provided for @printerTestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t connect'**
+  String get printerTestFailed;
+
+  /// No description provided for @printerTestConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Test connection'**
+  String get printerTestConnection;
+
+  /// No description provided for @settingsDefaultVat.
+  ///
+  /// In en, this message translates to:
+  /// **'Default VAT %'**
+  String get settingsDefaultVat;
+
+  /// No description provided for @factoryResetDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset complete'**
+  String get factoryResetDone;
+
+  /// No description provided for @factoryResetDoneHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'All data has been erased. Close and reopen UNOPOS to start fresh.'**
+  String get factoryResetDoneHelp;
+
+  /// No description provided for @notificationsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get notificationsNone;
+
+  /// No description provided for @hrDeactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get hrDeactivate;
+
+  /// No description provided for @shiftCountedCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash counted in the drawer'**
+  String get shiftCountedCash;
+
+  /// No description provided for @supplierContactPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact person'**
+  String get supplierContactPerson;
+
+  /// No description provided for @barcodeScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get barcodeScan;
+
+  /// No description provided for @barcodeScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan barcode'**
+  String get barcodeScanTitle;
+
+  /// No description provided for @tilePickerNoEmployees.
+  ///
+  /// In en, this message translates to:
+  /// **'No employees found for this store.'**
+  String get tilePickerNoEmployees;
+
+  /// No description provided for @dashboardSalesToday.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No sales today} =1{1 sale today} other{{count} sales today}}'**
+  String dashboardSalesToday(int count);
+
+  /// No description provided for @journalSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get journalSale;
+
+  /// No description provided for @journalPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase'**
+  String get journalPurchase;
+
+  /// No description provided for @journalSupplierPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier payment'**
+  String get journalSupplierPayment;
+
+  /// No description provided for @journalDebtPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt payment'**
+  String get journalDebtPayment;
+
+  /// No description provided for @journalExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get journalExpense;
+
+  /// No description provided for @journalReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get journalReturn;
+
+  /// No description provided for @journalAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment'**
+  String get journalAdjustment;
+
+  /// No description provided for @journalManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual entry'**
+  String get journalManual;
+
+  /// No description provided for @journalOpeningBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening balance'**
+  String get journalOpeningBalance;
+
+  /// No description provided for @acctTypeCogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost of sales'**
+  String get acctTypeCogs;
+
+  /// No description provided for @account1000.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on hand'**
+  String get account1000;
+
+  /// No description provided for @account1010.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account'**
+  String get account1010;
+
+  /// No description provided for @account1100.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer debts (receivable)'**
+  String get account1100;
+
+  /// No description provided for @account1200.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get account1200;
+
+  /// No description provided for @account2000.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier debts (payable)'**
+  String get account2000;
+
+  /// No description provided for @account2100.
+  ///
+  /// In en, this message translates to:
+  /// **'VAT / sales tax payable'**
+  String get account2100;
+
+  /// No description provided for @account3000.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner\'s equity'**
+  String get account3000;
+
+  /// No description provided for @account3100.
+  ///
+  /// In en, this message translates to:
+  /// **'Retained earnings'**
+  String get account3100;
+
+  /// No description provided for @account4000.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales revenue'**
+  String get account4000;
+
+  /// No description provided for @account4100.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales returns'**
+  String get account4100;
+
+  /// No description provided for @account4200.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts given'**
+  String get account4200;
+
+  /// No description provided for @account5000.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost of goods sold'**
+  String get account5000;
+
+  /// No description provided for @account6000.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent'**
+  String get account6000;
+
+  /// No description provided for @account6010.
+  ///
+  /// In en, this message translates to:
+  /// **'Utilities'**
+  String get account6010;
+
+  /// No description provided for @account6020.
+  ///
+  /// In en, this message translates to:
+  /// **'Salaries and wages'**
+  String get account6020;
+
+  /// No description provided for @account6030.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplies'**
+  String get account6030;
+
+  /// No description provided for @account6040.
+  ///
+  /// In en, this message translates to:
+  /// **'General expenses'**
+  String get account6040;
+
+  /// No description provided for @account6050.
+  ///
+  /// In en, this message translates to:
+  /// **'Card processing fees'**
+  String get account6050;
+
+  /// No description provided for @account6060.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory shrinkage'**
+  String get account6060;
+
+  /// No description provided for @transferItemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} item(s)'**
+  String transferItemCount(int count);
+
+  /// No description provided for @memoCashSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash sale'**
+  String get memoCashSale;
+
+  /// No description provided for @memoCardSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Card sale'**
+  String get memoCardSale;
+
+  /// No description provided for @memoPayLaterSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay-later sale (on account)'**
+  String get memoPayLaterSale;
+
+  /// No description provided for @memoDebtPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer debt payment received'**
+  String get memoDebtPayment;
+
+  /// No description provided for @memoPurchasePaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier purchase (paid)'**
+  String get memoPurchasePaid;
+
+  /// No description provided for @memoPurchaseCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier purchase (on credit)'**
+  String get memoPurchaseCredit;
+
+  /// No description provided for @memoSupplierPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment to supplier'**
+  String get memoSupplierPayment;
+
+  /// No description provided for @memoSaleReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale return / refund'**
+  String get memoSaleReturn;
+
+  /// No description provided for @memoShrinkage.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock shrinkage / adjustment'**
+  String get memoShrinkage;
+
+  /// No description provided for @printerAddressNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'IP address:port (e.g. 192.168.1.50:9100)'**
+  String get printerAddressNetwork;
+
+  /// No description provided for @printerAddressGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection address'**
+  String get printerAddressGeneric;
 }
 
 class _AppLocalizationsDelegate

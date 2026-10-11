@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../auth/domain/session_controller.dart';
@@ -28,7 +29,7 @@ Future<void> showAddSupplierDialog(BuildContext context, WidgetRef ref) async {
             const SizedBox(height: 12),
             TextField(controller: phoneController, decoration: InputDecoration(labelText: l10n.commonPhone)),
             const SizedBox(height: 12),
-            TextField(controller: personController, decoration: const InputDecoration(labelText: 'Contact person')),
+            TextField(controller: personController, decoration: InputDecoration(labelText: context.l10n.supplierContactPerson)),
             const SizedBox(height: 12),
             TextField(controller: addressController, decoration: InputDecoration(labelText: l10n.commonAddress)),
           ],

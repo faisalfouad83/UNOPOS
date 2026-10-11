@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -30,11 +31,11 @@ class DiscountsSection extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.commonName)),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               SegmentedButton<DiscountType>(
-                segments: const [
-                  ButtonSegment(value: DiscountType.percentOff, label: Text('% off')),
-                  ButtonSegment(value: DiscountType.amountOff, label: Text('Amount off')),
+                segments: [
+                  ButtonSegment(value: DiscountType.percentOff, label: Text(context.l10n.discountPercentOff)),
+                  ButtonSegment(value: DiscountType.amountOff, label: Text(context.l10n.discountAmountOff)),
                 ],
                 selected: {type},
                 onSelectionChanged: (s) => setState(() => type = s.first),
@@ -44,7 +45,7 @@ class DiscountsSection extends ConsumerWidget {
                 controller: valueController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                decoration: InputDecoration(labelText: type == DiscountType.percentOff ? 'Percent' : l10n.commonAmount),
+                decoration: InputDecoration(labelText: type == DiscountType.percentOff ? context.l10n.posDiscountPercent : l10n.commonAmount),
               ),
             ],
           ),
@@ -84,7 +85,7 @@ class DiscountsSection extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Expanded(child: Text('Discounts', style: TextStyle(fontWeight: FontWeight.w600))),
+                Expanded(child: Text(context.l10n.discountsTitle, style: const TextStyle(fontWeight: FontWeight.w600))),
                 IconButton(icon: const Icon(Icons.add), onPressed: () => _addDiscount(context, ref)),
               ],
             ),

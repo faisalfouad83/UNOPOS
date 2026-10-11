@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -57,7 +58,7 @@ class HrScreen extends ConsumerWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.person_off_outlined),
-                      tooltip: 'Deactivate',
+                      tooltip: context.l10n.hrDeactivate,
                       onPressed: () => ref.read(authRepositoryProvider).setEmployeeActive(employee.id, false),
                     ),
                   ],

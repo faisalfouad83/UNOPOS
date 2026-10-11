@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../domain/inventory_models.dart';
@@ -34,11 +35,11 @@ class TaxRatesSection extends ConsumerWidget {
                 controller: rateController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                decoration: const InputDecoration(labelText: 'Rate %'),
+                decoration: InputDecoration(labelText: context.l10n.taxRatePercent),
               ),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Default for new products'),
+                title: Text(context.l10n.taxDefaultForNew),
                 value: isDefault,
                 onChanged: (v) => setState(() => isDefault = v ?? false),
               ),
@@ -78,7 +79,7 @@ class TaxRatesSection extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Expanded(child: Text('Tax Rates', style: TextStyle(fontWeight: FontWeight.w600))),
+                Expanded(child: Text(context.l10n.taxRatesTitle, style: const TextStyle(fontWeight: FontWeight.w600))),
                 IconButton(icon: const Icon(Icons.add), onPressed: () => _addTaxRate(context, ref)),
               ],
             ),
@@ -91,7 +92,7 @@ class TaxRatesSection extends ConsumerWidget {
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                           title: Text(r.name),
-                          trailing: Text('${r.ratePercent}%${r.isDefault ? ' · default' : ''}'),
+                          trailing: Text('${r.ratePercent}%${r.isDefault ? ' · ${context.l10n.taxDefault}' : ''}'),
                         ))
                     .toList(),
               ),
