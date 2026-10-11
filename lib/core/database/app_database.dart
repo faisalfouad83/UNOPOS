@@ -39,6 +39,7 @@ part 'app_database.g.dart';
     ChartOfAccounts,
     JournalEntries,
     JournalLines,
+    ExpenseDetails,
     Sales,
     SaleLines,
     SaleReturns,
@@ -57,7 +58,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -76,6 +77,16 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(customers, customers.loyaltyPoints);
             await m.addColumn(appSettingsTable, appSettingsTable.loyaltySpendPerPointMinor);
             await m.addColumn(appSettingsTable, appSettingsTable.loyaltyPointValueMinor);
+          }
+          if (from < 5) {
+            await m.addColumn(appSettingsTable, appSettingsTable.loyaltyEnabled);
+            await m.addColumn(appSettingsTable, appSettingsTable.fullDiscountKeepsMargin);
+            await m.addColumn(users, users.permissions);
+            await m.createTable(expenseDetails);
+            // Loyalty used to be "on" whenever an earn rate was set.
+            await customStatement(
+              'UPDATE app_settings_table SET loyalty_enabled = 1 WHERE loyalty_spend_per_point_minor > 0',
+            );
           }
         },
       );

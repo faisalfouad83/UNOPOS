@@ -309,7 +309,7 @@
   "reportsReorderAt": "حد الطلب {level}",
 
   "loyaltyTitle": "نقاط الولاء",
-  "loyaltySettingsHelp": "يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم. اتركه فارغاً لإيقاف النقاط.",
+  "loyaltySettingsHelp": "يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم.",
   "loyaltySpendPerPoint": "المبلغ مقابل نقطة واحدة",
   "loyaltyPointValue": "قيمة النقطة الواحدة",
   "loyaltyNoCustomer": "بدون زبون (نقاط الولاء)",
@@ -338,5 +338,38 @@
   "unitTikka": "تكة",
   "unitBale": "بالة / شليف",
   "unitGram": "غرام",
-  "unitMilliliter": "ملي لتر"
+  "unitMilliliter": "ملي لتر",
+
+  "navCustomers": "الزبائن",
+  "hrPasscodeNew": "رمز الدخول (4 أرقام)",
+  "hrPasscodeReset": "رمز دخول جديد (اتركه فارغاً للإبقاء على الحالي)",
+  "permissionsTitle": "الصلاحيات",
+  "permissionsOwnerAll": "المالك لديه جميع الصلاحيات دائماً.",
+  "permissionSell": "البيع (شاشة الكاشير)",
+  "permissionGiveDiscount": "إعطاء خصومات",
+  "permissionProcessReturns": "إرجاع المبيعات",
+  "permissionDebts": "الديون",
+  "permissionCustomers": "الزبائن",
+  "permissionInventory": "عرض المخزون",
+  "permissionEditProducts": "إضافة وتعديل المنتجات",
+  "permissionSuppliers": "الموردون",
+  "permissionExpenses": "المصاريف والصندوق",
+  "permissionAccounting": "المحاسبة",
+  "permissionReports": "التقارير",
+  "permissionHr": "الموظفون",
+  "permissionSettings": "الإعدادات",
+
+  "posLineDiscount": "خصم على هذا المنتج",
+  "posInvoiceDiscount": "خصم على الفاتورة",
+  "posDiscountPercent": "نسبة الخصم %",
+  "posDiscountAmount": "مبلغ الخصم",
+  "posRemoveDiscount": "إزالة الخصم",
+
+  "settingsKeepMargin": "الاحتفاظ بهامش ربح 5% عند خصم 100%",
+  "settingsKeepMarginHelp": "عند الخصم الكامل يُحسب سعر الكلفة مضافاً إليه 5% بدلاً من إعطاء المنتج مجاناً.",
+
+  "customerWalkIn": "زبون نقدي عابر",
+  "customersNone": "لا يوجد زبائن بعد",
+  "customersTotalSales": "إجمالي المشتريات",
+  "customersOwes": "عليه دين"
 }

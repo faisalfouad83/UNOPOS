@@ -18,28 +18,7 @@ class Loyalty {
     return balance < byTotal ? balance : byTotal;
   }
 
-  /// [lines] with [discountMinorUnits] spread over them in proportion to
-  /// each line's price after its own discount, so tax and revenue are
-  /// recomputed exactly as for any other discount. Rounding leftovers go to
-  /// the largest line.
-  static List<CartLine> applyDiscount(List<CartLine> lines, int discountMinorUnits) {
-    if (discountMinorUnits <= 0 || lines.isEmpty) return lines;
-    final bases = <int>[for (final l in lines) l.grossMinorUnits - l.discountAmountMinorUnits];
-    final total = bases.fold<int>(0, (a, b) => a + b);
-    if (total <= 0) return lines;
-    final amount = discountMinorUnits > total ? total : discountMinorUnits;
-
-    final shares = <int>[for (final b in bases) amount * b ~/ total];
-    final leftover = amount - shares.fold<int>(0, (a, b) => a + b);
-    var largest = 0;
-    for (var i = 1; i < bases.length; i++) {
-      if (bases[i] > bases[largest]) largest = i;
-    }
-    shares[largest] += leftover;
-
-    return [
-      for (var i = 0; i < lines.length; i++)
-        lines[i].copyWith(discountAmountMinorUnits: lines[i].discountAmountMinorUnits + shares[i]),
-    ];
-  }
+  /// [lines] with the points discount spread over them (see [spreadDiscount]).
+  static List<CartLine> applyDiscount(List<CartLine> lines, int discountMinorUnits) =>
+      spreadDiscount(lines, discountMinorUnits);
 }

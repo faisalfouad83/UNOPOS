@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/permissions.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -68,6 +69,7 @@ class SalesHistoryScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final salesAsync = ref.watch(_todaysSalesProvider(storeId));
     final query = ref.watch(_searchQueryProvider).trim().toLowerCase();
+    final canReturn = ref.watch(sessionControllerProvider).employee?.can(AppPermission.processReturns) ?? false;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.posSalesHistory)),
@@ -110,10 +112,11 @@ class SalesHistoryScreen extends ConsumerWidget {
                             tooltip: l10n.whatsappSendReceipt,
                             onPressed: () => _sendWhatsApp(context, ref, sale),
                           ),
-                          TextButton(
-                            child: Text(l10n.posProcessReturn),
-                            onPressed: () => showProcessReturnDialog(context, ref, sale),
-                          ),
+                          if (canReturn)
+                            TextButton(
+                              child: Text(l10n.posProcessReturn),
+                              onPressed: () => showProcessReturnDialog(context, ref, sale),
+                            ),
                         ],
                       ),
                     );

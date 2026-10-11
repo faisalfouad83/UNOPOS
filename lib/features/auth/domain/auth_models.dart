@@ -1,3 +1,4 @@
+import '../../../core/constants/permissions.dart';
 import '../../../core/constants/roles.dart';
 
 class StoreRecord {
@@ -58,6 +59,7 @@ class EmployeeRecord {
     this.allowancesMinorUnits = 0,
     this.avatarColorHex = '#0F6E5C',
     this.isActive = true,
+    this.customPermissions,
   });
 
   final String id;
@@ -72,4 +74,28 @@ class EmployeeRecord {
   final int allowancesMinorUnits;
   final String avatarColorHex;
   final bool isActive;
+
+  /// Permissions set for this employee; null = their role's defaults.
+  final Set<AppPermission>? customPermissions;
+
+  Set<AppPermission> get permissions => effectivePermissions(role, customPermissions);
+
+  bool can(AppPermission permission) => permissions.contains(permission);
+
+  EmployeeRecord copyWith({Set<AppPermission>? customPermissions, bool clearCustomPermissions = false}) =>
+      EmployeeRecord(
+        id: id,
+        storeId: storeId,
+        branchId: branchId,
+        name: name,
+        role: role,
+        pinHash: pinHash,
+        phone: phone,
+        address: address,
+        salaryMinorUnits: salaryMinorUnits,
+        allowancesMinorUnits: allowancesMinorUnits,
+        avatarColorHex: avatarColorHex,
+        isActive: isActive,
+        customPermissions: clearCustomPermissions ? null : (customPermissions ?? this.customPermissions),
+      );
 }

@@ -334,7 +334,7 @@
   "@reportsReorderAt": {"placeholders": {"level": {"type": "int"}}},
 
   "loyaltyTitle": "Loyalty points",
-  "loyaltySettingsHelp": "Customers earn 1 point for every amount below they spend, and can spend points as a discount. Leave empty to turn loyalty off.",
+  "loyaltySettingsHelp": "Customers earn 1 point for every amount below they spend, and can spend points as a discount.",
   "loyaltySpendPerPoint": "Spend for 1 point",
   "loyaltyPointValue": "Value of 1 point",
   "loyaltyNoCustomer": "No customer (loyalty points)",
@@ -368,5 +368,38 @@
   "unitTikka": "Tikka (piece)",
   "unitBale": "Bale (sack)",
   "unitGram": "Gram",
-  "unitMilliliter": "Milliliter"
+  "unitMilliliter": "Milliliter",
+
+  "navCustomers": "Customers",
+  "hrPasscodeNew": "Passcode (4 digits)",
+  "hrPasscodeReset": "New passcode (leave empty to keep)",
+  "permissionsTitle": "Permissions",
+  "permissionsOwnerAll": "The owner always has every permission.",
+  "permissionSell": "Sell (cashier screen)",
+  "permissionGiveDiscount": "Give discounts",
+  "permissionProcessReturns": "Process returns",
+  "permissionDebts": "Debts",
+  "permissionCustomers": "Customers",
+  "permissionInventory": "View inventory",
+  "permissionEditProducts": "Add and edit products",
+  "permissionSuppliers": "Suppliers",
+  "permissionExpenses": "Expenses and cash",
+  "permissionAccounting": "Accounting",
+  "permissionReports": "Reports",
+  "permissionHr": "Employees (HR)",
+  "permissionSettings": "Settings",
+
+  "posLineDiscount": "Discount on this item",
+  "posInvoiceDiscount": "Discount on invoice",
+  "posDiscountPercent": "Discount %",
+  "posDiscountAmount": "Discount amount",
+  "posRemoveDiscount": "Remove discount",
+
+  "settingsKeepMargin": "Keep a 5% margin on 100% discounts",
+  "settingsKeepMarginHelp": "A full discount charges the item's cost plus 5% instead of giving it away.",
+
+  "customerWalkIn": "Walk-in customer (cash)",
+  "customersNone": "No customers yet",
+  "customersTotalSales": "Total purchases",
+  "customersOwes": "Owes"
 }

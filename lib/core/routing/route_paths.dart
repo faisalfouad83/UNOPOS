@@ -16,6 +16,7 @@ class RoutePaths {
   static const String pos = '/pos';
   static const String inventory = '/inventory';
   static const String debts = '/debts';
+  static const String customers = '/customers';
   static const String suppliers = '/suppliers';
   static const String accounting = '/accounting';
   static const String expensesCash = '/expenses-cash';

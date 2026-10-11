@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/magic_passcodes.dart';
+import '../../../core/constants/permissions.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
@@ -27,6 +28,10 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
   final pinController = TextEditingController();
   StoreRole role = existing?.role ?? StoreRole.cashier;
   String? error;
+  var permissions = {...(existing?.permissions ?? defaultPermissionsFor(role))};
+  // Until the permissions are touched, changing the role resets them to
+  // that role's defaults.
+  var permissionsEdited = existing?.customPermissions != null;
 
   await showDialog<void>(
     context: context,
@@ -54,7 +59,10 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                     DropdownMenuItem(value: StoreRole.cashier, child: Text(l10n.hrRoleCashier)),
                     DropdownMenuItem(value: StoreRole.warehouseManager, child: Text(l10n.hrRoleWarehouseManager)),
                   ],
-                  onChanged: (v) => setState(() => role = v ?? role),
+                  onChanged: (v) => setState(() {
+                    role = v ?? role;
+                    if (!permissionsEdited) permissions = {...defaultPermissionsFor(role)};
+                  }),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -85,10 +93,32 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(4)],
                   decoration: InputDecoration(
-                    labelText: existing == null ? 'Passcode (4 digits)' : 'Reset passcode (leave blank to keep)',
+                    labelText: existing == null ? l10n.hrPasscodeNew : l10n.hrPasscodeReset,
                     errorText: error,
                   ),
                 ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(l10n.permissionsTitle, style: Theme.of(context).textTheme.titleSmall),
+                ),
+                if (role == StoreRole.owner)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(l10n.permissionsOwnerAll, style: Theme.of(context).textTheme.bodySmall),
+                  )
+                else
+                  for (final permission in AppPermission.values)
+                    CheckboxListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(permissionLabel(l10n, permission)),
+                      value: permissions.contains(permission),
+                      onChanged: (on) => setState(() {
+                        permissionsEdited = true;
+                        on == true ? permissions.add(permission) : permissions.remove(permission);
+                      }),
+                    ),
               ],
             ),
           ),
@@ -107,8 +137,11 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
               }
 
               final repo = ref.read(authRepositoryProvider);
+              final custom = role == StoreRole.owner || _sameSet(permissions, defaultPermissionsFor(role))
+                  ? null
+                  : permissions;
               if (existing == null) {
-                await repo.createEmployee(
+                final created = await repo.createEmployee(
                   storeId: session.store!.id,
                   branchId: session.currentBranchId,
                   name: nameController.text.trim(),
@@ -119,6 +152,7 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                   salaryMinorUnits: Money.toMinorUnits(double.tryParse(salaryController.text) ?? 0),
                   allowancesMinorUnits: Money.toMinorUnits(double.tryParse(allowancesController.text) ?? 0),
                 );
+                if (custom != null) await repo.updateEmployee(created.copyWith(customPermissions: custom));
               } else {
                 await repo.updateEmployee(
                   EmployeeRecord(
@@ -132,6 +166,9 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                     address: addressController.text.trim(),
                     salaryMinorUnits: Money.toMinorUnits(double.tryParse(salaryController.text) ?? 0),
                     allowancesMinorUnits: Money.toMinorUnits(double.tryParse(allowancesController.text) ?? 0),
+                    avatarColorHex: existing.avatarColorHex,
+                    isActive: existing.isActive,
+                    customPermissions: custom,
                   ),
                   newPin: pinController.text.isEmpty ? null : pinController.text,
                 );
@@ -153,3 +190,21 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
     ),
   );
 }
+
+bool _sameSet(Set<AppPermission> a, Set<AppPermission> b) => a.length == b.length && a.containsAll(b);
+
+String permissionLabel(AppLocalizations l10n, AppPermission permission) => switch (permission) {
+      AppPermission.sell => l10n.permissionSell,
+      AppPermission.giveDiscount => l10n.permissionGiveDiscount,
+      AppPermission.processReturns => l10n.permissionProcessReturns,
+      AppPermission.debts => l10n.permissionDebts,
+      AppPermission.customers => l10n.permissionCustomers,
+      AppPermission.inventory => l10n.permissionInventory,
+      AppPermission.editProducts => l10n.permissionEditProducts,
+      AppPermission.suppliers => l10n.permissionSuppliers,
+      AppPermission.expenses => l10n.permissionExpenses,
+      AppPermission.accounting => l10n.permissionAccounting,
+      AppPermission.reports => l10n.permissionReports,
+      AppPermission.hr => l10n.permissionHr,
+      AppPermission.settings => l10n.permissionSettings,
+    };

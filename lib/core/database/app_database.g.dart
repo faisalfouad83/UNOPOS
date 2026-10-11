@@ -1149,6 +1149,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _permissionsMeta = const VerificationMeta(
+    'permissions',
+  );
+  @override
+  late final GeneratedColumn<String> permissions = GeneratedColumn<String>(
+    'permissions',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1164,6 +1175,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     avatarColorHex,
     isActive,
     createdAt,
+    permissions,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1273,6 +1285,15 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('permissions')) {
+      context.handle(
+        _permissionsMeta,
+        permissions.isAcceptableOrUnknown(
+          data['permissions']!,
+          _permissionsMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1334,6 +1355,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      permissions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}permissions'],
+      ),
     );
   }
 
@@ -1361,6 +1386,9 @@ class User extends DataClass implements Insertable<User> {
   final String avatarColorHex;
   final bool isActive;
   final DateTime createdAt;
+
+  /// Comma-separated AppPermission names; null = the role's defaults.
+  final String? permissions;
   const User({
     required this.id,
     required this.storeId,
@@ -1375,6 +1403,7 @@ class User extends DataClass implements Insertable<User> {
     required this.avatarColorHex,
     required this.isActive,
     required this.createdAt,
+    this.permissions,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1394,6 +1423,9 @@ class User extends DataClass implements Insertable<User> {
     map['avatar_color_hex'] = Variable<String>(avatarColorHex);
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || permissions != null) {
+      map['permissions'] = Variable<String>(permissions);
+    }
     return map;
   }
 
@@ -1414,6 +1446,9 @@ class User extends DataClass implements Insertable<User> {
       avatarColorHex: Value(avatarColorHex),
       isActive: Value(isActive),
       createdAt: Value(createdAt),
+      permissions: permissions == null && nullToAbsent
+          ? const Value.absent()
+          : Value(permissions),
     );
   }
 
@@ -1438,6 +1473,7 @@ class User extends DataClass implements Insertable<User> {
       avatarColorHex: serializer.fromJson<String>(json['avatarColorHex']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      permissions: serializer.fromJson<String?>(json['permissions']),
     );
   }
   @override
@@ -1457,6 +1493,7 @@ class User extends DataClass implements Insertable<User> {
       'avatarColorHex': serializer.toJson<String>(avatarColorHex),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'permissions': serializer.toJson<String?>(permissions),
     };
   }
 
@@ -1474,6 +1511,7 @@ class User extends DataClass implements Insertable<User> {
     String? avatarColorHex,
     bool? isActive,
     DateTime? createdAt,
+    Value<String?> permissions = const Value.absent(),
   }) => User(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -1488,6 +1526,7 @@ class User extends DataClass implements Insertable<User> {
     avatarColorHex: avatarColorHex ?? this.avatarColorHex,
     isActive: isActive ?? this.isActive,
     createdAt: createdAt ?? this.createdAt,
+    permissions: permissions.present ? permissions.value : this.permissions,
   );
   User copyWithCompanion(UsersCompanion data) {
     return User(
@@ -1510,6 +1549,9 @@ class User extends DataClass implements Insertable<User> {
           : this.avatarColorHex,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      permissions: data.permissions.present
+          ? data.permissions.value
+          : this.permissions,
     );
   }
 
@@ -1528,7 +1570,8 @@ class User extends DataClass implements Insertable<User> {
           ..write('allowancesMinorUnits: $allowancesMinorUnits, ')
           ..write('avatarColorHex: $avatarColorHex, ')
           ..write('isActive: $isActive, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('permissions: $permissions')
           ..write(')'))
         .toString();
   }
@@ -1548,6 +1591,7 @@ class User extends DataClass implements Insertable<User> {
     avatarColorHex,
     isActive,
     createdAt,
+    permissions,
   );
   @override
   bool operator ==(Object other) =>
@@ -1565,7 +1609,8 @@ class User extends DataClass implements Insertable<User> {
           other.allowancesMinorUnits == this.allowancesMinorUnits &&
           other.avatarColorHex == this.avatarColorHex &&
           other.isActive == this.isActive &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.permissions == this.permissions);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -1582,6 +1627,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> avatarColorHex;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
+  final Value<String?> permissions;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -1597,6 +1643,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.avatarColorHex = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.permissions = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -1613,6 +1660,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.avatarColorHex = const Value.absent(),
     this.isActive = const Value.absent(),
     required DateTime createdAt,
+    this.permissions = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId),
@@ -1634,6 +1682,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? avatarColorHex,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
+    Expression<String>? permissions,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1651,6 +1700,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (avatarColorHex != null) 'avatar_color_hex': avatarColorHex,
       if (isActive != null) 'is_active': isActive,
       if (createdAt != null) 'created_at': createdAt,
+      if (permissions != null) 'permissions': permissions,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1669,6 +1719,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String>? avatarColorHex,
     Value<bool>? isActive,
     Value<DateTime>? createdAt,
+    Value<String?>? permissions,
     Value<int>? rowid,
   }) {
     return UsersCompanion(
@@ -1685,6 +1736,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       avatarColorHex: avatarColorHex ?? this.avatarColorHex,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+      permissions: permissions ?? this.permissions,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1731,6 +1783,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (permissions.present) {
+      map['permissions'] = Variable<String>(permissions.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1753,6 +1808,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('avatarColorHex: $avatarColorHex, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
+          ..write('permissions: $permissions, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -12078,6 +12134,442 @@ class JournalLinesCompanion extends UpdateCompanion<JournalLine> {
   }
 }
 
+class $ExpenseDetailsTable extends ExpenseDetails
+    with TableInfo<$ExpenseDetailsTable, ExpenseDetail> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseDetailsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _journalEntryIdMeta = const VerificationMeta(
+    'journalEntryId',
+  );
+  @override
+  late final GeneratedColumn<String> journalEntryId = GeneratedColumn<String>(
+    'journal_entry_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expenseGroupMeta = const VerificationMeta(
+    'expenseGroup',
+  );
+  @override
+  late final GeneratedColumn<String> expenseGroup = GeneratedColumn<String>(
+    'expense_group',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorUnitsMeta = const VerificationMeta(
+    'amountMinorUnits',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinorUnits = GeneratedColumn<int>(
+    'amount_minor_units',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entryDateMeta = const VerificationMeta(
+    'entryDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> entryDate = GeneratedColumn<DateTime>(
+    'entry_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    journalEntryId,
+    storeId,
+    expenseGroup,
+    category,
+    amountMinorUnits,
+    entryDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'expense_details';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExpenseDetail> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('journal_entry_id')) {
+      context.handle(
+        _journalEntryIdMeta,
+        journalEntryId.isAcceptableOrUnknown(
+          data['journal_entry_id']!,
+          _journalEntryIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_journalEntryIdMeta);
+    }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('expense_group')) {
+      context.handle(
+        _expenseGroupMeta,
+        expenseGroup.isAcceptableOrUnknown(
+          data['expense_group']!,
+          _expenseGroupMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_expenseGroupMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('amount_minor_units')) {
+      context.handle(
+        _amountMinorUnitsMeta,
+        amountMinorUnits.isAcceptableOrUnknown(
+          data['amount_minor_units']!,
+          _amountMinorUnitsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorUnitsMeta);
+    }
+    if (data.containsKey('entry_date')) {
+      context.handle(
+        _entryDateMeta,
+        entryDate.isAcceptableOrUnknown(data['entry_date']!, _entryDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryDateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {journalEntryId};
+  @override
+  ExpenseDetail map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpenseDetail(
+      journalEntryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}journal_entry_id'],
+      )!,
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      expenseGroup: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}expense_group'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      amountMinorUnits: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor_units'],
+      )!,
+      entryDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}entry_date'],
+      )!,
+    );
+  }
+
+  @override
+  $ExpenseDetailsTable createAlias(String alias) {
+    return $ExpenseDetailsTable(attachedDatabase, alias);
+  }
+}
+
+class ExpenseDetail extends DataClass implements Insertable<ExpenseDetail> {
+  final String journalEntryId;
+  final String storeId;
+  final String expenseGroup;
+  final String category;
+  final int amountMinorUnits;
+  final DateTime entryDate;
+  const ExpenseDetail({
+    required this.journalEntryId,
+    required this.storeId,
+    required this.expenseGroup,
+    required this.category,
+    required this.amountMinorUnits,
+    required this.entryDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['journal_entry_id'] = Variable<String>(journalEntryId);
+    map['store_id'] = Variable<String>(storeId);
+    map['expense_group'] = Variable<String>(expenseGroup);
+    map['category'] = Variable<String>(category);
+    map['amount_minor_units'] = Variable<int>(amountMinorUnits);
+    map['entry_date'] = Variable<DateTime>(entryDate);
+    return map;
+  }
+
+  ExpenseDetailsCompanion toCompanion(bool nullToAbsent) {
+    return ExpenseDetailsCompanion(
+      journalEntryId: Value(journalEntryId),
+      storeId: Value(storeId),
+      expenseGroup: Value(expenseGroup),
+      category: Value(category),
+      amountMinorUnits: Value(amountMinorUnits),
+      entryDate: Value(entryDate),
+    );
+  }
+
+  factory ExpenseDetail.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpenseDetail(
+      journalEntryId: serializer.fromJson<String>(json['journalEntryId']),
+      storeId: serializer.fromJson<String>(json['storeId']),
+      expenseGroup: serializer.fromJson<String>(json['expenseGroup']),
+      category: serializer.fromJson<String>(json['category']),
+      amountMinorUnits: serializer.fromJson<int>(json['amountMinorUnits']),
+      entryDate: serializer.fromJson<DateTime>(json['entryDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'journalEntryId': serializer.toJson<String>(journalEntryId),
+      'storeId': serializer.toJson<String>(storeId),
+      'expenseGroup': serializer.toJson<String>(expenseGroup),
+      'category': serializer.toJson<String>(category),
+      'amountMinorUnits': serializer.toJson<int>(amountMinorUnits),
+      'entryDate': serializer.toJson<DateTime>(entryDate),
+    };
+  }
+
+  ExpenseDetail copyWith({
+    String? journalEntryId,
+    String? storeId,
+    String? expenseGroup,
+    String? category,
+    int? amountMinorUnits,
+    DateTime? entryDate,
+  }) => ExpenseDetail(
+    journalEntryId: journalEntryId ?? this.journalEntryId,
+    storeId: storeId ?? this.storeId,
+    expenseGroup: expenseGroup ?? this.expenseGroup,
+    category: category ?? this.category,
+    amountMinorUnits: amountMinorUnits ?? this.amountMinorUnits,
+    entryDate: entryDate ?? this.entryDate,
+  );
+  ExpenseDetail copyWithCompanion(ExpenseDetailsCompanion data) {
+    return ExpenseDetail(
+      journalEntryId: data.journalEntryId.present
+          ? data.journalEntryId.value
+          : this.journalEntryId,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      expenseGroup: data.expenseGroup.present
+          ? data.expenseGroup.value
+          : this.expenseGroup,
+      category: data.category.present ? data.category.value : this.category,
+      amountMinorUnits: data.amountMinorUnits.present
+          ? data.amountMinorUnits.value
+          : this.amountMinorUnits,
+      entryDate: data.entryDate.present ? data.entryDate.value : this.entryDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseDetail(')
+          ..write('journalEntryId: $journalEntryId, ')
+          ..write('storeId: $storeId, ')
+          ..write('expenseGroup: $expenseGroup, ')
+          ..write('category: $category, ')
+          ..write('amountMinorUnits: $amountMinorUnits, ')
+          ..write('entryDate: $entryDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    journalEntryId,
+    storeId,
+    expenseGroup,
+    category,
+    amountMinorUnits,
+    entryDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpenseDetail &&
+          other.journalEntryId == this.journalEntryId &&
+          other.storeId == this.storeId &&
+          other.expenseGroup == this.expenseGroup &&
+          other.category == this.category &&
+          other.amountMinorUnits == this.amountMinorUnits &&
+          other.entryDate == this.entryDate);
+}
+
+class ExpenseDetailsCompanion extends UpdateCompanion<ExpenseDetail> {
+  final Value<String> journalEntryId;
+  final Value<String> storeId;
+  final Value<String> expenseGroup;
+  final Value<String> category;
+  final Value<int> amountMinorUnits;
+  final Value<DateTime> entryDate;
+  final Value<int> rowid;
+  const ExpenseDetailsCompanion({
+    this.journalEntryId = const Value.absent(),
+    this.storeId = const Value.absent(),
+    this.expenseGroup = const Value.absent(),
+    this.category = const Value.absent(),
+    this.amountMinorUnits = const Value.absent(),
+    this.entryDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExpenseDetailsCompanion.insert({
+    required String journalEntryId,
+    required String storeId,
+    required String expenseGroup,
+    required String category,
+    required int amountMinorUnits,
+    required DateTime entryDate,
+    this.rowid = const Value.absent(),
+  }) : journalEntryId = Value(journalEntryId),
+       storeId = Value(storeId),
+       expenseGroup = Value(expenseGroup),
+       category = Value(category),
+       amountMinorUnits = Value(amountMinorUnits),
+       entryDate = Value(entryDate);
+  static Insertable<ExpenseDetail> custom({
+    Expression<String>? journalEntryId,
+    Expression<String>? storeId,
+    Expression<String>? expenseGroup,
+    Expression<String>? category,
+    Expression<int>? amountMinorUnits,
+    Expression<DateTime>? entryDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (journalEntryId != null) 'journal_entry_id': journalEntryId,
+      if (storeId != null) 'store_id': storeId,
+      if (expenseGroup != null) 'expense_group': expenseGroup,
+      if (category != null) 'category': category,
+      if (amountMinorUnits != null) 'amount_minor_units': amountMinorUnits,
+      if (entryDate != null) 'entry_date': entryDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExpenseDetailsCompanion copyWith({
+    Value<String>? journalEntryId,
+    Value<String>? storeId,
+    Value<String>? expenseGroup,
+    Value<String>? category,
+    Value<int>? amountMinorUnits,
+    Value<DateTime>? entryDate,
+    Value<int>? rowid,
+  }) {
+    return ExpenseDetailsCompanion(
+      journalEntryId: journalEntryId ?? this.journalEntryId,
+      storeId: storeId ?? this.storeId,
+      expenseGroup: expenseGroup ?? this.expenseGroup,
+      category: category ?? this.category,
+      amountMinorUnits: amountMinorUnits ?? this.amountMinorUnits,
+      entryDate: entryDate ?? this.entryDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (journalEntryId.present) {
+      map['journal_entry_id'] = Variable<String>(journalEntryId.value);
+    }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (expenseGroup.present) {
+      map['expense_group'] = Variable<String>(expenseGroup.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (amountMinorUnits.present) {
+      map['amount_minor_units'] = Variable<int>(amountMinorUnits.value);
+    }
+    if (entryDate.present) {
+      map['entry_date'] = Variable<DateTime>(entryDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseDetailsCompanion(')
+          ..write('journalEntryId: $journalEntryId, ')
+          ..write('storeId: $storeId, ')
+          ..write('expenseGroup: $expenseGroup, ')
+          ..write('category: $category, ')
+          ..write('amountMinorUnits: $amountMinorUnits, ')
+          ..write('entryDate: $entryDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -15647,6 +16139,36 @@ class $AppSettingsTableTable extends AppSettingsTable
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _loyaltyEnabledMeta = const VerificationMeta(
+    'loyaltyEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> loyaltyEnabled = GeneratedColumn<bool>(
+    'loyalty_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("loyalty_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _fullDiscountKeepsMarginMeta =
+      const VerificationMeta('fullDiscountKeepsMargin');
+  @override
+  late final GeneratedColumn<bool> fullDiscountKeepsMargin =
+      GeneratedColumn<bool>(
+        'full_discount_keeps_margin',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("full_discount_keeps_margin" IN (0, 1))',
+        ),
+        defaultValue: const Constant(false),
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -15664,6 +16186,8 @@ class $AppSettingsTableTable extends AppSettingsTable
     usdExchangeRate,
     loyaltySpendPerPointMinor,
     loyaltyPointValueMinor,
+    loyaltyEnabled,
+    fullDiscountKeepsMargin,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -15804,6 +16328,24 @@ class $AppSettingsTableTable extends AppSettingsTable
         ),
       );
     }
+    if (data.containsKey('loyalty_enabled')) {
+      context.handle(
+        _loyaltyEnabledMeta,
+        loyaltyEnabled.isAcceptableOrUnknown(
+          data['loyalty_enabled']!,
+          _loyaltyEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('full_discount_keeps_margin')) {
+      context.handle(
+        _fullDiscountKeepsMarginMeta,
+        fullDiscountKeepsMargin.isAcceptableOrUnknown(
+          data['full_discount_keeps_margin']!,
+          _fullDiscountKeepsMarginMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -15873,6 +16415,14 @@ class $AppSettingsTableTable extends AppSettingsTable
         DriftSqlType.int,
         data['${effectivePrefix}loyalty_point_value_minor'],
       )!,
+      loyaltyEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}loyalty_enabled'],
+      )!,
+      fullDiscountKeepsMargin: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}full_discount_keeps_margin'],
+      )!,
     );
   }
 
@@ -15907,6 +16457,10 @@ class AppSettingsTableData extends DataClass
 
   /// Loyalty: what one point is worth when redeemed (minor units).
   final int loyaltyPointValueMinor;
+  final bool loyaltyEnabled;
+
+  /// A 100% discount still charges cost + 5% instead of giving the item away.
+  final bool fullDiscountKeepsMargin;
   const AppSettingsTableData({
     required this.id,
     required this.storeId,
@@ -15923,6 +16477,8 @@ class AppSettingsTableData extends DataClass
     required this.usdExchangeRate,
     required this.loyaltySpendPerPointMinor,
     required this.loyaltyPointValueMinor,
+    required this.loyaltyEnabled,
+    required this.fullDiscountKeepsMargin,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -15948,6 +16504,8 @@ class AppSettingsTableData extends DataClass
       loyaltySpendPerPointMinor,
     );
     map['loyalty_point_value_minor'] = Variable<int>(loyaltyPointValueMinor);
+    map['loyalty_enabled'] = Variable<bool>(loyaltyEnabled);
+    map['full_discount_keeps_margin'] = Variable<bool>(fullDiscountKeepsMargin);
     return map;
   }
 
@@ -15970,6 +16528,8 @@ class AppSettingsTableData extends DataClass
       usdExchangeRate: Value(usdExchangeRate),
       loyaltySpendPerPointMinor: Value(loyaltySpendPerPointMinor),
       loyaltyPointValueMinor: Value(loyaltyPointValueMinor),
+      loyaltyEnabled: Value(loyaltyEnabled),
+      fullDiscountKeepsMargin: Value(fullDiscountKeepsMargin),
     );
   }
 
@@ -16006,6 +16566,10 @@ class AppSettingsTableData extends DataClass
       loyaltyPointValueMinor: serializer.fromJson<int>(
         json['loyaltyPointValueMinor'],
       ),
+      loyaltyEnabled: serializer.fromJson<bool>(json['loyaltyEnabled']),
+      fullDiscountKeepsMargin: serializer.fromJson<bool>(
+        json['fullDiscountKeepsMargin'],
+      ),
     );
   }
   @override
@@ -16031,6 +16595,10 @@ class AppSettingsTableData extends DataClass
         loyaltySpendPerPointMinor,
       ),
       'loyaltyPointValueMinor': serializer.toJson<int>(loyaltyPointValueMinor),
+      'loyaltyEnabled': serializer.toJson<bool>(loyaltyEnabled),
+      'fullDiscountKeepsMargin': serializer.toJson<bool>(
+        fullDiscountKeepsMargin,
+      ),
     };
   }
 
@@ -16050,6 +16618,8 @@ class AppSettingsTableData extends DataClass
     double? usdExchangeRate,
     int? loyaltySpendPerPointMinor,
     int? loyaltyPointValueMinor,
+    bool? loyaltyEnabled,
+    bool? fullDiscountKeepsMargin,
   }) => AppSettingsTableData(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -16071,6 +16641,9 @@ class AppSettingsTableData extends DataClass
         loyaltySpendPerPointMinor ?? this.loyaltySpendPerPointMinor,
     loyaltyPointValueMinor:
         loyaltyPointValueMinor ?? this.loyaltyPointValueMinor,
+    loyaltyEnabled: loyaltyEnabled ?? this.loyaltyEnabled,
+    fullDiscountKeepsMargin:
+        fullDiscountKeepsMargin ?? this.fullDiscountKeepsMargin,
   );
   AppSettingsTableData copyWithCompanion(AppSettingsTableCompanion data) {
     return AppSettingsTableData(
@@ -16113,6 +16686,12 @@ class AppSettingsTableData extends DataClass
       loyaltyPointValueMinor: data.loyaltyPointValueMinor.present
           ? data.loyaltyPointValueMinor.value
           : this.loyaltyPointValueMinor,
+      loyaltyEnabled: data.loyaltyEnabled.present
+          ? data.loyaltyEnabled.value
+          : this.loyaltyEnabled,
+      fullDiscountKeepsMargin: data.fullDiscountKeepsMargin.present
+          ? data.fullDiscountKeepsMargin.value
+          : this.fullDiscountKeepsMargin,
     );
   }
 
@@ -16133,7 +16712,9 @@ class AppSettingsTableData extends DataClass
           ..write('lowStockThresholdDefault: $lowStockThresholdDefault, ')
           ..write('usdExchangeRate: $usdExchangeRate, ')
           ..write('loyaltySpendPerPointMinor: $loyaltySpendPerPointMinor, ')
-          ..write('loyaltyPointValueMinor: $loyaltyPointValueMinor')
+          ..write('loyaltyPointValueMinor: $loyaltyPointValueMinor, ')
+          ..write('loyaltyEnabled: $loyaltyEnabled, ')
+          ..write('fullDiscountKeepsMargin: $fullDiscountKeepsMargin')
           ..write(')'))
         .toString();
   }
@@ -16155,6 +16736,8 @@ class AppSettingsTableData extends DataClass
     usdExchangeRate,
     loyaltySpendPerPointMinor,
     loyaltyPointValueMinor,
+    loyaltyEnabled,
+    fullDiscountKeepsMargin,
   );
   @override
   bool operator ==(Object other) =>
@@ -16174,7 +16757,9 @@ class AppSettingsTableData extends DataClass
           other.lowStockThresholdDefault == this.lowStockThresholdDefault &&
           other.usdExchangeRate == this.usdExchangeRate &&
           other.loyaltySpendPerPointMinor == this.loyaltySpendPerPointMinor &&
-          other.loyaltyPointValueMinor == this.loyaltyPointValueMinor);
+          other.loyaltyPointValueMinor == this.loyaltyPointValueMinor &&
+          other.loyaltyEnabled == this.loyaltyEnabled &&
+          other.fullDiscountKeepsMargin == this.fullDiscountKeepsMargin);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
@@ -16193,6 +16778,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
   final Value<double> usdExchangeRate;
   final Value<int> loyaltySpendPerPointMinor;
   final Value<int> loyaltyPointValueMinor;
+  final Value<bool> loyaltyEnabled;
+  final Value<bool> fullDiscountKeepsMargin;
   final Value<int> rowid;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
@@ -16210,6 +16797,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.usdExchangeRate = const Value.absent(),
     this.loyaltySpendPerPointMinor = const Value.absent(),
     this.loyaltyPointValueMinor = const Value.absent(),
+    this.loyaltyEnabled = const Value.absent(),
+    this.fullDiscountKeepsMargin = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
@@ -16228,6 +16817,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.usdExchangeRate = const Value.absent(),
     this.loyaltySpendPerPointMinor = const Value.absent(),
     this.loyaltyPointValueMinor = const Value.absent(),
+    this.loyaltyEnabled = const Value.absent(),
+    this.fullDiscountKeepsMargin = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId);
@@ -16247,6 +16838,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Expression<double>? usdExchangeRate,
     Expression<int>? loyaltySpendPerPointMinor,
     Expression<int>? loyaltyPointValueMinor,
+    Expression<bool>? loyaltyEnabled,
+    Expression<bool>? fullDiscountKeepsMargin,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -16271,6 +16864,9 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
         'loyalty_spend_per_point_minor': loyaltySpendPerPointMinor,
       if (loyaltyPointValueMinor != null)
         'loyalty_point_value_minor': loyaltyPointValueMinor,
+      if (loyaltyEnabled != null) 'loyalty_enabled': loyaltyEnabled,
+      if (fullDiscountKeepsMargin != null)
+        'full_discount_keeps_margin': fullDiscountKeepsMargin,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -16291,6 +16887,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Value<double>? usdExchangeRate,
     Value<int>? loyaltySpendPerPointMinor,
     Value<int>? loyaltyPointValueMinor,
+    Value<bool>? loyaltyEnabled,
+    Value<bool>? fullDiscountKeepsMargin,
     Value<int>? rowid,
   }) {
     return AppSettingsTableCompanion(
@@ -16313,6 +16911,9 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
           loyaltySpendPerPointMinor ?? this.loyaltySpendPerPointMinor,
       loyaltyPointValueMinor:
           loyaltyPointValueMinor ?? this.loyaltyPointValueMinor,
+      loyaltyEnabled: loyaltyEnabled ?? this.loyaltyEnabled,
+      fullDiscountKeepsMargin:
+          fullDiscountKeepsMargin ?? this.fullDiscountKeepsMargin,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -16377,6 +16978,14 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
         loyaltyPointValueMinor.value,
       );
     }
+    if (loyaltyEnabled.present) {
+      map['loyalty_enabled'] = Variable<bool>(loyaltyEnabled.value);
+    }
+    if (fullDiscountKeepsMargin.present) {
+      map['full_discount_keeps_margin'] = Variable<bool>(
+        fullDiscountKeepsMargin.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -16401,6 +17010,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
           ..write('usdExchangeRate: $usdExchangeRate, ')
           ..write('loyaltySpendPerPointMinor: $loyaltySpendPerPointMinor, ')
           ..write('loyaltyPointValueMinor: $loyaltyPointValueMinor, ')
+          ..write('loyaltyEnabled: $loyaltyEnabled, ')
+          ..write('fullDiscountKeepsMargin: $fullDiscountKeepsMargin, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -17527,6 +18138,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $JournalEntriesTable journalEntries = $JournalEntriesTable(this);
   late final $JournalLinesTable journalLines = $JournalLinesTable(this);
+  late final $ExpenseDetailsTable expenseDetails = $ExpenseDetailsTable(this);
   late final $SalesTable sales = $SalesTable(this);
   late final $SaleLinesTable saleLines = $SaleLinesTable(this);
   late final $SaleReturnsTable saleReturns = $SaleReturnsTable(this);
@@ -17566,6 +18178,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     chartOfAccounts,
     journalEntries,
     journalLines,
+    expenseDetails,
     sales,
     saleLines,
     saleReturns,
@@ -18085,6 +18698,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       Value<String> avatarColorHex,
       Value<bool> isActive,
       required DateTime createdAt,
+      Value<String?> permissions,
       Value<int> rowid,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -18102,6 +18716,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> avatarColorHex,
       Value<bool> isActive,
       Value<DateTime> createdAt,
+      Value<String?> permissions,
       Value<int> rowid,
     });
 
@@ -18175,6 +18790,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get permissions => $composableBuilder(
+    column: $table.permissions,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -18252,6 +18872,11 @@ class $$UsersTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get permissions => $composableBuilder(
+    column: $table.permissions,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UsersTableAnnotationComposer
@@ -18307,6 +18932,11 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get permissions => $composableBuilder(
+    column: $table.permissions,
+    builder: (column) => column,
+  );
 }
 
 class $$UsersTableTableManager
@@ -18350,6 +18980,7 @@ class $$UsersTableTableManager
                 Value<String> avatarColorHex = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> permissions = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -18365,6 +18996,7 @@ class $$UsersTableTableManager
                 avatarColorHex: avatarColorHex,
                 isActive: isActive,
                 createdAt: createdAt,
+                permissions: permissions,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -18382,6 +19014,7 @@ class $$UsersTableTableManager
                 Value<String> avatarColorHex = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 required DateTime createdAt,
+                Value<String?> permissions = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -18397,6 +19030,7 @@ class $$UsersTableTableManager
                 avatarColorHex: avatarColorHex,
                 isActive: isActive,
                 createdAt: createdAt,
+                permissions: permissions,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -23578,6 +24212,233 @@ typedef $$JournalLinesTableProcessedTableManager =
       JournalLine,
       PrefetchHooks Function()
     >;
+typedef $$ExpenseDetailsTableCreateCompanionBuilder =
+    ExpenseDetailsCompanion Function({
+      required String journalEntryId,
+      required String storeId,
+      required String expenseGroup,
+      required String category,
+      required int amountMinorUnits,
+      required DateTime entryDate,
+      Value<int> rowid,
+    });
+typedef $$ExpenseDetailsTableUpdateCompanionBuilder =
+    ExpenseDetailsCompanion Function({
+      Value<String> journalEntryId,
+      Value<String> storeId,
+      Value<String> expenseGroup,
+      Value<String> category,
+      Value<int> amountMinorUnits,
+      Value<DateTime> entryDate,
+      Value<int> rowid,
+    });
+
+class $$ExpenseDetailsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpenseDetailsTable> {
+  $$ExpenseDetailsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get journalEntryId => $composableBuilder(
+    column: $table.journalEntryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get expenseGroup => $composableBuilder(
+    column: $table.expenseGroup,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinorUnits => $composableBuilder(
+    column: $table.amountMinorUnits,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get entryDate => $composableBuilder(
+    column: $table.entryDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExpenseDetailsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpenseDetailsTable> {
+  $$ExpenseDetailsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get journalEntryId => $composableBuilder(
+    column: $table.journalEntryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get expenseGroup => $composableBuilder(
+    column: $table.expenseGroup,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinorUnits => $composableBuilder(
+    column: $table.amountMinorUnits,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get entryDate => $composableBuilder(
+    column: $table.entryDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExpenseDetailsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpenseDetailsTable> {
+  $$ExpenseDetailsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get journalEntryId => $composableBuilder(
+    column: $table.journalEntryId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get storeId =>
+      $composableBuilder(column: $table.storeId, builder: (column) => column);
+
+  GeneratedColumn<String> get expenseGroup => $composableBuilder(
+    column: $table.expenseGroup,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get amountMinorUnits => $composableBuilder(
+    column: $table.amountMinorUnits,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get entryDate =>
+      $composableBuilder(column: $table.entryDate, builder: (column) => column);
+}
+
+class $$ExpenseDetailsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExpenseDetailsTable,
+          ExpenseDetail,
+          $$ExpenseDetailsTableFilterComposer,
+          $$ExpenseDetailsTableOrderingComposer,
+          $$ExpenseDetailsTableAnnotationComposer,
+          $$ExpenseDetailsTableCreateCompanionBuilder,
+          $$ExpenseDetailsTableUpdateCompanionBuilder,
+          (
+            ExpenseDetail,
+            BaseReferences<_$AppDatabase, $ExpenseDetailsTable, ExpenseDetail>,
+          ),
+          ExpenseDetail,
+          PrefetchHooks Function()
+        > {
+  $$ExpenseDetailsTableTableManager(
+    _$AppDatabase db,
+    $ExpenseDetailsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExpenseDetailsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpenseDetailsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpenseDetailsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> journalEntryId = const Value.absent(),
+                Value<String> storeId = const Value.absent(),
+                Value<String> expenseGroup = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<int> amountMinorUnits = const Value.absent(),
+                Value<DateTime> entryDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ExpenseDetailsCompanion(
+                journalEntryId: journalEntryId,
+                storeId: storeId,
+                expenseGroup: expenseGroup,
+                category: category,
+                amountMinorUnits: amountMinorUnits,
+                entryDate: entryDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String journalEntryId,
+                required String storeId,
+                required String expenseGroup,
+                required String category,
+                required int amountMinorUnits,
+                required DateTime entryDate,
+                Value<int> rowid = const Value.absent(),
+              }) => ExpenseDetailsCompanion.insert(
+                journalEntryId: journalEntryId,
+                storeId: storeId,
+                expenseGroup: expenseGroup,
+                category: category,
+                amountMinorUnits: amountMinorUnits,
+                entryDate: entryDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExpenseDetailsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExpenseDetailsTable,
+      ExpenseDetail,
+      $$ExpenseDetailsTableFilterComposer,
+      $$ExpenseDetailsTableOrderingComposer,
+      $$ExpenseDetailsTableAnnotationComposer,
+      $$ExpenseDetailsTableCreateCompanionBuilder,
+      $$ExpenseDetailsTableUpdateCompanionBuilder,
+      (
+        ExpenseDetail,
+        BaseReferences<_$AppDatabase, $ExpenseDetailsTable, ExpenseDetail>,
+      ),
+      ExpenseDetail,
+      PrefetchHooks Function()
+    >;
 typedef $$SalesTableCreateCompanionBuilder =
     SalesCompanion Function({
       required String id,
@@ -25153,6 +26014,8 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder =
       Value<double> usdExchangeRate,
       Value<int> loyaltySpendPerPointMinor,
       Value<int> loyaltyPointValueMinor,
+      Value<bool> loyaltyEnabled,
+      Value<bool> fullDiscountKeepsMargin,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder =
@@ -25172,6 +26035,8 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder =
       Value<double> usdExchangeRate,
       Value<int> loyaltySpendPerPointMinor,
       Value<int> loyaltyPointValueMinor,
+      Value<bool> loyaltyEnabled,
+      Value<bool> fullDiscountKeepsMargin,
       Value<int> rowid,
     });
 
@@ -25256,6 +26121,16 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<int> get loyaltyPointValueMinor => $composableBuilder(
     column: $table.loyaltyPointValueMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get loyaltyEnabled => $composableBuilder(
+    column: $table.loyaltyEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get fullDiscountKeepsMargin => $composableBuilder(
+    column: $table.fullDiscountKeepsMargin,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -25343,6 +26218,16 @@ class $$AppSettingsTableTableOrderingComposer
     column: $table.loyaltyPointValueMinor,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get loyaltyEnabled => $composableBuilder(
+    column: $table.loyaltyEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get fullDiscountKeepsMargin => $composableBuilder(
+    column: $table.fullDiscountKeepsMargin,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -25422,6 +26307,16 @@ class $$AppSettingsTableTableAnnotationComposer
     column: $table.loyaltyPointValueMinor,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get loyaltyEnabled => $composableBuilder(
+    column: $table.loyaltyEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get fullDiscountKeepsMargin => $composableBuilder(
+    column: $table.fullDiscountKeepsMargin,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableTableManager
@@ -25476,6 +26371,8 @@ class $$AppSettingsTableTableTableManager
                 Value<double> usdExchangeRate = const Value.absent(),
                 Value<int> loyaltySpendPerPointMinor = const Value.absent(),
                 Value<int> loyaltyPointValueMinor = const Value.absent(),
+                Value<bool> loyaltyEnabled = const Value.absent(),
+                Value<bool> fullDiscountKeepsMargin = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion(
                 id: id,
@@ -25493,6 +26390,8 @@ class $$AppSettingsTableTableTableManager
                 usdExchangeRate: usdExchangeRate,
                 loyaltySpendPerPointMinor: loyaltySpendPerPointMinor,
                 loyaltyPointValueMinor: loyaltyPointValueMinor,
+                loyaltyEnabled: loyaltyEnabled,
+                fullDiscountKeepsMargin: fullDiscountKeepsMargin,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -25512,6 +26411,8 @@ class $$AppSettingsTableTableTableManager
                 Value<double> usdExchangeRate = const Value.absent(),
                 Value<int> loyaltySpendPerPointMinor = const Value.absent(),
                 Value<int> loyaltyPointValueMinor = const Value.absent(),
+                Value<bool> loyaltyEnabled = const Value.absent(),
+                Value<bool> fullDiscountKeepsMargin = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion.insert(
                 id: id,
@@ -25529,6 +26430,8 @@ class $$AppSettingsTableTableTableManager
                 usdExchangeRate: usdExchangeRate,
                 loyaltySpendPerPointMinor: loyaltySpendPerPointMinor,
                 loyaltyPointValueMinor: loyaltyPointValueMinor,
+                loyaltyEnabled: loyaltyEnabled,
+                fullDiscountKeepsMargin: fullDiscountKeepsMargin,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -26140,6 +27043,8 @@ class $AppDatabaseManager {
       $$JournalEntriesTableTableManager(_db, _db.journalEntries);
   $$JournalLinesTableTableManager get journalLines =>
       $$JournalLinesTableTableManager(_db, _db.journalLines);
+  $$ExpenseDetailsTableTableManager get expenseDetails =>
+      $$ExpenseDetailsTableTableManager(_db, _db.expenseDetails);
   $$SalesTableTableManager get sales =>
       $$SalesTableTableManager(_db, _db.sales);
   $$SaleLinesTableTableManager get saleLines =>

@@ -903,7 +903,7 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get loyaltySettingsHelp =>
-      'کڕیار بۆ هەر بڕێکی خوارەوە کە خەرجی دەکات خاڵێک وەردەگرێت، و دەتوانێت خاڵەکان وەک داشکاندن بەکاربهێنێت. بەتاڵی بهێڵەرەوە بۆ ڕاگرتن.';
+      'کڕیار بۆ هەر بڕێکی خوارەوە کە خەرجی دەکات خاڵێک وەردەگرێت، و دەتوانێت خاڵەکان وەک داشکاندن بەکاربهێنێت.';
 
   @override
   String get loyaltySpendPerPoint => 'بڕ بەرامبەر 1 خاڵ';
@@ -999,4 +999,92 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get unitMilliliter => 'میلیلیتر';
+
+  @override
+  String get navCustomers => 'کڕیاران';
+
+  @override
+  String get hrPasscodeNew => 'تێپەڕەوشە (4 ژمارە)';
+
+  @override
+  String get hrPasscodeReset => 'تێپەڕەوشەی نوێ (بەتاڵی بهێڵە بۆ هێشتنەوە)';
+
+  @override
+  String get permissionsTitle => 'دەسەڵاتەکان';
+
+  @override
+  String get permissionsOwnerAll => 'خاوەن هەمیشە هەموو دەسەڵاتەکانی هەیە.';
+
+  @override
+  String get permissionSell => 'فرۆشتن (شاشەی کاشێر)';
+
+  @override
+  String get permissionGiveDiscount => 'داشکاندن';
+
+  @override
+  String get permissionProcessReturns => 'گەڕاندنەوەی فرۆشتن';
+
+  @override
+  String get permissionDebts => 'قەرزەکان';
+
+  @override
+  String get permissionCustomers => 'کڕیاران';
+
+  @override
+  String get permissionInventory => 'بینینی کۆگا';
+
+  @override
+  String get permissionEditProducts => 'زیادکردن و دەستکاریکردنی کاڵا';
+
+  @override
+  String get permissionSuppliers => 'دابینکەران';
+
+  @override
+  String get permissionExpenses => 'خەرجی و سندوق';
+
+  @override
+  String get permissionAccounting => 'ژمێریاری';
+
+  @override
+  String get permissionReports => 'ڕاپۆرتەکان';
+
+  @override
+  String get permissionHr => 'کارمەندان';
+
+  @override
+  String get permissionSettings => 'ڕێکخستنەکان';
+
+  @override
+  String get posLineDiscount => 'داشکاندن لەسەر ئەم کاڵایە';
+
+  @override
+  String get posInvoiceDiscount => 'داشکاندن لەسەر پسوڵە';
+
+  @override
+  String get posDiscountPercent => 'ڕێژەی داشکاندن %';
+
+  @override
+  String get posDiscountAmount => 'بڕی داشکاندن';
+
+  @override
+  String get posRemoveDiscount => 'لابردنی داشکاندن';
+
+  @override
+  String get settingsKeepMargin => 'هێشتنەوەی قازانجی 5% لە داشکاندنی 100%';
+
+  @override
+  String get settingsKeepMarginHelp =>
+      'لە داشکاندنی تەواودا نرخی تێچوو + 5% وەردەگیرێت لەبری بەخۆڕایی دانی کاڵاکە.';
+
+  @override
+  String get customerWalkIn => 'کڕیاری نەختی ڕێبوار';
+
+  @override
+  String get customersNone => 'هێشتا هیچ کڕیارێک نییە';
+
+  @override
+  String get customersTotalSales => 'کۆی کڕینەکان';
+
+  @override
+  String get customersOwes => 'قەرزدارە';
 }

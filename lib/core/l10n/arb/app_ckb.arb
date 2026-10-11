@@ -309,7 +309,7 @@
   "reportsReorderAt": "ئاستی داواکردن {level}",
 
   "loyaltyTitle": "خاڵی دڵسۆزی",
-  "loyaltySettingsHelp": "کڕیار بۆ هەر بڕێکی خوارەوە کە خەرجی دەکات خاڵێک وەردەگرێت، و دەتوانێت خاڵەکان وەک داشکاندن بەکاربهێنێت. بەتاڵی بهێڵەرەوە بۆ ڕاگرتن.",
+  "loyaltySettingsHelp": "کڕیار بۆ هەر بڕێکی خوارەوە کە خەرجی دەکات خاڵێک وەردەگرێت، و دەتوانێت خاڵەکان وەک داشکاندن بەکاربهێنێت.",
   "loyaltySpendPerPoint": "بڕ بەرامبەر 1 خاڵ",
   "loyaltyPointValue": "نرخی 1 خاڵ",
   "loyaltyNoCustomer": "بێ کڕیار (خاڵی دڵسۆزی)",
@@ -338,5 +338,38 @@
   "unitTikka": "تکە",
   "unitBale": "باڵە",
   "unitGram": "گرام",
-  "unitMilliliter": "میلیلیتر"
+  "unitMilliliter": "میلیلیتر",
+
+  "navCustomers": "کڕیاران",
+  "hrPasscodeNew": "تێپەڕەوشە (4 ژمارە)",
+  "hrPasscodeReset": "تێپەڕەوشەی نوێ (بەتاڵی بهێڵە بۆ هێشتنەوە)",
+  "permissionsTitle": "دەسەڵاتەکان",
+  "permissionsOwnerAll": "خاوەن هەمیشە هەموو دەسەڵاتەکانی هەیە.",
+  "permissionSell": "فرۆشتن (شاشەی کاشێر)",
+  "permissionGiveDiscount": "داشکاندن",
+  "permissionProcessReturns": "گەڕاندنەوەی فرۆشتن",
+  "permissionDebts": "قەرزەکان",
+  "permissionCustomers": "کڕیاران",
+  "permissionInventory": "بینینی کۆگا",
+  "permissionEditProducts": "زیادکردن و دەستکاریکردنی کاڵا",
+  "permissionSuppliers": "دابینکەران",
+  "permissionExpenses": "خەرجی و سندوق",
+  "permissionAccounting": "ژمێریاری",
+  "permissionReports": "ڕاپۆرتەکان",
+  "permissionHr": "کارمەندان",
+  "permissionSettings": "ڕێکخستنەکان",
+
+  "posLineDiscount": "داشکاندن لەسەر ئەم کاڵایە",
+  "posInvoiceDiscount": "داشکاندن لەسەر پسوڵە",
+  "posDiscountPercent": "ڕێژەی داشکاندن %",
+  "posDiscountAmount": "بڕی داشکاندن",
+  "posRemoveDiscount": "لابردنی داشکاندن",
+
+  "settingsKeepMargin": "هێشتنەوەی قازانجی 5% لە داشکاندنی 100%",
+  "settingsKeepMarginHelp": "لە داشکاندنی تەواودا نرخی تێچوو + 5% وەردەگیرێت لەبری بەخۆڕایی دانی کاڵاکە.",
+
+  "customerWalkIn": "کڕیاری نەختی ڕێبوار",
+  "customersNone": "هێشتا هیچ کڕیارێک نییە",
+  "customersTotalSales": "کۆی کڕینەکان",
+  "customersOwes": "قەرزدارە"
 }

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/constants/permissions.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../domain/auth_models.dart';
@@ -51,6 +52,7 @@ class SupabaseAuthRepository implements AuthRepository {
         allowancesMinorUnits: (row['allowances_minor_units'] as num?)?.toInt() ?? 0,
         avatarColorHex: (row['avatar_color_hex'] as String?) ?? '#0F6E5C',
         isActive: row['is_active'] as bool? ?? true,
+        customPermissions: decodePermissions(row['permissions'] as String?),
       );
 
   @override
@@ -183,6 +185,7 @@ class SupabaseAuthRepository implements AuthRepository {
       'allowances_minor_units': employee.allowancesMinorUnits,
       'avatar_color_hex': employee.avatarColorHex,
       'is_active': employee.isActive,
+      'permissions': employee.customPermissions == null ? null : encodePermissions(employee.customPermissions!),
     }).eq('id', employee.id);
 
     if (newPin != null) {

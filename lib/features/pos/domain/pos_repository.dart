@@ -29,6 +29,9 @@ abstract class PosRepository {
 
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to});
 
+  /// Total completed sales per customer (customer id → minor units).
+  Future<Map<String, int>> salesTotalsByCustomer(String storeId);
+
   Future<void> voidSale(String saleId);
 
   Future<String> createSaleReturn({

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/permissions.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
@@ -14,9 +15,12 @@ import 'qr_label_dialog.dart';
 
 final _productsSearchProvider = StateProvider.autoDispose<String>((ref) => '');
 
-final _productsStreamProvider = StreamProvider.autoDispose.family<List<ProductRecord>, ({String storeId, String query})>((ref, key) {
-  return ref.watch(inventoryRepositoryProvider).watchProducts(key.storeId, searchQuery: key.query.isEmpty ? null : key.query);
-});
+final _productsStreamProvider = StreamProvider.autoDispose
+    .family<List<ProductRecord>, ({String storeId, String query})>((ref, key) {
+      return ref
+          .watch(inventoryRepositoryProvider)
+          .watchProducts(key.storeId, searchQuery: key.query.isEmpty ? null : key.query);
+    });
 
 class ProductsTab extends ConsumerWidget {
   const ProductsTab({super.key});
@@ -28,6 +32,7 @@ class ProductsTab extends ConsumerWidget {
     if (storeId == null) return const SizedBox.shrink();
 
     final query = ref.watch(_productsSearchProvider);
+    final canEdit = ref.watch(sessionControllerProvider).employee?.can(AppPermission.editProducts) ?? false;
     final productsAsync = ref.watch(_productsStreamProvider((storeId: storeId, query: query)));
 
     return Scaffold(
@@ -44,16 +49,18 @@ class ProductsTab extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.auto_awesome),
-                  tooltip: l10n.inventoryGenerateMissingBarcodes,
-                  onPressed: () => _generateMissingBarcodes(context, ref, storeId),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.upload_file),
-                  tooltip: l10n.importProductsTitle,
-                  onPressed: () => showProductImportDialog(context, ref),
-                ),
+                if (canEdit) ...[
+                  IconButton(
+                    icon: const Icon(Icons.auto_awesome),
+                    tooltip: l10n.inventoryGenerateMissingBarcodes,
+                    onPressed: () => _generateMissingBarcodes(context, ref, storeId),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.upload_file),
+                    tooltip: l10n.importProductsTitle,
+                    onPressed: () => showProductImportDialog(context, ref),
+                  ),
+                ],
               ],
             ),
           ),
@@ -72,13 +79,17 @@ class ProductsTab extends ConsumerWidget {
                     final expiry = expiryStatusOf(product);
                     return ListTile(
                       leading: switch (expiry) {
-                        ExpiryStatus.expired => Icon(Icons.dangerous_outlined, color: Theme.of(context).colorScheme.error),
+                        ExpiryStatus.expired => Icon(
+                          Icons.dangerous_outlined,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                         ExpiryStatus.soon => Icon(Icons.schedule, color: Colors.orange.shade800),
                         _ => const Icon(Icons.inventory_2_outlined),
                       },
                       title: Text(product.name),
                       subtitle: Text(
-                          '${product.sku} · ${Money.format(product.sellPriceMinorUnits)} · ${productUnitLabel(context, product.unit)}'),
+                        '${product.sku} · ${Money.format(product.sellPriceMinorUnits)} · ${productUnitLabel(context, product.unit)}',
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -87,10 +98,11 @@ class ProductsTab extends ConsumerWidget {
                             tooltip: l10n.inventoryGenerateQr,
                             onPressed: () => showQrLabelDialog(context, ref, product),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.edit_outlined),
-                            onPressed: () => showProductEditDialog(context, ref, existing: product),
-                          ),
+                          if (canEdit)
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined),
+                              onPressed: () => showProductEditDialog(context, ref, existing: product),
+                            ),
                         ],
                       ),
                     );
@@ -101,11 +113,13 @@ class ProductsTab extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showProductEditDialog(context, ref),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.inventoryAddProduct),
-      ),
+      floatingActionButton: !canEdit
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => showProductEditDialog(context, ref),
+              icon: const Icon(Icons.add),
+              label: Text(l10n.inventoryAddProduct),
+            ),
     );
   }
 }

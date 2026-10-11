@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/permissions.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/store_settings_provider.dart';
@@ -305,6 +307,8 @@ class _CartPanel extends ConsumerWidget {
     final cart = ref.watch(cartControllerProvider);
     final session = ref.watch(sessionControllerProvider);
     final storeSettings = ref.watch(currentStoreSettingsProvider).valueOrNull;
+    final canDiscount = session.employee?.can(AppPermission.giveDiscount) ?? false;
+    final keepMargin = storeSettings?.fullDiscountKeepsMargin ?? false;
     final rate = storeSettings == null
         ? null
         : ExchangeRate(storeCurrency: Money.currency, iqdPerUsd: storeSettings.usdExchangeRate);
@@ -331,7 +335,7 @@ class _CartPanel extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final line = cart.lines[index];
                     return ListTile(
-                      onLongPress: () => _showLineDiscountDialog(context, ref, line),
+                      onTap: canDiscount ? () => _showLineDiscountDialog(context, ref, line, keepMargin) : null,
                       leading: IconButton(
                         icon: const Icon(Icons.remove_circle_outline),
                         onPressed: () =>
@@ -348,19 +352,25 @@ class _CartPanel extends ConsumerWidget {
                             ? '${Money.format(line.unitPriceMinorUnits)} · -${Money.format(line.discountAmountMinorUnits)}'
                             : Money.format(line.unitPriceMinorUnits),
                       ),
-                      trailing: SizedBox(
-                        width: 96,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.add_circle_outline),
+                            onPressed: () =>
+                                ref.read(cartControllerProvider.notifier).setQuantity(line.product.id, line.quantity + 1),
+                          ),
+                          if (canDiscount)
                             IconButton(
-                              icon: const Icon(Icons.add_circle_outline),
-                              onPressed: () =>
-                                  ref.read(cartControllerProvider.notifier).setQuantity(line.product.id, line.quantity + 1),
+                              icon: Icon(
+                                Icons.local_offer_outlined,
+                                color: line.discountAmountMinorUnits > 0 ? Theme.of(context).colorScheme.primary : null,
+                              ),
+                              tooltip: l10n.posLineDiscount,
+                              onPressed: () => _showLineDiscountDialog(context, ref, line, keepMargin),
                             ),
-                            Text(Money.format(line.lineTotalMinorUnits)),
-                          ],
-                        ),
+                          Text(Money.format(line.lineTotalMinorUnits)),
+                        ],
                       ),
                     );
                   },
@@ -372,6 +382,20 @@ class _CartPanel extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (canDiscount && !cart.isEmpty)
+                Row(
+                  children: [
+                    TextButton.icon(
+                      icon: const Icon(Icons.discount_outlined),
+                      label: Text(l10n.posInvoiceDiscount),
+                      onPressed: () => _showInvoiceDiscountDialog(context, ref, cart, keepMargin),
+                    ),
+                    const Spacer(),
+                    if (cart.invoiceDiscountMinorUnits > 0)
+                      Text('-${Money.format(cart.invoiceDiscountMinorUnits)}',
+                          style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                  ],
+                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -402,7 +426,7 @@ class _CartPanel extends ConsumerWidget {
                                     storeId: session.store!.id,
                                     branchId: session.currentBranchId!,
                                     cashierId: session.employee!.id,
-                                    lines: cart.lines.map((l) => l.toSaleLineInput()).toList(),
+                                    lines: cart.pricedLines.map((l) => l.toSaleLineInput()).toList(),
                                   );
                               ref.read(cartControllerProvider.notifier).clear();
                             },
@@ -434,63 +458,165 @@ class _CartPanel extends ConsumerWidget {
   }
 }
 
-/// Long-press a cart line to apply either one of the store's configured
-/// discounts or a manual percent/amount override, for cashiers handling a
-/// one-off price adjustment at checkout.
-Future<void> _showLineDiscountDialog(BuildContext context, WidgetRef ref, CartLine line) async {
-  final l10n = AppLocalizations.of(context);
+/// Discount on one cart line: one of the store's saved discounts, or a
+/// percent / amount the cashier types for this sale.
+Future<void> _showLineDiscountDialog(BuildContext context, WidgetRef ref, CartLine line, bool keepMargin) async {
   final storeId = ref.read(sessionControllerProvider).store?.id;
   if (storeId == null) return;
   final discounts = await ref.read(discountsProvider(storeId).future);
   if (!context.mounted) return;
-
-  final customController = TextEditingController();
-
+  final cart = ref.read(cartControllerProvider.notifier);
   await showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text('${l10n.commonDiscount}: ${line.product.name}'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (line.discountAmountMinorUnits > 0)
-            TextButton.icon(
-              icon: const Icon(Icons.close),
-              label: const Text('Remove discount'),
-              onPressed: () {
-                ref.read(cartControllerProvider.notifier).setLineDiscount(line.product.id, 0);
-                Navigator.of(context).pop();
-              },
-            ),
-          ...discounts.map((d) => ListTile(
-                title: Text(d.name),
-                subtitle: Text(d.type == DiscountType.percentOff ? '${d.value}%' : Money.format(d.value)),
-                onTap: () {
-                  ref
-                      .read(cartControllerProvider.notifier)
-                      .setLineDiscount(line.product.id, d.amountForMinorUnits(line.grossMinorUnits));
-                  Navigator.of(context).pop();
-                },
-              )),
-          const Divider(),
-          TextField(
-            controller: customController,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Custom amount off'),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
-        FilledButton(
-          onPressed: () {
-            final amount = Money.toMinorUnits(double.tryParse(customController.text) ?? 0);
-            ref.read(cartControllerProvider.notifier).setLineDiscount(line.product.id, amount);
-            Navigator.of(context).pop();
-          },
-          child: Text(l10n.actionConfirm),
+    builder: (context) => _DiscountDialog(
+      title: line.product.name,
+      baseMinorUnits: line.grossMinorUnits,
+      presets: discounts,
+      hasDiscount: line.discountAmountMinorUnits > 0,
+      onApply: (isPercent, value) => cart.setLineDiscount(
+        line.product.id,
+        line.discountFor(
+          isPercent: isPercent,
+          value: isPercent ? value : Money.toMinorUnits(value.toDouble()),
+          keepMargin: keepMargin,
         ),
-      ],
+      ),
+      onRemove: () => cart.setLineDiscount(line.product.id, 0),
     ),
   );
+}
+
+/// Discount on the whole invoice, spread across the lines.
+Future<void> _showInvoiceDiscountDialog(BuildContext context, WidgetRef ref, CartState cart, bool keepMargin) async {
+  final l10n = AppLocalizations.of(context);
+  final controller = ref.read(cartControllerProvider.notifier);
+  final base = cart.lines.fold(0, (s, l) => s + l.grossMinorUnits - l.discountAmountMinorUnits);
+  await showDialog<void>(
+    context: context,
+    builder: (context) => _DiscountDialog(
+      title: l10n.posInvoiceDiscount,
+      baseMinorUnits: base,
+      presets: const [],
+      hasDiscount: cart.invoiceDiscount != null,
+      onApply: (isPercent, value) => controller.setInvoiceDiscount(
+        isPercent
+            ? InvoiceDiscount.percent(value, keepMargin: keepMargin)
+            : InvoiceDiscount.amount(Money.toMinorUnits(value.toDouble()), keepMargin: keepMargin),
+      ),
+      onRemove: () => controller.setInvoiceDiscount(null),
+    ),
+  );
+}
+
+class _DiscountDialog extends StatefulWidget {
+  const _DiscountDialog({
+    required this.title,
+    required this.baseMinorUnits,
+    required this.presets,
+    required this.hasDiscount,
+    required this.onApply,
+    required this.onRemove,
+  });
+
+  final String title;
+  final int baseMinorUnits;
+  final List<DiscountRecord> presets;
+  final bool hasDiscount;
+
+  /// [value] is a percent, or an amount in major units (as typed).
+  final void Function(bool isPercent, num value) onApply;
+  final VoidCallback onRemove;
+
+  @override
+  State<_DiscountDialog> createState() => _DiscountDialogState();
+}
+
+class _DiscountDialogState extends State<_DiscountDialog> {
+  bool _percent = true;
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _apply(bool isPercent, num value) {
+    widget.onApply(isPercent, value);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final typed = double.tryParse(_controller.text) ?? 0;
+    final preview = _percent
+        ? (widget.baseMinorUnits * typed.clamp(0, 100) / 100).round()
+        : Money.toMinorUnits(typed).clamp(0, widget.baseMinorUnits);
+    return AlertDialog(
+      title: Text('${l10n.commonDiscount}: ${widget.title}'),
+      content: SizedBox(
+        width: 380,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SegmentedButton<bool>(
+              segments: [
+                const ButtonSegment(value: true, label: Text('%')),
+                ButtonSegment(value: false, label: Text(Money.currency.code)),
+              ],
+              selected: {_percent},
+              onSelectionChanged: (s) => setState(() => _percent = s.first),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _controller,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+              decoration: InputDecoration(
+                labelText: _percent ? l10n.posDiscountPercent : l10n.posDiscountAmount,
+                helperText: typed > 0 ? '-${Money.format(preview)}' : null,
+              ),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _apply(_percent, typed),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final p in const [5, 10, 15, 20, 50, 100])
+                  ActionChip(label: Text('$p%'), onPressed: () => _apply(true, p)),
+              ],
+            ),
+            if (widget.presets.isNotEmpty) ...[
+              const Divider(),
+              for (final d in widget.presets)
+                ListTile(
+                  dense: true,
+                  title: Text(d.name),
+                  subtitle: Text(d.type == DiscountType.percentOff ? '${d.value}%' : Money.format(d.value)),
+                  onTap: () => d.type == DiscountType.percentOff
+                      ? _apply(true, d.value)
+                      : _apply(false, Money.toMajorUnits(d.value)),
+                ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        if (widget.hasDiscount)
+          TextButton(
+            onPressed: () {
+              widget.onRemove();
+              Navigator.of(context).pop();
+            },
+            child: Text(l10n.posRemoveDiscount),
+          ),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
+        FilledButton(onPressed: typed > 0 ? () => _apply(_percent, typed) : null, child: Text(l10n.actionConfirm)),
+      ],
+    );
+  }
 }

@@ -28,6 +28,23 @@ class CartLine {
   int get taxMinorUnits => ((grossMinorUnits - discountAmountMinorUnits) * taxRatePercent / 100).round();
   int get lineTotalMinorUnits => grossMinorUnits - discountAmountMinorUnits + taxMinorUnits;
 
+  /// The lowest this line may go under a full discount when the store keeps
+  /// a margin: cost + 5% (never more than the line's own price).
+  int get marginFloorMinorUnits {
+    final floor = (product.costPriceMinorUnits * quantity * 105 + 99) ~/ 100;
+    return floor > grossMinorUnits ? grossMinorUnits : floor;
+  }
+
+  /// The discount amount for a cashier-entered percent or amount, with the
+  /// optional cost + 5% floor applied to a full discount.
+  int discountFor({required bool isPercent, required num value, bool keepMargin = false}) {
+    final requested =
+        isPercent ? (grossMinorUnits * value.clamp(0, 100) / 100).round() : value.round().clamp(0, grossMinorUnits);
+    final full = isPercent ? value >= 100 : value >= grossMinorUnits;
+    if (keepMargin && full) return grossMinorUnits - marginFloorMinorUnits;
+    return requested;
+  }
+
   CartLine copyWith({int? quantity, int? discountAmountMinorUnits, bool? wholesale}) => CartLine(
         product: product,
         quantity: quantity ?? this.quantity,
@@ -46,20 +63,62 @@ class CartLine {
       );
 }
 
-class CartState {
-  const CartState({this.lines = const [], this.holdLabel, this.resumingHeldSale, this.wholesale = false});
+/// A discount on the whole invoice, entered by the cashier: either a
+/// percentage or a fixed amount (minor units).
+class InvoiceDiscount {
+  const InvoiceDiscount.percent(this.value, {this.keepMargin = false}) : isPercent = true;
+  const InvoiceDiscount.amount(this.value, {this.keepMargin = false}) : isPercent = false;
 
+  final bool isPercent;
+  final num value;
+
+  /// A full (100%) discount still charges cost + 5% (store setting).
+  final bool keepMargin;
+
+  int amountFor(int payableMinorUnits) =>
+      isPercent ? (payableMinorUnits * value.clamp(0, 100) / 100).round() : value.round().clamp(0, payableMinorUnits);
+
+  bool isFullFor(int payableMinorUnits) => isPercent ? value >= 100 : value >= payableMinorUnits;
+}
+
+class CartState {
+  const CartState({
+    this.lines = const [],
+    this.holdLabel,
+    this.resumingHeldSale,
+    this.wholesale = false,
+    this.invoiceDiscount,
+  });
+
+  /// Lines as entered, each with its own line discount.
   final List<CartLine> lines;
   final String? holdLabel;
   final SaleRecord? resumingHeldSale;
 
   /// Wholesale pricing for this sale.
   final bool wholesale;
+  final InvoiceDiscount? invoiceDiscount;
 
-  int get subtotalMinorUnits => lines.fold(0, (s, l) => s + l.grossMinorUnits);
-  int get discountTotalMinorUnits => lines.fold(0, (s, l) => s + l.discountAmountMinorUnits);
-  int get taxTotalMinorUnits => lines.fold(0, (s, l) => s + l.taxMinorUnits);
-  int get grandTotalMinorUnits => lines.fold(0, (s, l) => s + l.lineTotalMinorUnits);
+  /// [lines] with the invoice discount spread across them — what is
+  /// actually sold, and what every total below is computed from.
+  List<CartLine> get pricedLines {
+    final discount = invoiceDiscount;
+    if (discount == null || lines.isEmpty) return lines;
+    final payable = lines.fold(0, (s, l) => s + l.grossMinorUnits - l.discountAmountMinorUnits);
+    if (discount.keepMargin && discount.isFullFor(payable)) {
+      return [for (final l in lines) l.copyWith(discountAmountMinorUnits: l.grossMinorUnits - l.marginFloorMinorUnits)];
+    }
+    return spreadDiscount(lines, discount.amountFor(payable));
+  }
+
+  /// Discount coming from the invoice discount alone.
+  int get invoiceDiscountMinorUnits =>
+      pricedLines.fold(0, (s, l) => s + l.discountAmountMinorUnits) - lines.fold(0, (s, l) => s + l.discountAmountMinorUnits);
+
+  int get subtotalMinorUnits => pricedLines.fold(0, (s, l) => s + l.grossMinorUnits);
+  int get discountTotalMinorUnits => pricedLines.fold(0, (s, l) => s + l.discountAmountMinorUnits);
+  int get taxTotalMinorUnits => pricedLines.fold(0, (s, l) => s + l.taxMinorUnits);
+  int get grandTotalMinorUnits => pricedLines.fold(0, (s, l) => s + l.lineTotalMinorUnits);
   bool get isEmpty => lines.isEmpty;
 
   CartState copyWith({
@@ -68,12 +127,15 @@ class CartState {
     SaleRecord? resumingHeldSale,
     bool clearHeld = false,
     bool? wholesale,
+    InvoiceDiscount? invoiceDiscount,
+    bool clearInvoiceDiscount = false,
   }) {
     return CartState(
       lines: lines ?? this.lines,
       holdLabel: holdLabel ?? this.holdLabel,
       resumingHeldSale: clearHeld ? null : (resumingHeldSale ?? this.resumingHeldSale),
       wholesale: wholesale ?? this.wholesale,
+      invoiceDiscount: clearInvoiceDiscount ? null : (invoiceDiscount ?? this.invoiceDiscount),
     );
   }
 }
@@ -147,9 +209,40 @@ class CartController extends Notifier<CartState> {
     state = CartState(lines: lines, resumingHeldSale: sale);
   }
 
+  void setInvoiceDiscount(InvoiceDiscount? discount) {
+    state = discount == null || discount.value <= 0
+        ? state.copyWith(clearInvoiceDiscount: true)
+        : state.copyWith(invoiceDiscount: discount);
+  }
+
   void clear() {
     state = const CartState();
   }
 }
 
 final cartControllerProvider = NotifierProvider<CartController, CartState>(CartController.new);
+
+/// [lines] with [discountMinorUnits] spread over them in proportion to each
+/// line's price after its own discount, so tax and revenue are recomputed
+/// exactly as for any other discount. Rounding leftovers go to the largest
+/// line; the total is capped at what the lines are worth.
+List<CartLine> spreadDiscount(List<CartLine> lines, int discountMinorUnits) {
+  if (discountMinorUnits <= 0 || lines.isEmpty) return lines;
+  final bases = <int>[for (final l in lines) l.grossMinorUnits - l.discountAmountMinorUnits];
+  final total = bases.fold<int>(0, (a, b) => a + b);
+  if (total <= 0) return lines;
+  final amount = discountMinorUnits > total ? total : discountMinorUnits;
+
+  final shares = <int>[for (final b in bases) amount * b ~/ total];
+  final leftover = amount - shares.fold<int>(0, (a, b) => a + b);
+  var largest = 0;
+  for (var i = 1; i < bases.length; i++) {
+    if (bases[i] > bases[largest]) largest = i;
+  }
+  shares[largest] += leftover;
+
+  return [
+    for (var i = 0; i < lines.length; i++)
+      lines[i].copyWith(discountAmountMinorUnits: lines[i].discountAmountMinorUnits + shares[i]),
+  ];
+}

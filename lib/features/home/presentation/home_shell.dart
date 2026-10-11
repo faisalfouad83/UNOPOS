@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/constants/roles.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/theming/app_theme.dart';
+import '../../../core/routing/route_guard.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../../pos/presentation/offline_sync_indicator.dart';
@@ -26,6 +26,7 @@ const _allDestinations = [
   _Destination(RoutePaths.pos, Icons.point_of_sale_outlined, _navSales),
   _Destination(RoutePaths.inventory, Icons.inventory_2_outlined, _navInventory),
   _Destination(RoutePaths.debts, Icons.receipt_long_outlined, _navDebts),
+  _Destination(RoutePaths.customers, Icons.people_alt_outlined, _navCustomers),
   _Destination(RoutePaths.suppliers, Icons.local_shipping_outlined, _navSuppliers),
   _Destination(RoutePaths.accounting, Icons.account_balance_outlined, _navAccounting),
   _Destination(RoutePaths.expensesCash, Icons.savings_outlined, _navExpensesCash),
@@ -38,6 +39,7 @@ String _navDashboard(AppLocalizations l) => l.navDashboard;
 String _navSales(AppLocalizations l) => l.navSales;
 String _navInventory(AppLocalizations l) => l.navInventory;
 String _navDebts(AppLocalizations l) => l.navDebts;
+String _navCustomers(AppLocalizations l) => l.navCustomers;
 String _navSuppliers(AppLocalizations l) => l.navSuppliers;
 String _navAccounting(AppLocalizations l) => l.navAccounting;
 String _navExpensesCash(AppLocalizations l) => l.navExpensesCash;
@@ -45,21 +47,10 @@ String _navHr(AppLocalizations l) => l.navHr;
 String _navReports(AppLocalizations l) => l.navReports;
 String _navSettings(AppLocalizations l) => l.navSettings;
 
-List<_Destination> _destinationsForRole(SessionRole? role) {
-  switch (role) {
-    case SessionRole.cashier:
-      return _allDestinations
-          .where((d) => [RoutePaths.pos, RoutePaths.debts, RoutePaths.expensesCash].contains(d.path))
-          .toList();
-    case SessionRole.warehouseManager:
-      return _allDestinations.where((d) => [RoutePaths.inventory].contains(d.path)).toList();
-    case SessionRole.owner:
-    case SessionRole.manager:
-      return _allDestinations;
-    case SessionRole.developer:
-    case null:
-      return const [];
-  }
+/// Sections this employee's permissions allow (the dashboard always).
+List<_Destination> _destinationsFor(SessionState session) {
+  if (session.employee == null) return const [];
+  return _allDestinations.where((d) => RouteGuard.isAllowed(d.path, session)).toList();
 }
 
 /// Provides navigation chrome (rail/bottom bar) plus a thin persistent
@@ -76,7 +67,7 @@ class HomeShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final session = ref.watch(sessionControllerProvider);
-    final destinations = _destinationsForRole(session.role);
+    final destinations = _destinationsFor(session);
     final selectedIndex =
         destinations.indexWhere((d) => currentPath.startsWith(d.path)).clamp(0, destinations.isEmpty ? 0 : destinations.length - 1);
 

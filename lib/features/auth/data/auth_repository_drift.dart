@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../../core/constants/permissions.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/security/passcode_hasher.dart';
@@ -45,6 +46,7 @@ class DriftAuthRepository implements AuthRepository {
         allowancesMinorUnits: row.allowancesMinorUnits,
         avatarColorHex: row.avatarColorHex,
         isActive: row.isActive,
+        customPermissions: decodePermissions(row.permissions),
       );
 
   @override
@@ -208,6 +210,7 @@ class DriftAuthRepository implements AuthRepository {
         allowancesMinorUnits: Value(employee.allowancesMinorUnits),
         avatarColorHex: Value(employee.avatarColorHex),
         isActive: Value(employee.isActive),
+        permissions: Value(employee.customPermissions == null ? null : encodePermissions(employee.customPermissions!)),
         pinHash: newPin != null ? Value(PasscodeHasher.hash(newPin)) : const Value.absent(),
       ),
     );

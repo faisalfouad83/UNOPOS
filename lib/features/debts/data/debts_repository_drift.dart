@@ -86,6 +86,13 @@ class DriftDebtsRepository implements DebtsRepository {
   }
 
   @override
+  Future<void> updateCustomer(CustomerRecord customer) async {
+    await (_db.update(_db.customers)..where((t) => t.id.equals(customer.id))).write(
+      CustomersCompanion(name: Value(customer.name), phone: Value(customer.phone), address: Value(customer.address)),
+    );
+  }
+
+  @override
   Future<void> updateCustomerPhone(String customerId, String? phone) async {
     await (_db.update(_db.customers)..where((t) => t.id.equals(customerId))).write(CustomersCompanion(phone: Value(phone)));
   }

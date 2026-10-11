@@ -7,13 +7,22 @@ import '../../debts/domain/debts_models.dart';
 
 /// Pick the customer collecting loyalty points on this sale — search by
 /// name or phone, or add a new one.
-Future<CustomerRecord?> showLoyaltyCustomerPicker(BuildContext context, WidgetRef ref, String storeId) {
-  return showDialog<CustomerRecord>(context: context, builder: (_) => _LoyaltyCustomerPicker(storeId: storeId));
+Future<CustomerRecord?> showLoyaltyCustomerPicker(
+  BuildContext context,
+  WidgetRef ref,
+  String storeId, {
+  bool showPoints = true,
+}) {
+  return showDialog<CustomerRecord>(
+    context: context,
+    builder: (_) => _LoyaltyCustomerPicker(storeId: storeId, showPoints: showPoints),
+  );
 }
 
 class _LoyaltyCustomerPicker extends ConsumerStatefulWidget {
-  const _LoyaltyCustomerPicker({required this.storeId});
+  const _LoyaltyCustomerPicker({required this.storeId, required this.showPoints});
   final String storeId;
+  final bool showPoints;
 
   @override
   ConsumerState<_LoyaltyCustomerPicker> createState() => _LoyaltyCustomerPickerState();
@@ -89,7 +98,7 @@ class _LoyaltyCustomerPickerState extends ConsumerState<_LoyaltyCustomerPicker> 
                         final matches = snapshot.data!
                             .where((c) => q.isEmpty || c.name.toLowerCase().contains(q) || (c.phone ?? '').contains(q))
                             .toList()
-                          ..sort((a, b) => b.loyaltyPoints.compareTo(a.loyaltyPoints));
+                          ..sort((a, b) => a.name.compareTo(b.name));
                         if (matches.isEmpty) return Center(child: Text(l10n.loyaltyNoMatches));
                         return ListView.builder(
                           itemCount: matches.length,
@@ -99,7 +108,7 @@ class _LoyaltyCustomerPickerState extends ConsumerState<_LoyaltyCustomerPicker> 
                               leading: CircleAvatar(child: Text(c.name.isEmpty ? '?' : c.name[0].toUpperCase())),
                               title: Text(c.name),
                               subtitle: c.phone == null ? null : Text(c.phone!),
-                              trailing: Text(l10n.loyaltyPointsBalance(c.loyaltyPoints)),
+                              trailing: widget.showPoints ? Text(l10n.loyaltyPointsBalance(c.loyaltyPoints)) : null,
                               onTap: () => Navigator.of(context).pop(c),
                             );
                           },

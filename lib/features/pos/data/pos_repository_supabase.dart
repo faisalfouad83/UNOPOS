@@ -148,6 +148,28 @@ class SupabasePosRepository implements PosRepository {
   }
 
   @override
+  Future<Map<String, int>> salesTotalsByCustomer(String storeId) async {
+    final totals = <String, int>{};
+    const pageSize = 1000;
+    for (var from = 0;; from += pageSize) {
+      final page = await _client
+          .from('sales')
+          .select('customer_id, grand_total_minor_units')
+          .eq('store_id', storeId)
+          .eq('status', 'completed')
+          .not('customer_id', 'is', null)
+          .order('id')
+          .range(from, from + pageSize - 1);
+      for (final r in (page as List).cast<Map<String, dynamic>>()) {
+        final id = r['customer_id'] as String;
+        totals[id] = (totals[id] ?? 0) + (r['grand_total_minor_units'] as num).toInt();
+      }
+      if (page.length < pageSize) break;
+    }
+    return totals;
+  }
+
+  @override
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to}) {
     return _client.from('sales').stream(primaryKey: ['id']).eq('status', 'completed').order('completed_at', ascending: false).asyncMap((rows) async {
       var filtered = rows;

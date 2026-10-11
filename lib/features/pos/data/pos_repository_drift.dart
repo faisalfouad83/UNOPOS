@@ -191,6 +191,17 @@ class DriftPosRepository implements PosRepository {
   }
 
   @override
+  Future<Map<String, int>> salesTotalsByCustomer(String storeId) async {
+    final rows = await _db.customSelect(
+      'SELECT customer_id, SUM(grand_total_minor_units) AS total FROM sales '
+      "WHERE store_id = ? AND status = 'completed' AND customer_id IS NOT NULL GROUP BY customer_id",
+      variables: [Variable.withString(storeId)],
+      readsFrom: {_db.sales},
+    ).get();
+    return {for (final r in rows) r.read<String>('customer_id'): r.read<int>('total')};
+  }
+
+  @override
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to}) {
     final query = _db.select(_db.sales)
       ..where((t) => t.storeId.equals(storeId) & t.status.equals('completed'));

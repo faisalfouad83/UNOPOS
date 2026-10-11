@@ -67,7 +67,10 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
   /// Points can't be spent on a resumed held sale: the server re-prices it
   /// from the held lines, which wouldn't carry the points discount.
   bool _canRedeem(CartState cart) =>
-      _loyaltyCustomer != null && widget.settings.loyaltyPointValueMinor > 0 && cart.resumingHeldSale == null;
+      _loyaltyCustomer != null &&
+      widget.settings.loyaltyEnabled &&
+      widget.settings.loyaltyPointValueMinor > 0 &&
+      cart.resumingHeldSale == null;
 
   int _maxRedeemable(CartState cart) => _canRedeem(cart)
       ? Loyalty.maxRedeemable(
@@ -85,14 +88,14 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
 
   /// Cart lines with the points discount spread over them.
   List<CartLine> _saleLines(CartState cart) =>
-      Loyalty.applyDiscount(cart.lines, _pointsToRedeem(cart) * widget.settings.loyaltyPointValueMinor);
+      Loyalty.applyDiscount(cart.pricedLines, _pointsToRedeem(cart) * widget.settings.loyaltyPointValueMinor);
 
   int _payable(CartState cart) => _saleLines(cart).fold(0, (s, l) => s + l.lineTotalMinorUnits);
 
   Future<void> _chooseCustomer() async {
     final storeId = ref.read(sessionControllerProvider).store?.id;
     if (storeId == null) return;
-    final picked = await showLoyaltyCustomerPicker(context, ref, storeId);
+    final picked = await showLoyaltyCustomerPicker(context, ref, storeId, showPoints: widget.settings.loyaltyEnabled);
     if (picked == null || !mounted) return;
     setState(() {
       _loyaltyCustomer = picked;
@@ -162,7 +165,9 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
         _PayMethod.payLater => SalePaymentMethod.payLater,
       };
 
-      final result = await ref.read(completeSaleUseCaseProvider).checkout(
+      final result = await ref
+          .read(completeSaleUseCaseProvider)
+          .checkout(
             storeId: session.store!.id,
             branchId: session.currentBranchId!,
             cashierId: session.employee!.id,
@@ -176,7 +181,8 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
               if (foreignPayment) ...foreignExtras,
               if (_method == _PayMethod.payLater && _customerPhoneController.text.trim().isNotEmpty)
                 'customer_phone': _customerPhoneController.text.trim(),
-              if (loyaltyCustomer != null) ...{
+              if (loyaltyCustomer != null) 'customer_id': loyaltyCustomer.id,
+              if (loyaltyCustomer != null && widget.settings.loyaltyEnabled) ...{
                 'loyalty_customer_id': loyaltyCustomer.id,
                 'points_redeemed': pointsRedeemed,
                 // Used by the local (single-device) checkout; the server
@@ -256,12 +262,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
     final change = tendered - payable;
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -282,13 +283,13 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
               '≈ ${rate.foreign.format(rate.toForeign(payable))}  ·  ${rate.label}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-          if (widget.settings.loyaltyEnabled) ...[
+          ...[
             const SizedBox(height: 12),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.loyalty_outlined),
-              title: Text(_loyaltyCustomer?.name ?? l10n.loyaltyNoCustomer),
-              subtitle: _loyaltyCustomer == null
+              leading: Icon(_loyaltyCustomer == null ? Icons.person_outline : Icons.person),
+              title: Text(_loyaltyCustomer?.name ?? l10n.customerWalkIn),
+              subtitle: _loyaltyCustomer == null || !widget.settings.loyaltyEnabled
                   ? null
                   : Text(l10n.loyaltyPointsBalance(_loyaltyCustomer!.loyaltyPoints)),
               trailing: _loyaltyCustomer == null
@@ -318,9 +319,17 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
           const SizedBox(height: 16),
           SegmentedButton<_PayMethod>(
             segments: [
-              ButtonSegment(value: _PayMethod.cash, label: Text(l10n.posPayCash), icon: const Icon(Icons.payments_outlined)),
+              ButtonSegment(
+                value: _PayMethod.cash,
+                label: Text(l10n.posPayCash),
+                icon: const Icon(Icons.payments_outlined),
+              ),
               ButtonSegment(value: _PayMethod.card, label: Text(l10n.posPayCard), icon: const Icon(Icons.credit_card)),
-              ButtonSegment(value: _PayMethod.payLater, label: Text(l10n.posPayLater), icon: const Icon(Icons.schedule)),
+              ButtonSegment(
+                value: _PayMethod.payLater,
+                label: Text(l10n.posPayLater),
+                icon: const Icon(Icons.schedule),
+              ),
             ],
             selected: {_method},
             onSelectionChanged: (s) => setState(() => _method = s.first),
@@ -375,8 +384,7 @@ class _CheckoutSheetContentState extends ConsumerState<_CheckoutSheetContent> {
                 prefixIcon: const Icon(Icons.phone),
               ),
             ),
-          ]
-          else if (_error != null)
+          ] else if (_error != null)
             Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
           const SizedBox(height: 20),
           FilledButton(

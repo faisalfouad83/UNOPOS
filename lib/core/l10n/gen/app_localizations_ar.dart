@@ -910,7 +910,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loyaltySettingsHelp =>
-      'يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم. اتركه فارغاً لإيقاف النقاط.';
+      'يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم.';
 
   @override
   String get loyaltySpendPerPoint => 'المبلغ مقابل نقطة واحدة';
@@ -1006,4 +1006,93 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unitMilliliter => 'ملي لتر';
+
+  @override
+  String get navCustomers => 'الزبائن';
+
+  @override
+  String get hrPasscodeNew => 'رمز الدخول (4 أرقام)';
+
+  @override
+  String get hrPasscodeReset =>
+      'رمز دخول جديد (اتركه فارغاً للإبقاء على الحالي)';
+
+  @override
+  String get permissionsTitle => 'الصلاحيات';
+
+  @override
+  String get permissionsOwnerAll => 'المالك لديه جميع الصلاحيات دائماً.';
+
+  @override
+  String get permissionSell => 'البيع (شاشة الكاشير)';
+
+  @override
+  String get permissionGiveDiscount => 'إعطاء خصومات';
+
+  @override
+  String get permissionProcessReturns => 'إرجاع المبيعات';
+
+  @override
+  String get permissionDebts => 'الديون';
+
+  @override
+  String get permissionCustomers => 'الزبائن';
+
+  @override
+  String get permissionInventory => 'عرض المخزون';
+
+  @override
+  String get permissionEditProducts => 'إضافة وتعديل المنتجات';
+
+  @override
+  String get permissionSuppliers => 'الموردون';
+
+  @override
+  String get permissionExpenses => 'المصاريف والصندوق';
+
+  @override
+  String get permissionAccounting => 'المحاسبة';
+
+  @override
+  String get permissionReports => 'التقارير';
+
+  @override
+  String get permissionHr => 'الموظفون';
+
+  @override
+  String get permissionSettings => 'الإعدادات';
+
+  @override
+  String get posLineDiscount => 'خصم على هذا المنتج';
+
+  @override
+  String get posInvoiceDiscount => 'خصم على الفاتورة';
+
+  @override
+  String get posDiscountPercent => 'نسبة الخصم %';
+
+  @override
+  String get posDiscountAmount => 'مبلغ الخصم';
+
+  @override
+  String get posRemoveDiscount => 'إزالة الخصم';
+
+  @override
+  String get settingsKeepMargin => 'الاحتفاظ بهامش ربح 5% عند خصم 100%';
+
+  @override
+  String get settingsKeepMarginHelp =>
+      'عند الخصم الكامل يُحسب سعر الكلفة مضافاً إليه 5% بدلاً من إعطاء المنتج مجاناً.';
+
+  @override
+  String get customerWalkIn => 'زبون نقدي عابر';
+
+  @override
+  String get customersNone => 'لا يوجد زبائن بعد';
+
+  @override
+  String get customersTotalSales => 'إجمالي المشتريات';
+
+  @override
+  String get customersOwes => 'عليه دين';
 }

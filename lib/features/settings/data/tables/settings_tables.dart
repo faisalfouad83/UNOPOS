@@ -27,6 +27,11 @@ class AppSettingsTable extends Table {
   /// Loyalty: what one point is worth when redeemed (minor units).
   IntColumn get loyaltyPointValueMinor => integer().withDefault(const Constant(0))();
 
+  BoolColumn get loyaltyEnabled => boolean().withDefault(const Constant(false))();
+
+  /// A 100% discount still charges cost + 5% instead of giving the item away.
+  BoolColumn get fullDiscountKeepsMargin => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

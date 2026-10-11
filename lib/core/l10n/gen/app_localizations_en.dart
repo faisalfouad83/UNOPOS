@@ -912,7 +912,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loyaltySettingsHelp =>
-      'Customers earn 1 point for every amount below they spend, and can spend points as a discount. Leave empty to turn loyalty off.';
+      'Customers earn 1 point for every amount below they spend, and can spend points as a discount.';
 
   @override
   String get loyaltySpendPerPoint => 'Spend for 1 point';
@@ -1008,4 +1008,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitMilliliter => 'Milliliter';
+
+  @override
+  String get navCustomers => 'Customers';
+
+  @override
+  String get hrPasscodeNew => 'Passcode (4 digits)';
+
+  @override
+  String get hrPasscodeReset => 'New passcode (leave empty to keep)';
+
+  @override
+  String get permissionsTitle => 'Permissions';
+
+  @override
+  String get permissionsOwnerAll => 'The owner always has every permission.';
+
+  @override
+  String get permissionSell => 'Sell (cashier screen)';
+
+  @override
+  String get permissionGiveDiscount => 'Give discounts';
+
+  @override
+  String get permissionProcessReturns => 'Process returns';
+
+  @override
+  String get permissionDebts => 'Debts';
+
+  @override
+  String get permissionCustomers => 'Customers';
+
+  @override
+  String get permissionInventory => 'View inventory';
+
+  @override
+  String get permissionEditProducts => 'Add and edit products';
+
+  @override
+  String get permissionSuppliers => 'Suppliers';
+
+  @override
+  String get permissionExpenses => 'Expenses and cash';
+
+  @override
+  String get permissionAccounting => 'Accounting';
+
+  @override
+  String get permissionReports => 'Reports';
+
+  @override
+  String get permissionHr => 'Employees (HR)';
+
+  @override
+  String get permissionSettings => 'Settings';
+
+  @override
+  String get posLineDiscount => 'Discount on this item';
+
+  @override
+  String get posInvoiceDiscount => 'Discount on invoice';
+
+  @override
+  String get posDiscountPercent => 'Discount %';
+
+  @override
+  String get posDiscountAmount => 'Discount amount';
+
+  @override
+  String get posRemoveDiscount => 'Remove discount';
+
+  @override
+  String get settingsKeepMargin => 'Keep a 5% margin on 100% discounts';
+
+  @override
+  String get settingsKeepMarginHelp =>
+      'A full discount charges the item\'s cost plus 5% instead of giving it away.';
+
+  @override
+  String get customerWalkIn => 'Walk-in customer (cash)';
+
+  @override
+  String get customersNone => 'No customers yet';
+
+  @override
+  String get customersTotalSales => 'Total purchases';
+
+  @override
+  String get customersOwes => 'Owes';
 }

@@ -126,12 +126,14 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
     SaleRecord? resumingHeldSale,
     Map<String, dynamic> extras = const {},
   }) async {
+    final chosenCustomerId = extras['customer_id'] as String?;
     final sale = resumingHeldSale ??
         await _posRepository.createSale(
           storeId: storeId,
           branchId: branchId,
           cashierId: cashierId,
           shiftId: shiftId,
+          customerId: chosenCustomerId,
           status: SaleStatus.completed,
           lines: lines,
         );
@@ -185,7 +187,9 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
     String? debtEntryId;
     if (paymentMethod == SalePaymentMethod.payLater) {
       final name = (customerNameForPayLater ?? '').trim();
-      var customer = name.isEmpty ? null : await _debtsRepository.findCustomerByName(storeId, name);
+      final customers = chosenCustomerId == null ? null : await _debtsRepository.watchCustomers(storeId).first;
+      var customer = customers?.where((c) => c.id == chosenCustomerId).firstOrNull;
+      customer ??= name.isEmpty ? null : await _debtsRepository.findCustomerByName(storeId, name);
       customer ??= await _debtsRepository.createCustomer(storeId, name.isEmpty ? 'Walk-in customer' : name);
       final phone = (extras['customer_phone'] as String?)?.trim();
       if (phone != null && phone.isNotEmpty) await _debtsRepository.updateCustomerPhone(customer.id, phone);

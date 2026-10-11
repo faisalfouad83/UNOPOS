@@ -1,5 +1,5 @@
 import '../../features/auth/domain/session_controller.dart';
-import '../constants/roles.dart';
+import '../constants/permissions.dart';
 import '../supabase/supabase_config.dart';
 import 'route_paths.dart';
 
@@ -8,25 +8,28 @@ import 'route_paths.dart';
 class RouteGuard {
   const RouteGuard._();
 
-  static const Map<String, Set<SessionRole>> _allowedRoles = {
-    RoutePaths.pos: {SessionRole.owner, SessionRole.manager, SessionRole.cashier},
-    RoutePaths.debts: {SessionRole.owner, SessionRole.manager, SessionRole.cashier},
-    RoutePaths.inventory: {SessionRole.owner, SessionRole.manager, SessionRole.warehouseManager},
-    RoutePaths.suppliers: {SessionRole.owner, SessionRole.manager},
-    RoutePaths.accounting: {SessionRole.owner, SessionRole.manager},
-    RoutePaths.hr: {SessionRole.owner, SessionRole.manager, SessionRole.developer},
-    RoutePaths.reports: {SessionRole.owner, SessionRole.manager},
-    RoutePaths.settings: {SessionRole.owner, SessionRole.manager},
+  /// The permission each section needs. Sections not listed (the
+  /// dashboard) are open to every signed-in employee.
+  static const Map<String, AppPermission> requiredPermission = {
+    RoutePaths.pos: AppPermission.sell,
+    RoutePaths.debts: AppPermission.debts,
+    RoutePaths.customers: AppPermission.customers,
+    RoutePaths.inventory: AppPermission.inventory,
+    RoutePaths.suppliers: AppPermission.suppliers,
+    RoutePaths.accounting: AppPermission.accounting,
+    RoutePaths.expensesCash: AppPermission.expenses,
+    RoutePaths.hr: AppPermission.hr,
+    RoutePaths.reports: AppPermission.reports,
+    RoutePaths.settings: AppPermission.settings,
   };
 
-  static bool isRoleAllowed(String location, SessionRole? role) {
-    final matchingKey = _allowedRoles.keys.firstWhere(
-      (k) => location.startsWith(k),
-      orElse: () => '',
-    );
+  static bool isAllowed(String location, SessionState session) {
+    final matchingKey = requiredPermission.keys.firstWhere((k) => location.startsWith(k), orElse: () => '');
     if (matchingKey.isEmpty) return true; // no restriction declared
-    if (role == null) return false;
-    return _allowedRoles[matchingKey]!.contains(role);
+    if (session.developerMode) return matchingKey == RoutePaths.hr;
+    final employee = session.employee;
+    if (employee == null) return false;
+    return employee.can(requiredPermission[matchingKey]!);
   }
 
   /// [hasStoreOnDisk] / [hasValidLicense] are resolved asynchronously before
@@ -115,7 +118,7 @@ class RouteGuard {
       return RoutePaths.home;
     }
 
-    if (!isRoleAllowed(location, session.role)) {
+    if (!isAllowed(location, session)) {
       return RoutePaths.home;
     }
 

@@ -5,6 +5,7 @@ abstract class DebtsRepository {
   Stream<List<CustomerRecord>> watchCustomers(String storeId);
   Future<CustomerRecord?> findCustomerByName(String storeId, String name);
   Future<void> updateCustomerPhone(String customerId, String? phone);
+  Future<void> updateCustomer(CustomerRecord customer);
   Future<void> adjustLoyaltyPoints(String customerId, int delta);
 
   Future<DebtLedgerEntryRecord> createDebtEntry({

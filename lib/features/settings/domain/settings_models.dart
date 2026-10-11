@@ -58,6 +58,8 @@ class AppSettingsRecord {
     this.usdExchangeRate = 0,
     this.loyaltySpendPerPointMinor = 0,
     this.loyaltyPointValueMinor = 0,
+    this.loyaltyEnabledFlag = false,
+    this.fullDiscountKeepsMargin = false,
   });
 
   final String storeId;
@@ -81,7 +83,14 @@ class AppSettingsRecord {
   /// What one point is worth when redeemed (minor units); 0 = can't redeem.
   final int loyaltyPointValueMinor;
 
-  bool get loyaltyEnabled => loyaltySpendPerPointMinor > 0;
+  /// The Settings switch for loyalty points.
+  final bool loyaltyEnabledFlag;
+
+  /// Loyalty is in effect: switched on and an earn rate is set.
+  bool get loyaltyEnabled => loyaltyEnabledFlag && loyaltySpendPerPointMinor > 0;
+
+  /// A 100% discount still charges cost + 5% instead of giving goods away.
+  final bool fullDiscountKeepsMargin;
 
   AppSettingsRecord copyWith({
     String? defaultLanguage,
@@ -97,6 +106,8 @@ class AppSettingsRecord {
     double? usdExchangeRate,
     int? loyaltySpendPerPointMinor,
     int? loyaltyPointValueMinor,
+    bool? loyaltyEnabledFlag,
+    bool? fullDiscountKeepsMargin,
   }) =>
       AppSettingsRecord(
         storeId: storeId,
@@ -113,5 +124,7 @@ class AppSettingsRecord {
         usdExchangeRate: usdExchangeRate ?? this.usdExchangeRate,
         loyaltySpendPerPointMinor: loyaltySpendPerPointMinor ?? this.loyaltySpendPerPointMinor,
         loyaltyPointValueMinor: loyaltyPointValueMinor ?? this.loyaltyPointValueMinor,
+        loyaltyEnabledFlag: loyaltyEnabledFlag ?? this.loyaltyEnabledFlag,
+        fullDiscountKeepsMargin: fullDiscountKeepsMargin ?? this.fullDiscountKeepsMargin,
       );
 }

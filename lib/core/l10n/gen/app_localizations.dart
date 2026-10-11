@@ -1771,7 +1771,7 @@ abstract class AppLocalizations {
   /// No description provided for @loyaltySettingsHelp.
   ///
   /// In en, this message translates to:
-  /// **'Customers earn 1 point for every amount below they spend, and can spend points as a discount. Leave empty to turn loyalty off.'**
+  /// **'Customers earn 1 point for every amount below they spend, and can spend points as a discount.'**
   String get loyaltySettingsHelp;
 
   /// No description provided for @loyaltySpendPerPoint.
@@ -1935,6 +1935,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Milliliter'**
   String get unitMilliliter;
+
+  /// No description provided for @navCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get navCustomers;
+
+  /// No description provided for @hrPasscodeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode (4 digits)'**
+  String get hrPasscodeNew;
+
+  /// No description provided for @hrPasscodeReset.
+  ///
+  /// In en, this message translates to:
+  /// **'New passcode (leave empty to keep)'**
+  String get hrPasscodeReset;
+
+  /// No description provided for @permissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get permissionsTitle;
+
+  /// No description provided for @permissionsOwnerAll.
+  ///
+  /// In en, this message translates to:
+  /// **'The owner always has every permission.'**
+  String get permissionsOwnerAll;
+
+  /// No description provided for @permissionSell.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell (cashier screen)'**
+  String get permissionSell;
+
+  /// No description provided for @permissionGiveDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Give discounts'**
+  String get permissionGiveDiscount;
+
+  /// No description provided for @permissionProcessReturns.
+  ///
+  /// In en, this message translates to:
+  /// **'Process returns'**
+  String get permissionProcessReturns;
+
+  /// No description provided for @permissionDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Debts'**
+  String get permissionDebts;
+
+  /// No description provided for @permissionCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get permissionCustomers;
+
+  /// No description provided for @permissionInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'View inventory'**
+  String get permissionInventory;
+
+  /// No description provided for @permissionEditProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Add and edit products'**
+  String get permissionEditProducts;
+
+  /// No description provided for @permissionSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get permissionSuppliers;
+
+  /// No description provided for @permissionExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses and cash'**
+  String get permissionExpenses;
+
+  /// No description provided for @permissionAccounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounting'**
+  String get permissionAccounting;
+
+  /// No description provided for @permissionReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get permissionReports;
+
+  /// No description provided for @permissionHr.
+  ///
+  /// In en, this message translates to:
+  /// **'Employees (HR)'**
+  String get permissionHr;
+
+  /// No description provided for @permissionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get permissionSettings;
+
+  /// No description provided for @posLineDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount on this item'**
+  String get posLineDiscount;
+
+  /// No description provided for @posInvoiceDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount on invoice'**
+  String get posInvoiceDiscount;
+
+  /// No description provided for @posDiscountPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount %'**
+  String get posDiscountPercent;
+
+  /// No description provided for @posDiscountAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount amount'**
+  String get posDiscountAmount;
+
+  /// No description provided for @posRemoveDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove discount'**
+  String get posRemoveDiscount;
+
+  /// No description provided for @settingsKeepMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a 5% margin on 100% discounts'**
+  String get settingsKeepMargin;
+
+  /// No description provided for @settingsKeepMarginHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'A full discount charges the item\'s cost plus 5% instead of giving it away.'**
+  String get settingsKeepMarginHelp;
+
+  /// No description provided for @customerWalkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in customer (cash)'**
+  String get customerWalkIn;
+
+  /// No description provided for @customersNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers yet'**
+  String get customersNone;
+
+  /// No description provided for @customersTotalSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Total purchases'**
+  String get customersTotalSales;
+
+  /// No description provided for @customersOwes.
+  ///
+  /// In en, this message translates to:
+  /// **'Owes'**
+  String get customersOwes;
 }
 
 class _AppLocalizationsDelegate

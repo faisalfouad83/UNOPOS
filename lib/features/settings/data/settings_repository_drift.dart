@@ -26,6 +26,8 @@ class DriftSettingsRepository implements SettingsRepository {
         usdExchangeRate: row.usdExchangeRate,
         loyaltySpendPerPointMinor: row.loyaltySpendPerPointMinor,
         loyaltyPointValueMinor: row.loyaltyPointValueMinor,
+        loyaltyEnabledFlag: row.loyaltyEnabled,
+        fullDiscountKeepsMargin: row.fullDiscountKeepsMargin,
       );
 
   @override
@@ -71,6 +73,8 @@ class DriftSettingsRepository implements SettingsRepository {
         usdExchangeRate: Value(settings.usdExchangeRate),
         loyaltySpendPerPointMinor: Value(settings.loyaltySpendPerPointMinor),
         loyaltyPointValueMinor: Value(settings.loyaltyPointValueMinor),
+        loyaltyEnabled: Value(settings.loyaltyEnabledFlag),
+        fullDiscountKeepsMargin: Value(settings.fullDiscountKeepsMargin),
       ),
     );
   }

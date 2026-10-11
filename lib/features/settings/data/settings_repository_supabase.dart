@@ -28,6 +28,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
         usdExchangeRate: (row['usd_exchange_rate'] as num?)?.toDouble() ?? 0,
         loyaltySpendPerPointMinor: (row['loyalty_spend_per_point_minor'] as num?)?.toInt() ?? 0,
         loyaltyPointValueMinor: (row['loyalty_point_value_minor'] as num?)?.toInt() ?? 0,
+        loyaltyEnabledFlag: row['loyalty_enabled'] as bool? ?? false,
+        fullDiscountKeepsMargin: row['full_discount_keeps_margin'] as bool? ?? false,
       );
 
   @override
@@ -91,6 +93,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
       'usd_exchange_rate': settings.usdExchangeRate,
       'loyalty_spend_per_point_minor': settings.loyaltySpendPerPointMinor,
       'loyalty_point_value_minor': settings.loyaltyPointValueMinor,
+      'loyalty_enabled': settings.loyaltyEnabledFlag,
+      'full_discount_keeps_margin': settings.fullDiscountKeepsMargin,
     }).eq('store_id', settings.storeId);
   }
 }

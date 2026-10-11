@@ -53,6 +53,9 @@ class Users extends Table {
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
 
+  /// Comma-separated AppPermission names; null = the role's defaults.
+  TextColumn get permissions => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

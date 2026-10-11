@@ -75,7 +75,9 @@ class GeneralSettingsSection extends ConsumerWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    initialValue: settings.currencyCode == CurrencyInfo.usd.code ? CurrencyInfo.usd.code : CurrencyInfo.iqd.code,
+                    initialValue: settings.currencyCode == CurrencyInfo.usd.code
+                        ? CurrencyInfo.usd.code
+                        : CurrencyInfo.iqd.code,
                     decoration: InputDecoration(labelText: l10n.settingsCurrency),
                     items: [
                       DropdownMenuItem(value: CurrencyInfo.iqd.code, child: Text(l10n.currencyIqd)),
@@ -114,42 +116,56 @@ class GeneralSettingsSection extends ConsumerWidget {
               onFieldSubmitted: (value) =>
                   _update(ref, settings.copyWith(usdExchangeRate: double.tryParse(value) ?? 0)),
             ),
-            const SizedBox(height: 20),
-            Text(l10n.loyaltyTitle, style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 4),
-            Text(l10n.loyaltySettingsHelp, style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: settings.loyaltySpendPerPointMinor > 0
-                        ? Money.inputText(settings.loyaltySpendPerPointMinor)
-                        : '',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                    decoration: InputDecoration(labelText: l10n.loyaltySpendPerPoint),
-                    onFieldSubmitted: (value) => _update(
-                      ref,
-                      settings.copyWith(loyaltySpendPerPointMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: settings.loyaltyPointValueMinor > 0 ? Money.inputText(settings.loyaltyPointValueMinor) : '',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                    decoration: InputDecoration(labelText: l10n.loyaltyPointValue),
-                    onFieldSubmitted: (value) => _update(
-                      ref,
-                      settings.copyWith(loyaltyPointValueMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),
-                    ),
-                  ),
-                ),
-              ],
+            const SizedBox(height: 12),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.settingsKeepMargin),
+              subtitle: Text(l10n.settingsKeepMarginHelp),
+              value: settings.fullDiscountKeepsMargin,
+              onChanged: (v) => _update(ref, settings.copyWith(fullDiscountKeepsMargin: v)),
             ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.loyaltyTitle),
+              subtitle: Text(l10n.loyaltySettingsHelp),
+              value: settings.loyaltyEnabledFlag,
+              onChanged: (v) => _update(ref, settings.copyWith(loyaltyEnabledFlag: v)),
+            ),
+            if (settings.loyaltyEnabledFlag)
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: settings.loyaltySpendPerPointMinor > 0
+                          ? Money.inputText(settings.loyaltySpendPerPointMinor)
+                          : '',
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                      decoration: InputDecoration(labelText: l10n.loyaltySpendPerPoint),
+                      onFieldSubmitted: (value) => _update(
+                        ref,
+                        settings.copyWith(loyaltySpendPerPointMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: settings.loyaltyPointValueMinor > 0
+                          ? Money.inputText(settings.loyaltyPointValueMinor)
+                          : '',
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                      decoration: InputDecoration(labelText: l10n.loyaltyPointValue),
+                      onFieldSubmitted: (value) => _update(
+                        ref,
+                        settings.copyWith(loyaltyPointValueMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

@@ -46,3 +46,17 @@ class JournalLines extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+/// The type of an expense (fixed / variable / negligible / custom) and its
+/// category, kept beside the expense's journal entry.
+class ExpenseDetails extends Table {
+  TextColumn get journalEntryId => text()();
+  TextColumn get storeId => text()();
+  TextColumn get expenseGroup => text()();
+  TextColumn get category => text()();
+  IntColumn get amountMinorUnits => integer()();
+  DateTimeColumn get entryDate => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {journalEntryId};
+}
