@@ -30,6 +30,7 @@ const _backupTables = [
   'chart_of_accounts',
   'journal_entries',
   'journal_lines',
+  'expense_details',
   'sales',
   'sale_lines',
   'sale_returns',

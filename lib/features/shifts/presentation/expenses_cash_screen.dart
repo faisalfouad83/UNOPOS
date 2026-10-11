@@ -7,7 +7,9 @@ import '../../../core/providers.dart';
 import '../../../core/theming/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../accounting/domain/accounting_models.dart';
+import '../../accounting/domain/expense_categories.dart';
 import '../../accounting/presentation/add_expense_dialog.dart';
+import '../../accounting/presentation/expense_labels.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../pos/domain/pos_models.dart';
 import '../domain/shifts_models.dart';
@@ -17,6 +19,11 @@ import 'shift_providers.dart';
 
 final _shiftSalesProvider = StreamProvider.autoDispose.family<List<SaleRecord>, ({String storeId, DateTime from})>((ref, key) {
   return ref.watch(posRepositoryProvider).watchCompletedSales(key.storeId, from: key.from);
+});
+
+final _shiftExpenseDetailsProvider =
+    StreamProvider.autoDispose.family<List<ExpenseDetailRecord>, ({String storeId, DateTime from})>((ref, key) {
+  return ref.watch(expenseDetailsRepositoryProvider).watch(key.storeId, from: key.from);
 });
 
 final _shiftJournalEntriesProvider =
@@ -128,6 +135,11 @@ class _ShiftDetail extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final salesAsync = ref.watch(_shiftSalesProvider((storeId: storeId, from: shift.openedAt)));
     final entriesAsync = ref.watch(_shiftJournalEntriesProvider(storeId));
+    final detailsById = {
+      for (final d in ref.watch(_shiftExpenseDetailsProvider((storeId: storeId, from: shift.openedAt))).value ??
+          const <ExpenseDetailRecord>[])
+        d.journalEntryId: d,
+    };
 
     final cashSalesTotal = (salesAsync.value ?? const <SaleRecord>[])
         .where((s) => s.shiftId == shift.id && s.paymentMethod == SalePaymentMethod.cash)
@@ -182,7 +194,13 @@ class _ShiftDetail extends ConsumerWidget {
               child: ListTile(
                 leading: const Icon(Icons.receipt_long_outlined),
                 title: Text(e.memo.isEmpty ? l10n.accountingAddExpense : e.memo),
-                subtitle: Text(AppDateFormat.dateTime(e.entryDate)),
+                subtitle: Text([
+                  if (detailsById[e.id] != null)
+                    '${expenseGroupLabel(l10n, detailsById[e.id]!.group)} · '
+                        '${expenseCategoryLabel(l10n, detailsById[e.id]!.group, detailsById[e.id]!.category)}',
+                  AppDateFormat.dateTime(e.entryDate),
+                ].join('\n')),
+                onTap: detailsById[e.id] == null ? null : () => showEditExpenseTypeDialog(context, ref, detailsById[e.id]!),
                 trailing: Text(
                   Money.format(entryAmount(e)),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.error),

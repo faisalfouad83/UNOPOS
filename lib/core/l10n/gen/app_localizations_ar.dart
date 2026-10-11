@@ -1144,4 +1144,100 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get roleDeveloper => 'المطوّر';
+
+  @override
+  String get expenseType => 'نوع المصروف';
+
+  @override
+  String get expenseCategory => 'البند';
+
+  @override
+  String get expenseCustomName => 'اسم النوع المخصص';
+
+  @override
+  String get expenseEditType => 'تعديل نوع المصروف';
+
+  @override
+  String get expenseGroupFixed => 'ثابتة';
+
+  @override
+  String get expenseGroupVariable => 'متغيرة';
+
+  @override
+  String get expenseGroupNegligible => 'مهملة';
+
+  @override
+  String get expenseGroupCustom => 'مخصص';
+
+  @override
+  String get expenseRent => 'الإيجار';
+
+  @override
+  String get expenseSalaries => 'رواتب الموظفين';
+
+  @override
+  String get expenseGeneratorElectricity => 'الكهرباء (سحب)';
+
+  @override
+  String get expenseNationalElectricity => 'الكهرباء (وطني)';
+
+  @override
+  String get expenseWater => 'الماء';
+
+  @override
+  String get expenseInternet => 'الإنترنت';
+
+  @override
+  String get expenseSolarPower => 'الطاقة الشمسية';
+
+  @override
+  String get expenseSoftware => 'البرامج';
+
+  @override
+  String get expenseMaterials => 'المواد';
+
+  @override
+  String get expenseTransport => 'النقل';
+
+  @override
+  String get expenseCleaningSupplies => 'المنظفات';
+
+  @override
+  String get expensePackaging => 'التغليف';
+
+  @override
+  String get expenseDeliveryAppCommission => 'عمولة تطبيقات التوصيل';
+
+  @override
+  String get expenseWasteAndDamage => 'الهدر والتالف';
+
+  @override
+  String get expenseMaintenance => 'الصيانة';
+
+  @override
+  String get expenseStaffMeals => 'أكل الموظفين';
+
+  @override
+  String get expenseAnnualFees => 'الرسوم السنوية (الصحة والبلدية)';
+
+  @override
+  String get expenseHospitality => 'الضيافة';
+
+  @override
+  String get expensesThisMonth => 'مصاريف هذا الشهر';
+
+  @override
+  String get expensesThisYear => 'مصاريف هذه السنة';
+
+  @override
+  String get expensesMonth => 'الشهر';
+
+  @override
+  String get expensesYear => 'السنة';
+
+  @override
+  String get expensesNone => 'لا توجد مصاريف مسجلة في هذه الفترة';
+
+  @override
+  String get expensesUntyped => 'المصاريف القديمة بدون نوع غير محسوبة هنا.';
 }

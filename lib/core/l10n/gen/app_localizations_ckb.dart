@@ -1136,4 +1136,100 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get roleDeveloper => 'گەشەپێدەر';
+
+  @override
+  String get expenseType => 'جۆری خەرجی';
+
+  @override
+  String get expenseCategory => 'بەش';
+
+  @override
+  String get expenseCustomName => 'ناوی جۆری تایبەت';
+
+  @override
+  String get expenseEditType => 'گۆڕینی جۆری خەرجی';
+
+  @override
+  String get expenseGroupFixed => 'جێگیر';
+
+  @override
+  String get expenseGroupVariable => 'گۆڕاو';
+
+  @override
+  String get expenseGroupNegligible => 'کەم';
+
+  @override
+  String get expenseGroupCustom => 'تایبەت';
+
+  @override
+  String get expenseRent => 'کرێ';
+
+  @override
+  String get expenseSalaries => 'مووچەی کارمەندان';
+
+  @override
+  String get expenseGeneratorElectricity => 'کارەبای مۆلیدە';
+
+  @override
+  String get expenseNationalElectricity => 'کارەبای نیشتمانی';
+
+  @override
+  String get expenseWater => 'ئاو';
+
+  @override
+  String get expenseInternet => 'ئینتەرنێت';
+
+  @override
+  String get expenseSolarPower => 'وزەی خۆر';
+
+  @override
+  String get expenseSoftware => 'پرۆگرامەکان';
+
+  @override
+  String get expenseMaterials => 'کەرەستە';
+
+  @override
+  String get expenseTransport => 'گواستنەوە';
+
+  @override
+  String get expenseCleaningSupplies => 'پاککەرەوەکان';
+
+  @override
+  String get expensePackaging => 'پێچانەوە';
+
+  @override
+  String get expenseDeliveryAppCommission => 'کۆمیسیۆنی ئەپی گەیاندن';
+
+  @override
+  String get expenseWasteAndDamage => 'بەفیڕۆچوو و تێکچوو';
+
+  @override
+  String get expenseMaintenance => 'چاککردنەوە';
+
+  @override
+  String get expenseStaffMeals => 'خواردنی کارمەندان';
+
+  @override
+  String get expenseAnnualFees => 'باجی ساڵانە (تەندروستی، شارەوانی)';
+
+  @override
+  String get expenseHospitality => 'میواندارێتی';
+
+  @override
+  String get expensesThisMonth => 'خەرجییەکانی ئەم مانگە';
+
+  @override
+  String get expensesThisYear => 'خەرجییەکانی ئەمساڵ';
+
+  @override
+  String get expensesMonth => 'مانگ';
+
+  @override
+  String get expensesYear => 'ساڵ';
+
+  @override
+  String get expensesNone => 'هیچ خەرجییەک لەم ماوەیەدا تۆمار نەکراوە';
+
+  @override
+  String get expensesUntyped => 'خەرجییە کۆنەکانی بێ جۆر لێرەدا ناژمێردرێن.';
 }

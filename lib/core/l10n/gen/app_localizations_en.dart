@@ -1145,4 +1145,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roleDeveloper => 'Developer';
+
+  @override
+  String get expenseType => 'Expense type';
+
+  @override
+  String get expenseCategory => 'Category';
+
+  @override
+  String get expenseCustomName => 'Custom type name';
+
+  @override
+  String get expenseEditType => 'Change expense type';
+
+  @override
+  String get expenseGroupFixed => 'Fixed';
+
+  @override
+  String get expenseGroupVariable => 'Variable';
+
+  @override
+  String get expenseGroupNegligible => 'Negligible';
+
+  @override
+  String get expenseGroupCustom => 'Custom';
+
+  @override
+  String get expenseRent => 'Rent';
+
+  @override
+  String get expenseSalaries => 'Staff salaries';
+
+  @override
+  String get expenseGeneratorElectricity => 'Generator electricity';
+
+  @override
+  String get expenseNationalElectricity => 'National grid electricity';
+
+  @override
+  String get expenseWater => 'Water';
+
+  @override
+  String get expenseInternet => 'Internet';
+
+  @override
+  String get expenseSolarPower => 'Solar power';
+
+  @override
+  String get expenseSoftware => 'Software';
+
+  @override
+  String get expenseMaterials => 'Materials';
+
+  @override
+  String get expenseTransport => 'Transport';
+
+  @override
+  String get expenseCleaningSupplies => 'Cleaning supplies';
+
+  @override
+  String get expensePackaging => 'Packaging';
+
+  @override
+  String get expenseDeliveryAppCommission => 'Delivery app commission';
+
+  @override
+  String get expenseWasteAndDamage => 'Waste and damage';
+
+  @override
+  String get expenseMaintenance => 'Maintenance';
+
+  @override
+  String get expenseStaffMeals => 'Staff meals';
+
+  @override
+  String get expenseAnnualFees => 'Annual fees (health, municipality)';
+
+  @override
+  String get expenseHospitality => 'Hospitality';
+
+  @override
+  String get expensesThisMonth => 'Expenses this month';
+
+  @override
+  String get expensesThisYear => 'Expenses this year';
+
+  @override
+  String get expensesMonth => 'Month';
+
+  @override
+  String get expensesYear => 'Year';
+
+  @override
+  String get expensesNone => 'No expenses recorded in this period';
+
+  @override
+  String get expensesUntyped =>
+      'Older expenses without a type aren\'t included.';
 }

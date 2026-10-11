@@ -2181,6 +2181,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Developer'**
   String get roleDeveloper;
+
+  /// No description provided for @expenseType.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense type'**
+  String get expenseType;
+
+  /// No description provided for @expenseCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get expenseCategory;
+
+  /// No description provided for @expenseCustomName.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom type name'**
+  String get expenseCustomName;
+
+  /// No description provided for @expenseEditType.
+  ///
+  /// In en, this message translates to:
+  /// **'Change expense type'**
+  String get expenseEditType;
+
+  /// No description provided for @expenseGroupFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed'**
+  String get expenseGroupFixed;
+
+  /// No description provided for @expenseGroupVariable.
+  ///
+  /// In en, this message translates to:
+  /// **'Variable'**
+  String get expenseGroupVariable;
+
+  /// No description provided for @expenseGroupNegligible.
+  ///
+  /// In en, this message translates to:
+  /// **'Negligible'**
+  String get expenseGroupNegligible;
+
+  /// No description provided for @expenseGroupCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get expenseGroupCustom;
+
+  /// No description provided for @expenseRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent'**
+  String get expenseRent;
+
+  /// No description provided for @expenseSalaries.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff salaries'**
+  String get expenseSalaries;
+
+  /// No description provided for @expenseGeneratorElectricity.
+  ///
+  /// In en, this message translates to:
+  /// **'Generator electricity'**
+  String get expenseGeneratorElectricity;
+
+  /// No description provided for @expenseNationalElectricity.
+  ///
+  /// In en, this message translates to:
+  /// **'National grid electricity'**
+  String get expenseNationalElectricity;
+
+  /// No description provided for @expenseWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Water'**
+  String get expenseWater;
+
+  /// No description provided for @expenseInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Internet'**
+  String get expenseInternet;
+
+  /// No description provided for @expenseSolarPower.
+  ///
+  /// In en, this message translates to:
+  /// **'Solar power'**
+  String get expenseSolarPower;
+
+  /// No description provided for @expenseSoftware.
+  ///
+  /// In en, this message translates to:
+  /// **'Software'**
+  String get expenseSoftware;
+
+  /// No description provided for @expenseMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'Materials'**
+  String get expenseMaterials;
+
+  /// No description provided for @expenseTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get expenseTransport;
+
+  /// No description provided for @expenseCleaningSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaning supplies'**
+  String get expenseCleaningSupplies;
+
+  /// No description provided for @expensePackaging.
+  ///
+  /// In en, this message translates to:
+  /// **'Packaging'**
+  String get expensePackaging;
+
+  /// No description provided for @expenseDeliveryAppCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery app commission'**
+  String get expenseDeliveryAppCommission;
+
+  /// No description provided for @expenseWasteAndDamage.
+  ///
+  /// In en, this message translates to:
+  /// **'Waste and damage'**
+  String get expenseWasteAndDamage;
+
+  /// No description provided for @expenseMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get expenseMaintenance;
+
+  /// No description provided for @expenseStaffMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff meals'**
+  String get expenseStaffMeals;
+
+  /// No description provided for @expenseAnnualFees.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual fees (health, municipality)'**
+  String get expenseAnnualFees;
+
+  /// No description provided for @expenseHospitality.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospitality'**
+  String get expenseHospitality;
+
+  /// No description provided for @expensesThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses this month'**
+  String get expensesThisMonth;
+
+  /// No description provided for @expensesThisYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses this year'**
+  String get expensesThisYear;
+
+  /// No description provided for @expensesMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get expensesMonth;
+
+  /// No description provided for @expensesYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get expensesYear;
+
+  /// No description provided for @expensesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses recorded in this period'**
+  String get expensesNone;
+
+  /// No description provided for @expensesUntyped.
+  ///
+  /// In en, this message translates to:
+  /// **'Older expenses without a type aren\'t included.'**
+  String get expensesUntyped;
 }
 
 class _AppLocalizationsDelegate

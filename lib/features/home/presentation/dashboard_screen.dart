@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/permissions.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/routing/route_paths.dart';
@@ -13,6 +14,7 @@ import '../../inventory/domain/inventory_models.dart';
 import '../../inventory/domain/product_expiry.dart';
 import '../../inventory/presentation/expiry_screen.dart';
 import '../../pos/domain/pos_models.dart';
+import 'expenses_overview_card.dart';
 
 typedef _BranchKey = ({String storeId, String branchId});
 
@@ -134,6 +136,10 @@ class DashboardScreen extends ConsumerWidget {
                 );
               },
             ),
+            if (storeId != null && (session.employee?.can(AppPermission.expenses) ?? false)) ...[
+              const SizedBox(height: 16),
+              ExpensesOverviewCard(storeId: storeId),
+            ],
           ],
         ),
       ),
