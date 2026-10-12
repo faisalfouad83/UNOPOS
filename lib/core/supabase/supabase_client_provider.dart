@@ -8,7 +8,13 @@ import 'supabase_config.dart';
 /// callers should still guard it so a purely-local build never needs
 /// `SUPABASE_URL`/`SUPABASE_ANON_KEY` to be defined at all.
 Future<void> initSupabase() async {
-  await Supabase.initialize(url: SupabaseConfig.url, publishableKey: SupabaseConfig.anonKey);
+  await Supabase.initialize(
+    url: SupabaseConfig.url,
+    publishableKey: SupabaseConfig.anonKey,
+    // UNOPOS never signs in through a link, so skip the deep-link listener:
+    // on Windows its "initial link" lookup can stall startup indefinitely.
+    authOptions: const FlutterAuthClientOptions(detectSessionInUri: false),
+  );
 }
 
 /// The shared Supabase client. Only ever read when [kUseSupabaseBackend] is
