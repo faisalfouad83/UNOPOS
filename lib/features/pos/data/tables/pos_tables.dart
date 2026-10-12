@@ -38,6 +38,7 @@ class SaleLines extends Table {
   IntColumn get taxAmountMinorUnits => integer().withDefault(const Constant(0))();
   IntColumn get lineTotalMinorUnits => integer()();
   IntColumn get costPriceSnapshotMinorUnits => integer().withDefault(const Constant(0))();
+  IntColumn get quantityReturned => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

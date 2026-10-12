@@ -1762,4 +1762,59 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorStoreIdTaken =>
       'This store ID is already taken — choose another';
+
+  @override
+  String get returnInvoice => 'Return invoice';
+
+  @override
+  String get returnInvoiceNumber => 'Invoice number';
+
+  @override
+  String get returnInvoiceNumberHint => 'e.g. 125 or S-000125';
+
+  @override
+  String get returnFind => 'Find invoice';
+
+  @override
+  String get returnNotFound => 'No invoice with this number';
+
+  @override
+  String get returnNothingLeft =>
+      'Everything on this invoice has already been returned';
+
+  @override
+  String get returnNotReturnable => 'This invoice can\'t be returned';
+
+  @override
+  String get returnAll => 'Return everything';
+
+  @override
+  String get returnRefund => 'Refund';
+
+  @override
+  String get returnRefundTo => 'Give the money back as';
+
+  @override
+  String returnSoldReturned(int sold, int returned) {
+    return 'Sold $sold · returned $returned';
+  }
+
+  @override
+  String returnDone(String amount) {
+    return 'Return completed — refund $amount';
+  }
+
+  @override
+  String get returnFailed =>
+      'The return didn\'t go through — check the connection and try again';
+
+  @override
+  String get returnStatusRefunded => 'Returned';
+
+  @override
+  String get returnStatusPartial => 'Partly returned';
+
+  @override
+  String get returnWhatHappens =>
+      'Stock goes back on the shelf, the sale and its profit are reduced, and the money is refunded.';
 }

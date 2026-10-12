@@ -67,24 +67,29 @@ class SalesSummary {
     for (final sale in sales) {
       final at = sale.completedAt ?? sale.createdAt;
       if (at.isBefore(start) || at.isAfter(current)) continue;
+      // Returns are netted out of the invoice they came from; a fully
+      // returned invoice no longer counts as a sale.
+      final total = sale.netTotalMinorUnits;
+      if (sale.status == SaleStatus.refunded) continue;
       count++;
-      revenue += sale.grandTotalMinorUnits;
-      tax += sale.taxTotalMinorUnits;
+      revenue += total;
+      tax += sale.netTaxMinorUnits;
       final method = sale.paymentMethod;
-      if (method != null) byMethod[method] = (byMethod[method] ?? 0) + sale.grandTotalMinorUnits;
+      if (method != null) byMethod[method] = (byMethod[method] ?? 0) + total;
 
       final index = period == ReportPeriod.today
           ? at.hour
           : DateTime(at.year, at.month, at.day).difference(DateTime(start.year, start.month, start.day)).inDays;
-      if (index >= 0 && index < buckets.length) buckets[index].add(sale.grandTotalMinorUnits);
+      if (index >= 0 && index < buckets.length) buckets[index].add(total);
 
       for (final line in sale.lines) {
-        final net = line.lineTotalMinorUnits - line.taxAmountMinorUnits;
-        profit += net - line.costPriceSnapshotMinorUnits * line.quantity;
+        if (line.remainingQuantity <= 0) continue;
+        final net = line.netTotalMinorUnits - line.netTaxMinorUnits;
+        profit += net - line.netCostMinorUnits;
         productTotals.update(
           line.productId,
-          (p) => p.add(line.quantity, line.lineTotalMinorUnits),
-          ifAbsent: () => ProductSales(line.productId, line.quantity, line.lineTotalMinorUnits),
+          (p) => p.add(line.remainingQuantity, line.netTotalMinorUnits),
+          ifAbsent: () => ProductSales(line.productId, line.remainingQuantity, line.netTotalMinorUnits),
         );
       }
     }

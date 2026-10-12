@@ -1744,4 +1744,59 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get errorStoreIdTaken =>
       'ئەم ناسنامەیەی فرۆشگا پێشتر بەکارهاتووە — یەکێکی تر هەڵبژێرە';
+
+  @override
+  String get returnInvoice => 'گەڕاندنەوەی پسوڵە';
+
+  @override
+  String get returnInvoiceNumber => 'ژمارەی پسوڵە';
+
+  @override
+  String get returnInvoiceNumberHint => 'نموونە: 125 یان S-000125';
+
+  @override
+  String get returnFind => 'دۆزینەوەی پسوڵە';
+
+  @override
+  String get returnNotFound => 'هیچ پسوڵەیەک بەم ژمارەیە نییە';
+
+  @override
+  String get returnNothingLeft =>
+      'هەموو کاڵاکانی ئەم پسوڵەیە پێشتر گەڕێندراونەتەوە';
+
+  @override
+  String get returnNotReturnable => 'ناتوانرێت ئەم پسوڵەیە بگەڕێندرێتەوە';
+
+  @override
+  String get returnAll => 'گەڕاندنەوەی هەمووی';
+
+  @override
+  String get returnRefund => 'بڕی گەڕاوە';
+
+  @override
+  String get returnRefundTo => 'گەڕاندنەوەی پارە بە';
+
+  @override
+  String returnSoldReturned(int sold, int returned) {
+    return 'فرۆشراو $sold · گەڕاوە $returned';
+  }
+
+  @override
+  String returnDone(String amount) {
+    return 'گەڕاندنەوە تەواو بوو — $amount';
+  }
+
+  @override
+  String get returnFailed =>
+      'گەڕاندنەوە سەرکەوتوو نەبوو — پەیوەندییەکە بپشکنە و دووبارە هەوڵ بدەرەوە';
+
+  @override
+  String get returnStatusRefunded => 'گەڕێندراوە';
+
+  @override
+  String get returnStatusPartial => 'بەشێکی گەڕێندراوە';
+
+  @override
+  String get returnWhatHappens =>
+      'کاڵاکە دەگەڕێتەوە کۆگا، فرۆشتن و قازانج کەم دەبنەوە، و پارەکە دەگەڕێندرێتەوە.';
 }

@@ -587,5 +587,22 @@
   "errorPasswordTooShort": "وشەی نهێنی دەبێت لانیکەم 6 پیت بێت",
   "errorPasswordMismatch": "وشە نهێنییەکان وەک یەک نین",
   "errorStoreIdFormat": "تەنها پیتی ئینگلیزی و ژمارە بەکاربهێنە، بێ بۆشایی",
-  "errorStoreIdTaken": "ئەم ناسنامەیەی فرۆشگا پێشتر بەکارهاتووە — یەکێکی تر هەڵبژێرە"
+  "errorStoreIdTaken": "ئەم ناسنامەیەی فرۆشگا پێشتر بەکارهاتووە — یەکێکی تر هەڵبژێرە",
+
+  "returnInvoice": "گەڕاندنەوەی پسوڵە",
+  "returnInvoiceNumber": "ژمارەی پسوڵە",
+  "returnInvoiceNumberHint": "نموونە: 125 یان S-000125",
+  "returnFind": "دۆزینەوەی پسوڵە",
+  "returnNotFound": "هیچ پسوڵەیەک بەم ژمارەیە نییە",
+  "returnNothingLeft": "هەموو کاڵاکانی ئەم پسوڵەیە پێشتر گەڕێندراونەتەوە",
+  "returnNotReturnable": "ناتوانرێت ئەم پسوڵەیە بگەڕێندرێتەوە",
+  "returnAll": "گەڕاندنەوەی هەمووی",
+  "returnRefund": "بڕی گەڕاوە",
+  "returnRefundTo": "گەڕاندنەوەی پارە بە",
+  "returnSoldReturned": "فرۆشراو {sold} · گەڕاوە {returned}",
+  "returnDone": "گەڕاندنەوە تەواو بوو — {amount}",
+  "returnFailed": "گەڕاندنەوە سەرکەوتوو نەبوو — پەیوەندییەکە بپشکنە و دووبارە هەوڵ بدەرەوە",
+  "returnStatusRefunded": "گەڕێندراوە",
+  "returnStatusPartial": "بەشێکی گەڕێندراوە",
+  "returnWhatHappens": "کاڵاکە دەگەڕێتەوە کۆگا، فرۆشتن و قازانج کەم دەبنەوە، و پارەکە دەگەڕێندرێتەوە."
 }

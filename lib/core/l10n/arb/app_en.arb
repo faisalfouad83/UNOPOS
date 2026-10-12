@@ -629,5 +629,24 @@
   "errorPasswordTooShort": "Password must be at least 6 characters",
   "errorPasswordMismatch": "Passwords do not match",
   "errorStoreIdFormat": "Use English letters and numbers only, no spaces",
-  "errorStoreIdTaken": "This store ID is already taken — choose another"
+  "errorStoreIdTaken": "This store ID is already taken — choose another",
+
+  "returnInvoice": "Return invoice",
+  "returnInvoiceNumber": "Invoice number",
+  "returnInvoiceNumberHint": "e.g. 125 or S-000125",
+  "returnFind": "Find invoice",
+  "returnNotFound": "No invoice with this number",
+  "returnNothingLeft": "Everything on this invoice has already been returned",
+  "returnNotReturnable": "This invoice can't be returned",
+  "returnAll": "Return everything",
+  "returnRefund": "Refund",
+  "returnRefundTo": "Give the money back as",
+  "returnSoldReturned": "Sold {sold} · returned {returned}",
+  "@returnSoldReturned": {"placeholders": {"sold": {"type": "int"}, "returned": {"type": "int"}}},
+  "returnDone": "Return completed — refund {amount}",
+  "@returnDone": {"placeholders": {"amount": {"type": "String"}}},
+  "returnFailed": "The return didn't go through — check the connection and try again",
+  "returnStatusRefunded": "Returned",
+  "returnStatusPartial": "Partly returned",
+  "returnWhatHappens": "Stock goes back on the shelf, the sale and its profit are reduced, and the money is refunded."
 }

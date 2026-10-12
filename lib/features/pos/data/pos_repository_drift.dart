@@ -20,6 +20,7 @@ class DriftPosRepository implements PosRepository {
         taxAmountMinorUnits: row.taxAmountMinorUnits,
         lineTotalMinorUnits: row.lineTotalMinorUnits,
         costPriceSnapshotMinorUnits: row.costPriceSnapshotMinorUnits,
+        quantityReturned: row.quantityReturned,
       );
 
   SaleRecord _mapSale(Sale row, List<SaleLineRecord> lines) => SaleRecord(
@@ -176,6 +177,16 @@ class DriftPosRepository implements PosRepository {
   }
 
   @override
+  Future<SaleRecord?> findSaleByNumber(String storeId, String number) async {
+    final row = await (_db.select(_db.sales)
+          ..where((t) => t.storeId.equals(storeId) & t.saleNumber.equals(normalizeSaleNumber(number)))
+          ..limit(1))
+        .getSingleOrNull();
+    if (row == null) return null;
+    return getSale(row.id);
+  }
+
+  @override
   Stream<List<SaleRecord>> watchHeldSales(String storeId, String branchId) {
     final query = _db.select(_db.sales)
       ..where((t) => t.storeId.equals(storeId) & t.branchId.equals(branchId) & t.status.equals('held'))
@@ -193,10 +204,13 @@ class DriftPosRepository implements PosRepository {
   @override
   Future<Map<String, int>> salesTotalsByCustomer(String storeId) async {
     final rows = await _db.customSelect(
-      'SELECT customer_id, SUM(grand_total_minor_units) AS total FROM sales '
-      "WHERE store_id = ? AND status = 'completed' AND customer_id IS NOT NULL GROUP BY customer_id",
+      'SELECT s.customer_id AS customer_id, SUM(s.grand_total_minor_units - COALESCE(('
+      '  SELECT SUM((l.line_total_minor_units / l.quantity) * l.quantity_returned) FROM sale_lines l '
+      '  WHERE l.sale_id = s.id AND l.quantity > 0), 0)) AS total FROM sales s '
+      "WHERE s.store_id = ? AND s.status IN ('completed', 'partiallyRefunded', 'refunded') "
+      'AND s.customer_id IS NOT NULL GROUP BY s.customer_id',
       variables: [Variable.withString(storeId)],
-      readsFrom: {_db.sales},
+      readsFrom: {_db.sales, _db.saleLines},
     ).get();
     return {for (final r in rows) r.read<String>('customer_id'): r.read<int>('total')};
   }
@@ -204,7 +218,7 @@ class DriftPosRepository implements PosRepository {
   @override
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to}) {
     final query = _db.select(_db.sales)
-      ..where((t) => t.storeId.equals(storeId) & t.status.equals('completed'));
+      ..where((t) => t.storeId.equals(storeId) & t.status.isIn(soldStatuses));
     if (from != null) query.where((t) => t.completedAt.isBiggerOrEqualValue(from));
     if (to != null) query.where((t) => t.completedAt.isSmallerOrEqualValue(to));
     query.orderBy([(t) => OrderingTerm.desc(t.completedAt)]);
@@ -248,6 +262,11 @@ class DriftPosRepository implements PosRepository {
           );
       for (final entry in saleLineIdToQuantity) {
         final line = await (_db.select(_db.saleLines)..where((t) => t.id.equals(entry.key))).getSingle();
+        if (entry.value > line.quantity - line.quantityReturned) {
+          throw StateError('return exceeds remaining quantity');
+        }
+        await (_db.update(_db.saleLines)..where((t) => t.id.equals(line.id)))
+            .write(SaleLinesCompanion(quantityReturned: Value(line.quantityReturned + entry.value)));
         final unitRefund = line.quantity == 0 ? 0 : (line.lineTotalMinorUnits ~/ line.quantity) * entry.value;
         await _db.into(_db.saleReturnLines).insert(
               SaleReturnLinesCompanion.insert(
@@ -259,6 +278,10 @@ class DriftPosRepository implements PosRepository {
               ),
             );
       }
+      final lines = await (_db.select(_db.saleLines)..where((t) => t.saleId.equals(originalSaleId))).get();
+      final fullyReturned = lines.every((l) => l.quantityReturned >= l.quantity);
+      await (_db.update(_db.sales)..where((t) => t.id.equals(originalSaleId)))
+          .write(SalesCompanion(status: Value(fullyReturned ? 'refunded' : 'partiallyRefunded')));
     });
     return returnId;
   }

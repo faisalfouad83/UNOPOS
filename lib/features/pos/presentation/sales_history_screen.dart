@@ -73,7 +73,17 @@ class SalesHistoryScreen extends ConsumerWidget {
     final canReturn = ref.watch(sessionControllerProvider).employee?.can(AppPermission.processReturns) ?? false;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.posSalesHistory)),
+      appBar: AppBar(
+        title: Text(l10n.posSalesHistory),
+        actions: [
+          if (canReturn)
+            TextButton.icon(
+              icon: const Icon(Icons.assignment_return_outlined),
+              label: Text(l10n.returnInvoice),
+              onPressed: () => showReturnInvoiceDialog(context, ref),
+            ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -96,9 +106,14 @@ class SalesHistoryScreen extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final sale = filtered[index];
                     return ListTile(
-                      title: Text('${sale.saleNumber} · ${Money.format(sale.grandTotalMinorUnits)}'),
+                      title: Text('${sale.saleNumber} · ${Money.format(sale.netTotalMinorUnits)}'),
                       subtitle: Text(
-                        '${paymentMethodLabel(l10n, sale.paymentMethod)} · ${AppDateFormat.dateTime(sale.completedAt ?? sale.createdAt)}',
+                        [
+                          paymentMethodLabel(l10n, sale.paymentMethod),
+                          AppDateFormat.dateTime(sale.completedAt ?? sale.createdAt),
+                          if (sale.status == SaleStatus.refunded) l10n.returnStatusRefunded,
+                          if (sale.status == SaleStatus.partiallyRefunded) l10n.returnStatusPartial,
+                        ].join(' · '),
                       ),
                       trailing: Wrap(
                         spacing: 4,
@@ -113,7 +128,7 @@ class SalesHistoryScreen extends ConsumerWidget {
                             tooltip: l10n.whatsappSendReceipt,
                             onPressed: () => _sendWhatsApp(context, ref, sale),
                           ),
-                          if (canReturn)
+                          if (canReturn && sale.canReturn)
                             TextButton(
                               child: Text(l10n.posProcessReturn),
                               onPressed: () => showProcessReturnDialog(context, ref, sale),

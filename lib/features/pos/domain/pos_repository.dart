@@ -25,11 +25,16 @@ abstract class PosRepository {
 
   Future<SaleRecord?> getSale(String saleId);
 
+  /// Looks an invoice up by the number printed on its receipt. Accepts the
+  /// full number ("S-000123") or just its digits ("123").
+  Future<SaleRecord?> findSaleByNumber(String storeId, String number);
+
   Stream<List<SaleRecord>> watchHeldSales(String storeId, String branchId);
 
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to});
 
-  /// Total completed sales per customer (customer id → minor units).
+  /// Total completed sales per customer, net of returns (customer id →
+  /// minor units).
   Future<Map<String, int>> salesTotalsByCustomer(String storeId);
 
   Future<void> voidSale(String saleId);
@@ -43,3 +48,14 @@ abstract class PosRepository {
     required List<MapEntry<String, int>> saleLineIdToQuantity,
   });
 }
+
+/// "123", "s-123" and "S-000123" all mean invoice S-000123.
+String normalizeSaleNumber(String input) {
+  final trimmed = input.trim().toUpperCase();
+  final digits = RegExp(r'\d+').firstMatch(trimmed)?.group(0);
+  if (digits == null) return trimmed;
+  return 'S-${int.parse(digits).toString().padLeft(6, '0')}';
+}
+
+/// Sale statuses that count as sales (returns are netted out per line).
+const soldStatuses = ['completed', 'partiallyRefunded', 'refunded'];

@@ -25,6 +25,7 @@ class SupabasePosRepository implements PosRepository {
         taxAmountMinorUnits: (row['tax_amount_minor_units'] as num?)?.toInt() ?? 0,
         lineTotalMinorUnits: (row['line_total_minor_units'] as num).toInt(),
         costPriceSnapshotMinorUnits: (row['cost_price_snapshot_minor_units'] as num?)?.toInt() ?? 0,
+        quantityReturned: (row['quantity_returned'] as num?)?.toInt() ?? 0,
       );
 
   SaleRecord _mapSale(Map<String, dynamic> row, List<SaleLineRecord> lines) => SaleRecord(
@@ -137,6 +138,19 @@ class SupabasePosRepository implements PosRepository {
   }
 
   @override
+  Future<SaleRecord?> findSaleByNumber(String storeId, String number) async {
+    final row = await _client
+        .from('sales')
+        .select()
+        .eq('store_id', storeId)
+        .eq('sale_number', normalizeSaleNumber(number))
+        .limit(1)
+        .maybeSingle();
+    if (row == null) return null;
+    return (await _withLines([row])).first;
+  }
+
+  @override
   Stream<List<SaleRecord>> watchHeldSales(String storeId, String branchId) {
     // .stream() allows one server-side filter; status='held' cuts the
     // payload the most (held sales are always a small fraction of all
@@ -154,15 +168,21 @@ class SupabasePosRepository implements PosRepository {
     for (var from = 0;; from += pageSize) {
       final page = await _client
           .from('sales')
-          .select('customer_id, grand_total_minor_units')
+          .select('customer_id, grand_total_minor_units, sale_lines(quantity, line_total_minor_units, quantity_returned)')
           .eq('store_id', storeId)
-          .eq('status', 'completed')
+          .inFilter('status', soldStatuses)
           .not('customer_id', 'is', null)
           .order('id')
           .range(from, from + pageSize - 1);
       for (final r in (page as List).cast<Map<String, dynamic>>()) {
         final id = r['customer_id'] as String;
-        totals[id] = (totals[id] ?? 0) + (r['grand_total_minor_units'] as num).toInt();
+        var refunded = 0;
+        for (final l in ((r['sale_lines'] as List?) ?? const []).cast<Map<String, dynamic>>()) {
+          final qty = (l['quantity'] as num).toInt();
+          if (qty == 0) continue;
+          refunded += ((l['line_total_minor_units'] as num).toInt() ~/ qty) * ((l['quantity_returned'] as num?)?.toInt() ?? 0);
+        }
+        totals[id] = (totals[id] ?? 0) + (r['grand_total_minor_units'] as num).toInt() - refunded;
       }
       if (page.length < pageSize) break;
     }
@@ -171,7 +191,7 @@ class SupabasePosRepository implements PosRepository {
 
   @override
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to}) {
-    return _client.from('sales').stream(primaryKey: ['id']).eq('status', 'completed').order('completed_at', ascending: false).asyncMap((rows) async {
+    return _client.from('sales').stream(primaryKey: ['id']).inFilter('status', soldStatuses).order('completed_at', ascending: false).asyncMap((rows) async {
       var filtered = rows;
       if (from != null) {
         filtered = filtered.where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).isBefore(from)).toList();

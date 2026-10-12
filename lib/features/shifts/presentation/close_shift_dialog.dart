@@ -20,7 +20,7 @@ Future<void> showCloseShiftDialog(BuildContext context, WidgetRef ref, ShiftReco
   final sales = await ref.read(posRepositoryProvider).watchCompletedSales(session.store!.id, from: shift.openedAt).first;
   final cashSalesTotal = sales
       .where((s) => s.shiftId == shift.id && s.paymentMethod?.name == 'cash')
-      .fold<int>(0, (sum, s) => sum + s.grandTotalMinorUnits);
+      .fold<int>(0, (sum, s) => sum + s.netTotalMinorUnits);
   final expected = shift.openingCashFloatMinorUnits + cashSalesTotal;
 
   final controller = TextEditingController(text: Money.toMajorUnits(expected).toStringAsFixed(2));

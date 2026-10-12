@@ -58,7 +58,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -86,6 +86,13 @@ class AppDatabase extends _$AppDatabase {
             // Loyalty used to be "on" whenever an earn rate was set.
             await customStatement(
               'UPDATE app_settings_table SET loyalty_enabled = 1 WHERE loyalty_spend_per_point_minor > 0',
+            );
+          }
+          if (from < 6) {
+            await m.addColumn(saleLines, saleLines.quantityReturned);
+            await customStatement(
+              'UPDATE sale_lines SET quantity_returned = (SELECT COALESCE(SUM(r.quantity_returned), 0) '
+              'FROM sale_return_lines r WHERE r.sale_line_id = sale_lines.id)',
             );
           }
         },

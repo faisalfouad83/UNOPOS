@@ -1762,4 +1762,57 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorStoreIdTaken => 'معرّف المتجر هذا مستخدم — اختر معرّفًا آخر';
+
+  @override
+  String get returnInvoice => 'استرجاع فاتورة';
+
+  @override
+  String get returnInvoiceNumber => 'رقم الفاتورة';
+
+  @override
+  String get returnInvoiceNumberHint => 'مثال: 125 أو S-000125';
+
+  @override
+  String get returnFind => 'بحث عن الفاتورة';
+
+  @override
+  String get returnNotFound => 'لا توجد فاتورة بهذا الرقم';
+
+  @override
+  String get returnNothingLeft => 'تم استرجاع كل مواد هذه الفاتورة مسبقاً';
+
+  @override
+  String get returnNotReturnable => 'لا يمكن استرجاع هذه الفاتورة';
+
+  @override
+  String get returnAll => 'استرجاع الكل';
+
+  @override
+  String get returnRefund => 'المبلغ المسترجع';
+
+  @override
+  String get returnRefundTo => 'إرجاع المبلغ';
+
+  @override
+  String returnSoldReturned(int sold, int returned) {
+    return 'المباع $sold · المسترجع $returned';
+  }
+
+  @override
+  String returnDone(String amount) {
+    return 'تم الاسترجاع — المبلغ المسترجع $amount';
+  }
+
+  @override
+  String get returnFailed => 'لم يتم الاسترجاع — تحقق من الاتصال وحاول مجدداً';
+
+  @override
+  String get returnStatusRefunded => 'مسترجعة';
+
+  @override
+  String get returnStatusPartial => 'مسترجعة جزئياً';
+
+  @override
+  String get returnWhatHappens =>
+      'ترجع الكمية للمخزون، وتنقص المبيعات والربح، ويُرجع المبلغ للزبون.';
 }

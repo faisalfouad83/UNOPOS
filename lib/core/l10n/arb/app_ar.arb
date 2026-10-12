@@ -587,5 +587,22 @@
   "errorPasswordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
   "errorPasswordMismatch": "كلمتا المرور غير متطابقتين",
   "errorStoreIdFormat": "استخدم حروفًا إنجليزية وأرقامًا فقط، بدون مسافات",
-  "errorStoreIdTaken": "معرّف المتجر هذا مستخدم — اختر معرّفًا آخر"
+  "errorStoreIdTaken": "معرّف المتجر هذا مستخدم — اختر معرّفًا آخر",
+
+  "returnInvoice": "استرجاع فاتورة",
+  "returnInvoiceNumber": "رقم الفاتورة",
+  "returnInvoiceNumberHint": "مثال: 125 أو S-000125",
+  "returnFind": "بحث عن الفاتورة",
+  "returnNotFound": "لا توجد فاتورة بهذا الرقم",
+  "returnNothingLeft": "تم استرجاع كل مواد هذه الفاتورة مسبقاً",
+  "returnNotReturnable": "لا يمكن استرجاع هذه الفاتورة",
+  "returnAll": "استرجاع الكل",
+  "returnRefund": "المبلغ المسترجع",
+  "returnRefundTo": "إرجاع المبلغ",
+  "returnSoldReturned": "المباع {sold} · المسترجع {returned}",
+  "returnDone": "تم الاسترجاع — المبلغ المسترجع {amount}",
+  "returnFailed": "لم يتم الاسترجاع — تحقق من الاتصال وحاول مجدداً",
+  "returnStatusRefunded": "مسترجعة",
+  "returnStatusPartial": "مسترجعة جزئياً",
+  "returnWhatHappens": "ترجع الكمية للمخزون، وتنقص المبيعات والربح، ويُرجع المبلغ للزبون."
 }

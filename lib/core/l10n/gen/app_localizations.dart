@@ -3351,6 +3351,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This store ID is already taken — choose another'**
   String get errorStoreIdTaken;
+
+  /// No description provided for @returnInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Return invoice'**
+  String get returnInvoice;
+
+  /// No description provided for @returnInvoiceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice number'**
+  String get returnInvoiceNumber;
+
+  /// No description provided for @returnInvoiceNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 125 or S-000125'**
+  String get returnInvoiceNumberHint;
+
+  /// No description provided for @returnFind.
+  ///
+  /// In en, this message translates to:
+  /// **'Find invoice'**
+  String get returnFind;
+
+  /// No description provided for @returnNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No invoice with this number'**
+  String get returnNotFound;
+
+  /// No description provided for @returnNothingLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything on this invoice has already been returned'**
+  String get returnNothingLeft;
+
+  /// No description provided for @returnNotReturnable.
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice can\'t be returned'**
+  String get returnNotReturnable;
+
+  /// No description provided for @returnAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Return everything'**
+  String get returnAll;
+
+  /// No description provided for @returnRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund'**
+  String get returnRefund;
+
+  /// No description provided for @returnRefundTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the money back as'**
+  String get returnRefundTo;
+
+  /// No description provided for @returnSoldReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold {sold} · returned {returned}'**
+  String returnSoldReturned(int sold, int returned);
+
+  /// No description provided for @returnDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Return completed — refund {amount}'**
+  String returnDone(String amount);
+
+  /// No description provided for @returnFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The return didn\'t go through — check the connection and try again'**
+  String get returnFailed;
+
+  /// No description provided for @returnStatusRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get returnStatusRefunded;
+
+  /// No description provided for @returnStatusPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Partly returned'**
+  String get returnStatusPartial;
+
+  /// No description provided for @returnWhatHappens.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock goes back on the shelf, the sale and its profit are reduced, and the money is refunded.'**
+  String get returnWhatHappens;
 }
 
 class _AppLocalizationsDelegate

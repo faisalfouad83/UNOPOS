@@ -143,7 +143,7 @@ class _ShiftDetail extends ConsumerWidget {
 
     final cashSalesTotal = (salesAsync.value ?? const <SaleRecord>[])
         .where((s) => s.shiftId == shift.id && s.paymentMethod == SalePaymentMethod.cash)
-        .fold<int>(0, (sum, s) => sum + s.grandTotalMinorUnits);
+        .fold<int>(0, (sum, s) => sum + s.netTotalMinorUnits);
 
     // A cash expense is a journal entry that credited the Cash account —
     // postExpense() (see add_expense_dialog.dart) always shapes it this

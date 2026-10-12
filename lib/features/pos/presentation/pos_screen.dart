@@ -18,6 +18,7 @@ import '../../shifts/presentation/shift_providers.dart';
 import '../domain/pos_models.dart';
 import 'cart_controller.dart';
 import 'checkout_sheet.dart';
+import 'process_return_dialog.dart';
 import 'sales_history_screen.dart';
 
 typedef _ProductQueryKey = ({String storeId, String query});
@@ -65,6 +66,12 @@ class PosScreen extends ConsumerWidget {
                   ),
             orElse: () => const SizedBox.shrink(),
           ),
+          if (session.employee!.can(AppPermission.processReturns))
+            TextButton.icon(
+              icon: const Icon(Icons.assignment_return_outlined),
+              label: Text(l10n.returnInvoice),
+              onPressed: () => showReturnInvoiceDialog(context, ref),
+            ),
           IconButton(
             icon: const Icon(Icons.receipt_long_outlined),
             tooltip: l10n.posSalesHistory,

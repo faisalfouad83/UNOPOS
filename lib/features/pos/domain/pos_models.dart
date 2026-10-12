@@ -33,6 +33,7 @@ class SaleLineRecord {
     this.taxAmountMinorUnits = 0,
     required this.lineTotalMinorUnits,
     this.costPriceSnapshotMinorUnits = 0,
+    this.quantityReturned = 0,
   });
 
   final String id;
@@ -44,6 +45,22 @@ class SaleLineRecord {
   final int taxAmountMinorUnits;
   final int lineTotalMinorUnits;
   final int costPriceSnapshotMinorUnits;
+
+  /// How many of [quantity] have since been returned.
+  final int quantityReturned;
+
+  int get remainingQuantity => quantity - quantityReturned;
+
+  /// What one unit refunds: the line total spread evenly per unit (same
+  /// whole-unit division the server's return uses).
+  int get unitRefundMinorUnits => quantity == 0 ? 0 : lineTotalMinorUnits ~/ quantity;
+
+  int get refundedMinorUnits => unitRefundMinorUnits * quantityReturned;
+
+  /// The line after returns: what it still counts for in sales and profit.
+  int get netTotalMinorUnits => lineTotalMinorUnits - refundedMinorUnits;
+  int get netTaxMinorUnits => quantity == 0 ? 0 : taxAmountMinorUnits * remainingQuantity ~/ quantity;
+  int get netCostMinorUnits => costPriceSnapshotMinorUnits * remainingQuantity;
 }
 
 class SaleRecord {
@@ -90,4 +107,14 @@ class SaleRecord {
   final DateTime createdAt;
   final DateTime? completedAt;
   final List<SaleLineRecord> lines;
+
+  int get refundedMinorUnits => lines.fold(0, (s, l) => s + l.refundedMinorUnits);
+
+  /// The invoice total after any returns.
+  int get netTotalMinorUnits => grandTotalMinorUnits - refundedMinorUnits;
+  int get netTaxMinorUnits => refundedMinorUnits == 0 ? taxTotalMinorUnits : lines.fold(0, (s, l) => s + l.netTaxMinorUnits);
+  bool get hasReturns => lines.any((l) => l.quantityReturned > 0);
+  bool get canReturn =>
+      (status == SaleStatus.completed || status == SaleStatus.partiallyRefunded) &&
+      lines.any((l) => l.remainingQuantity > 0);
 }

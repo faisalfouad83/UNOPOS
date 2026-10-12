@@ -13793,6 +13793,18 @@ class $SaleLinesTable extends SaleLines
         requiredDuringInsert: false,
         defaultValue: const Constant(0),
       );
+  static const VerificationMeta _quantityReturnedMeta = const VerificationMeta(
+    'quantityReturned',
+  );
+  @override
+  late final GeneratedColumn<int> quantityReturned = GeneratedColumn<int>(
+    'quantity_returned',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -13804,6 +13816,7 @@ class $SaleLinesTable extends SaleLines
     taxAmountMinorUnits,
     lineTotalMinorUnits,
     costPriceSnapshotMinorUnits,
+    quantityReturned,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -13895,6 +13908,15 @@ class $SaleLinesTable extends SaleLines
         ),
       );
     }
+    if (data.containsKey('quantity_returned')) {
+      context.handle(
+        _quantityReturnedMeta,
+        quantityReturned.isAcceptableOrUnknown(
+          data['quantity_returned']!,
+          _quantityReturnedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -13940,6 +13962,10 @@ class $SaleLinesTable extends SaleLines
         DriftSqlType.int,
         data['${effectivePrefix}cost_price_snapshot_minor_units'],
       )!,
+      quantityReturned: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantity_returned'],
+      )!,
     );
   }
 
@@ -13959,6 +13985,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
   final int taxAmountMinorUnits;
   final int lineTotalMinorUnits;
   final int costPriceSnapshotMinorUnits;
+  final int quantityReturned;
   const SaleLine({
     required this.id,
     required this.saleId,
@@ -13969,6 +13996,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
     required this.taxAmountMinorUnits,
     required this.lineTotalMinorUnits,
     required this.costPriceSnapshotMinorUnits,
+    required this.quantityReturned,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -13986,6 +14014,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
     map['cost_price_snapshot_minor_units'] = Variable<int>(
       costPriceSnapshotMinorUnits,
     );
+    map['quantity_returned'] = Variable<int>(quantityReturned);
     return map;
   }
 
@@ -14000,6 +14029,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
       taxAmountMinorUnits: Value(taxAmountMinorUnits),
       lineTotalMinorUnits: Value(lineTotalMinorUnits),
       costPriceSnapshotMinorUnits: Value(costPriceSnapshotMinorUnits),
+      quantityReturned: Value(quantityReturned),
     );
   }
 
@@ -14028,6 +14058,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
       costPriceSnapshotMinorUnits: serializer.fromJson<int>(
         json['costPriceSnapshotMinorUnits'],
       ),
+      quantityReturned: serializer.fromJson<int>(json['quantityReturned']),
     );
   }
   @override
@@ -14047,6 +14078,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
       'costPriceSnapshotMinorUnits': serializer.toJson<int>(
         costPriceSnapshotMinorUnits,
       ),
+      'quantityReturned': serializer.toJson<int>(quantityReturned),
     };
   }
 
@@ -14060,6 +14092,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
     int? taxAmountMinorUnits,
     int? lineTotalMinorUnits,
     int? costPriceSnapshotMinorUnits,
+    int? quantityReturned,
   }) => SaleLine(
     id: id ?? this.id,
     saleId: saleId ?? this.saleId,
@@ -14072,6 +14105,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
     lineTotalMinorUnits: lineTotalMinorUnits ?? this.lineTotalMinorUnits,
     costPriceSnapshotMinorUnits:
         costPriceSnapshotMinorUnits ?? this.costPriceSnapshotMinorUnits,
+    quantityReturned: quantityReturned ?? this.quantityReturned,
   );
   SaleLine copyWithCompanion(SaleLinesCompanion data) {
     return SaleLine(
@@ -14094,6 +14128,9 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
       costPriceSnapshotMinorUnits: data.costPriceSnapshotMinorUnits.present
           ? data.costPriceSnapshotMinorUnits.value
           : this.costPriceSnapshotMinorUnits,
+      quantityReturned: data.quantityReturned.present
+          ? data.quantityReturned.value
+          : this.quantityReturned,
     );
   }
 
@@ -14108,7 +14145,8 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
           ..write('discountAmountMinorUnits: $discountAmountMinorUnits, ')
           ..write('taxAmountMinorUnits: $taxAmountMinorUnits, ')
           ..write('lineTotalMinorUnits: $lineTotalMinorUnits, ')
-          ..write('costPriceSnapshotMinorUnits: $costPriceSnapshotMinorUnits')
+          ..write('costPriceSnapshotMinorUnits: $costPriceSnapshotMinorUnits, ')
+          ..write('quantityReturned: $quantityReturned')
           ..write(')'))
         .toString();
   }
@@ -14124,6 +14162,7 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
     taxAmountMinorUnits,
     lineTotalMinorUnits,
     costPriceSnapshotMinorUnits,
+    quantityReturned,
   );
   @override
   bool operator ==(Object other) =>
@@ -14138,7 +14177,8 @@ class SaleLine extends DataClass implements Insertable<SaleLine> {
           other.taxAmountMinorUnits == this.taxAmountMinorUnits &&
           other.lineTotalMinorUnits == this.lineTotalMinorUnits &&
           other.costPriceSnapshotMinorUnits ==
-              this.costPriceSnapshotMinorUnits);
+              this.costPriceSnapshotMinorUnits &&
+          other.quantityReturned == this.quantityReturned);
 }
 
 class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
@@ -14151,6 +14191,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
   final Value<int> taxAmountMinorUnits;
   final Value<int> lineTotalMinorUnits;
   final Value<int> costPriceSnapshotMinorUnits;
+  final Value<int> quantityReturned;
   final Value<int> rowid;
   const SaleLinesCompanion({
     this.id = const Value.absent(),
@@ -14162,6 +14203,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
     this.taxAmountMinorUnits = const Value.absent(),
     this.lineTotalMinorUnits = const Value.absent(),
     this.costPriceSnapshotMinorUnits = const Value.absent(),
+    this.quantityReturned = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SaleLinesCompanion.insert({
@@ -14174,6 +14216,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
     this.taxAmountMinorUnits = const Value.absent(),
     required int lineTotalMinorUnits,
     this.costPriceSnapshotMinorUnits = const Value.absent(),
+    this.quantityReturned = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        saleId = Value(saleId),
@@ -14191,6 +14234,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
     Expression<int>? taxAmountMinorUnits,
     Expression<int>? lineTotalMinorUnits,
     Expression<int>? costPriceSnapshotMinorUnits,
+    Expression<int>? quantityReturned,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -14208,6 +14252,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
         'line_total_minor_units': lineTotalMinorUnits,
       if (costPriceSnapshotMinorUnits != null)
         'cost_price_snapshot_minor_units': costPriceSnapshotMinorUnits,
+      if (quantityReturned != null) 'quantity_returned': quantityReturned,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -14222,6 +14267,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
     Value<int>? taxAmountMinorUnits,
     Value<int>? lineTotalMinorUnits,
     Value<int>? costPriceSnapshotMinorUnits,
+    Value<int>? quantityReturned,
     Value<int>? rowid,
   }) {
     return SaleLinesCompanion(
@@ -14236,6 +14282,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
       lineTotalMinorUnits: lineTotalMinorUnits ?? this.lineTotalMinorUnits,
       costPriceSnapshotMinorUnits:
           costPriceSnapshotMinorUnits ?? this.costPriceSnapshotMinorUnits,
+      quantityReturned: quantityReturned ?? this.quantityReturned,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -14274,6 +14321,9 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
         costPriceSnapshotMinorUnits.value,
       );
     }
+    if (quantityReturned.present) {
+      map['quantity_returned'] = Variable<int>(quantityReturned.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -14292,6 +14342,7 @@ class SaleLinesCompanion extends UpdateCompanion<SaleLine> {
           ..write('taxAmountMinorUnits: $taxAmountMinorUnits, ')
           ..write('lineTotalMinorUnits: $lineTotalMinorUnits, ')
           ..write('costPriceSnapshotMinorUnits: $costPriceSnapshotMinorUnits, ')
+          ..write('quantityReturned: $quantityReturned, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -24931,6 +24982,7 @@ typedef $$SaleLinesTableCreateCompanionBuilder =
       Value<int> taxAmountMinorUnits,
       required int lineTotalMinorUnits,
       Value<int> costPriceSnapshotMinorUnits,
+      Value<int> quantityReturned,
       Value<int> rowid,
     });
 typedef $$SaleLinesTableUpdateCompanionBuilder =
@@ -24944,6 +24996,7 @@ typedef $$SaleLinesTableUpdateCompanionBuilder =
       Value<int> taxAmountMinorUnits,
       Value<int> lineTotalMinorUnits,
       Value<int> costPriceSnapshotMinorUnits,
+      Value<int> quantityReturned,
       Value<int> rowid,
     });
 
@@ -24998,6 +25051,11 @@ class $$SaleLinesTableFilterComposer
 
   ColumnFilters<int> get costPriceSnapshotMinorUnits => $composableBuilder(
     column: $table.costPriceSnapshotMinorUnits,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get quantityReturned => $composableBuilder(
+    column: $table.quantityReturned,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -25055,6 +25113,11 @@ class $$SaleLinesTableOrderingComposer
     column: $table.costPriceSnapshotMinorUnits,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get quantityReturned => $composableBuilder(
+    column: $table.quantityReturned,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SaleLinesTableAnnotationComposer
@@ -25102,6 +25165,11 @@ class $$SaleLinesTableAnnotationComposer
     column: $table.costPriceSnapshotMinorUnits,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get quantityReturned => $composableBuilder(
+    column: $table.quantityReturned,
+    builder: (column) => column,
+  );
 }
 
 class $$SaleLinesTableTableManager
@@ -25141,6 +25209,7 @@ class $$SaleLinesTableTableManager
                 Value<int> taxAmountMinorUnits = const Value.absent(),
                 Value<int> lineTotalMinorUnits = const Value.absent(),
                 Value<int> costPriceSnapshotMinorUnits = const Value.absent(),
+                Value<int> quantityReturned = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SaleLinesCompanion(
                 id: id,
@@ -25152,6 +25221,7 @@ class $$SaleLinesTableTableManager
                 taxAmountMinorUnits: taxAmountMinorUnits,
                 lineTotalMinorUnits: lineTotalMinorUnits,
                 costPriceSnapshotMinorUnits: costPriceSnapshotMinorUnits,
+                quantityReturned: quantityReturned,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -25165,6 +25235,7 @@ class $$SaleLinesTableTableManager
                 Value<int> taxAmountMinorUnits = const Value.absent(),
                 required int lineTotalMinorUnits,
                 Value<int> costPriceSnapshotMinorUnits = const Value.absent(),
+                Value<int> quantityReturned = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SaleLinesCompanion.insert(
                 id: id,
@@ -25176,6 +25247,7 @@ class $$SaleLinesTableTableManager
                 taxAmountMinorUnits: taxAmountMinorUnits,
                 lineTotalMinorUnits: lineTotalMinorUnits,
                 costPriceSnapshotMinorUnits: costPriceSnapshotMinorUnits,
+                quantityReturned: quantityReturned,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

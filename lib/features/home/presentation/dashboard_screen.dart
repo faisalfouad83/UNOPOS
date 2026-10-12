@@ -56,8 +56,8 @@ class DashboardScreen extends ConsumerWidget {
     final lowStockAsync =
         (storeId == null || branchId == null) ? null : ref.watch(_dashboardLowStockProvider((storeId: storeId, branchId: branchId)));
 
-    final todaysSales = salesAsync.value ?? const [];
-    final todaysTotal = todaysSales.fold<int>(0, (s, sale) => s + sale.grandTotalMinorUnits);
+    final todaysSales = (salesAsync.value ?? const <SaleRecord>[]).where((s) => s.status != SaleStatus.refunded).toList();
+    final todaysTotal = todaysSales.fold<int>(0, (s, sale) => s + sale.netTotalMinorUnits);
     final debtsTotal =
         (debtsAsync?.value ?? const <DebtLedgerEntryRecord>[]).fold<int>(0, (s, d) => s + d.balanceRemainingMinorUnits);
     final lowStockCount = lowStockAsync?.value?.length ?? 0;
