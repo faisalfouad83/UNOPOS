@@ -624,5 +624,10 @@
 
   "pickBranchTitle": "Choose a branch",
   "pickBranchChange": "Change branch",
-  "pickBranchMain": "Main branch"
+  "pickBranchMain": "Main branch",
+
+  "errorPasswordTooShort": "Password must be at least 6 characters",
+  "errorPasswordMismatch": "Passwords do not match",
+  "errorStoreIdFormat": "Use English letters and numbers only, no spaces",
+  "errorStoreIdTaken": "This store ID is already taken — choose another"
 }

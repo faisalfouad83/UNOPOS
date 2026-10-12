@@ -1748,4 +1748,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickBranchMain => 'Main branch';
+
+  @override
+  String get errorPasswordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get errorPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get errorStoreIdFormat =>
+      'Use English letters and numbers only, no spaces';
+
+  @override
+  String get errorStoreIdTaken =>
+      'This store ID is already taken — choose another';
 }

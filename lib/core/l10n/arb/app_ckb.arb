@@ -582,5 +582,10 @@
 
   "pickBranchTitle": "لقێک هەڵبژێرە",
   "pickBranchChange": "گۆڕینی لق",
-  "pickBranchMain": "لقی سەرەکی"
+  "pickBranchMain": "لقی سەرەکی",
+
+  "errorPasswordTooShort": "وشەی نهێنی دەبێت لانیکەم 6 پیت بێت",
+  "errorPasswordMismatch": "وشە نهێنییەکان وەک یەک نین",
+  "errorStoreIdFormat": "تەنها پیتی ئینگلیزی و ژمارە بەکاربهێنە، بێ بۆشایی",
+  "errorStoreIdTaken": "ئەم ناسنامەیەی فرۆشگا پێشتر بەکارهاتووە — یەکێکی تر هەڵبژێرە"
 }

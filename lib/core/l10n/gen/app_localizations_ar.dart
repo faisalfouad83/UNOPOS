@@ -1748,4 +1748,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pickBranchMain => 'الفرع الرئيسي';
+
+  @override
+  String get errorPasswordTooShort =>
+      'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+
+  @override
+  String get errorPasswordMismatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get errorStoreIdFormat =>
+      'استخدم حروفًا إنجليزية وأرقامًا فقط، بدون مسافات';
+
+  @override
+  String get errorStoreIdTaken => 'معرّف المتجر هذا مستخدم — اختر معرّفًا آخر';
 }

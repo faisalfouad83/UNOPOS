@@ -3327,6 +3327,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Main branch'**
   String get pickBranchMain;
+
+  /// No description provided for @errorPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get errorPasswordTooShort;
+
+  /// No description provided for @errorPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get errorPasswordMismatch;
+
+  /// No description provided for @errorStoreIdFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Use English letters and numbers only, no spaces'**
+  String get errorStoreIdFormat;
+
+  /// No description provided for @errorStoreIdTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'This store ID is already taken — choose another'**
+  String get errorStoreIdTaken;
 }
 
 class _AppLocalizationsDelegate

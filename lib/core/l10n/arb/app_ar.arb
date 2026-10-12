@@ -582,5 +582,10 @@
 
   "pickBranchTitle": "اختر الفرع",
   "pickBranchChange": "تغيير الفرع",
-  "pickBranchMain": "الفرع الرئيسي"
+  "pickBranchMain": "الفرع الرئيسي",
+
+  "errorPasswordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+  "errorPasswordMismatch": "كلمتا المرور غير متطابقتين",
+  "errorStoreIdFormat": "استخدم حروفًا إنجليزية وأرقامًا فقط، بدون مسافات",
+  "errorStoreIdTaken": "معرّف المتجر هذا مستخدم — اختر معرّفًا آخر"
 }

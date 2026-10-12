@@ -1730,4 +1730,18 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get pickBranchMain => 'لقی سەرەکی';
+
+  @override
+  String get errorPasswordTooShort => 'وشەی نهێنی دەبێت لانیکەم 6 پیت بێت';
+
+  @override
+  String get errorPasswordMismatch => 'وشە نهێنییەکان وەک یەک نین';
+
+  @override
+  String get errorStoreIdFormat =>
+      'تەنها پیتی ئینگلیزی و ژمارە بەکاربهێنە، بێ بۆشایی';
+
+  @override
+  String get errorStoreIdTaken =>
+      'ئەم ناسنامەیەی فرۆشگا پێشتر بەکارهاتووە — یەکێکی تر هەڵبژێرە';
 }
