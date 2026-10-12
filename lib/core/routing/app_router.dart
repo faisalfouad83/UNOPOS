@@ -13,6 +13,7 @@ import '../../features/auth/presentation/tile_picker_screen.dart';
 import '../../features/home/presentation/dashboard_screen.dart';
 import '../../features/home/presentation/home_shell.dart';
 import '../../features/licensing/presentation/activation_screen.dart';
+import '../supabase/supabase_config.dart';
 import '../../features/licensing/domain/license_watch.dart';
 import '../../features/licensing/presentation/developer_home_screen.dart';
 import '../../features/licensing/presentation/license_expired_screen.dart';
@@ -58,7 +59,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       );
     },
     routes: [
-      GoRoute(path: RoutePaths.activation, builder: (context, state) => const ActivationScreen()),
+      // On the shared backend the first screen is simply the store login.
+      GoRoute(
+        path: RoutePaths.activation,
+        builder: (context, state) =>
+            kUseSupabaseBackend ? const StoreLoginScreen(isWelcome: true) : const ActivationScreen(),
+      ),
       GoRoute(path: RoutePaths.onboardingStore, builder: (context, state) => const CreateStoreScreen()),
       GoRoute(
         path: RoutePaths.onboardingManager,

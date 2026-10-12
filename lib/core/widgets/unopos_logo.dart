@@ -26,3 +26,24 @@ class UnoposLogo extends StatelessWidget {
     );
   }
 }
+
+/// The full UNOPOS lockup (mark, wordmark and tagline) for the welcome and
+/// sign-in screens, where there is room for it.
+class UnoposLogoLockup extends StatelessWidget {
+  const UnoposLogoLockup({super.key, this.width = 220});
+
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(width * 0.08),
+      child: Image.asset(
+        'assets/branding/unopos_logo.png',
+        width: width,
+        height: width,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+}

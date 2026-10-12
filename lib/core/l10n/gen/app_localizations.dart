@@ -3309,6 +3309,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Connection address'**
   String get printerAddressGeneric;
+
+  /// No description provided for @pickBranchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a branch'**
+  String get pickBranchTitle;
+
+  /// No description provided for @pickBranchChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change branch'**
+  String get pickBranchChange;
+
+  /// No description provided for @pickBranchMain.
+  ///
+  /// In en, this message translates to:
+  /// **'Main branch'**
+  String get pickBranchMain;
 }
 
 class _AppLocalizationsDelegate

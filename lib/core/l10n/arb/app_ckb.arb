@@ -578,5 +578,9 @@
   "memoSaleReturn": "گەڕاندنەوەی فرۆشتن",
   "memoShrinkage": "کەمبوونی کۆگا / ڕێکخستن",
   "printerAddressNetwork": "ناونیشانی IP:دەروازە (نموونە 192.168.1.50:9100)",
-  "printerAddressGeneric": "ناونیشانی پەیوەندی"
+  "printerAddressGeneric": "ناونیشانی پەیوەندی",
+
+  "pickBranchTitle": "لقێک هەڵبژێرە",
+  "pickBranchChange": "گۆڕینی لق",
+  "pickBranchMain": "لقی سەرەکی"
 }

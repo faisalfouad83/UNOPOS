@@ -1721,4 +1721,13 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get printerAddressGeneric => 'ناونیشانی پەیوەندی';
+
+  @override
+  String get pickBranchTitle => 'لقێک هەڵبژێرە';
+
+  @override
+  String get pickBranchChange => 'گۆڕینی لق';
+
+  @override
+  String get pickBranchMain => 'لقی سەرەکی';
 }

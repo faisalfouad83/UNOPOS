@@ -620,5 +620,9 @@
   "memoSaleReturn": "Sale return / refund",
   "memoShrinkage": "Stock shrinkage / adjustment",
   "printerAddressNetwork": "IP address:port (e.g. 192.168.1.50:9100)",
-  "printerAddressGeneric": "Connection address"
+  "printerAddressGeneric": "Connection address",
+
+  "pickBranchTitle": "Choose a branch",
+  "pickBranchChange": "Change branch",
+  "pickBranchMain": "Main branch"
 }

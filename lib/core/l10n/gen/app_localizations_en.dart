@@ -1739,4 +1739,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get printerAddressGeneric => 'Connection address';
+
+  @override
+  String get pickBranchTitle => 'Choose a branch';
+
+  @override
+  String get pickBranchChange => 'Change branch';
+
+  @override
+  String get pickBranchMain => 'Main branch';
 }

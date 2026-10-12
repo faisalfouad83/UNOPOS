@@ -7,10 +7,15 @@ import '../../../core/providers.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../../../core/widgets/unopos_logo.dart';
+import '../../licensing/presentation/developer_gate.dart';
 import '../domain/session_controller.dart';
 
+/// Store sign-in. On the shared backend this is also the app's first
+/// screen ([isWelcome]); opening a new store is only a small link under it.
 class StoreLoginScreen extends ConsumerStatefulWidget {
-  const StoreLoginScreen({super.key});
+  const StoreLoginScreen({super.key, this.isWelcome = false});
+
+  final bool isWelcome;
 
   @override
   ConsumerState<StoreLoginScreen> createState() => _StoreLoginScreenState();
@@ -61,53 +66,66 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(RoutePaths.activation),
-        ),
-      ),
+      appBar: widget.isWelcome
+          ? null
+          : AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go(RoutePaths.activation),
+              ),
+            ),
       body: SafeArea(
         child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const UnoposLogo(size: 56),
-                  const SizedBox(height: 12),
-                  Text(l10n.loginStoreTitle,
-                      style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: _idController,
-                    decoration: InputDecoration(labelText: l10n.loginStoreIdHint),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(labelText: l10n.loginStorePasswordHint, errorText: _error),
-                    onSubmitted: (_) => _login(),
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: _submitting ? null : _login,
-                    child: _submitting
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                        : Text(l10n.loginButton),
-                  ),
-                  if (kUseSupabaseBackend) ...[
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () => context.go(RoutePaths.onboardingStore),
-                      child: Text(l10n.loginCreateStoreLink),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: GestureDetector(
+                        onLongPress: () => showDeveloperGate(context, ref),
+                        child: const UnoposLogoLockup(width: 220),
+                      ),
                     ),
+                    const SizedBox(height: 20),
+                    Text(
+                      l10n.loginStoreTitle,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    TextField(
+                      controller: _idController,
+                      decoration: InputDecoration(labelText: l10n.loginStoreIdHint),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(labelText: l10n.loginStorePasswordHint, errorText: _error),
+                      onSubmitted: (_) => _login(),
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: _submitting ? null : _login,
+                      child: _submitting
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                          : Text(l10n.loginButton),
+                    ),
+                    if (kUseSupabaseBackend) ...[
+                      const SizedBox(height: 24),
+                      TextButton(
+                        style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.bodySmall),
+                        onPressed: () => context.go(RoutePaths.onboardingStore),
+                        child: Text(l10n.loginCreateStoreLink, textAlign: TextAlign.center),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

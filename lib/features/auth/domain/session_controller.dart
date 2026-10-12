@@ -37,13 +37,14 @@ class SessionState {
     bool? developerMode,
     String? currentBranchId,
     bool clearEmployee = false,
+    bool clearBranch = false,
     bool clearDeveloperMode = false,
   }) {
     return SessionState(
       store: store ?? this.store,
       employee: clearEmployee ? null : (employee ?? this.employee),
       developerMode: clearDeveloperMode ? false : (developerMode ?? this.developerMode),
-      currentBranchId: currentBranchId ?? this.currentBranchId,
+      currentBranchId: clearBranch ? null : (currentBranchId ?? this.currentBranchId),
     );
   }
 }
@@ -134,6 +135,8 @@ class SessionController extends Notifier<SessionState> {
       state = state.copyWith(currentBranchId: employee.branchId);
       return;
     }
+    // A branch already picked on the account screen wins.
+    if (state.currentBranchId != null) return;
     final branches = await ref.read(authRepositoryProvider).listBranches(employee.storeId);
     if (branches.isEmpty) return;
     final main = branches.where((b) => b.isMainBranch).toList();
@@ -176,6 +179,11 @@ class SessionController extends Notifier<SessionState> {
 
   void setCurrentBranch(String branchId) {
     state = state.copyWith(currentBranchId: branchId);
+  }
+
+  /// Back to the branch list on the account screen.
+  void clearCurrentBranch() {
+    state = state.copyWith(clearBranch: true);
   }
 }
 

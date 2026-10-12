@@ -1739,4 +1739,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get printerAddressGeneric => 'عنوان الاتصال';
+
+  @override
+  String get pickBranchTitle => 'اختر الفرع';
+
+  @override
+  String get pickBranchChange => 'تغيير الفرع';
+
+  @override
+  String get pickBranchMain => 'الفرع الرئيسي';
 }
