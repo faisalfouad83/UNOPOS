@@ -194,7 +194,33 @@ class AppTheme {
     );
   }
 
-  static ThemeData _base(ColorScheme scheme) {
+  /// Translucent "glass" fills for cards and panels over [GlassBackground].
+  static Color glassFill(Brightness b) =>
+      b == Brightness.dark ? const Color(0xFF1B2B4D).withValues(alpha: 0.55) : Colors.white.withValues(alpha: 0.62);
+  static Color glassBorder(Brightness b) =>
+      b == Brightness.dark ? Colors.white.withValues(alpha: 0.14) : const Color(0xFF1B3A73).withValues(alpha: 0.10);
+
+  /// Popups (dialogs, menus, sheets) stay nearly solid so text over busy
+  /// screens stays easy to read.
+  static Color _popupFill(Brightness b) =>
+      b == Brightness.dark ? const Color(0xFF14213D).withValues(alpha: 0.97) : const Color(0xFFF7FAFF).withValues(alpha: 0.98);
+
+  static ColorScheme _glassScheme(ColorScheme s) {
+    final dark = s.brightness == Brightness.dark;
+    final fill = glassFill(s.brightness);
+    return s.copyWith(
+      surfaceContainerLowest: fill,
+      surfaceContainerLow: fill,
+      surfaceContainer: dark ? const Color(0xFF213459).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.7),
+      surfaceContainerHigh: dark ? const Color(0xFF263B63).withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.78),
+      outlineVariant: dark ? glassBorder(s.brightness) : const Color(0xFF1B3A73).withValues(alpha: 0.14),
+    );
+  }
+
+  static ThemeData _base(ColorScheme opaqueScheme) {
+    final scheme = _glassScheme(opaqueScheme);
+    final glassSide = BorderSide(color: glassBorder(scheme.brightness), width: 1);
+    final popupShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(26), side: glassSide);
     final base = (scheme.brightness == Brightness.dark ? ThemeData.dark() : ThemeData.light()).textTheme;
     final baseTextTheme = base
         .apply(
@@ -240,23 +266,51 @@ class AppTheme {
         },
       ),
       colorScheme: scheme,
-      scaffoldBackgroundColor: scheme.surface,
+      scaffoldBackgroundColor: Colors.transparent,
+      canvasColor: _popupFill(scheme.brightness),
       textTheme: textTheme,
       visualDensity: VisualDensity.standard,
       appBarTheme: AppBarTheme(
-        backgroundColor: scheme.surface,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         foregroundColor: scheme.onSurface,
         titleTextStyle: textTheme.headlineSmall?.copyWith(color: scheme.onSurface),
         elevation: 0,
-        scrolledUnderElevation: 1,
+        scrolledUnderElevation: 0,
         centerTitle: false,
       ),
+      // No elevation: a shadow under a translucent card shows through it as
+      // a dark frame. The glass reads from the fill and the light edge.
       cardTheme: CardThemeData(
-        elevation: 1,
-        shadowColor: scheme.brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.45) : _Brand.neutralLight[8].withValues(alpha: 0.14),
-        color: scheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        color: glassFill(scheme.brightness),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: glassSide),
         margin: EdgeInsets.zero,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: _popupFill(scheme.brightness),
+        surfaceTintColor: Colors.transparent,
+        shape: popupShape,
+        elevation: 24,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: _popupFill(scheme.brightness),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: glassSide),
+        elevation: 12,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: _popupFill(scheme.brightness),
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+      ),
+      drawerTheme: DrawerThemeData(backgroundColor: _popupFill(scheme.brightness)),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        menuStyle: MenuStyle(backgroundColor: WidgetStatePropertyAll(_popupFill(scheme.brightness))),
+      ),
+      listTileTheme: const ListTileThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -304,13 +358,14 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       ),
       navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: scheme.surfaceContainerLow,
+        backgroundColor: glassFill(scheme.brightness),
         selectedIconTheme: IconThemeData(color: scheme.onPrimaryContainer),
         selectedLabelTextStyle: TextStyle(color: scheme.onPrimaryContainer, fontWeight: FontWeight.w700),
         indicatorColor: scheme.primaryContainer,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: scheme.surfaceContainerLow,
+        backgroundColor: glassFill(scheme.brightness),
+        surfaceTintColor: Colors.transparent,
         indicatorColor: scheme.primaryContainer,
         height: 68,
       ),

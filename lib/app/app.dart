@@ -11,6 +11,7 @@ import '../core/routing/app_bootstrap.dart';
 import '../core/routing/app_router.dart';
 import '../core/store_settings_provider.dart';
 import '../core/theming/app_theme.dart';
+import '../core/theming/glass_background.dart';
 import '../core/utils/formatters.dart';
 import '../core/widgets/unopos_logo.dart';
 import '../features/auth/domain/session_controller.dart';
@@ -100,6 +101,7 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
+        builder: (context, child) => GlassBackground(child: child ?? const SizedBox.shrink()),
         home: const _SplashScreen(),
       );
     }
@@ -146,7 +148,7 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
         final isRtl = locale.languageCode == 'ar' || locale.languageCode == 'ckb';
         return Directionality(
           textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-          child: child ?? const SizedBox.shrink(),
+          child: GlassBackground(child: child ?? const SizedBox.shrink()),
         );
       },
       routerConfig: router,
