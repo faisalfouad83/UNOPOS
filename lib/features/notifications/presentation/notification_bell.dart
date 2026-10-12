@@ -45,7 +45,7 @@ class NotificationBell extends ConsumerWidget {
           final notificationsAsync = ref.watch(_myNotificationsProvider);
           return notificationsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Center(child: Text(context.l10n.errorWithDetails('$e'))),
+            error: (e, st) => Center(child: Text(context.l10n.errorGeneric)),
             data: (notifications) {
               if (notifications.isEmpty) {
                 return Center(child: Text(context.l10n.notificationsNone));

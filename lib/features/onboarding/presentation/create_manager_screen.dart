@@ -107,12 +107,8 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
       await sessionNotifier.signInEmployeeDirectly(owner);
 
       if (mounted) context.go(RoutePaths.home);
-    } catch (e) {
-      // TODO(debug): temporarily shows the raw exception instead of a
-      // generic message while diagnosing the Supabase onboarding flow —
-      // revert to l10n.errorGeneric once this is confirmed working end to
-      // end against a real project.
-      setState(() => _error = '${l10n.errorGeneric}\n$e');
+    } catch (_) {
+      setState(() => _error = l10n.errorGeneric);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

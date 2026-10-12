@@ -1,0 +1,45 @@
+name: Windows release
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.7'
+          channel: stable
+          cache: true
+      - name: Build app
+        run: |
+          flutter pub get
+          flutter build windows --release
+      - name: Bundle the Visual C++ runtime
+        shell: pwsh
+        run: |
+          foreach ($d in 'msvcp140.dll','vcruntime140.dll','vcruntime140_1.dll') {
+            Copy-Item "$env:WINDIR\System32\$d" build\windows\x64\runner\Release\ -ErrorAction SilentlyContinue
+          }
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $ver = ((Select-String -Path pubspec.yaml -Pattern '^version:\s*([^+\s]+)').Matches[0].Groups[1].Value)
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$ver" installer\unopos.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: UNOPOS-Windows
+          path: |
+            build/installer/*.exe
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: UNOPOS-Windows-portable
+          path: build/windows/x64/runner/Release/
+          retention-days: 30

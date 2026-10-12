@@ -61,7 +61,7 @@ class TilePickerScreen extends ConsumerWidget {
             )
           : employeesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, st) => Center(child: Text(l10n.errorWithDetails('$e'))),
+              error: (e, st) => Center(child: Text(l10n.errorGeneric)),
               data: (all) {
                 // With several branches, show the chosen branch's staff plus
                 // anyone not tied to a branch (e.g. the owner).
