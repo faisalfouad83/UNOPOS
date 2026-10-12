@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
 import 'core/diagnostics/error_log.dart';
 import 'core/theming/app_theme.dart';
+import 'core/window/full_screen.dart';
 import 'core/theming/glass_background.dart';
 import 'core/widgets/unopos_logo.dart';
 import 'core/supabase/supabase_client_provider.dart';
@@ -40,6 +41,8 @@ void main() async {
           ),
         ),
       );
+
+  await AppFullScreen.init();
 
   // Something on screen straight away, instead of a blank window while the
   // cloud connection starts.

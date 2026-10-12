@@ -1799,4 +1799,10 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get returnWhatHappens =>
       'کاڵاکە دەگەڕێتەوە کۆگا، فرۆشتن و قازانج کەم دەبنەوە، و پارەکە دەگەڕێندرێتەوە.';
+
+  @override
+  String get actionFullScreen => 'پڕکردنەوەی شاشە (F11)';
+
+  @override
+  String get actionExitFullScreen => 'دەرچوون لە پڕکردنەوەی شاشە (F11)';
 }

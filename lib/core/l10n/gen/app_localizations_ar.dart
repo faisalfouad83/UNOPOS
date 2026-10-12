@@ -1815,4 +1815,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get returnWhatHappens =>
       'ترجع الكمية للمخزون، وتنقص المبيعات والربح، ويُرجع المبلغ للزبون.';
+
+  @override
+  String get actionFullScreen => 'ملء الشاشة (F11)';
+
+  @override
+  String get actionExitFullScreen => 'الخروج من ملء الشاشة (F11)';
 }

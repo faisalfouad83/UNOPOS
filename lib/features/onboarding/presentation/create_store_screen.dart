@@ -7,9 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
+import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
-import '../../../core/supabase/supabase_config.dart';
-import '../../licensing/domain/license_watch.dart';
 
 class CreateStoreScreen extends ConsumerStatefulWidget {
   const CreateStoreScreen({super.key});
@@ -25,8 +24,6 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
-  final _codeController = TextEditingController();
-  String? _codeError;
   bool _submitting = false;
 
   @override
@@ -36,31 +33,15 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
-    _codeController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
-      _submitting = true;
-      _codeError = null;
-    });
+    setState(() => _submitting = true);
     try {
-      // On the shared backend every new store starts from an activation
-      // code (a two-week trial code included). Check it before creating
-      // anything so a used or mistyped code costs nothing.
       final licensing = ref.read(licensingRepositoryProvider);
-      String? cloudCode;
-      if (kUseSupabaseBackend) {
-        cloudCode = _codeController.text.trim().toUpperCase();
-        final status = await licensing.codeStatus(cloudCode);
-        if (status != 'unused') {
-          setState(() => _codeError = status == 'used' ? l10n.activationAlreadyUsed : l10n.activationInvalid);
-          return;
-        }
-      }
 
       final gate = ref.read(licenseGateServiceProvider);
       final pendingCodeId = await gate.getPendingActivationCodeId();
@@ -80,16 +61,10 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
         await licensing.redeemCode(pendingCodeId, store.id);
         await gate.clearPendingActivation();
       }
-      if (cloudCode != null) {
-        try {
-          await licensing.redeemCode(cloudCode, store.id);
-        } catch (_) {
-          // The store exists either way; without a redeemed code it opens on
-          // the "enter a code" screen, where the owner can try again.
-        }
-        await ref.read(licenseRefresherProvider)();
-      }
 
+      // A brand-new store has no accounts yet. It is created locked and asks
+      // for its activation code once the manager account exists.
+      ref.read(storeHasEmployeesProvider.notifier).state = false;
       if (mounted) {
         context.go(RoutePaths.onboardingManager, extra: store);
       }
@@ -128,25 +103,6 @@ class _CreateStoreScreenState extends ConsumerState<CreateStoreScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
-                      if (kUseSupabaseBackend) ...[
-                        TextFormField(
-                          controller: _codeController,
-                          textCapitalization: TextCapitalization.characters,
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            letterSpacing: 1.2,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          decoration: InputDecoration(
-                            labelText: l10n.activationCodeLabel,
-                            hintText: l10n.activationCodeHint,
-                            errorText: _codeError,
-                            prefixIcon: const Icon(Icons.confirmation_number_outlined),
-                          ),
-                          validator: (v) => (v == null || v.trim().isEmpty) ? l10n.errorRequired : null,
-                        ),
-                        const SizedBox(height: 16),
-                      ],
                       TextFormField(
                         controller: _storeIdController,
                         decoration: InputDecoration(labelText: l10n.onboardingStoreId),

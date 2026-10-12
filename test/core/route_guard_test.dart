@@ -192,4 +192,52 @@ void main() {
       expect(RouteGuard.isAllowed(RoutePaths.settings, SessionState(employee: owner)), isTrue);
     });
   });
+
+  group('RouteGuard.redirect — lock screen and store sign-in', () {
+    test('a locked store stays on the lock screen', () {
+      final redirect = RouteGuard.redirect(
+        location: RoutePaths.home,
+        hasValidLicense: true,
+        hasStoreOnDisk: true,
+        hasEmployees: true,
+        licenseExpired: true,
+        session: const SessionState(employee: _fakeOwner),
+      );
+      expect(redirect, RoutePaths.licenseExpired);
+    });
+
+    test('once a code unlocks it, the lock screen moves on to the app', () {
+      expect(
+        RouteGuard.redirect(
+          location: RoutePaths.licenseExpired,
+          hasValidLicense: true,
+          hasStoreOnDisk: true,
+          hasEmployees: true,
+          session: const SessionState(employee: _fakeOwner),
+        ),
+        RoutePaths.home,
+      );
+      expect(
+        RouteGuard.redirect(
+          location: RoutePaths.licenseExpired,
+          hasValidLicense: true,
+          hasStoreOnDisk: true,
+          hasEmployees: true,
+          session: const SessionState(),
+        ),
+        RoutePaths.tilePicker,
+      );
+    });
+
+    test('signing in to a store that has accounts goes to its accounts, not "create the manager"', () {
+      final redirect = RouteGuard.redirect(
+        location: RoutePaths.tilePicker,
+        hasValidLicense: true,
+        hasStoreOnDisk: true,
+        hasEmployees: true,
+        session: const SessionState(),
+      );
+      expect(redirect, isNull);
+    });
+  });
 }

@@ -62,6 +62,10 @@ class RouteGuard {
     if (hasStoreOnDisk && (licenseExpired || (!hasValidLicense && !kUseSupabaseBackend))) {
       return location == RoutePaths.licenseExpired ? null : RoutePaths.licenseExpired;
     }
+    // Unlocked (a code was just entered): move on from the lock screen.
+    if (location == RoutePaths.licenseExpired) {
+      return session.isAuthenticated ? RoutePaths.home : RoutePaths.tilePicker;
+    }
 
     // The offline activation-code gate only applies to the local/Drift
     // single-tenant build. In SaaS mode a store registers freely on a trial

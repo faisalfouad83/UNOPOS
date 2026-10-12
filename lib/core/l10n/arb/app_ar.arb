@@ -604,5 +604,8 @@
   "returnFailed": "لم يتم الاسترجاع — تحقق من الاتصال وحاول مجدداً",
   "returnStatusRefunded": "مسترجعة",
   "returnStatusPartial": "مسترجعة جزئياً",
-  "returnWhatHappens": "ترجع الكمية للمخزون، وتنقص المبيعات والربح، ويُرجع المبلغ للزبون."
+  "returnWhatHappens": "ترجع الكمية للمخزون، وتنقص المبيعات والربح، ويُرجع المبلغ للزبون.",
+
+  "actionFullScreen": "ملء الشاشة (F11)",
+  "actionExitFullScreen": "الخروج من ملء الشاشة (F11)"
 }

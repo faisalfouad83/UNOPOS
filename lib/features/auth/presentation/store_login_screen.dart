@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/window/full_screen_button.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
+import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../../../core/widgets/unopos_logo.dart';
@@ -49,8 +51,10 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
       }
       final store = await authRepo.getCurrentStore();
       if (store != null) {
+        final employees = await authRepo.watchEmployees(store.id).first;
+        ref.read(storeHasEmployeesProvider.notifier).state = employees.isNotEmpty;
         ref.read(sessionControllerProvider.notifier).setStore(store);
-        if (mounted) context.go(RoutePaths.tilePicker);
+        if (mounted) context.go(employees.isEmpty ? RoutePaths.onboardingManager : RoutePaths.tilePicker);
       } else {
         // Password verified but no matching store row came back — surface
         // this instead of silently sitting on the login screen with no
@@ -67,8 +71,9 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: widget.isWelcome
-          ? null
+          ? AppBar(actions: const [FullScreenButton()])
           : AppBar(
+              actions: const [FullScreenButton()],
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => context.go(RoutePaths.activation),

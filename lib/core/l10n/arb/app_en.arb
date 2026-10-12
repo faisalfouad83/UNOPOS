@@ -648,5 +648,8 @@
   "returnFailed": "The return didn't go through — check the connection and try again",
   "returnStatusRefunded": "Returned",
   "returnStatusPartial": "Partly returned",
-  "returnWhatHappens": "Stock goes back on the shelf, the sale and its profit are reduced, and the money is refunded."
+  "returnWhatHappens": "Stock goes back on the shelf, the sale and its profit are reduced, and the money is refunded.",
+
+  "actionFullScreen": "Full screen (F11)",
+  "actionExitFullScreen": "Exit full screen (F11)"
 }

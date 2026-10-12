@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/l10n/gen/app_localizations.dart';
@@ -12,6 +13,7 @@ import '../core/routing/app_router.dart';
 import '../core/store_settings_provider.dart';
 import '../core/theming/app_theme.dart';
 import '../core/theming/glass_background.dart';
+import '../core/window/full_screen.dart';
 import '../core/utils/formatters.dart';
 import '../core/widgets/unopos_logo.dart';
 import '../features/auth/domain/session_controller.dart';
@@ -146,9 +148,15 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
       },
       builder: (context, child) {
         final isRtl = locale.languageCode == 'ar' || locale.languageCode == 'ckb';
-        return Directionality(
-          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-          child: GlassBackground(child: child ?? const SizedBox.shrink()),
+        return CallbackShortcuts(
+          bindings: {const SingleActivator(LogicalKeyboardKey.f11): AppFullScreen.toggle},
+          child: Focus(
+            autofocus: true,
+            child: Directionality(
+              textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+              child: GlassBackground(child: child ?? const SizedBox.shrink()),
+            ),
+          ),
         );
       },
       routerConfig: router,

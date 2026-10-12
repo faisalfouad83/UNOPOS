@@ -1817,4 +1817,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get returnWhatHappens =>
       'Stock goes back on the shelf, the sale and its profit are reduced, and the money is refunded.';
+
+  @override
+  String get actionFullScreen => 'Full screen (F11)';
+
+  @override
+  String get actionExitFullScreen => 'Exit full screen (F11)';
 }

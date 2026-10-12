@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app.dart';
+import '../../../core/window/full_screen_button.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/providers.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
@@ -102,6 +103,7 @@ class HomeShell extends ConsumerWidget {
               const OfflineSyncIndicator(),
               const _LiveClock(),
               const SizedBox(width: 8),
+              const FullScreenButton(),
               const _LanguageMenu(),
               const NotificationBell(),
               PopupMenuButton<String>(
@@ -157,7 +159,9 @@ class HomeShell extends ConsumerWidget {
         accountStrip,
         const Divider(height: 1),
         Expanded(
-          child: isCompact
+          // A rail needs at least two items; right after signing out there
+          // are none (no employee), so draw just the page for that moment.
+          child: isCompact || destinations.length < 2
               ? child
               : Row(
                   children: [
@@ -174,7 +178,7 @@ class HomeShell extends ConsumerWidget {
                   ],
                 ),
         ),
-        if (isCompact && destinations.isNotEmpty)
+        if (isCompact && destinations.length >= 2)
           NavigationBar(
             selectedIndex: selectedIndex,
             onDestinationSelected: onSelect,

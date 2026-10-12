@@ -3447,6 +3447,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stock goes back on the shelf, the sale and its profit are reduced, and the money is refunded.'**
   String get returnWhatHappens;
+
+  /// No description provided for @actionFullScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Full screen (F11)'**
+  String get actionFullScreen;
+
+  /// No description provided for @actionExitFullScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit full screen (F11)'**
+  String get actionExitFullScreen;
 }
 
 class _AppLocalizationsDelegate

@@ -35,6 +35,7 @@ class _GoRouterRefreshNotifier extends ChangeNotifier {
     ref.listen(sessionControllerProvider, (_, __) => notifyListeners());
     ref.listen(licenseValidProvider, (_, __) => notifyListeners());
     ref.listen(licenseExpiredProvider, (_, __) => notifyListeners());
+    ref.listen(storeHasEmployeesProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -53,7 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         location: state.matchedLocation,
         hasValidLicense: hasValidLicense,
         hasStoreOnDisk: session.hasStore,
-        hasEmployees: bootstrap.value?.hasEmployees ?? false,
+        hasEmployees: ref.read(storeHasEmployeesProvider),
         session: session,
         licenseExpired: ref.read(licenseExpiredProvider),
       );

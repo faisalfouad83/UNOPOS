@@ -7,6 +7,7 @@ import '../../../core/constants/magic_passcodes.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
+import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../auth/domain/auth_models.dart';
 import '../../auth/domain/session_controller.dart';
@@ -103,6 +104,7 @@ class _CreateManagerScreenState extends ConsumerState<CreateManagerScreen> {
       await ref.read(settingsRepositoryProvider).ensureSettings(store.id);
 
       final sessionNotifier = ref.read(sessionControllerProvider.notifier);
+      ref.read(storeHasEmployeesProvider.notifier).state = true;
       sessionNotifier.setStore(store);
       await sessionNotifier.signInEmployeeDirectly(owner);
 

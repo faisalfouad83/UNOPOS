@@ -22,6 +22,12 @@ class AppBootstrapResult {
 /// future re-activation in Settings, without waiting for a full app restart.
 final licenseValidProvider = StateProvider<bool>((ref) => false);
 
+/// Whether the store signed in on this device already has accounts. Set at
+/// start-up and again on every store sign-in (start-up only knows the store
+/// that was signed in when the app opened), so signing in to an existing
+/// store goes to its accounts instead of "create the manager".
+final storeHasEmployeesProvider = StateProvider<bool>((ref) => false);
+
 /// Runs once at app start: loads the (at most one) local store, if any, and
 /// resolves whether the install currently has a valid license.
 final appBootstrapProvider = FutureProvider<AppBootstrapResult>((ref) async {
@@ -38,6 +44,7 @@ final appBootstrapProvider = FutureProvider<AppBootstrapResult>((ref) async {
     hasEmployees = employees.isNotEmpty;
   }
   ref.read(licenseValidProvider.notifier).state = valid;
+  ref.read(storeHasEmployeesProvider.notifier).state = hasEmployees;
 
   return AppBootstrapResult(store: store, hasValidLicense: valid, hasEmployees: hasEmployees);
 });
