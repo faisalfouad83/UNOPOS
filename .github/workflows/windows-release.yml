@@ -27,6 +27,17 @@ jobs:
           foreach ($d in 'msvcp140.dll','vcruntime140.dll','vcruntime140_1.dll') {
             Copy-Item "$env:WINDIR\System32\$d" build\windows\x64\runner\Release\ -ErrorAction SilentlyContinue
           }
+      - name: Smoke test - start the app and print its log
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $app = Start-Process build\windows\x64\runner\Release\unopos.exe -PassThru
+          Start-Sleep -Seconds 30
+          $running = -not $app.HasExited
+          Write-Host "App still running after 30s: $running"
+          if ($running) { Stop-Process -Id $app.Id -Force }
+          $log = Get-ChildItem $env:APPDATA -Recurse -Filter unopos.log -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($log) { Write-Host "---- $($log.FullName) ----"; Get-Content $log.FullName } else { Write-Host "No log file found" }
       - name: Build installer
         shell: pwsh
         run: |
