@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -119,6 +120,7 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'UNOPOS',
+      scrollBehavior: const AppScrollBehavior(),
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
@@ -170,4 +172,14 @@ class _SplashScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Lets every list scroll by dragging with any pointer — mouse, touchpad
+/// (including Boot Camp trackpads that report as a mouse) or touch screen —
+/// not just the wheel.
+class AppScrollBehavior extends MaterialScrollBehavior {
+  const AppScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => PointerDeviceKind.values.toSet();
 }

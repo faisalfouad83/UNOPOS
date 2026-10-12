@@ -89,6 +89,18 @@ class SupabaseLicensingRepository implements LicensingRepository {
     await _client.rpc('redeem_activation_code', params: {'p_code': activationCodeId});
   }
 
+  @override
+  Future<String> codeStatus(String rawCode) async {
+    try {
+      final payload = ActivationCodeCodec.verifyAndDecode(rawCode);
+      if (payload.expiresAt != null && payload.expiresAt!.isBefore(DateTime.now())) return 'expired';
+    } on ActivationCodeException {
+      return 'invalid';
+    }
+    final status = await _client.rpc('activation_code_status', params: {'p_code': rawCode.trim().toUpperCase()});
+    return status as String? ?? 'invalid';
+  }
+
   /// A cloud store runs on its trial until its first code is redeemed, then
   /// on that code; either way `stores.expires_at` is the end date (null =
   /// no end date — e.g. stores created before trials were introduced).

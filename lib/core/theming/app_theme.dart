@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// UNOPOS's visual identity — recolored to match the UNOPOS logo (a navy
 /// tile with a blue-to-cyan "U" and a brushed-silver "N"): a deep navy
@@ -113,8 +112,19 @@ class _Brand {
 class AppTheme {
   const AppTheme._();
 
-  static ThemeData light() => _base(_lightScheme());
-  static ThemeData dark() => _base(_darkScheme());
+  // Built once: rebuilding ThemeData on every app rebuild forces the whole
+  // widget tree to restyle.
+  static final ThemeData _light = _base(_lightScheme());
+  static final ThemeData _dark = _base(_darkScheme());
+
+  static ThemeData light() => _light;
+  static ThemeData dark() => _dark;
+
+  /// Bundled fonts (assets/fonts): Noto Sans for Latin with Noto Sans Arabic
+  /// as the fallback, so English and Arabic share one look and nothing is
+  /// fetched from the internet at runtime.
+  static const String bodyFamily = 'UnoSans';
+  static const List<String> fallbackFamilies = ['UnoArabic'];
 
   static ColorScheme _lightScheme() {
     final n = _Brand.neutralLight;
@@ -185,40 +195,50 @@ class AppTheme {
   }
 
   static ThemeData _base(ColorScheme scheme) {
-    // Figtree (body) + Caprasimo (headings/buttons) per the Organic system.
-    // Neither Google Font covers Arabic glyphs, unlike the single Cairo
-    // family used before this redesign — Flutter's text renderer falls back
-    // to the platform's Arabic-capable font per-glyph automatically, so
-    // Arabic strings still render, just no longer in the same family as the
-    // Latin type. That's a real, accepted trade-off of following the
-    // handoff's fidelity request, not an oversight.
-    final baseTextTheme = GoogleFonts.figtreeTextTheme(
-      (scheme.brightness == Brightness.dark ? ThemeData.dark() : ThemeData.light()).textTheme,
-    ).apply(bodyColor: scheme.onSurface, displayColor: scheme.onSurface);
+    final base = (scheme.brightness == Brightness.dark ? ThemeData.dark() : ThemeData.light()).textTheme;
+    final baseTextTheme = base
+        .apply(
+          fontFamily: bodyFamily,
+          fontFamilyFallback: fallbackFamilies,
+          bodyColor: scheme.onSurface,
+          displayColor: scheme.onSurface,
+        );
 
-    final headingFamily = GoogleFonts.caprasimo().fontFamily;
+    const headingFamily = bodyFamily;
 
     final textTheme = baseTextTheme.copyWith(
       headlineLarge: baseTextTheme.headlineLarge
-          ?.copyWith(fontFamily: headingFamily, fontSize: 42, fontWeight: FontWeight.w400, letterSpacing: -0.6),
+          ?.copyWith(fontFamily: headingFamily, fontSize: 40, fontWeight: FontWeight.w700, letterSpacing: -0.6),
       headlineMedium: baseTextTheme.headlineMedium
-          ?.copyWith(fontFamily: headingFamily, fontSize: 32, fontWeight: FontWeight.w400, letterSpacing: -0.45),
+          ?.copyWith(fontFamily: headingFamily, fontSize: 30, fontWeight: FontWeight.w700, letterSpacing: -0.45),
       headlineSmall: baseTextTheme.headlineSmall
-          ?.copyWith(fontFamily: headingFamily, fontSize: 20, fontWeight: FontWeight.w400, letterSpacing: -0.2),
+          ?.copyWith(fontFamily: headingFamily, fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.2),
       titleLarge: baseTextTheme.titleLarge
-          ?.copyWith(fontFamily: headingFamily, fontSize: 20, fontWeight: FontWeight.w400),
+          ?.copyWith(fontFamily: headingFamily, fontSize: 20, fontWeight: FontWeight.w700),
       titleMedium: baseTextTheme.titleMedium
-          ?.copyWith(fontFamily: headingFamily, fontSize: 17, fontWeight: FontWeight.w400),
+          ?.copyWith(fontFamily: headingFamily, fontSize: 17, fontWeight: FontWeight.w700),
       labelLarge: baseTextTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
     );
 
     // .btn { font-family: var(--font-heading) } — button labels use the
     // display font, not the body font, per the token sheet.
-    final buttonTextStyle = TextStyle(fontFamily: headingFamily, fontWeight: FontWeight.w400, fontSize: 14);
+    const buttonTextStyle = TextStyle(fontFamily: headingFamily, fontFamilyFallback: fallbackFamilies, fontWeight: FontWeight.w700, fontSize: 14);
     const pillShape = StadiumBorder();
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: bodyFamily,
+      fontFamilyFallback: fallbackFamilies,
+      // A short fade instead of the default zoom keeps moving between
+      // sections snappy on desktop tills.
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.macOS: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+        },
+      ),
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surface,
       textTheme: textTheme,

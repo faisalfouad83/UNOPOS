@@ -66,6 +66,22 @@ class DriftLicensingRepository implements LicensingRepository {
   }
 
   @override
+  Future<String> codeStatus(String rawCode) async {
+    final ActivationPayload payload;
+    try {
+      payload = ActivationCodeCodec.verifyAndDecode(rawCode);
+    } on ActivationCodeException {
+      return 'invalid';
+    }
+    if (payload.expiresAt != null && payload.expiresAt!.isBefore(DateTime.now())) return 'expired';
+    final existing = await (_db.select(_db.activationCodes)
+          ..where((t) => t.code.equals(rawCode.trim().toUpperCase())))
+        .getSingleOrNull();
+    if (existing != null && existing.status != 'unused') return 'used';
+    return 'unused';
+  }
+
+  @override
   Future<ActivationCodeRecord> validateCode(String rawCode) async {
     // Throws ActivationCodeException if the signature doesn't match —
     // callers should catch this and show a localized error.

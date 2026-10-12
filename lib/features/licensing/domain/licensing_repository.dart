@@ -17,6 +17,10 @@ abstract class LicensingRepository {
 
   Future<void> redeemCode(String activationCodeId, String storeId);
 
+  /// Checks a code before a store is created: 'unused' (good to go),
+  /// 'used', 'expired' or 'invalid'. Never marks it redeemed.
+  Future<String> codeStatus(String rawCode);
+
   /// The code currently bound to this install's store, if any (used by
   /// Settings to show days-remaining and by the app-launch expiry gate).
   Future<ActivationCodeRecord?> getActiveCodeForStore(String storeId);
