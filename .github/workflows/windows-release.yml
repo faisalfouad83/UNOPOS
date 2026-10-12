@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     tags: ['v*']
+    branches: ['claude/unopos-pos-saas-flutter-ful666']
+    paths-ignore: ['**.md', 'supabase/**', 'android/**']
 
 jobs:
   build:
