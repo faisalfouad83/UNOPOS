@@ -1,3 +1,4 @@
+import 'invoice_query.dart';
 import 'pos_models.dart';
 
 abstract class PosRepository {
@@ -39,6 +40,10 @@ abstract class PosRepository {
   Future<SaleRecord?> findSaleByNumber(String storeId, String number);
 
   Stream<List<SaleRecord>> watchHeldSales(String storeId, String branchId);
+
+  /// One page of the store's invoices with their lines and, for pay-later
+  /// invoices, the debt they created (what's paid / still owed).
+  Future<List<InvoiceRecord>> listInvoices(InvoiceQuery query);
 
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to});
 

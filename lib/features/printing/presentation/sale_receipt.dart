@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/offline/offline_cache.dart';
 import '../../../core/providers.dart';
+import '../../auth/domain/auth_models.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_repository.dart';
 import '../../pos/domain/pos_models.dart';
@@ -23,6 +26,12 @@ ReceiptLabels receiptLabelsFor(AppLocalizations l10n) => ReceiptLabels(
       cash: l10n.receiptCash,
       card: l10n.receiptCard,
       payLater: l10n.posPayLater,
+      invoice: l10n.invoiceTitle,
+      item: l10n.receiptItem,
+      quantity: l10n.commonQuantity,
+      unitPrice: l10n.commonPrice,
+      lineTotal: l10n.commonTotal,
+      date: l10n.invoiceDate,
     );
 
 /// The receipt for [sale] in the store's language, with real product names
@@ -35,6 +44,8 @@ Future<ReceiptDocument> buildSaleReceipt({
   required AppSettingsRecord settings,
   required AppLocalizations l10n,
   String? customerName,
+  String? cashierName,
+  BranchRecord? branch,
   List<(String, String)> extraRows = const [],
 }) async {
   final productNames = <String, String>{};
@@ -54,17 +65,23 @@ Future<ReceiptDocument> buildSaleReceipt({
       if (id != null && productNames[id] == id) productNames[id] = row['name'] as String? ?? id;
     }
   }
+  final config = settings.printerConfig;
+  String? nonEmpty(String? v) => (v?.trim().isEmpty ?? true) ? null : v!.trim();
   return ReceiptTemplateBuilder.build(
     sale: sale,
     productNamesById: productNames,
-    storeName: session.store?.displayName ?? '',
-    branchName: '',
-    cashierName: session.employee?.name ?? '',
+    storeName: nonEmpty(config.brandName) ?? session.store?.displayName ?? '',
+    branchName: branch?.name ?? '',
+    branchPhone: nonEmpty(config.brandPhone) ?? branch?.phone ?? '',
+    branchAddress: nonEmpty(config.brandAddress) ?? branch?.address ?? '',
+    cashierName: cashierName ?? session.employee?.name ?? '',
     customerName: customerName,
     currencySymbol: settings.currencySymbol,
-    footerText: l10n.receiptThankYou,
+    footerText: nonEmpty(config.brandFooter) ?? l10n.receiptThankYou,
     labels: receiptLabelsFor(l10n),
     extraRows: extraRows,
+    logoPng: config.showLogo && config.logoBase64 != null ? base64Decode(config.logoBase64!) : null,
+    layout: config.layout,
   );
 }
 
@@ -74,6 +91,7 @@ Future<void> printReceiptDocument(ReceiptDocument doc, AppSettingsRecord setting
     settings.printerConfig.driverType,
     paperWidthMm: settings.printerConfig.paperWidthMm,
   );
+  // The system printer takes the chosen printer's name (empty = ask).
   final address = settings.printerConfig.connectionAddress;
   if (address != null && address.isNotEmpty) {
     await printer.connect(address);

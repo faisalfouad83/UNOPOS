@@ -16,12 +16,14 @@ class BarcodeInputField extends StatelessWidget {
     this.label = 'Barcode',
     this.onSubmitted,
     this.helperText,
+    this.errorText,
   });
 
   final TextEditingController controller;
   final String label;
   final ValueChanged<String>? onSubmitted;
   final String? helperText;
+  final String? errorText;
 
   Future<void> _scanWithCamera(BuildContext context) async {
     final result = await Navigator.of(context).push<String>(
@@ -40,6 +42,9 @@ class BarcodeInputField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         helperText: helperText,
+        helperMaxLines: 2,
+        errorText: errorText,
+        errorMaxLines: 2,
         suffixIcon: IconButton(
           icon: const Icon(Icons.qr_code_scanner),
           tooltip: context.l10n.barcodeScan,

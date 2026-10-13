@@ -15,6 +15,7 @@ class RoutePaths {
 
   static const String home = '/home';
   static const String pos = '/pos';
+  static const String invoices = '/invoices';
   static const String inventory = '/inventory';
   static const String debts = '/debts';
   static const String customers = '/customers';

@@ -32,6 +32,7 @@ class _Destination {
 const _allDestinations = [
   _Destination(RoutePaths.home, Icons.dashboard_outlined, _navDashboard),
   _Destination(RoutePaths.pos, Icons.point_of_sale_outlined, _navSales),
+  _Destination(RoutePaths.invoices, Icons.receipt_outlined, _navInvoices),
   _Destination(RoutePaths.inventory, Icons.inventory_2_outlined, _navInventory),
   _Destination(RoutePaths.debts, Icons.receipt_long_outlined, _navDebts),
   _Destination(RoutePaths.customers, Icons.people_alt_outlined, _navCustomers),
@@ -45,6 +46,7 @@ const _allDestinations = [
 
 String _navDashboard(AppLocalizations l) => l.navDashboard;
 String _navSales(AppLocalizations l) => l.navSales;
+String _navInvoices(AppLocalizations l) => l.navInvoices;
 String _navInventory(AppLocalizations l) => l.navInventory;
 String _navDebts(AppLocalizations l) => l.navDebts;
 String _navCustomers(AppLocalizations l) => l.navCustomers;
@@ -172,13 +174,26 @@ class HomeShell extends ConsumerWidget {
               ? child
               : Row(
                   children: [
-                    NavigationRail(
-                      selectedIndex: destinations.isEmpty ? 0 : selectedIndex,
-                      onDestinationSelected: onSelect,
-                      labelType: NavigationRailLabelType.all,
-                      destinations: destinations
-                          .map((d) => NavigationRailDestination(icon: Icon(d.icon), label: Text(d.labelBuilder(l10n))))
-                          .toList(),
+                    // Scrolls when the window is too short for every section.
+                    LayoutBuilder(
+                      builder: (context, constraints) => SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                          child: IntrinsicHeight(
+                            child: NavigationRail(
+                              selectedIndex: destinations.isEmpty ? 0 : selectedIndex,
+                              onDestinationSelected: onSelect,
+                              labelType: NavigationRailLabelType.all,
+                              destinations: destinations
+                                  .map(
+                                    (d) => NavigationRailDestination(
+                                        icon: Icon(d.icon), label: Text(d.labelBuilder(l10n))),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const VerticalDivider(width: 1),
                     Expanded(child: child),

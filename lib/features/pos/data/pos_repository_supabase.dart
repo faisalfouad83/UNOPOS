@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../debts/domain/debts_models.dart';
+import '../domain/invoice_query.dart';
 import '../domain/pos_models.dart';
 import '../domain/pos_repository.dart';
 
@@ -194,6 +196,83 @@ class SupabasePosRepository implements PosRepository {
           return _withLines(filtered);
         });
   }
+
+  @override
+  Future<List<InvoiceRecord>> listInvoices(InvoiceQuery query) async {
+    if (query.customerIds != null && query.customerIds!.isEmpty) return const [];
+    final status = query.status;
+    final debtStatus = switch (status) {
+      InvoiceStatus.unpaid => 'open',
+      InvoiceStatus.partiallyPaid => 'partiallyPaid',
+      InvoiceStatus.paid => 'paid',
+      _ => null,
+    };
+    // A debt-status filter needs an inner join so only matching invoices
+    // come back (and the page stays a full page).
+    final debtJoin = debtStatus == null ? 'debt_ledger_entries' : 'debt_ledger_entries!inner';
+    var q = _client.from('sales').select('*, sale_lines(*), $debtJoin(*)').eq('store_id', query.storeId);
+
+    switch (status) {
+      case null:
+        q = q.inFilter('status', soldStatuses);
+      case InvoiceStatus.completed:
+        q = q.eq('status', 'completed').neq('payment_method', 'payLater');
+      case InvoiceStatus.partiallyRefunded:
+        q = q.eq('status', 'partiallyRefunded');
+      case InvoiceStatus.refunded:
+        q = q.eq('status', 'refunded');
+      case InvoiceStatus.cancelled:
+        q = q.eq('status', 'voided').not('payment_method', 'is', null);
+      case InvoiceStatus.unpaid || InvoiceStatus.partiallyPaid || InvoiceStatus.paid:
+        q = q
+            .eq('payment_method', 'payLater')
+            .inFilter('status', soldStatuses)
+            .eq('debt_ledger_entries.status', debtStatus!);
+    }
+    if (query.branchId != null) q = q.eq('branch_id', query.branchId!);
+    if (query.cashierId != null) q = q.eq('cashier_id', query.cashierId!);
+    if (query.paymentMethod != null) q = q.eq('payment_method', query.paymentMethod!.name);
+    if (query.from != null) q = q.gte('completed_at', query.from!.toUtc().toIso8601String());
+    if (query.to != null) q = q.lte('completed_at', query.to!.toUtc().toIso8601String());
+    final exact = query.exactNumber;
+    if (exact != null) {
+      q = q.eq('sale_number', exact);
+    } else if ((query.number?.trim() ?? '').isNotEmpty) {
+      q = q.ilike('sale_number', '%${query.number!.trim()}%');
+    }
+    if (query.customerIds != null) q = q.inFilter('customer_id', query.customerIds!.toList());
+
+    final (column, ascending) = switch (query.sort) {
+      InvoiceSort.newest => ('completed_at', false),
+      InvoiceSort.oldest => ('completed_at', true),
+      InvoiceSort.numberDesc => ('sale_number', false),
+      InvoiceSort.numberAsc => ('sale_number', true),
+      InvoiceSort.amountDesc => ('grand_total_minor_units', false),
+      InvoiceSort.amountAsc => ('grand_total_minor_units', true),
+    };
+    final rows =
+        await q.order(column, ascending: ascending).order('id').range(query.offset, query.offset + query.limit - 1);
+
+    return (rows as List).cast<Map<String, dynamic>>().map((row) {
+      final lines = ((row['sale_lines'] as List?) ?? const []).cast<Map<String, dynamic>>().map(_mapLine).toList();
+      final debts = ((row['debt_ledger_entries'] as List?) ?? const []).cast<Map<String, dynamic>>();
+      return InvoiceRecord(sale: _mapSale(row, lines), debt: debts.isEmpty ? null : _mapDebt(debts.first));
+    }).toList();
+  }
+
+  DebtLedgerEntryRecord _mapDebt(Map<String, dynamic> row) => DebtLedgerEntryRecord(
+        id: row['id'] as String,
+        storeId: row['store_id'] as String,
+        branchId: row['branch_id'] as String,
+        customerId: row['customer_id'] as String,
+        saleId: row['sale_id'] as String?,
+        journalEntryId: row['journal_entry_id'] as String?,
+        originalAmountMinorUnits: (row['original_amount_minor_units'] as num).toInt(),
+        amountPaidMinorUnits: (row['amount_paid_minor_units'] as num?)?.toInt() ?? 0,
+        receiptRef: row['receipt_ref'] as String?,
+        status: DebtStatus.values.firstWhere((s) => s.name == row['status']),
+        createdAt: DateTime.parse(row['created_at'] as String),
+      );
 
   @override
   Future<Map<String, int>> salesTotalsByCustomer(String storeId) async {

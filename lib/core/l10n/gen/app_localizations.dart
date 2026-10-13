@@ -63,7 +63,8 @@ import 'app_localizations_en.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -71,7 +72,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -83,15 +85,20 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('ar'), Locale('ckb'), Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
+    Locale('ckb'),
+    Locale('en'),
+  ];
 
   /// Application name, shown on splash and title bars
   ///
@@ -2455,7 +2462,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Employees: {employees} · Branches: {branches} · Products: {products} · Daily sales: {daily} · Storage: {storage} MB'**
-  String devPlanSummary(int employees, int branches, int products, int daily, int storage);
+  String devPlanSummary(
+    int employees,
+    int branches,
+    int products,
+    int daily,
+    int storage,
+  );
 
   /// No description provided for @devTotalStores.
   ///
@@ -3638,9 +3651,430 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spending: the discount one point gives at the till'**
   String get loyaltyPointValueHelp;
+
+  /// No description provided for @navInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get navInvoices;
+
+  /// No description provided for @invoiceStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get invoiceStatusCompleted;
+
+  /// No description provided for @invoiceStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get invoiceStatusCancelled;
+
+  /// No description provided for @invoiceStatusUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid'**
+  String get invoiceStatusUnpaid;
+
+  /// No description provided for @invoiceStatusPartiallyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Partly paid'**
+  String get invoiceStatusPartiallyPaid;
+
+  /// No description provided for @invoiceStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get invoiceStatusPaid;
+
+  /// No description provided for @invoiceSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice number or customer name'**
+  String get invoiceSearchHint;
+
+  /// No description provided for @invoiceAnyDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Any date'**
+  String get invoiceAnyDate;
+
+  /// No description provided for @invoiceAllBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'All branches'**
+  String get invoiceAllBranches;
+
+  /// No description provided for @invoiceAnyPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Any payment'**
+  String get invoiceAnyPayment;
+
+  /// No description provided for @invoiceAnyCashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Any cashier'**
+  String get invoiceAnyCashier;
+
+  /// No description provided for @invoiceAnyStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Any status'**
+  String get invoiceAnyStatus;
+
+  /// No description provided for @invoiceNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No invoices match'**
+  String get invoiceNone;
+
+  /// No description provided for @invoiceSortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get invoiceSortNewest;
+
+  /// No description provided for @invoiceSortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get invoiceSortOldest;
+
+  /// No description provided for @invoiceSortNumberDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Number (high → low)'**
+  String get invoiceSortNumberDesc;
+
+  /// No description provided for @invoiceSortNumberAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Number (low → high)'**
+  String get invoiceSortNumberAsc;
+
+  /// No description provided for @invoiceSortAmountDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (high → low)'**
+  String get invoiceSortAmountDesc;
+
+  /// No description provided for @invoiceSortAmountAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (low → high)'**
+  String get invoiceSortAmountAsc;
+
+  /// No description provided for @invoiceCreditCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit customer'**
+  String get invoiceCreditCustomer;
+
+  /// No description provided for @invoiceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get invoiceTitle;
+
+  /// No description provided for @invoiceDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get invoiceDate;
+
+  /// No description provided for @invoiceBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get invoiceBranch;
+
+  /// No description provided for @invoiceNetTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Net after returns'**
+  String get invoiceNetTotal;
+
+  /// No description provided for @invoicePaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get invoicePaid;
+
+  /// No description provided for @invoicePaymentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get invoicePaymentHistory;
+
+  /// No description provided for @invoiceNoPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet'**
+  String get invoiceNoPayments;
+
+  /// No description provided for @invoiceReprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reprint'**
+  String get invoiceReprint;
+
+  /// No description provided for @printPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get printPreview;
+
+  /// No description provided for @printSample.
+  ///
+  /// In en, this message translates to:
+  /// **'SAMPLE'**
+  String get printSample;
+
+  /// No description provided for @receiptItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get receiptItem;
+
+  /// No description provided for @invoiceTemplateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice template'**
+  String get invoiceTemplateTitle;
+
+  /// No description provided for @invoicePaper.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper'**
+  String get invoicePaper;
+
+  /// No description provided for @invoicePaperThermal.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt roll'**
+  String get invoicePaperThermal;
+
+  /// No description provided for @invoiceStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Style'**
+  String get invoiceStyle;
+
+  /// No description provided for @invoiceStyleClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get invoiceStyleClassic;
+
+  /// No description provided for @invoiceStyleModern.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern'**
+  String get invoiceStyleModern;
+
+  /// No description provided for @invoiceStyleCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get invoiceStyleCompact;
+
+  /// No description provided for @invoiceBranding.
+  ///
+  /// In en, this message translates to:
+  /// **'Store details on the invoice'**
+  String get invoiceBranding;
+
+  /// No description provided for @invoiceLogoChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose logo'**
+  String get invoiceLogoChoose;
+
+  /// No description provided for @invoiceLogoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change logo'**
+  String get invoiceLogoChange;
+
+  /// No description provided for @invoiceLogoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Print the logo'**
+  String get invoiceLogoShow;
+
+  /// No description provided for @invoiceBrandName.
+  ///
+  /// In en, this message translates to:
+  /// **'Store name on the invoice'**
+  String get invoiceBrandName;
+
+  /// No description provided for @invoiceBrandDefaultHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the store\'s name, and the branch\'s phone and address'**
+  String get invoiceBrandDefaultHint;
+
+  /// No description provided for @invoiceFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Footer / thank-you message'**
+  String get invoiceFooter;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get settingsSaved;
+
+  /// No description provided for @actionRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get actionRemove;
+
+  /// No description provided for @imageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'The image is too large (5 MB at most).'**
+  String get imageTooLarge;
+
+  /// No description provided for @imageWrongType.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a PNG, JPG or WebP image.'**
+  String get imageWrongType;
+
+  /// No description provided for @printerAskEachTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask which printer each time'**
+  String get printerAskEachTime;
+
+  /// No description provided for @printerSystemHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a printer to print straight to it without a dialog.'**
+  String get printerSystemHelp;
+
+  /// No description provided for @printerChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose printer'**
+  String get printerChoose;
+
+  /// No description provided for @productCodeInvalidChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Use letters, digits and - _ . only'**
+  String get productCodeInvalidChars;
+
+  /// No description provided for @productCodeTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Too long (64 characters at most)'**
+  String get productCodeTooLong;
+
+  /// No description provided for @productCodeBadCheckDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'This barcode\'s check digit is wrong — check it was typed correctly'**
+  String get productCodeBadCheckDigit;
+
+  /// No description provided for @productCodeTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Already used by \"{name}\"'**
+  String productCodeTaken(String name);
+
+  /// No description provided for @productCodeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the product\'s barcode, type it, or tap ✨ to generate one'**
+  String get productCodeHelp;
+
+  /// No description provided for @productCodeGeneratedInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This barcode is saved with the product. You\'ll find it in Inventory › Products (label button) to print and stick on the product; scanning it at the till adds this product.'**
+  String get productCodeGeneratedInfo;
+
+  /// No description provided for @productSkuOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal code (SKU) — optional'**
+  String get productSkuOptional;
+
+  /// No description provided for @productSkuHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the barcode. Searching or scanning either code finds the product.'**
+  String get productSkuHelp;
+
+  /// No description provided for @productPhotoChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get productPhotoChoose;
+
+  /// No description provided for @productPhotoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get productPhotoChange;
+
+  /// No description provided for @productOpeningStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting quantity in stock'**
+  String get productOpeningStock;
+
+  /// No description provided for @productStockInBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'In branch: {branch}'**
+  String productStockInBranch(String branch);
+
+  /// No description provided for @errorQuantityInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid quantity'**
+  String get errorQuantityInvalid;
+
+  /// No description provided for @customerLoyaltyValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Points worth'**
+  String get customerLoyaltyValue;
+
+  /// No description provided for @customerLoyaltyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyalty member — earns points on every purchase'**
+  String get customerLoyaltyMember;
+
+  /// No description provided for @customerDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Debts'**
+  String get customerDebts;
+
+  /// No description provided for @customerNoDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'No debts'**
+  String get customerNoDebts;
+
+  /// No description provided for @customerInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest invoices'**
+  String get customerInvoices;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -3649,7 +4083,8 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['ar', 'ckb', 'en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['ar', 'ckb', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

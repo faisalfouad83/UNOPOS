@@ -11,6 +11,7 @@ import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../../inventory/presentation/discounts_section.dart';
+import '../../inventory/presentation/product_thumb.dart';
 import '../../inventory/presentation/tax_rates_section.dart';
 import '../../shifts/presentation/close_shift_dialog.dart';
 import '../../shifts/presentation/open_shift_dialog.dart';
@@ -403,7 +404,7 @@ class _ProductTile extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.inventory_2_outlined, size: 32, color: Theme.of(context).colorScheme.primary),
+              ProductThumb(imagePath: product.imagePath, size: 48, radius: 10),
               const SizedBox(height: 8),
               Text(product.name, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),

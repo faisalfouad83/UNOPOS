@@ -7,6 +7,7 @@ import '../../../core/store_settings_provider.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../domain/debts_models.dart';
+import 'customer_details_dialog.dart';
 
 final _customersProvider = StreamProvider.autoDispose.family<List<CustomerRecord>, String>((ref, storeId) {
   return ref.watch(debtsRepositoryProvider).watchCustomers(storeId);
@@ -75,16 +76,13 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, st) => Center(child: Text(l10n.errorGeneric)),
               data: (customers) {
-                final list =
-                    customers
-                        .where(
-                          (c) =>
-                              _query.isEmpty ||
-                              c.name.toLowerCase().contains(_query) ||
-                              (c.phone ?? '').contains(_query),
-                        )
-                        .toList()
-                      ..sort((a, b) => (totals[b.id] ?? 0).compareTo(totals[a.id] ?? 0));
+                final list = customers
+                    .where(
+                      (c) =>
+                          _query.isEmpty || c.name.toLowerCase().contains(_query) || (c.phone ?? '').contains(_query),
+                    )
+                    .toList()
+                  ..sort((a, b) => (totals[b.id] ?? 0).compareTo(totals[a.id] ?? 0));
                 if (list.isEmpty) return Center(child: Text(l10n.customersNone));
                 return ListView.separated(
                   itemCount: list.length,
@@ -113,7 +111,7 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
                               ],
                             )
                           : null,
-                      onTap: () => showCustomerEditDialog(context, ref, storeId, existing: c),
+                      onTap: () => showCustomerDetails(context, ref, c, totalPurchasesMinorUnits: totals[c.id] ?? 0),
                     );
                   },
                 );

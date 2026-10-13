@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:printing/printing.dart';
 
 import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
@@ -82,6 +83,37 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
               ],
               onChanged: (value) => _save(config.copyWith(driverType: value)),
             ),
+            if (config.driverType == 'windowsSystem') ...[
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.print_outlined),
+                title: Text(
+                  (config.connectionAddress?.isNotEmpty ?? false) ? config.connectionAddress! : l10n.printerAskEachTime,
+                ),
+                subtitle: Text(l10n.printerSystemHelp),
+                trailing: Wrap(
+                  spacing: 4,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () async {
+                        final printer = await Printing.pickPrinter(context: context);
+                        if (printer != null) await _save(config.copyWith(connectionAddress: printer.url));
+                      },
+                      child: Text(l10n.printerChoose),
+                    ),
+                    if (config.connectionAddress?.isNotEmpty ?? false)
+                      IconButton(
+                        tooltip: l10n.printerAskEachTime,
+                        icon: const Icon(Icons.clear),
+                        onPressed: () => _save(
+                          PrinterConfig.fromJson({...config.toJson(), 'connectionAddress': null}),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
             if (needsAddress) ...[
               const SizedBox(height: 12),
               TextField(

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../../pos/domain/pos_models.dart';
 import 'receipt_models.dart';
 
@@ -17,6 +19,8 @@ class ReceiptTemplateBuilder {
     String footerText = 'Thank you for shopping with us!',
     ReceiptLabels labels = const ReceiptLabels(),
     List<(String, String)> extraRows = const [],
+    Uint8List? logoPng,
+    ReceiptLayout layout = const ReceiptLayout(),
   }) {
     return ReceiptDocument(
       storeName: storeName,
@@ -33,6 +37,7 @@ class ReceiptTemplateBuilder {
                 quantity: l.quantity,
                 unitPriceMinorUnits: l.unitPriceMinorUnits,
                 lineTotalMinorUnits: l.lineTotalMinorUnits,
+                discountMinorUnits: l.discountAmountMinorUnits,
               ))
           .toList(),
       subtotalMinorUnits: sale.subtotalMinorUnits,
@@ -52,6 +57,8 @@ class ReceiptTemplateBuilder {
       footerText: footerText,
       labels: labels,
       extraRows: extraRows,
+      logoPng: logoPng,
+      layout: layout,
     );
   }
 }

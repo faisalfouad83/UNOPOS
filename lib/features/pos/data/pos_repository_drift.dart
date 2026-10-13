@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../../core/utils/id_generator.dart';
+import '../../debts/domain/debts_models.dart';
+import '../domain/invoice_query.dart';
 import '../domain/pos_models.dart';
 import '../domain/pos_repository.dart';
 
@@ -234,6 +236,40 @@ class DriftPosRepository implements PosRepository {
         .getSingleOrNull();
     if (row == null) return null;
     return getSale(row.id);
+  }
+
+  @override
+  Future<List<InvoiceRecord>> listInvoices(InvoiceQuery query) async {
+    final rows = await (_db.select(_db.sales)
+          ..where((t) => t.storeId.equals(query.storeId) & t.status.equals(SaleStatus.held.name).not()))
+        .get();
+    final ids = rows.map((r) => r.id).toList();
+    final lines = await (_db.select(_db.saleLines)..where((t) => t.saleId.isIn(ids))).get();
+    final debts = await (_db.select(_db.debtLedgerEntries)..where((t) => t.saleId.isIn(ids))).get();
+    final linesBySale = <String, List<SaleLineRecord>>{};
+    for (final l in lines) {
+      (linesBySale[l.saleId] ??= []).add(_mapLine(l));
+    }
+    final debtBySale = {
+      for (final d in debts)
+        d.saleId!: DebtLedgerEntryRecord(
+          id: d.id,
+          storeId: d.storeId,
+          branchId: d.branchId,
+          customerId: d.customerId,
+          saleId: d.saleId,
+          journalEntryId: d.journalEntryId,
+          originalAmountMinorUnits: d.originalAmountMinorUnits,
+          amountPaidMinorUnits: d.amountPaidMinorUnits,
+          receiptRef: d.receiptRef,
+          status: DebtStatus.values.firstWhere((s) => s.name == d.status),
+          createdAt: d.createdAt,
+        ),
+    };
+    return filterInvoices(
+      rows.map((r) => InvoiceRecord(sale: _mapSale(r, linesBySale[r.id] ?? const []), debt: debtBySale[r.id])),
+      query,
+    );
   }
 
   @override

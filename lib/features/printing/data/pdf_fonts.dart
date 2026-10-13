@@ -10,19 +10,23 @@ class PdfFonts {
   const PdfFonts._();
 
   static pw.ThemeData? _theme;
+  static pw.ThemeData? _rtlTheme;
 
-  static Future<pw.ThemeData> theme() async {
-    final cached = _theme;
+  /// [rtl]: the document is Arabic/Kurdish. Arabic letters only join up
+  /// (shaping) when the Arabic font is the main font, so it leads there and
+  /// Latin falls back; otherwise Latin leads.
+  static Future<pw.ThemeData> theme({bool rtl = false}) async {
+    final cached = rtl ? _rtlTheme : _theme;
     if (cached != null) return cached;
     Future<pw.Font> load(String name) async => pw.Font.ttf(await rootBundle.load('assets/fonts/$name.ttf'));
     final arabic = await load('NotoSansArabic-Regular');
     final arabicBold = await load('NotoSansArabic-Bold');
-    final theme = pw.ThemeData.withFont(
-      base: await load('NotoSansLatin-Regular'),
-      bold: await load('NotoSansLatin-Bold'),
-      fontFallback: [arabic, arabicBold],
-    );
-    return _theme = theme;
+    final latin = await load('NotoSansLatin-Regular');
+    final latinBold = await load('NotoSansLatin-Bold');
+    if (rtl) {
+      return _rtlTheme = pw.ThemeData.withFont(base: arabic, bold: arabicBold, fontFallback: [latin, latinBold]);
+    }
+    return _theme = pw.ThemeData.withFont(base: latin, bold: latinBold, fontFallback: [arabic, arabicBold]);
   }
 
   static final RegExp _rtlChars = RegExp(r'[֐-ࣿיִ-﷿ﹰ-﻿]');

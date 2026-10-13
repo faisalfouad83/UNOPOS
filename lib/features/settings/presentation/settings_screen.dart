@@ -10,6 +10,7 @@ import 'backup_settings_section.dart';
 import 'branch_settings_section.dart';
 import 'factory_reset_section.dart';
 import 'general_settings_section.dart';
+import 'invoice_branding_section.dart';
 import 'printer_settings_section.dart';
 
 final _settingsStreamProvider = StreamProvider.autoDispose.family((ref, String storeId) {
@@ -41,6 +42,8 @@ class SettingsScreen extends ConsumerWidget {
               BranchSettingsSection(storeId: storeId),
               const SizedBox(height: 16),
               PrinterSettingsSection(storeId: storeId, settings: settings),
+              const SizedBox(height: 16),
+              InvoiceBrandingSection(settings: settings),
               const SizedBox(height: 16),
               ActivationSettingsSection(storeId: storeId),
               const SizedBox(height: 16),

@@ -126,7 +126,7 @@ class _BarcodePainter extends CustomPainter {
 }
 
 Future<void> _printLabel(ProductRecord product, String payload) async {
-  final doc = pw.Document(theme: await PdfFonts.theme());
+  final doc = pw.Document(theme: await PdfFonts.theme(rtl: PdfFonts.hasRtl(product.name)));
   final symbology = _symbologyFor(payload);
 
   final pw.Widget code;

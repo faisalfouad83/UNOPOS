@@ -111,7 +111,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activationTitle => 'Activate UNOPOS';
 
   @override
-  String get activationSubtitle => 'Enter the activation code provided by your UNOPOS representative';
+  String get activationSubtitle =>
+      'Enter the activation code provided by your UNOPOS representative';
 
   @override
   String get activationCodeLabel => 'Activation Code';
@@ -123,10 +124,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activationButton => 'Activate';
 
   @override
-  String get activationInvalid => 'This activation code is invalid or has expired';
+  String get activationInvalid =>
+      'This activation code is invalid or has expired';
 
   @override
-  String get activationExpired => 'Your license has expired. Please enter a new activation code';
+  String get activationExpired =>
+      'Your license has expired. Please enter a new activation code';
 
   @override
   String get activationSuccess => 'Activated successfully';
@@ -322,19 +325,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posRefundMethod => 'Refund Method';
 
   @override
-  String get posReturnReducesBalance => 'This reduces the customer\'s outstanding balance';
+  String get posReturnReducesBalance =>
+      'This reduces the customer\'s outstanding balance';
 
   @override
-  String get posNoReturnableQuantitySelected => 'Select at least one item to return';
+  String get posNoReturnableQuantitySelected =>
+      'Select at least one item to return';
 
   @override
   String get expensesCashTitle => 'Expenses & Cash';
 
   @override
-  String get expensesCashSubtitle => 'Track operating expenses, revenue, and reconcile the drawer\'s actual balance';
+  String get expensesCashSubtitle =>
+      'Track operating expenses, revenue, and reconcile the drawer\'s actual balance';
 
   @override
-  String get expensesCashNoOpenShift => 'No open shift — open one to start tracking cash';
+  String get expensesCashNoOpenShift =>
+      'No open shift — open one to start tracking cash';
 
   @override
   String get expensesCashOpeningCash => 'Opening Cash';
@@ -382,13 +389,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inventoryGenerateBarcode => 'Generate barcode';
 
   @override
-  String get inventoryBarcodeAutoHint => 'Leave empty to generate one automatically';
+  String get inventoryBarcodeAutoHint =>
+      'Leave empty to generate one automatically';
 
   @override
   String get inventoryPrintLabel => 'Print label';
 
   @override
-  String get inventoryGenerateMissingBarcodes => 'Generate barcodes for products without one';
+  String get inventoryGenerateMissingBarcodes =>
+      'Generate barcodes for products without one';
 
   @override
   String inventoryBarcodesGenerated(int count) {
@@ -687,13 +696,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get offlineSaleSaved => 'No internet — sale saved on this device and will be sent automatically';
+  String get offlineSaleSaved =>
+      'No internet — sale saved on this device and will be sent automatically';
 
   @override
   String get settingsExchangeRate => 'Dollar exchange rate';
 
   @override
-  String get settingsExchangeRateHint => 'Dinars per 1 US dollar. Leave empty to hide dollar prices.';
+  String get settingsExchangeRateHint =>
+      'Dinars per 1 US dollar. Leave empty to hide dollar prices.';
 
   @override
   String posPaidIn(String currency) {
@@ -717,7 +728,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importTemplateSaved => 'Template saved';
 
   @override
-  String get importReadFailed => 'Couldn\'t read this file. Save it as .xlsx or .csv and try again.';
+  String get importReadFailed =>
+      'Couldn\'t read this file. Save it as .xlsx or .csv and try again.';
 
   @override
   String importRowsReady(int count) {
@@ -775,7 +787,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posCustomerPhone => 'Customer phone';
 
   @override
-  String get posCustomerPhoneHint => 'Optional — for WhatsApp payment reminders';
+  String get posCustomerPhoneHint =>
+      'Optional — for WhatsApp payment reminders';
 
   @override
   String get debtsNone => 'No outstanding debts';
@@ -785,7 +798,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String debtsSalesCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count sales', one: '1 sale');
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sales',
+      one: '1 sale',
+    );
     return '$_temp0';
   }
 
@@ -939,7 +957,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loyaltyBalance => 'Points balance';
 
   @override
-  String get backupNoFolder => 'No backup folder chosen — automatic backups go to the app\'s documents folder';
+  String get backupNoFolder =>
+      'No backup folder chosen — automatic backups go to the app\'s documents folder';
 
   @override
   String get backupChooseFolder => 'Choose folder';
@@ -961,7 +980,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupTypeManual => 'Manual';
 
   @override
-  String get backupRestoreWarningLocal => 'This replaces all current data on this device with the backup. Continue?';
+  String get backupRestoreWarningLocal =>
+      'This replaces all current data on this device with the backup. Continue?';
 
   @override
   String get backupRestoreWarningCloud =>
@@ -971,7 +991,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupRestoreDone => 'Restore complete';
 
   @override
-  String get backupRestoreReopen => 'Close and reopen UNOPOS to load the restored data.';
+  String get backupRestoreReopen =>
+      'Close and reopen UNOPOS to load the restored data.';
 
   @override
   String get unitPacket => 'Packet';
@@ -1061,7 +1082,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsKeepMargin => 'Keep a 5% margin on 100% discounts';
 
   @override
-  String get settingsKeepMarginHelp => 'A full discount charges the item\'s cost plus 5% instead of giving it away.';
+  String get settingsKeepMarginHelp =>
+      'A full discount charges the item\'s cost plus 5% instead of giving it away.';
 
   @override
   String get customerWalkIn => 'Walk-in customer (cash)';
@@ -1088,7 +1110,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a new activation code to keep using UNOPOS. Your data is safe and will be there when you continue.';
 
   @override
-  String get activationAlreadyUsed => 'This code can\'t be used (already used or not found).';
+  String get activationAlreadyUsed =>
+      'This code can\'t be used (already used or not found).';
 
   @override
   String get developerTier2Weeks => '2-week trial';
@@ -1117,7 +1140,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get developerLocalStatusNote => 'Offline version: only activations on this device are shown.';
+  String get developerLocalStatusNote =>
+      'Offline version: only activations on this device are shown.';
 
   @override
   String get roleDeveloper => 'Developer';
@@ -1216,7 +1240,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expensesNone => 'No expenses recorded in this period';
 
   @override
-  String get expensesUntyped => 'Older expenses without a type aren\'t included.';
+  String get expensesUntyped =>
+      'Older expenses without a type aren\'t included.';
 
   @override
   String get devStores => 'Stores';
@@ -1265,7 +1290,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get devMaxDailyTransactions => 'Max sales per day';
 
   @override
-  String devPlanSummary(int employees, int branches, int products, int daily, int storage) {
+  String devPlanSummary(
+    int employees,
+    int branches,
+    int products,
+    int daily,
+    int storage,
+  ) {
     return 'Employees: $employees · Branches: $branches · Products: $products · Daily sales: $daily · Storage: $storage MB';
   }
 
@@ -1473,7 +1504,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transferOutgoing => 'Outgoing';
 
   @override
-  String get transferOneBranchOnly => 'This store has only one branch — there\'s nowhere to transfer to.';
+  String get transferOneBranchOnly =>
+      'This store has only one branch — there\'s nowhere to transfer to.';
 
   @override
   String get transferToBranch => 'To branch';
@@ -1497,7 +1529,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get poSupplier => 'Supplier';
 
   @override
-  String get poNeedSupplierAndProduct => 'Add a supplier and at least one product first.';
+  String get poNeedSupplierAndProduct =>
+      'Add a supplier and at least one product first.';
 
   @override
   String get commonNone => 'None';
@@ -1545,7 +1578,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get factoryResetDone => 'Reset complete';
 
   @override
-  String get factoryResetDoneHelp => 'All data has been erased. Close and reopen UNOPOS to start fresh.';
+  String get factoryResetDoneHelp =>
+      'All data has been erased. Close and reopen UNOPOS to start fresh.';
 
   @override
   String get notificationsNone => 'No notifications';
@@ -1700,7 +1734,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get memoShrinkage => 'Stock shrinkage / adjustment';
 
   @override
-  String get printerAddressNetwork => 'IP address:port (e.g. 192.168.1.50:9100)';
+  String get printerAddressNetwork =>
+      'IP address:port (e.g. 192.168.1.50:9100)';
 
   @override
   String get printerAddressGeneric => 'Connection address';
@@ -1721,10 +1756,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorPasswordMismatch => 'Passwords do not match';
 
   @override
-  String get errorStoreIdFormat => 'Use English letters and numbers only, no spaces';
+  String get errorStoreIdFormat =>
+      'Use English letters and numbers only, no spaces';
 
   @override
-  String get errorStoreIdTaken => 'This store ID is already taken — choose another';
+  String get errorStoreIdTaken =>
+      'This store ID is already taken — choose another';
 
   @override
   String get returnInvoice => 'Return invoice';
@@ -1742,7 +1779,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnNotFound => 'No invoice with this number';
 
   @override
-  String get returnNothingLeft => 'Everything on this invoice has already been returned';
+  String get returnNothingLeft =>
+      'Everything on this invoice has already been returned';
 
   @override
   String get returnNotReturnable => 'This invoice can\'t be returned';
@@ -1767,7 +1805,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get returnFailed => 'The return didn\'t go through — check the connection and try again';
+  String get returnFailed =>
+      'The return didn\'t go through — check the connection and try again';
 
   @override
   String get returnStatusRefunded => 'Returned';
@@ -1840,7 +1879,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payRestOnAccount => 'Put the rest on account';
 
   @override
-  String get payCustomerNeeded => 'Choose the customer, or type their name, for a pay-later sale.';
+  String get payCustomerNeeded =>
+      'Choose the customer, or type their name, for a pay-later sale.';
 
   @override
   String get payPaidNowTooMuch => 'Paid in full: choose cash or card instead.';
@@ -1881,11 +1921,235 @@ class AppLocalizationsEn extends AppLocalizations {
   String get branchCurrent => 'Branch you\'re working in';
 
   @override
-  String get tilePickerLoadFailed => 'Couldn\'t load the accounts. Check the connection and try again.';
+  String get tilePickerLoadFailed =>
+      'Couldn\'t load the accounts. Check the connection and try again.';
 
   @override
-  String get loyaltySpendPerPointHelp => 'Earning: the customer gets 1 point for every this much spent';
+  String get loyaltySpendPerPointHelp =>
+      'Earning: the customer gets 1 point for every this much spent';
 
   @override
-  String get loyaltyPointValueHelp => 'Spending: the discount one point gives at the till';
+  String get loyaltyPointValueHelp =>
+      'Spending: the discount one point gives at the till';
+
+  @override
+  String get navInvoices => 'Invoices';
+
+  @override
+  String get invoiceStatusCompleted => 'Completed';
+
+  @override
+  String get invoiceStatusCancelled => 'Cancelled';
+
+  @override
+  String get invoiceStatusUnpaid => 'Unpaid';
+
+  @override
+  String get invoiceStatusPartiallyPaid => 'Partly paid';
+
+  @override
+  String get invoiceStatusPaid => 'Paid';
+
+  @override
+  String get invoiceSearchHint => 'Invoice number or customer name';
+
+  @override
+  String get invoiceAnyDate => 'Any date';
+
+  @override
+  String get invoiceAllBranches => 'All branches';
+
+  @override
+  String get invoiceAnyPayment => 'Any payment';
+
+  @override
+  String get invoiceAnyCashier => 'Any cashier';
+
+  @override
+  String get invoiceAnyStatus => 'Any status';
+
+  @override
+  String get invoiceNone => 'No invoices match';
+
+  @override
+  String get invoiceSortNewest => 'Newest first';
+
+  @override
+  String get invoiceSortOldest => 'Oldest first';
+
+  @override
+  String get invoiceSortNumberDesc => 'Number (high → low)';
+
+  @override
+  String get invoiceSortNumberAsc => 'Number (low → high)';
+
+  @override
+  String get invoiceSortAmountDesc => 'Amount (high → low)';
+
+  @override
+  String get invoiceSortAmountAsc => 'Amount (low → high)';
+
+  @override
+  String get invoiceCreditCustomer => 'Credit customer';
+
+  @override
+  String get invoiceTitle => 'Invoice';
+
+  @override
+  String get invoiceDate => 'Date';
+
+  @override
+  String get invoiceBranch => 'Branch';
+
+  @override
+  String get invoiceNetTotal => 'Net after returns';
+
+  @override
+  String get invoicePaid => 'Paid';
+
+  @override
+  String get invoicePaymentHistory => 'Payments';
+
+  @override
+  String get invoiceNoPayments => 'No payments yet';
+
+  @override
+  String get invoiceReprint => 'Reprint';
+
+  @override
+  String get printPreview => 'Preview';
+
+  @override
+  String get printSample => 'SAMPLE';
+
+  @override
+  String get receiptItem => 'Item';
+
+  @override
+  String get invoiceTemplateTitle => 'Invoice template';
+
+  @override
+  String get invoicePaper => 'Paper';
+
+  @override
+  String get invoicePaperThermal => 'Receipt roll';
+
+  @override
+  String get invoiceStyle => 'Style';
+
+  @override
+  String get invoiceStyleClassic => 'Classic';
+
+  @override
+  String get invoiceStyleModern => 'Modern';
+
+  @override
+  String get invoiceStyleCompact => 'Compact';
+
+  @override
+  String get invoiceBranding => 'Store details on the invoice';
+
+  @override
+  String get invoiceLogoChoose => 'Choose logo';
+
+  @override
+  String get invoiceLogoChange => 'Change logo';
+
+  @override
+  String get invoiceLogoShow => 'Print the logo';
+
+  @override
+  String get invoiceBrandName => 'Store name on the invoice';
+
+  @override
+  String get invoiceBrandDefaultHint =>
+      'Leave empty to use the store\'s name, and the branch\'s phone and address';
+
+  @override
+  String get invoiceFooter => 'Footer / thank-you message';
+
+  @override
+  String get settingsSaved => 'Saved';
+
+  @override
+  String get actionRemove => 'Remove';
+
+  @override
+  String get imageTooLarge => 'The image is too large (5 MB at most).';
+
+  @override
+  String get imageWrongType => 'Choose a PNG, JPG or WebP image.';
+
+  @override
+  String get printerAskEachTime => 'Ask which printer each time';
+
+  @override
+  String get printerSystemHelp =>
+      'Choose a printer to print straight to it without a dialog.';
+
+  @override
+  String get printerChoose => 'Choose printer';
+
+  @override
+  String get productCodeInvalidChars => 'Use letters, digits and - _ . only';
+
+  @override
+  String get productCodeTooLong => 'Too long (64 characters at most)';
+
+  @override
+  String get productCodeBadCheckDigit =>
+      'This barcode\'s check digit is wrong — check it was typed correctly';
+
+  @override
+  String productCodeTaken(String name) {
+    return 'Already used by \"$name\"';
+  }
+
+  @override
+  String get productCodeHelp =>
+      'Scan the product\'s barcode, type it, or tap ✨ to generate one';
+
+  @override
+  String get productCodeGeneratedInfo =>
+      'This barcode is saved with the product. You\'ll find it in Inventory › Products (label button) to print and stick on the product; scanning it at the till adds this product.';
+
+  @override
+  String get productSkuOptional => 'Internal code (SKU) — optional';
+
+  @override
+  String get productSkuHelp =>
+      'Leave empty to use the barcode. Searching or scanning either code finds the product.';
+
+  @override
+  String get productPhotoChoose => 'Add photo';
+
+  @override
+  String get productPhotoChange => 'Change photo';
+
+  @override
+  String get productOpeningStock => 'Starting quantity in stock';
+
+  @override
+  String productStockInBranch(String branch) {
+    return 'In branch: $branch';
+  }
+
+  @override
+  String get errorQuantityInvalid => 'Enter a valid quantity';
+
+  @override
+  String get customerLoyaltyValue => 'Points worth';
+
+  @override
+  String get customerLoyaltyMember =>
+      'Loyalty member — earns points on every purchase';
+
+  @override
+  String get customerDebts => 'Debts';
+
+  @override
+  String get customerNoDebts => 'No debts';
+
+  @override
+  String get customerInvoices => 'Latest invoices';
 }

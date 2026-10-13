@@ -19,6 +19,7 @@ import '../../features/licensing/presentation/developer_home_screen.dart';
 import '../../features/licensing/presentation/license_expired_screen.dart';
 import '../../features/onboarding/presentation/create_manager_screen.dart';
 import '../../features/onboarding/presentation/create_store_screen.dart';
+import '../../features/pos/presentation/invoices_screen.dart';
 import '../../features/pos/presentation/pos_screen.dart';
 import '../../features/inventory/presentation/inventory_screen.dart';
 import '../../features/debts/presentation/customers_screen.dart';
@@ -86,6 +87,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(path: RoutePaths.home, builder: (context, state) => const DashboardScreen()),
           GoRoute(path: RoutePaths.pos, builder: (context, state) => const PosScreen()),
+          GoRoute(path: RoutePaths.invoices, builder: (context, state) => const InvoicesScreen()),
           GoRoute(path: RoutePaths.inventory, builder: (context, state) => const InventoryScreen()),
           GoRoute(path: RoutePaths.debts, builder: (context, state) => const DebtsScreen()),
           GoRoute(path: RoutePaths.customers, builder: (context, state) => const CustomersScreen()),

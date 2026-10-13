@@ -10,17 +10,26 @@ import '../domain/inventory_models.dart';
 import '../domain/product_expiry.dart';
 import '../domain/product_units.dart';
 import 'product_edit_dialog.dart';
+import 'product_thumb.dart';
 import 'product_import_dialog.dart';
 import 'qr_label_dialog.dart';
 
 final _productsSearchProvider = StateProvider.autoDispose<String>((ref) => '');
 
-final _productsStreamProvider = StreamProvider.autoDispose
-    .family<List<ProductRecord>, ({String storeId, String query})>((ref, key) {
-      return ref
-          .watch(inventoryRepositoryProvider)
-          .watchProducts(key.storeId, searchQuery: key.query.isEmpty ? null : key.query);
-    });
+final _productsStreamProvider =
+    StreamProvider.autoDispose.family<List<ProductRecord>, ({String storeId, String query})>((ref, key) {
+  return ref
+      .watch(inventoryRepositoryProvider)
+      .watchProducts(key.storeId, searchQuery: key.query.isEmpty ? null : key.query);
+});
+
+final _branchStockProvider =
+    StreamProvider.autoDispose.family<Map<String, int>, ({String storeId, String branchId})>((ref, key) {
+  return ref
+      .watch(inventoryRepositoryProvider)
+      .watchStock(key.storeId, key.branchId)
+      .map((items) => {for (final s in items) s.productId: s.quantityOnHand});
+});
 
 class ProductsTab extends ConsumerWidget {
   const ProductsTab({super.key});
@@ -34,6 +43,11 @@ class ProductsTab extends ConsumerWidget {
     final query = ref.watch(_productsSearchProvider);
     final canEdit = ref.watch(sessionControllerProvider).employee?.can(AppPermission.editProducts) ?? false;
     final productsAsync = ref.watch(_productsStreamProvider((storeId: storeId, query: query)));
+    final branchId = ref.watch(sessionControllerProvider).currentBranchId;
+    // Stock in the branch being worked in (each branch has its own stock).
+    final stock = branchId == null
+        ? const <String, int>{}
+        : ref.watch(_branchStockProvider((storeId: storeId, branchId: branchId))).valueOrNull ?? const <String, int>{};
 
     return Scaffold(
       body: Column(
@@ -77,22 +91,45 @@ class ProductsTab extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final product = products[index];
                     final expiry = expiryStatusOf(product);
+                    final qty = stock[product.id] ?? 0;
+                    final low = qty <= product.reorderLevel;
                     return ListTile(
-                      leading: switch (expiry) {
-                        ExpiryStatus.expired => Icon(
-                          Icons.dangerous_outlined,
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                        ExpiryStatus.soon => Icon(Icons.schedule, color: Colors.orange.shade800),
-                        _ => const Icon(Icons.inventory_2_outlined),
-                      },
+                      leading: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          ProductThumb(imagePath: product.imagePath, size: 44),
+                          if (expiry == ExpiryStatus.expired || expiry == ExpiryStatus.soon)
+                            PositionedDirectional(
+                              end: -4,
+                              top: -4,
+                              child: Icon(
+                                expiry == ExpiryStatus.expired ? Icons.dangerous : Icons.schedule,
+                                size: 16,
+                                color: expiry == ExpiryStatus.expired
+                                    ? Theme.of(context).colorScheme.error
+                                    : Colors.orange.shade800,
+                              ),
+                            ),
+                        ],
+                      ),
                       title: Text(product.name),
                       subtitle: Text(
-                        '${product.sku} · ${Money.format(product.sellPriceMinorUnits)} · ${productUnitLabel(context, product.unit)}',
+                        '${product.barcode ?? product.sku} · ${Money.format(product.sellPriceMinorUnits)} · ${productUnitLabel(context, product.unit)}',
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // Stock on hand here (replaces the cost, which stays in
+                          // the product form for costing and profit).
+                          Tooltip(
+                            message: l10n.inventoryStockLevel,
+                            child: Chip(
+                              visualDensity: VisualDensity.compact,
+                              label: Text('$qty'),
+                              backgroundColor: low ? Theme.of(context).colorScheme.errorContainer : null,
+                              labelStyle: low ? TextStyle(color: Theme.of(context).colorScheme.onErrorContainer) : null,
+                            ),
+                          ),
                           IconButton(
                             icon: const Icon(Icons.qr_code_2),
                             tooltip: l10n.inventoryGenerateQr,

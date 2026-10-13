@@ -60,7 +60,9 @@ class StockTab extends ConsumerWidget {
                     ...pendingTransfers.map((transfer) => ListTile(
                           leading: const Icon(Icons.swap_horiz),
                           title: Text(context.l10n.transferItemCount(transfer.lines.length)),
-                          subtitle: Text(transfer.toBranchId == branchId ? context.l10n.transferIncoming : context.l10n.transferOutgoing),
+                          subtitle: Text(transfer.toBranchId == branchId
+                              ? context.l10n.transferIncoming
+                              : context.l10n.transferOutgoing),
                           trailing: transfer.toBranchId == branchId
                               ? TextButton(
                                   child: Text(context.l10n.actionReceive),
@@ -97,7 +99,14 @@ class StockTab extends ConsumerWidget {
                           IconButton(
                             icon: const Icon(Icons.tune),
                             tooltip: l10n.inventoryAdjustStock,
-                            onPressed: () => _showAdjustDialog(context, ref, storeId, branchId, product),
+                            onPressed: () => showStockAdjustDialog(
+                              context,
+                              ref,
+                              storeId: storeId,
+                              branchId: branchId,
+                              product: product,
+                              onHand: qty,
+                            ),
                           ),
                         ],
                       ),
@@ -116,33 +125,47 @@ class StockTab extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Future<void> _showAdjustDialog(
-    BuildContext context,
-    WidgetRef ref,
-    String storeId,
-    String branchId,
-    ProductRecord product,
-  ) async {
-    final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController();
-    bool increase = true;
+/// Adds or takes away stock of [product] in [branchId] (a counted
+/// correction, damage, etc.), recorded as a stock movement. Can't take away
+/// more than is on hand.
+Future<void> showStockAdjustDialog(
+  BuildContext context,
+  WidgetRef ref, {
+  required String storeId,
+  required String branchId,
+  required ProductRecord product,
+  required int onHand,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final controller = TextEditingController();
+  var increase = true;
+  String? error;
+  var saving = false;
 
-    await showDialog<void>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text('${l10n.inventoryAdjustStock}: ${product.name}'),
-          content: Column(
+  await showDialog<void>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: Text('${l10n.inventoryAdjustStock}: ${product.name}'),
+        content: SizedBox(
+          width: 360,
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text('${l10n.inventoryStockLevel}: $onHand'),
+              const SizedBox(height: 12),
               SegmentedButton<bool>(
                 segments: const [
                   ButtonSegment(value: true, label: Text('+'), icon: Icon(Icons.add)),
                   ButtonSegment(value: false, label: Text('-'), icon: Icon(Icons.remove)),
                 ],
                 selected: {increase},
-                onSelectionChanged: (s) => setState(() => increase = s.first),
+                onSelectionChanged: (s) => setState(() {
+                  increase = s.first;
+                  error = null;
+                }),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -150,32 +173,49 @@ class StockTab extends ConsumerWidget {
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(labelText: l10n.commonQuantity),
+                decoration: InputDecoration(labelText: l10n.commonQuantity, errorText: error),
+                onChanged: (_) => setState(() => error = null),
               ),
             ],
           ),
-          actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
-            FilledButton(
-              onPressed: () async {
-                final qty = int.tryParse(controller.text) ?? 0;
-                if (qty <= 0) return;
-                final session = ref.read(sessionControllerProvider);
-                await ref.read(inventoryRepositoryProvider).recordStockMovement(
-                      storeId: storeId,
-                      productId: product.id,
-                      branchId: branchId,
-                      type: increase ? StockMovementType.adjustmentIn : StockMovementType.adjustmentOut,
-                      quantity: qty,
-                      createdByUserId: session.employee?.id ?? session.store?.id ?? '',
-                    );
-                if (context.mounted) Navigator.of(context).pop();
-              },
-              child: Text(l10n.actionConfirm),
-            ),
-          ],
         ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
+          FilledButton(
+            onPressed: saving
+                ? null
+                : () async {
+                    final qty = int.tryParse(controller.text) ?? 0;
+                    if (qty <= 0 || (!increase && qty > onHand)) {
+                      setState(() => error = l10n.errorQuantityInvalid);
+                      return;
+                    }
+                    setState(() => saving = true);
+                    final session = ref.read(sessionControllerProvider);
+                    try {
+                      await ref.read(inventoryRepositoryProvider).recordStockMovement(
+                            storeId: storeId,
+                            productId: product.id,
+                            branchId: branchId,
+                            type: increase ? StockMovementType.adjustmentIn : StockMovementType.adjustmentOut,
+                            quantity: qty,
+                            unitCostMinorUnits: product.costPriceMinorUnits,
+                            referenceType: 'ADJUSTMENT',
+                            createdByUserId: session.employee?.id ?? session.store?.id ?? '',
+                          );
+                      if (context.mounted) Navigator.of(context).pop();
+                    } catch (_) {
+                      setState(() {
+                        saving = false;
+                        error = l10n.errorGeneric;
+                      });
+                    }
+                  },
+            child: Text(l10n.actionConfirm),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+  controller.dispose();
 }

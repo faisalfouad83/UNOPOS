@@ -111,7 +111,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get activationTitle => 'چالاککردنی یونۆپۆس';
 
   @override
-  String get activationSubtitle => 'کۆدی چالاککردن بنووسە کە لەلایەن نوێنەرەکەی یونۆپۆسەوە پێتدراوە';
+  String get activationSubtitle =>
+      'کۆدی چالاککردن بنووسە کە لەلایەن نوێنەرەکەی یونۆپۆسەوە پێتدراوە';
 
   @override
   String get activationCodeLabel => 'کۆدی چالاککردن';
@@ -126,7 +127,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get activationInvalid => 'کۆدی چالاککردن هەڵەیە یان کاتی بەسەرچووە';
 
   @override
-  String get activationExpired => 'مۆڵەتەکەت بەسەرچووە. تکایە کۆدێکی نوێ بنووسە';
+  String get activationExpired =>
+      'مۆڵەتەکەت بەسەرچووە. تکایە کۆدێکی نوێ بنووسە';
 
   @override
   String get activationSuccess => 'بە سەرکەوتوویی چالاک کرا';
@@ -325,16 +327,19 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get posReturnReducesBalance => 'ئەمە قەرزی کڕیار کەم دەکاتەوە';
 
   @override
-  String get posNoReturnableQuantitySelected => 'لانیکەم یەک کاڵا هەڵبژێرە بۆ گەڕاندنەوە';
+  String get posNoReturnableQuantitySelected =>
+      'لانیکەم یەک کاڵا هەڵبژێرە بۆ گەڕاندنەوە';
 
   @override
   String get expensesCashTitle => 'خەرجی و سندوق';
 
   @override
-  String get expensesCashSubtitle => 'شوێنپێی خەرجی کارگێڕی و داهات، و ڕێکخستنی باڵانسی ڕاستەقینەی سندوق';
+  String get expensesCashSubtitle =>
+      'شوێنپێی خەرجی کارگێڕی و داهات، و ڕێکخستنی باڵانسی ڕاستەقینەی سندوق';
 
   @override
-  String get expensesCashNoOpenShift => 'هیچ شیفتێکی کراوە نییە — شیفتێک بکەرەوە بۆ دەستپێکردنی شوێنپێی سندوق';
+  String get expensesCashNoOpenShift =>
+      'هیچ شیفتێکی کراوە نییە — شیفتێک بکەرەوە بۆ دەستپێکردنی شوێنپێی سندوق';
 
   @override
   String get expensesCashOpeningCash => 'کاشی کردنەوە';
@@ -388,7 +393,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get inventoryPrintLabel => 'چاپکردنی لیبڵ';
 
   @override
-  String get inventoryGenerateMissingBarcodes => 'دروستکردنی بارکۆد بۆ ئەو کاڵایانەی نییانە';
+  String get inventoryGenerateMissingBarcodes =>
+      'دروستکردنی بارکۆد بۆ ئەو کاڵایانەی نییانە';
 
   @override
   String inventoryBarcodesGenerated(int count) {
@@ -687,13 +693,15 @@ class AppLocalizationsCkb extends AppLocalizations {
   }
 
   @override
-  String get offlineSaleSaved => 'ئینتەرنێت نییە — فرۆشتن لەسەر ئامێرەکە پاشەکەوت کرا و خۆکارانە دەنێردرێت';
+  String get offlineSaleSaved =>
+      'ئینتەرنێت نییە — فرۆشتن لەسەر ئامێرەکە پاشەکەوت کرا و خۆکارانە دەنێردرێت';
 
   @override
   String get settingsExchangeRate => 'نرخی دۆلار';
 
   @override
-  String get settingsExchangeRateHint => 'چەند دینار بەرامبەر 1 دۆلار. بەتاڵی بهێڵەرەوە بۆ شاردنەوەی نرخی دۆلار.';
+  String get settingsExchangeRateHint =>
+      'چەند دینار بەرامبەر 1 دۆلار. بەتاڵی بهێڵەرەوە بۆ شاردنەوەی نرخی دۆلار.';
 
   @override
   String posPaidIn(String currency) {
@@ -776,7 +784,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get posCustomerPhone => 'ژمارەی کڕیار';
 
   @override
-  String get posCustomerPhoneHint => 'ئارەزوومەندانە — بۆ بیرخستنەوەی پارەدان لە واتساپ';
+  String get posCustomerPhoneHint =>
+      'ئارەزوومەندانە — بۆ بیرخستنەوەی پارەدان لە واتساپ';
 
   @override
   String get debtsNone => 'هیچ قەرزێک نییە';
@@ -962,7 +971,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get backupTypeManual => 'دەستی';
 
   @override
-  String get backupRestoreWarningLocal => 'هەموو داتاکانی ئێستای ئەم ئامێرە بە پاڵپشتییەکە دەگۆڕدرێن. بەردەوام دەبیت؟';
+  String get backupRestoreWarningLocal =>
+      'هەموو داتاکانی ئێستای ئەم ئامێرە بە پاڵپشتییەکە دەگۆڕدرێن. بەردەوام دەبیت؟';
 
   @override
   String get backupRestoreWarningCloud =>
@@ -972,7 +982,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get backupRestoreDone => 'گەڕاندنەوە تەواو بوو';
 
   @override
-  String get backupRestoreReopen => 'UNOPOS دابخە و دووبارە بیکەرەوە بۆ بارکردنی داتا گەڕێنراوەکان.';
+  String get backupRestoreReopen =>
+      'UNOPOS دابخە و دووبارە بیکەرەوە بۆ بارکردنی داتا گەڕێنراوەکان.';
 
   @override
   String get unitPacket => 'پاکێت';
@@ -1062,7 +1073,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get settingsKeepMargin => 'هێشتنەوەی قازانجی 5% لە داشکاندنی 100%';
 
   @override
-  String get settingsKeepMarginHelp => 'لە داشکاندنی تەواودا نرخی تێچوو + 5% وەردەگیرێت لەبری بەخۆڕایی دانی کاڵاکە.';
+  String get settingsKeepMarginHelp =>
+      'لە داشکاندنی تەواودا نرخی تێچوو + 5% وەردەگیرێت لەبری بەخۆڕایی دانی کاڵاکە.';
 
   @override
   String get customerWalkIn => 'کڕیاری نەختی ڕێبوار';
@@ -1089,7 +1101,8 @@ class AppLocalizationsCkb extends AppLocalizations {
       'کۆدێکی چالاککردنی نوێ بنووسە بۆ بەردەوامبوون لە بەکارهێنانی UNOPOS. داتاکانت پارێزراون.';
 
   @override
-  String get activationAlreadyUsed => 'ناتوانرێت ئەم کۆدە بەکاربهێنرێت (پێشتر بەکارهاتووە یان نەدۆزرایەوە).';
+  String get activationAlreadyUsed =>
+      'ناتوانرێت ئەم کۆدە بەکاربهێنرێت (پێشتر بەکارهاتووە یان نەدۆزرایەوە).';
 
   @override
   String get developerTier2Weeks => 'تاقیکردنەوەی 2 هەفتە';
@@ -1118,7 +1131,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   }
 
   @override
-  String get developerLocalStatusNote => 'وەشانی ناوخۆیی: تەنها چالاککردنەکانی ئەم ئامێرە پیشان دەدرێن.';
+  String get developerLocalStatusNote =>
+      'وەشانی ناوخۆیی: تەنها چالاککردنەکانی ئەم ئامێرە پیشان دەدرێن.';
 
   @override
   String get roleDeveloper => 'گەشەپێدەر';
@@ -1266,7 +1280,13 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get devMaxDailyTransactions => 'زۆرترین فرۆشتن لە ڕۆژێکدا';
 
   @override
-  String devPlanSummary(int employees, int branches, int products, int daily, int storage) {
+  String devPlanSummary(
+    int employees,
+    int branches,
+    int products,
+    int daily,
+    int storage,
+  ) {
     return 'کارمەند: $employees · لق: $branches · کاڵا: $products · فرۆشتنی ڕۆژانە: $daily · هەڵگرتن: $storage MB';
   }
 
@@ -1498,7 +1518,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get poSupplier => 'دابینکەر';
 
   @override
-  String get poNeedSupplierAndProduct => 'سەرەتا دابینکەرێک و لانیکەم یەک کاڵا زیاد بکە.';
+  String get poNeedSupplierAndProduct =>
+      'سەرەتا دابینکەرێک و لانیکەم یەک کاڵا زیاد بکە.';
 
   @override
   String get commonNone => 'هیچ';
@@ -1546,7 +1567,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get factoryResetDone => 'ڕێکخستنەوە تەواو بوو';
 
   @override
-  String get factoryResetDoneHelp => 'هەموو داتاکان سڕانەوە. UNOPOS دابخە و دووبارە بیکەرەوە.';
+  String get factoryResetDoneHelp =>
+      'هەموو داتاکان سڕانەوە. UNOPOS دابخە و دووبارە بیکەرەوە.';
 
   @override
   String get notificationsNone => 'هیچ ئاگادارکردنەوەیەک نییە';
@@ -1694,7 +1716,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get memoShrinkage => 'کەمبوونی کۆگا / ڕێکخستن';
 
   @override
-  String get printerAddressNetwork => 'ناونیشانی IP:دەروازە (نموونە 192.168.1.50:9100)';
+  String get printerAddressNetwork =>
+      'ناونیشانی IP:دەروازە (نموونە 192.168.1.50:9100)';
 
   @override
   String get printerAddressGeneric => 'ناونیشانی پەیوەندی';
@@ -1715,10 +1738,12 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get errorPasswordMismatch => 'وشە نهێنییەکان وەک یەک نین';
 
   @override
-  String get errorStoreIdFormat => 'تەنها پیتی ئینگلیزی و ژمارە بەکاربهێنە، بێ بۆشایی';
+  String get errorStoreIdFormat =>
+      'تەنها پیتی ئینگلیزی و ژمارە بەکاربهێنە، بێ بۆشایی';
 
   @override
-  String get errorStoreIdTaken => 'ئەم ناسنامەیەی فرۆشگا پێشتر بەکارهاتووە — یەکێکی تر هەڵبژێرە';
+  String get errorStoreIdTaken =>
+      'ئەم ناسنامەیەی فرۆشگا پێشتر بەکارهاتووە — یەکێکی تر هەڵبژێرە';
 
   @override
   String get returnInvoice => 'گەڕاندنەوەی پسوڵە';
@@ -1736,7 +1761,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get returnNotFound => 'هیچ پسوڵەیەک بەم ژمارەیە نییە';
 
   @override
-  String get returnNothingLeft => 'هەموو کاڵاکانی ئەم پسوڵەیە پێشتر گەڕێندراونەتەوە';
+  String get returnNothingLeft =>
+      'هەموو کاڵاکانی ئەم پسوڵەیە پێشتر گەڕێندراونەتەوە';
 
   @override
   String get returnNotReturnable => 'ناتوانرێت ئەم پسوڵەیە بگەڕێندرێتەوە';
@@ -1761,7 +1787,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   }
 
   @override
-  String get returnFailed => 'گەڕاندنەوە سەرکەوتوو نەبوو — پەیوەندییەکە بپشکنە و دووبارە هەوڵ بدەرەوە';
+  String get returnFailed =>
+      'گەڕاندنەوە سەرکەوتوو نەبوو — پەیوەندییەکە بپشکنە و دووبارە هەوڵ بدەرەوە';
 
   @override
   String get returnStatusRefunded => 'گەڕێندراوە';
@@ -1770,7 +1797,8 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get returnStatusPartial => 'بەشێکی گەڕێندراوە';
 
   @override
-  String get returnWhatHappens => 'کاڵاکە دەگەڕێتەوە کۆگا، فرۆشتن و قازانج کەم دەبنەوە، و پارەکە دەگەڕێندرێتەوە.';
+  String get returnWhatHappens =>
+      'کاڵاکە دەگەڕێتەوە کۆگا، فرۆشتن و قازانج کەم دەبنەوە، و پارەکە دەگەڕێندرێتەوە.';
 
   @override
   String get actionFullScreen => 'پڕکردنەوەی شاشە (F11)';
@@ -1826,13 +1854,15 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get payClear => 'سڕینەوە';
 
   @override
-  String get payInsufficient => 'بڕی وەرگیراو کەمترە لە کۆی گشتی. ماوەکە وەربگرە یان بیکە بە قەرز لەسەر کڕیار.';
+  String get payInsufficient =>
+      'بڕی وەرگیراو کەمترە لە کۆی گشتی. ماوەکە وەربگرە یان بیکە بە قەرز لەسەر کڕیار.';
 
   @override
   String get payRestOnAccount => 'ماوەکە بکە بە قەرز';
 
   @override
-  String get payCustomerNeeded => 'بۆ فرۆشتنی قەرز کڕیار هەڵبژێرە یان ناوی بنووسە.';
+  String get payCustomerNeeded =>
+      'بۆ فرۆشتنی قەرز کڕیار هەڵبژێرە یان ناوی بنووسە.';
 
   @override
   String get payPaidNowTooMuch => 'تەواو دراوە: کاش یان کارت هەڵبژێرە.';
@@ -1873,11 +1903,235 @@ class AppLocalizationsCkb extends AppLocalizations {
   String get branchCurrent => 'لقی ئێستا';
 
   @override
-  String get tilePickerLoadFailed => 'نەتوانرا هەژمارەکان باربکرێن. پەیوەندی بپشکنە و دووبارە هەوڵبدەرەوە.';
+  String get tilePickerLoadFailed =>
+      'نەتوانرا هەژمارەکان باربکرێن. پەیوەندی بپشکنە و دووبارە هەوڵبدەرەوە.';
 
   @override
-  String get loyaltySpendPerPointHelp => 'بەدەستهێنان: کڕیار بۆ هەر ئەم بڕە خەرجکردنێک ١ خاڵ وەردەگرێت';
+  String get loyaltySpendPerPointHelp =>
+      'بەدەستهێنان: کڕیار بۆ هەر ئەم بڕە خەرجکردنێک ١ خاڵ وەردەگرێت';
 
   @override
-  String get loyaltyPointValueHelp => 'بەکارهێنان: بڕی داشکاندنی یەک خاڵ لە کاتی پارەدان';
+  String get loyaltyPointValueHelp =>
+      'بەکارهێنان: بڕی داشکاندنی یەک خاڵ لە کاتی پارەدان';
+
+  @override
+  String get navInvoices => 'پسوڵەکان';
+
+  @override
+  String get invoiceStatusCompleted => 'تەواوبوو';
+
+  @override
+  String get invoiceStatusCancelled => 'هەڵوەشاوە';
+
+  @override
+  String get invoiceStatusUnpaid => 'نەدراو';
+
+  @override
+  String get invoiceStatusPartiallyPaid => 'بەشێکی دراوە';
+
+  @override
+  String get invoiceStatusPaid => 'دراوە';
+
+  @override
+  String get invoiceSearchHint => 'ژمارەی پسوڵە یان ناوی کڕیار';
+
+  @override
+  String get invoiceAnyDate => 'هەموو بەروارەکان';
+
+  @override
+  String get invoiceAllBranches => 'هەموو لقەکان';
+
+  @override
+  String get invoiceAnyPayment => 'هەموو شێوازەکانی پارەدان';
+
+  @override
+  String get invoiceAnyCashier => 'هەموو کاشێرەکان';
+
+  @override
+  String get invoiceAnyStatus => 'هەموو دۆخەکان';
+
+  @override
+  String get invoiceNone => 'هیچ پسوڵەیەک نییە';
+
+  @override
+  String get invoiceSortNewest => 'نوێترین سەرەتا';
+
+  @override
+  String get invoiceSortOldest => 'کۆنترین سەرەتا';
+
+  @override
+  String get invoiceSortNumberDesc => 'ژمارە (کەمبوونەوە)';
+
+  @override
+  String get invoiceSortNumberAsc => 'ژمارە (زیادبوون)';
+
+  @override
+  String get invoiceSortAmountDesc => 'بڕ (زۆرترین سەرەتا)';
+
+  @override
+  String get invoiceSortAmountAsc => 'بڕ (کەمترین سەرەتا)';
+
+  @override
+  String get invoiceCreditCustomer => 'کڕیاری قەرز';
+
+  @override
+  String get invoiceTitle => 'پسوڵە';
+
+  @override
+  String get invoiceDate => 'بەروار';
+
+  @override
+  String get invoiceBranch => 'لق';
+
+  @override
+  String get invoiceNetTotal => 'پوختە دوای گەڕاندنەوە';
+
+  @override
+  String get invoicePaid => 'دراو';
+
+  @override
+  String get invoicePaymentHistory => 'پارەدانەکان';
+
+  @override
+  String get invoiceNoPayments => 'هێشتا هیچ پارەیەک نەدراوە';
+
+  @override
+  String get invoiceReprint => 'دووبارە چاپکردنەوە';
+
+  @override
+  String get printPreview => 'پێشبینین';
+
+  @override
+  String get printSample => 'نموونە';
+
+  @override
+  String get receiptItem => 'کاڵا';
+
+  @override
+  String get invoiceTemplateTitle => 'شێوازی پسوڵە';
+
+  @override
+  String get invoicePaper => 'کاغەز';
+
+  @override
+  String get invoicePaperThermal => 'ڕۆڵی پسوڵە';
+
+  @override
+  String get invoiceStyle => 'شێواز';
+
+  @override
+  String get invoiceStyleClassic => 'کلاسیک';
+
+  @override
+  String get invoiceStyleModern => 'نوێ';
+
+  @override
+  String get invoiceStyleCompact => 'چڕ';
+
+  @override
+  String get invoiceBranding => 'زانیاری فرۆشگا لەسەر پسوڵە';
+
+  @override
+  String get invoiceLogoChoose => 'هەڵبژاردنی لۆگۆ';
+
+  @override
+  String get invoiceLogoChange => 'گۆڕینی لۆگۆ';
+
+  @override
+  String get invoiceLogoShow => 'لۆگۆ چاپ بکە';
+
+  @override
+  String get invoiceBrandName => 'ناوی فرۆشگا لەسەر پسوڵە';
+
+  @override
+  String get invoiceBrandDefaultHint =>
+      'بەتاڵی بهێڵە بۆ بەکارهێنانی ناوی فرۆشگا و ژمارە و ناونیشانی لق';
+
+  @override
+  String get invoiceFooter => 'پەیامی خوارەوە / سوپاس';
+
+  @override
+  String get settingsSaved => 'پاشەکەوت کرا';
+
+  @override
+  String get actionRemove => 'لابردن';
+
+  @override
+  String get imageTooLarge => 'وێنەکە زۆر گەورەیە (زۆرترین ٥ مێگابایت).';
+
+  @override
+  String get imageWrongType => 'وێنەیەکی PNG یان JPG یان WebP هەڵبژێرە.';
+
+  @override
+  String get printerAskEachTime => 'هەموو جارێک بپرسە کام چاپکەر';
+
+  @override
+  String get printerSystemHelp =>
+      'چاپکەرێک هەڵبژێرە بۆ چاپکردنی ڕاستەوخۆ بێ پەنجەرە.';
+
+  @override
+  String get printerChoose => 'هەڵبژاردنی چاپکەر';
+
+  @override
+  String get productCodeInvalidChars => 'تەنها پیت و ژمارە و - _ . بەکاربهێنە';
+
+  @override
+  String get productCodeTooLong => 'زۆر درێژە (زۆرترین ٦٤ پیت)';
+
+  @override
+  String get productCodeBadCheckDigit =>
+      'ژمارەی پشکنینی ئەم باڕکۆدە هەڵەیە — دڵنیابە بە دروستی نووسراوە';
+
+  @override
+  String productCodeTaken(String name) {
+    return 'پێشتر بۆ \"$name\" بەکارهاتووە';
+  }
+
+  @override
+  String get productCodeHelp =>
+      'باڕکۆدی کاڵا بخوێنەرەوە یان بینووسە، یان ✨ دابگرە بۆ دروستکردن';
+
+  @override
+  String get productCodeGeneratedInfo =>
+      'ئەم باڕکۆدە لەگەڵ کاڵاکە پاشەکەوت دەکرێت. لە کۆگا › کاڵاکان (دوگمەی لیبڵ) دەیدۆزیتەوە بۆ چاپکردن؛ خوێندنەوەی لە کاشێر ئەم کاڵایە زیاد دەکات.';
+
+  @override
+  String get productSkuOptional => 'کۆدی ناوخۆیی (SKU) — ئارەزوومەندانە';
+
+  @override
+  String get productSkuHelp =>
+      'بەتاڵی بهێڵە بۆ بەکارهێنانی باڕکۆد. گەڕان یان خوێندنەوەی هەر کۆدێک کاڵاکە دەدۆزێتەوە.';
+
+  @override
+  String get productPhotoChoose => 'زیادکردنی وێنە';
+
+  @override
+  String get productPhotoChange => 'گۆڕینی وێنە';
+
+  @override
+  String get productOpeningStock => 'بڕی سەرەتایی لە کۆگا';
+
+  @override
+  String productStockInBranch(String branch) {
+    return 'لە لقی: $branch';
+  }
+
+  @override
+  String get errorQuantityInvalid => 'بڕێکی دروست بنووسە';
+
+  @override
+  String get customerLoyaltyValue => 'بەهای خاڵەکان';
+
+  @override
+  String get customerLoyaltyMember =>
+      'ئەندامی وەفاداری — لە هەموو کڕینێک خاڵ وەردەگرێت';
+
+  @override
+  String get customerDebts => 'قەرزەکان';
+
+  @override
+  String get customerNoDebts => 'هیچ قەرزێک نییە';
+
+  @override
+  String get customerInvoices => 'دوایین پسوڵەکان';
 }

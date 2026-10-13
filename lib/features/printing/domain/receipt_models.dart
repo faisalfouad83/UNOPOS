@@ -1,15 +1,52 @@
+import 'dart:typed_data';
+
 class ReceiptLine {
   const ReceiptLine({
     required this.name,
     required this.quantity,
     required this.unitPriceMinorUnits,
     required this.lineTotalMinorUnits,
+    this.discountMinorUnits = 0,
   });
 
   final String name;
   final int quantity;
   final int unitPriceMinorUnits;
   final int lineTotalMinorUnits;
+  final int discountMinorUnits;
+}
+
+/// The paper a receipt is laid out for: a thermal roll (58/80 mm, see
+/// [ReceiptLayout.paperWidthMm]) or an A4/A5 sheet.
+enum ReceiptPaper {
+  thermal,
+  a5,
+  a4;
+
+  static ReceiptPaper fromName(String? name) =>
+      ReceiptPaper.values.where((p) => p.name == name).firstOrNull ?? ReceiptPaper.thermal;
+}
+
+/// The look of the receipt.
+enum ReceiptStyle {
+  classic,
+  modern,
+  compact;
+
+  static ReceiptStyle fromName(String? name) =>
+      ReceiptStyle.values.where((s) => s.name == name).firstOrNull ?? ReceiptStyle.classic;
+}
+
+class ReceiptLayout {
+  const ReceiptLayout({this.paper = ReceiptPaper.thermal, this.style = ReceiptStyle.classic, this.paperWidthMm = 58});
+
+  final ReceiptPaper paper;
+  final ReceiptStyle style;
+
+  /// Roll width for thermal paper (58 or 80).
+  final int paperWidthMm;
+
+  bool get isThermal => paper == ReceiptPaper.thermal;
 }
 
 /// The fixed captions printed on a receipt, so it can be printed in the
@@ -30,6 +67,12 @@ class ReceiptLabels {
     this.cash = 'Cash',
     this.card = 'Card',
     this.payLater = 'Pay Later',
+    this.invoice = 'Invoice',
+    this.item = 'Item',
+    this.quantity = 'Qty',
+    this.unitPrice = 'Price',
+    this.lineTotal = 'Total',
+    this.date = 'Date',
   });
 
   final String sale;
@@ -46,6 +89,14 @@ class ReceiptLabels {
   final String cash;
   final String card;
   final String payLater;
+
+  /// Column headings and title used by the A4/A5 invoice.
+  final String invoice;
+  final String item;
+  final String quantity;
+  final String unitPrice;
+  final String lineTotal;
+  final String date;
 }
 
 /// Driver-agnostic receipt content — every printer driver renders this same
@@ -73,6 +124,8 @@ class ReceiptDocument {
     this.footerText = 'Thank you!',
     this.labels = const ReceiptLabels(),
     this.extraRows = const [],
+    this.logoPng,
+    this.layout = const ReceiptLayout(),
   });
 
   final String storeName;
@@ -99,6 +152,12 @@ class ReceiptDocument {
   /// Additional label/value rows printed after the payment details (e.g.
   /// the amount paid in a foreign currency and the rate used).
   final List<(String, String)> extraRows;
+
+  /// The store's logo (PNG), printed at the top when set.
+  final Uint8List? logoPng;
+
+  /// Paper and style chosen in Settings › Printer.
+  final ReceiptLayout layout;
 
   /// Every piece of text the receipt prints, for deciding whether it can go
   /// out as plain printer text or needs rendering (e.g. Arabic).

@@ -1,3 +1,5 @@
+import '../../printing/domain/receipt_models.dart';
+
 enum AppThemeMode { light, dark, system }
 
 /// What happens after a sale is paid: print the receipt straight away, ask
@@ -18,6 +20,13 @@ class PrinterConfig {
     this.paperWidthMm = 58,
     this.showLogo = false,
     this.printMode = ReceiptPrintMode.auto,
+    this.paper = ReceiptPaper.thermal,
+    this.style = ReceiptStyle.classic,
+    this.brandName,
+    this.brandPhone,
+    this.brandAddress,
+    this.brandFooter,
+    this.logoBase64,
   });
 
   /// none/network/usb/bluetooth/windowsSystem
@@ -30,12 +39,36 @@ class PrinterConfig {
   /// automatically, so that stays the default.
   final ReceiptPrintMode printMode;
 
+  /// Receipt template: paper and style.
+  final ReceiptPaper paper;
+  final ReceiptStyle style;
+
+  /// Invoice branding. Empty/null falls back to the store's name, the
+  /// branch's phone and address, and the default thank-you line.
+  final String? brandName;
+  final String? brandPhone;
+  final String? brandAddress;
+  final String? brandFooter;
+
+  /// The logo as a small PNG (resized when chosen), base64 — kept with the
+  /// store's settings so every till of the store prints the same logo.
+  final String? logoBase64;
+
+  ReceiptLayout get layout => ReceiptLayout(paper: paper, style: style, paperWidthMm: paperWidthMm);
+
   Map<String, dynamic> toJson() => {
         'driverType': driverType,
         'connectionAddress': connectionAddress,
         'paperWidthMm': paperWidthMm,
         'showLogo': showLogo,
         'printMode': printMode.name,
+        'paper': paper.name,
+        'style': style.name,
+        'brandName': brandName,
+        'brandPhone': brandPhone,
+        'brandAddress': brandAddress,
+        'brandFooter': brandFooter,
+        'logoBase64': logoBase64,
       };
 
   factory PrinterConfig.fromJson(Map<String, dynamic> json) => PrinterConfig(
@@ -44,6 +77,13 @@ class PrinterConfig {
         paperWidthMm: json['paperWidthMm'] as int? ?? 58,
         showLogo: json['showLogo'] as bool? ?? false,
         printMode: ReceiptPrintMode.fromName(json['printMode'] as String?),
+        paper: ReceiptPaper.fromName(json['paper'] as String?),
+        style: ReceiptStyle.fromName(json['style'] as String?),
+        brandName: json['brandName'] as String?,
+        brandPhone: json['brandPhone'] as String?,
+        brandAddress: json['brandAddress'] as String?,
+        brandFooter: json['brandFooter'] as String?,
+        logoBase64: json['logoBase64'] as String?,
       );
 
   PrinterConfig copyWith({
@@ -52,6 +92,14 @@ class PrinterConfig {
     int? paperWidthMm,
     bool? showLogo,
     ReceiptPrintMode? printMode,
+    ReceiptPaper? paper,
+    ReceiptStyle? style,
+    String? brandName,
+    String? brandPhone,
+    String? brandAddress,
+    String? brandFooter,
+    String? logoBase64,
+    bool clearLogo = false,
   }) =>
       PrinterConfig(
         driverType: driverType ?? this.driverType,
@@ -59,6 +107,13 @@ class PrinterConfig {
         paperWidthMm: paperWidthMm ?? this.paperWidthMm,
         showLogo: showLogo ?? this.showLogo,
         printMode: printMode ?? this.printMode,
+        paper: paper ?? this.paper,
+        style: style ?? this.style,
+        brandName: brandName ?? this.brandName,
+        brandPhone: brandPhone ?? this.brandPhone,
+        brandAddress: brandAddress ?? this.brandAddress,
+        brandFooter: brandFooter ?? this.brandFooter,
+        logoBase64: clearLogo ? null : (logoBase64 ?? this.logoBase64),
       );
 }
 

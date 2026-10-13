@@ -291,6 +291,11 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
         settings: widget.settings,
         l10n: l10n,
         customerName: customer?.name ?? (typedName.isEmpty ? null : typedName),
+        branch: ref
+            .read(storeBranchesProvider(session.store!.id))
+            .valueOrNull
+            ?.where((b) => b.id == session.currentBranchId)
+            .firstOrNull,
         extraRows: extraRows,
       );
       if (!mounted) return;

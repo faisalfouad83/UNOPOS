@@ -126,7 +126,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get activationInvalid => 'رمز التفعيل غير صالح أو منتهي الصلاحية';
 
   @override
-  String get activationExpired => 'انتهت صلاحية الترخيص. الرجاء إدخال رمز تفعيل جديد';
+  String get activationExpired =>
+      'انتهت صلاحية الترخيص. الرجاء إدخال رمز تفعيل جديد';
 
   @override
   String get activationSuccess => 'تم التفعيل بنجاح';
@@ -322,19 +323,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get posRefundMethod => 'طريقة الاسترجاع';
 
   @override
-  String get posReturnReducesBalance => 'سيؤدي هذا إلى تخفيض رصيد الزبون المستحق';
+  String get posReturnReducesBalance =>
+      'سيؤدي هذا إلى تخفيض رصيد الزبون المستحق';
 
   @override
-  String get posNoReturnableQuantitySelected => 'اختر عنصراً واحداً على الأقل للإرجاع';
+  String get posNoReturnableQuantitySelected =>
+      'اختر عنصراً واحداً على الأقل للإرجاع';
 
   @override
   String get expensesCashTitle => 'المصاريف والصندوق';
 
   @override
-  String get expensesCashSubtitle => 'متابعة المصاريف التشغيلية والإيرادات، ومطابقة الرصيد الفعلي للصندوق';
+  String get expensesCashSubtitle =>
+      'متابعة المصاريف التشغيلية والإيرادات، ومطابقة الرصيد الفعلي للصندوق';
 
   @override
-  String get expensesCashNoOpenShift => 'لا توجد وردية مفتوحة — افتح وردية لبدء متابعة الصندوق';
+  String get expensesCashNoOpenShift =>
+      'لا توجد وردية مفتوحة — افتح وردية لبدء متابعة الصندوق';
 
   @override
   String get expensesCashOpeningCash => 'الكاش الافتتاحي';
@@ -388,7 +393,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inventoryPrintLabel => 'طباعة ملصق';
 
   @override
-  String get inventoryGenerateMissingBarcodes => 'توليد باركود للمنتجات التي لا تملك باركود';
+  String get inventoryGenerateMissingBarcodes =>
+      'توليد باركود للمنتجات التي لا تملك باركود';
 
   @override
   String inventoryBarcodesGenerated(int count) {
@@ -591,7 +597,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsFactoryReset => 'إعادة ضبط المصنع';
 
   @override
-  String get settingsFactoryResetWarning => 'سيؤدي هذا إلى حذف جميع البيانات نهائياً. أدخل رمز إعادة الضبط للمتابعة.';
+  String get settingsFactoryResetWarning =>
+      'سيؤدي هذا إلى حذف جميع البيانات نهائياً. أدخل رمز إعادة الضبط للمتابعة.';
 
   @override
   String get settingsDeveloper => 'المطوّر';
@@ -686,13 +693,15 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get offlineSaleSaved => 'لا يوجد إنترنت — تم حفظ البيع على الجهاز وسيُرسل تلقائياً';
+  String get offlineSaleSaved =>
+      'لا يوجد إنترنت — تم حفظ البيع على الجهاز وسيُرسل تلقائياً';
 
   @override
   String get settingsExchangeRate => 'سعر صرف الدولار';
 
   @override
-  String get settingsExchangeRateHint => 'كم دينار مقابل 1 دولار. اتركه فارغاً لإخفاء أسعار الدولار.';
+  String get settingsExchangeRateHint =>
+      'كم دينار مقابل 1 دولار. اتركه فارغاً لإخفاء أسعار الدولار.';
 
   @override
   String posPaidIn(String currency) {
@@ -716,7 +725,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get importTemplateSaved => 'تم حفظ النموذج';
 
   @override
-  String get importReadFailed => 'تعذّرت قراءة الملف. احفظه بصيغة ‎.xlsx أو ‎.csv وحاول مجدداً.';
+  String get importReadFailed =>
+      'تعذّرت قراءة الملف. احفظه بصيغة ‎.xlsx أو ‎.csv وحاول مجدداً.';
 
   @override
   String importRowsReady(int count) {
@@ -821,7 +831,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String expiryInDays(int days) {
-    String _temp0 = intl.Intl.pluralLogic(days, locale: localeName, other: 'بعد $days يوم', one: 'غداً', zero: 'اليوم');
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'بعد $days يوم',
+      one: 'غداً',
+      zero: 'اليوم',
+    );
     return '$_temp0';
   }
 
@@ -893,7 +909,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loyaltyTitle => 'نقاط الولاء';
 
   @override
-  String get loyaltySettingsHelp => 'يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم.';
+  String get loyaltySettingsHelp =>
+      'يكسب الزبون نقطة واحدة عن كل مبلغ أدناه يشتري به، ويمكنه استخدام النقاط كخصم.';
 
   @override
   String get loyaltySpendPerPoint => 'المبلغ مقابل نقطة واحدة';
@@ -938,7 +955,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loyaltyBalance => 'رصيد النقاط';
 
   @override
-  String get backupNoFolder => 'لم يتم اختيار مجلد — النسخ التلقائي يُحفظ في مجلد مستندات التطبيق';
+  String get backupNoFolder =>
+      'لم يتم اختيار مجلد — النسخ التلقائي يُحفظ في مجلد مستندات التطبيق';
 
   @override
   String get backupChooseFolder => 'اختيار مجلد';
@@ -971,7 +989,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get backupRestoreDone => 'تمت الاستعادة';
 
   @override
-  String get backupRestoreReopen => 'أغلق UNOPOS وافتحه من جديد لتحميل البيانات المستعادة.';
+  String get backupRestoreReopen =>
+      'أغلق UNOPOS وافتحه من جديد لتحميل البيانات المستعادة.';
 
   @override
   String get unitPacket => 'باكيت';
@@ -995,7 +1014,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hrPasscodeNew => 'رمز الدخول (4 أرقام)';
 
   @override
-  String get hrPasscodeReset => 'رمز دخول جديد (اتركه فارغاً للإبقاء على الحالي)';
+  String get hrPasscodeReset =>
+      'رمز دخول جديد (اتركه فارغاً للإبقاء على الحالي)';
 
   @override
   String get permissionsTitle => 'الصلاحيات';
@@ -1061,7 +1081,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsKeepMargin => 'الاحتفاظ بهامش ربح 5% عند خصم 100%';
 
   @override
-  String get settingsKeepMarginHelp => 'عند الخصم الكامل يُحسب سعر الكلفة مضافاً إليه 5% بدلاً من إعطاء المنتج مجاناً.';
+  String get settingsKeepMarginHelp =>
+      'عند الخصم الكامل يُحسب سعر الكلفة مضافاً إليه 5% بدلاً من إعطاء المنتج مجاناً.';
 
   @override
   String get customerWalkIn => 'زبون نقدي عابر';
@@ -1088,7 +1109,8 @@ class AppLocalizationsAr extends AppLocalizations {
       'أدخل كود تفعيل جديد لمواصلة استخدام UNOPOS. بياناتك محفوظة وستجدها كما هي عند المتابعة.';
 
   @override
-  String get activationAlreadyUsed => 'لا يمكن استخدام هذا الكود (مستخدم مسبقاً أو غير موجود).';
+  String get activationAlreadyUsed =>
+      'لا يمكن استخدام هذا الكود (مستخدم مسبقاً أو غير موجود).';
 
   @override
   String get developerTier2Weeks => 'تجربة أسبوعين';
@@ -1117,7 +1139,8 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get developerLocalStatusNote => 'النسخة المحلية: يظهر فقط التفعيل الذي تم على هذا الجهاز.';
+  String get developerLocalStatusNote =>
+      'النسخة المحلية: يظهر فقط التفعيل الذي تم على هذا الجهاز.';
 
   @override
   String get roleDeveloper => 'المطوّر';
@@ -1265,7 +1288,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get devMaxDailyTransactions => 'أقصى عدد مبيعات يومياً';
 
   @override
-  String devPlanSummary(int employees, int branches, int products, int daily, int storage) {
+  String devPlanSummary(
+    int employees,
+    int branches,
+    int products,
+    int daily,
+    int storage,
+  ) {
     return 'الموظفون: $employees · الفروع: $branches · المنتجات: $products · المبيعات اليومية: $daily · التخزين: $storage ميغابايت';
   }
 
@@ -1473,7 +1502,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transferOutgoing => 'صادر';
 
   @override
-  String get transferOneBranchOnly => 'هذا المتجر لديه فرع واحد فقط — لا يوجد فرع للتحويل إليه.';
+  String get transferOneBranchOnly =>
+      'هذا المتجر لديه فرع واحد فقط — لا يوجد فرع للتحويل إليه.';
 
   @override
   String get transferToBranch => 'إلى الفرع';
@@ -1497,7 +1527,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get poSupplier => 'المورد';
 
   @override
-  String get poNeedSupplierAndProduct => 'أضف مورداً ومنتجاً واحداً على الأقل أولاً.';
+  String get poNeedSupplierAndProduct =>
+      'أضف مورداً ومنتجاً واحداً على الأقل أولاً.';
 
   @override
   String get commonNone => 'بدون';
@@ -1545,7 +1576,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get factoryResetDone => 'تمت إعادة الضبط';
 
   @override
-  String get factoryResetDoneHelp => 'تم مسح جميع البيانات. أغلق UNOPOS وافتحه من جديد للبدء من الصفر.';
+  String get factoryResetDoneHelp =>
+      'تم مسح جميع البيانات. أغلق UNOPOS وافتحه من جديد للبدء من الصفر.';
 
   @override
   String get notificationsNone => 'لا توجد إشعارات';
@@ -1702,7 +1734,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get memoShrinkage => 'نقص مخزون / تسوية';
 
   @override
-  String get printerAddressNetwork => 'عنوان IP:المنفذ (مثال 192.168.1.50:9100)';
+  String get printerAddressNetwork =>
+      'عنوان IP:المنفذ (مثال 192.168.1.50:9100)';
 
   @override
   String get printerAddressGeneric => 'عنوان الاتصال';
@@ -1717,13 +1750,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pickBranchMain => 'الفرع الرئيسي';
 
   @override
-  String get errorPasswordTooShort => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+  String get errorPasswordTooShort =>
+      'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
 
   @override
   String get errorPasswordMismatch => 'كلمتا المرور غير متطابقتين';
 
   @override
-  String get errorStoreIdFormat => 'استخدم حروفًا إنجليزية وأرقامًا فقط، بدون مسافات';
+  String get errorStoreIdFormat =>
+      'استخدم حروفًا إنجليزية وأرقامًا فقط، بدون مسافات';
 
   @override
   String get errorStoreIdTaken => 'معرّف المتجر هذا مستخدم — اختر معرّفًا آخر';
@@ -1778,7 +1813,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get returnStatusPartial => 'مسترجعة جزئياً';
 
   @override
-  String get returnWhatHappens => 'ترجع الكمية للمخزون، وتنقص المبيعات والربح، ويُرجع المبلغ للزبون.';
+  String get returnWhatHappens =>
+      'ترجع الكمية للمخزون، وتنقص المبيعات والربح، ويُرجع المبلغ للزبون.';
 
   @override
   String get actionFullScreen => 'ملء الشاشة (F11)';
@@ -1834,7 +1870,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get payClear => 'مسح';
 
   @override
-  String get payInsufficient => 'المبلغ المستلم أقل من المجموع. استلم الباقي أو سجّله ديناً على الزبون.';
+  String get payInsufficient =>
+      'المبلغ المستلم أقل من المجموع. استلم الباقي أو سجّله ديناً على الزبون.';
 
   @override
   String get payRestOnAccount => 'تسجيل الباقي ديناً';
@@ -1881,11 +1918,234 @@ class AppLocalizationsAr extends AppLocalizations {
   String get branchCurrent => 'الفرع الحالي';
 
   @override
-  String get tilePickerLoadFailed => 'تعذّر تحميل الحسابات. تحقق من الاتصال وحاول مرة أخرى.';
+  String get tilePickerLoadFailed =>
+      'تعذّر تحميل الحسابات. تحقق من الاتصال وحاول مرة أخرى.';
 
   @override
-  String get loyaltySpendPerPointHelp => 'الكسب: يحصل الزبون على نقطة واحدة عن كل هذا المبلغ';
+  String get loyaltySpendPerPointHelp =>
+      'الكسب: يحصل الزبون على نقطة واحدة عن كل هذا المبلغ';
 
   @override
-  String get loyaltyPointValueHelp => 'الاستخدام: قيمة الخصم الذي تعطيه النقطة الواحدة عند الدفع';
+  String get loyaltyPointValueHelp =>
+      'الاستخدام: قيمة الخصم الذي تعطيه النقطة الواحدة عند الدفع';
+
+  @override
+  String get navInvoices => 'الفواتير';
+
+  @override
+  String get invoiceStatusCompleted => 'مكتملة';
+
+  @override
+  String get invoiceStatusCancelled => 'ملغاة';
+
+  @override
+  String get invoiceStatusUnpaid => 'غير مدفوعة';
+
+  @override
+  String get invoiceStatusPartiallyPaid => 'مدفوعة جزئياً';
+
+  @override
+  String get invoiceStatusPaid => 'مدفوعة';
+
+  @override
+  String get invoiceSearchHint => 'رقم الفاتورة أو اسم الزبون';
+
+  @override
+  String get invoiceAnyDate => 'كل التواريخ';
+
+  @override
+  String get invoiceAllBranches => 'كل الفروع';
+
+  @override
+  String get invoiceAnyPayment => 'كل طرق الدفع';
+
+  @override
+  String get invoiceAnyCashier => 'كل الكاشيرية';
+
+  @override
+  String get invoiceAnyStatus => 'كل الحالات';
+
+  @override
+  String get invoiceNone => 'لا توجد فواتير مطابقة';
+
+  @override
+  String get invoiceSortNewest => 'الأحدث أولاً';
+
+  @override
+  String get invoiceSortOldest => 'الأقدم أولاً';
+
+  @override
+  String get invoiceSortNumberDesc => 'الرقم (تنازلي)';
+
+  @override
+  String get invoiceSortNumberAsc => 'الرقم (تصاعدي)';
+
+  @override
+  String get invoiceSortAmountDesc => 'المبلغ (الأعلى أولاً)';
+
+  @override
+  String get invoiceSortAmountAsc => 'المبلغ (الأقل أولاً)';
+
+  @override
+  String get invoiceCreditCustomer => 'زبون آجل';
+
+  @override
+  String get invoiceTitle => 'فاتورة';
+
+  @override
+  String get invoiceDate => 'التاريخ';
+
+  @override
+  String get invoiceBranch => 'الفرع';
+
+  @override
+  String get invoiceNetTotal => 'الصافي بعد الإرجاع';
+
+  @override
+  String get invoicePaid => 'المدفوع';
+
+  @override
+  String get invoicePaymentHistory => 'سجل الدفعات';
+
+  @override
+  String get invoiceNoPayments => 'لا توجد دفعات بعد';
+
+  @override
+  String get invoiceReprint => 'إعادة الطباعة';
+
+  @override
+  String get printPreview => 'معاينة';
+
+  @override
+  String get printSample => 'نموذج';
+
+  @override
+  String get receiptItem => 'المادة';
+
+  @override
+  String get invoiceTemplateTitle => 'قالب الفاتورة';
+
+  @override
+  String get invoicePaper => 'الورق';
+
+  @override
+  String get invoicePaperThermal => 'رول حراري';
+
+  @override
+  String get invoiceStyle => 'الشكل';
+
+  @override
+  String get invoiceStyleClassic => 'كلاسيكي';
+
+  @override
+  String get invoiceStyleModern => 'حديث';
+
+  @override
+  String get invoiceStyleCompact => 'مضغوط';
+
+  @override
+  String get invoiceBranding => 'معلومات المتجر على الفاتورة';
+
+  @override
+  String get invoiceLogoChoose => 'اختيار الشعار';
+
+  @override
+  String get invoiceLogoChange => 'تغيير الشعار';
+
+  @override
+  String get invoiceLogoShow => 'طباعة الشعار';
+
+  @override
+  String get invoiceBrandName => 'اسم المتجر على الفاتورة';
+
+  @override
+  String get invoiceBrandDefaultHint =>
+      'اتركه فارغاً لاستخدام اسم المتجر وهاتف الفرع وعنوانه';
+
+  @override
+  String get invoiceFooter => 'رسالة أسفل الفاتورة / الشكر';
+
+  @override
+  String get settingsSaved => 'تم الحفظ';
+
+  @override
+  String get actionRemove => 'إزالة';
+
+  @override
+  String get imageTooLarge => 'الصورة كبيرة جداً (5 ميغابايت كحد أقصى).';
+
+  @override
+  String get imageWrongType => 'اختر صورة بصيغة PNG أو JPG أو WebP.';
+
+  @override
+  String get printerAskEachTime => 'السؤال عن الطابعة في كل مرة';
+
+  @override
+  String get printerSystemHelp => 'اختر طابعة للطباعة عليها مباشرة بدون نافذة.';
+
+  @override
+  String get printerChoose => 'اختيار الطابعة';
+
+  @override
+  String get productCodeInvalidChars => 'استخدم الحروف والأرقام و - _ . فقط';
+
+  @override
+  String get productCodeTooLong => 'طويل جداً (64 حرفاً كحد أقصى)';
+
+  @override
+  String get productCodeBadCheckDigit =>
+      'رقم التحقق في هذا الباركود خاطئ — تأكد من كتابته بشكل صحيح';
+
+  @override
+  String productCodeTaken(String name) {
+    return 'مستخدم مسبقاً للمنتج \"$name\"';
+  }
+
+  @override
+  String get productCodeHelp =>
+      'امسح باركود المنتج أو اكتبه، أو اضغط ✨ لتوليد واحد';
+
+  @override
+  String get productCodeGeneratedInfo =>
+      'يُحفظ هذا الباركود مع المنتج. تجده في المخزون ← المنتجات (زر الملصق) لطباعته ولصقه على المنتج، ومسحه عند الكاشير يضيف هذا المنتج.';
+
+  @override
+  String get productSkuOptional => 'الرمز الداخلي (SKU) — اختياري';
+
+  @override
+  String get productSkuHelp =>
+      'اتركه فارغاً لاستخدام الباركود. البحث أو المسح بأي من الرمزين يجد المنتج.';
+
+  @override
+  String get productPhotoChoose => 'إضافة صورة';
+
+  @override
+  String get productPhotoChange => 'تغيير الصورة';
+
+  @override
+  String get productOpeningStock => 'الكمية الابتدائية في المخزون';
+
+  @override
+  String productStockInBranch(String branch) {
+    return 'في فرع: $branch';
+  }
+
+  @override
+  String get errorQuantityInvalid => 'أدخل كمية صحيحة';
+
+  @override
+  String get customerLoyaltyValue => 'قيمة النقاط';
+
+  @override
+  String get customerLoyaltyMember =>
+      'عضو في برنامج الولاء — يكسب نقاطاً مع كل شراء';
+
+  @override
+  String get customerDebts => 'الديون';
+
+  @override
+  String get customerNoDebts => 'لا توجد ديون';
+
+  @override
+  String get customerInvoices => 'آخر الفواتير';
 }

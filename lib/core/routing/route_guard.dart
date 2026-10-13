@@ -12,6 +12,7 @@ class RouteGuard {
   /// dashboard) are open to every signed-in employee.
   static const Map<String, AppPermission> requiredPermission = {
     RoutePaths.pos: AppPermission.sell,
+    RoutePaths.invoices: AppPermission.sell,
     RoutePaths.debts: AppPermission.debts,
     RoutePaths.customers: AppPermission.customers,
     RoutePaths.inventory: AppPermission.inventory,
