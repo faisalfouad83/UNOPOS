@@ -66,6 +66,25 @@ class DriftLicensingRepository implements LicensingRepository {
   }
 
   @override
+  Future<void> revokeCode(String codeId, {bool endStoreActivation = false}) async {
+    await (_db.update(_db.activationCodes)..where((t) => t.id.equals(codeId))).write(
+      ActivationCodesCompanion(
+        status: const Value('revoked'),
+        // Ends the activation of the store using it (this install's store).
+        expiresAt: endStoreActivation ? Value(DateTime.now()) : const Value.absent(),
+      ),
+    );
+  }
+
+  @override
+  Future<void> removeCode(String codeId) async {
+    final row = await (_db.select(_db.activationCodes)..where((t) => t.id.equals(codeId))).getSingleOrNull();
+    if (row == null) return;
+    if (row.redeemedByStoreId != null) throw StateError('this code was used by a store: revoke it instead');
+    await (_db.delete(_db.activationCodes)..where((t) => t.id.equals(codeId))).go();
+  }
+
+  @override
   Future<String> codeStatus(String rawCode) async {
     final ActivationPayload payload;
     try {
@@ -74,9 +93,9 @@ class DriftLicensingRepository implements LicensingRepository {
       return 'invalid';
     }
     if (payload.expiresAt != null && payload.expiresAt!.isBefore(DateTime.now())) return 'expired';
-    final existing = await (_db.select(_db.activationCodes)
-          ..where((t) => t.code.equals(rawCode.trim().toUpperCase())))
+    final existing = await (_db.select(_db.activationCodes)..where((t) => t.code.equals(rawCode.trim().toUpperCase())))
         .getSingleOrNull();
+    if (existing != null && existing.status == 'revoked') return 'revoked';
     if (existing != null && existing.status != 'unused') return 'used';
     return 'unused';
   }
@@ -88,9 +107,7 @@ class DriftLicensingRepository implements LicensingRepository {
     ActivationCodeCodec.verifyAndDecode(rawCode);
 
     final normalized = rawCode.trim().toUpperCase();
-    final existing = await (_db.select(_db.activationCodes)
-          ..where((t) => t.code.equals(normalized)))
-        .getSingleOrNull();
+    final existing = await (_db.select(_db.activationCodes)..where((t) => t.code.equals(normalized))).getSingleOrNull();
 
     if (existing != null) {
       return _mapRow(existing);
@@ -125,6 +142,8 @@ class DriftLicensingRepository implements LicensingRepository {
 
   @override
   Future<void> redeemCode(String activationCodeId, String storeId) async {
+    final row = await (_db.select(_db.activationCodes)..where((t) => t.id.equals(activationCodeId))).getSingleOrNull();
+    if (row?.status == 'revoked') throw StateError('activation code revoked');
     await (_db.update(_db.activationCodes)..where((t) => t.id.equals(activationCodeId))).write(
       ActivationCodesCompanion(
         status: const Value('active'),

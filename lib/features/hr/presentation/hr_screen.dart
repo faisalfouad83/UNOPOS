@@ -7,6 +7,8 @@ import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/auth_models.dart';
 import '../../auth/domain/session_controller.dart';
+import '../../auth/domain/account_rules.dart';
+import '../../auth/presentation/confirm_with_pin.dart';
 import 'employee_edit_dialog.dart';
 
 final _employeesProvider = StreamProvider.autoDispose.family<List<EmployeeRecord>, String>((ref, storeId) {
@@ -26,6 +28,7 @@ class HrScreen extends ConsumerWidget {
     if (storeId == null) return const Scaffold(body: SizedBox.shrink());
 
     final employeesAsync = ref.watch(_employeesProvider(storeId));
+    final me = ref.watch(sessionControllerProvider).employee;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.hrTitle)),
@@ -56,11 +59,20 @@ class HrScreen extends ConsumerWidget {
                       icon: const Icon(Icons.edit_outlined),
                       onPressed: () => showEmployeeEditDialog(context, ref, existing: employee),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.person_off_outlined),
-                      tooltip: context.l10n.hrDeactivate,
-                      onPressed: () => ref.read(authRepositoryProvider).setEmployeeActive(employee.id, false),
-                    ),
+                    // Only offered when allowed: never the owner, a manager
+                    // only to the owner, nobody to themselves (and the
+                    // server checks the same with the actor's PIN).
+                    if (me != null && canDeactivate(me, employee) == null)
+                      IconButton(
+                        icon: const Icon(Icons.person_off_outlined),
+                        tooltip: context.l10n.hrDeactivate,
+                        onPressed: () => _deactivate(context, ref, me, employee),
+                      )
+                    else if (employee.role.name == 'owner')
+                      Tooltip(
+                        message: l10n.accountOwnerProtected,
+                        child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.shield_outlined)),
+                      ),
                   ],
                 ),
               );
@@ -74,5 +86,26 @@ class HrScreen extends ConsumerWidget {
         label: Text(l10n.hrAddEmployee),
       ),
     );
+  }
+}
+
+/// Deactivates [employee] after the signed-in account confirms with its PIN.
+/// The account's history (sales, shifts) stays; it just can't sign in.
+Future<void> _deactivate(BuildContext context, WidgetRef ref, EmployeeRecord me, EmployeeRecord employee) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final pin = await confirmWithPin(
+    context,
+    title: '${context.l10n.hrDeactivate}: ${employee.name}',
+    message: l10n.accountDeactivateConfirm(employee.name),
+  );
+  if (pin == null) return;
+  try {
+    await ref.read(authRepositoryProvider).deactivateEmployee(employeeId: employee.id, actorId: me.id, actorPin: pin);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.accountDeactivated(employee.name))));
+  } on AccountChangeException catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(accountRefusalMessage(l10n, e))));
+  } catch (_) {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
   }
 }

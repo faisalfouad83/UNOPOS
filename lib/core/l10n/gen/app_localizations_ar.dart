@@ -2148,4 +2148,181 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get customerInvoices => 'آخر الفواتير';
+
+  @override
+  String get confirmYourPin => 'رمزك السري';
+
+  @override
+  String get accountOwnerProtected =>
+      'لا يمكن إيقاف حساب المالك أو تغيير دوره. نقل الملكية يتم بإجراء منفصل ومصرّح به.';
+
+  @override
+  String get accountOnlyOwnerForManager =>
+      'فقط المالك يستطيع إيقاف حساب مدير أو تغيير المدراء.';
+
+  @override
+  String get accountNotYourself => 'لا يمكنك إيقاف حسابك بنفسك.';
+
+  @override
+  String get accountNotAllowed => 'حسابك لا يملك صلاحية هذا الإجراء.';
+
+  @override
+  String accountDeactivateConfirm(String name) {
+    return 'لن يتمكن $name من تسجيل الدخول بعد الآن. تبقى مبيعاته وسجله محفوظة. أدخل رمزك للتأكيد.';
+  }
+
+  @override
+  String accountDeactivated(String name) {
+    return 'تم إيقاف حساب $name';
+  }
+
+  @override
+  String accountRoleChangeConfirm(String name) {
+    return 'تغيير دور المدير لـ $name يحتاج إلى المالك. أدخل رمزك للتأكيد.';
+  }
+
+  @override
+  String get activationRevoked =>
+      'تم إلغاء هذا الكود من قبل المطوّر. اطلب كوداً جديداً.';
+
+  @override
+  String get codeRevoke => 'إلغاء الكود';
+
+  @override
+  String get codeRevoked => 'ملغى';
+
+  @override
+  String get codeRevokeTitle => 'إلغاء هذا الكود؟';
+
+  @override
+  String codeRevokeMessage(String store) {
+    return 'لن يعود بالإمكان استخدام كود \"$store\" لتفعيل أي متجر.';
+  }
+
+  @override
+  String codeRevokeEndStore(String store) {
+    return 'إنهاء تفعيل متجر \"$store\" أيضاً';
+  }
+
+  @override
+  String get codeRevokeEndStoreHelp =>
+      'يُقفل ذلك المتجر فقط حتى يُدخل كوداً جديداً. اتركه بدون تحديد ليبقى تفعيله الحالي.';
+
+  @override
+  String get codeRemoveTitle => 'حذف هذا الكود؟';
+
+  @override
+  String codeRemoveMessage(String store) {
+    return 'سيُحذف كود \"$store\" غير المستخدم نهائياً.';
+  }
+
+  @override
+  String get codeRemoveUsed =>
+      'استخدم متجرٌ هذا الكود — قم بإلغائه بدلاً من الحذف.';
+
+  @override
+  String get breakStart => 'أخذ استراحة';
+
+  @override
+  String breakStartConfirm(int minutes, int perDay) {
+    return 'الاستراحة حتى $minutes دقيقة، و$perDay مرات في اليوم. يُقفل الجهاز حتى تعود وتُدخل رمزك، وتبقى ورديتك مفتوحة.';
+  }
+
+  @override
+  String get breakOff => 'الاستراحات متوقفة.';
+
+  @override
+  String get breakRoleNotAllowed => 'دورك لا يسمح بالاستراحات.';
+
+  @override
+  String get breakAlreadyOn => 'أنت في استراحة بالفعل.';
+
+  @override
+  String breakNoneLeft(int max) {
+    return 'لا توجد استراحات متبقية اليوم ($max في اليوم).';
+  }
+
+  @override
+  String breakOnBreak(String name) {
+    return '$name في استراحة';
+  }
+
+  @override
+  String get breakTillLocked => 'الجهاز مقفل حتى العودة.';
+
+  @override
+  String get breakTimeLeft => 'متبقية';
+
+  @override
+  String get breakOverTime => 'تجاوز الوقت المسموح';
+
+  @override
+  String get breakEnterPinToReturn => 'عدت؟ أدخل رمزك';
+
+  @override
+  String get breakWrongPin =>
+      'فقط الموظف الذي في الاستراحة يمكنه إنهاؤها برمزه الخاص.';
+
+  @override
+  String get breakExceededTitle => 'تجاوزت الاستراحة الوقت';
+
+  @override
+  String breakExceededMessage(int minutes) {
+    return 'تجاوزت هذه الاستراحة الحد بـ $minutes دقيقة. سُجّل ذلك في تقرير اليوم للمدير.';
+  }
+
+  @override
+  String get breakSettingsTitle => 'الاستراحات';
+
+  @override
+  String get breakEnable => 'السماح بالاستراحات';
+
+  @override
+  String get breakEnableHelp =>
+      'يمكن للموظف الابتعاد دون إغلاق ورديته؛ يُقفل الجهاز حتى يعود برمزه.';
+
+  @override
+  String get breakMaxMinutes => 'دقائق الاستراحة الواحدة';
+
+  @override
+  String get breakMaxPerDay => 'عدد الاستراحات في اليوم';
+
+  @override
+  String get breakMinutesRange => 'من 1 إلى 240';
+
+  @override
+  String get breakPerDayRange => 'من 1 إلى 10';
+
+  @override
+  String get breakRolesTitle => 'من يحق له الاستراحة';
+
+  @override
+  String get breakReportTitle => 'استراحات اليوم';
+
+  @override
+  String get breakNoneToday => 'لا توجد استراحات اليوم';
+
+  @override
+  String breakCount(int count) {
+    return '$count اليوم';
+  }
+
+  @override
+  String get breakStillAway => 'لم يعد بعد';
+
+  @override
+  String breakMinutes(int minutes) {
+    return '$minutes دقيقة';
+  }
+
+  @override
+  String get breakEndedEarly => 'انتهت مبكراً';
+
+  @override
+  String get breakReconciled => 'أُغلقت عند الدخول التالي';
+
+  @override
+  String breakOverBy(int minutes) {
+    return 'تجاوز $minutes دقيقة';
+  }
 }

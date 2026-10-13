@@ -1,3 +1,4 @@
+import '../../../core/constants/roles.dart';
 import 'auth_models.dart';
 
 abstract class AuthRepository {
@@ -50,6 +51,20 @@ abstract class AuthRepository {
   Future<void> updateEmployee(EmployeeRecord employee, {String? newPin});
 
   Future<void> setEmployeeActive(String employeeId, bool isActive);
+
+  /// Deactivates [employeeId] on behalf of [actorId], who proves it with
+  /// their own PIN. Refused (AccountChangeException) for the owner's
+  /// account, for a manager unless the actor is the owner, and for oneself.
+  Future<void> deactivateEmployee({required String employeeId, required String actorId, required String actorPin});
+
+  /// Changes [employeeId]'s role on behalf of [actorId] (PIN-checked); the
+  /// owner alone makes or unmakes managers, nobody becomes owner.
+  Future<void> changeEmployeeRole({
+    required String employeeId,
+    required StoreRole newRole,
+    required String actorId,
+    required String actorPin,
+  });
 
   Stream<List<EmployeeRecord>> watchEmployees(String storeId);
 

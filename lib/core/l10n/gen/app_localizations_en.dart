@@ -2152,4 +2152,180 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerInvoices => 'Latest invoices';
+
+  @override
+  String get confirmYourPin => 'Your PIN';
+
+  @override
+  String get accountOwnerProtected =>
+      'The owner\'s account can\'t be deactivated or given another role. Ownership is transferred through a separate, authorised process.';
+
+  @override
+  String get accountOnlyOwnerForManager =>
+      'Only the owner can deactivate a manager or change who is a manager.';
+
+  @override
+  String get accountNotYourself => 'You can\'t deactivate your own account.';
+
+  @override
+  String get accountNotAllowed => 'Your account isn\'t allowed to do this.';
+
+  @override
+  String accountDeactivateConfirm(String name) {
+    return '$name won\'t be able to sign in any more. Their sales and history are kept. Enter your PIN to confirm.';
+  }
+
+  @override
+  String accountDeactivated(String name) {
+    return '$name was deactivated';
+  }
+
+  @override
+  String accountRoleChangeConfirm(String name) {
+    return 'Changing $name\'s manager role needs the owner. Enter your PIN to confirm.';
+  }
+
+  @override
+  String get activationRevoked =>
+      'This code was cancelled by the developer. Ask for a new code.';
+
+  @override
+  String get codeRevoke => 'Revoke';
+
+  @override
+  String get codeRevoked => 'Revoked';
+
+  @override
+  String get codeRevokeTitle => 'Revoke this code?';
+
+  @override
+  String codeRevokeMessage(String store) {
+    return 'The code for \"$store\" can no longer be used to activate a store.';
+  }
+
+  @override
+  String codeRevokeEndStore(String store) {
+    return 'Also end the activation of \"$store\"';
+  }
+
+  @override
+  String get codeRevokeEndStoreHelp =>
+      'Only that store is locked until it enters a new code. Leave unticked to let it keep its current activation.';
+
+  @override
+  String get codeRemoveTitle => 'Remove this code?';
+
+  @override
+  String codeRemoveMessage(String store) {
+    return 'The unused code for \"$store\" will be removed for good.';
+  }
+
+  @override
+  String get codeRemoveUsed => 'A store used this code — revoke it instead.';
+
+  @override
+  String get breakStart => 'Take a break';
+
+  @override
+  String breakStartConfirm(int minutes, int perDay) {
+    return 'Breaks are up to $minutes minutes, $perDay a day. The till locks until you come back and enter your PIN; your shift stays open.';
+  }
+
+  @override
+  String get breakOff => 'Breaks are switched off.';
+
+  @override
+  String get breakRoleNotAllowed => 'Your role can\'t take breaks.';
+
+  @override
+  String get breakAlreadyOn => 'You\'re already on a break.';
+
+  @override
+  String breakNoneLeft(int max) {
+    return 'No breaks left today ($max a day).';
+  }
+
+  @override
+  String breakOnBreak(String name) {
+    return '$name is on a break';
+  }
+
+  @override
+  String get breakTillLocked => 'The till is locked until they come back.';
+
+  @override
+  String get breakTimeLeft => 'left';
+
+  @override
+  String get breakOverTime => 'over the allowed time';
+
+  @override
+  String get breakEnterPinToReturn => 'Back? Enter your PIN';
+
+  @override
+  String get breakWrongPin =>
+      'Only the employee on the break can end it, with their own PIN.';
+
+  @override
+  String get breakExceededTitle => 'Break ran over';
+
+  @override
+  String breakExceededMessage(int minutes) {
+    return 'This break went $minutes min over the limit. It\'s recorded in today\'s report for the manager.';
+  }
+
+  @override
+  String get breakSettingsTitle => 'Breaks';
+
+  @override
+  String get breakEnable => 'Allow breaks';
+
+  @override
+  String get breakEnableHelp =>
+      'Employees can step away without closing their shift; the till locks until they return with their PIN.';
+
+  @override
+  String get breakMaxMinutes => 'Minutes per break';
+
+  @override
+  String get breakMaxPerDay => 'Breaks per day';
+
+  @override
+  String get breakMinutesRange => '1 to 240';
+
+  @override
+  String get breakPerDayRange => '1 to 10';
+
+  @override
+  String get breakRolesTitle => 'Who may take breaks';
+
+  @override
+  String get breakReportTitle => 'Breaks today';
+
+  @override
+  String get breakNoneToday => 'No breaks today';
+
+  @override
+  String breakCount(int count) {
+    return '$count today';
+  }
+
+  @override
+  String get breakStillAway => 'still away';
+
+  @override
+  String breakMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get breakEndedEarly => 'ended early';
+
+  @override
+  String get breakReconciled => 'closed at next sign-in';
+
+  @override
+  String breakOverBy(int minutes) {
+    return '$minutes min over';
+  }
 }

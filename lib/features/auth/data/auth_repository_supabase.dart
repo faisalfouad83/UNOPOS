@@ -4,6 +4,7 @@ import '../../../core/constants/permissions.dart';
 import '../../../core/offline/offline_cache.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/supabase/supabase_config.dart';
+import '../domain/account_rules.dart';
 import '../domain/auth_models.dart';
 import '../domain/auth_repository.dart';
 
@@ -194,6 +195,51 @@ class SupabaseAuthRepository implements AuthRepository {
 
     if (newPin != null) {
       await _client.rpc('update_employee_pin', params: {'p_user_id': employee.id, 'p_new_pin': newPin});
+    }
+  }
+
+  /// Maps the server's refusal to [AccountChangeException].
+  Never _accountError(PostgrestException e) {
+    final m = e.message;
+    if (m.contains('wrong PIN')) throw const AccountChangeException(null, wrongPin: true);
+    if (m.contains('owner account') || m.contains('ownership')) {
+      throw const AccountChangeException(AccountChangeRefusal.ownerProtected);
+    }
+    if (m.contains('only the owner')) throw const AccountChangeException(AccountChangeRefusal.onlyOwnerForManager);
+    if (m.contains('your own account')) throw const AccountChangeException(AccountChangeRefusal.notYourself);
+    throw const AccountChangeException(AccountChangeRefusal.notAllowed);
+  }
+
+  @override
+  Future<void> deactivateEmployee(
+      {required String employeeId, required String actorId, required String actorPin}) async {
+    try {
+      await _client.rpc('deactivate_employee', params: {
+        'p_employee_id': employeeId,
+        'p_actor_id': actorId,
+        'p_actor_pin': actorPin,
+      });
+    } on PostgrestException catch (e) {
+      _accountError(e);
+    }
+  }
+
+  @override
+  Future<void> changeEmployeeRole({
+    required String employeeId,
+    required StoreRole newRole,
+    required String actorId,
+    required String actorPin,
+  }) async {
+    try {
+      await _client.rpc('change_employee_role', params: {
+        'p_employee_id': employeeId,
+        'p_new_role': newRole.name,
+        'p_actor_id': actorId,
+        'p_actor_pin': actorPin,
+      });
+    } on PostgrestException catch (e) {
+      _accountError(e);
     }
   }
 

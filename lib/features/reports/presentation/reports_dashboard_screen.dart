@@ -9,6 +9,7 @@ import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../../pos/domain/pos_models.dart';
 import '../domain/sales_summary.dart';
+import '../../breaks/presentation/break_report_card.dart';
 
 typedef _BranchKey = ({String storeId, String branchId});
 
@@ -69,6 +70,8 @@ class ReportsDashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               _KpiRow(summary: summary),
+              const SizedBox(height: 16),
+              BreakReportCard(storeId: storeId, branchId: branchId),
               const SizedBox(height: 16),
               _SalesOverTimeCard(summary: summary, period: period),
               const SizedBox(height: 16),

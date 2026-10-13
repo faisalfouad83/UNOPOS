@@ -4071,6 +4071,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Latest invoices'**
   String get customerInvoices;
+
+  /// No description provided for @confirmYourPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Your PIN'**
+  String get confirmYourPin;
+
+  /// No description provided for @accountOwnerProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'The owner\'s account can\'t be deactivated or given another role. Ownership is transferred through a separate, authorised process.'**
+  String get accountOwnerProtected;
+
+  /// No description provided for @accountOnlyOwnerForManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the owner can deactivate a manager or change who is a manager.'**
+  String get accountOnlyOwnerForManager;
+
+  /// No description provided for @accountNotYourself.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t deactivate your own account.'**
+  String get accountNotYourself;
+
+  /// No description provided for @accountNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account isn\'t allowed to do this.'**
+  String get accountNotAllowed;
+
+  /// No description provided for @accountDeactivateConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} won\'t be able to sign in any more. Their sales and history are kept. Enter your PIN to confirm.'**
+  String accountDeactivateConfirm(String name);
+
+  /// No description provided for @accountDeactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} was deactivated'**
+  String accountDeactivated(String name);
+
+  /// No description provided for @accountRoleChangeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing {name}\'s manager role needs the owner. Enter your PIN to confirm.'**
+  String accountRoleChangeConfirm(String name);
+
+  /// No description provided for @activationRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'This code was cancelled by the developer. Ask for a new code.'**
+  String get activationRevoked;
+
+  /// No description provided for @codeRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get codeRevoke;
+
+  /// No description provided for @codeRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get codeRevoked;
+
+  /// No description provided for @codeRevokeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke this code?'**
+  String get codeRevokeTitle;
+
+  /// No description provided for @codeRevokeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The code for \"{store}\" can no longer be used to activate a store.'**
+  String codeRevokeMessage(String store);
+
+  /// No description provided for @codeRevokeEndStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Also end the activation of \"{store}\"'**
+  String codeRevokeEndStore(String store);
+
+  /// No description provided for @codeRevokeEndStoreHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Only that store is locked until it enters a new code. Leave unticked to let it keep its current activation.'**
+  String get codeRevokeEndStoreHelp;
+
+  /// No description provided for @codeRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this code?'**
+  String get codeRemoveTitle;
+
+  /// No description provided for @codeRemoveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The unused code for \"{store}\" will be removed for good.'**
+  String codeRemoveMessage(String store);
+
+  /// No description provided for @codeRemoveUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'A store used this code — revoke it instead.'**
+  String get codeRemoveUsed;
+
+  /// No description provided for @breakStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a break'**
+  String get breakStart;
+
+  /// No description provided for @breakStartConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks are up to {minutes} minutes, {perDay} a day. The till locks until you come back and enter your PIN; your shift stays open.'**
+  String breakStartConfirm(int minutes, int perDay);
+
+  /// No description provided for @breakOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks are switched off.'**
+  String get breakOff;
+
+  /// No description provided for @breakRoleNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your role can\'t take breaks.'**
+  String get breakRoleNotAllowed;
+
+  /// No description provided for @breakAlreadyOn.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re already on a break.'**
+  String get breakAlreadyOn;
+
+  /// No description provided for @breakNoneLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'No breaks left today ({max} a day).'**
+  String breakNoneLeft(int max);
+
+  /// No description provided for @breakOnBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is on a break'**
+  String breakOnBreak(String name);
+
+  /// No description provided for @breakTillLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The till is locked until they come back.'**
+  String get breakTillLocked;
+
+  /// No description provided for @breakTimeLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'left'**
+  String get breakTimeLeft;
+
+  /// No description provided for @breakOverTime.
+  ///
+  /// In en, this message translates to:
+  /// **'over the allowed time'**
+  String get breakOverTime;
+
+  /// No description provided for @breakEnterPinToReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back? Enter your PIN'**
+  String get breakEnterPinToReturn;
+
+  /// No description provided for @breakWrongPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the employee on the break can end it, with their own PIN.'**
+  String get breakWrongPin;
+
+  /// No description provided for @breakExceededTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Break ran over'**
+  String get breakExceededTitle;
+
+  /// No description provided for @breakExceededMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This break went {minutes} min over the limit. It\'s recorded in today\'s report for the manager.'**
+  String breakExceededMessage(int minutes);
+
+  /// No description provided for @breakSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks'**
+  String get breakSettingsTitle;
+
+  /// No description provided for @breakEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow breaks'**
+  String get breakEnable;
+
+  /// No description provided for @breakEnableHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Employees can step away without closing their shift; the till locks until they return with their PIN.'**
+  String get breakEnableHelp;
+
+  /// No description provided for @breakMaxMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes per break'**
+  String get breakMaxMinutes;
+
+  /// No description provided for @breakMaxPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks per day'**
+  String get breakMaxPerDay;
+
+  /// No description provided for @breakMinutesRange.
+  ///
+  /// In en, this message translates to:
+  /// **'1 to 240'**
+  String get breakMinutesRange;
+
+  /// No description provided for @breakPerDayRange.
+  ///
+  /// In en, this message translates to:
+  /// **'1 to 10'**
+  String get breakPerDayRange;
+
+  /// No description provided for @breakRolesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who may take breaks'**
+  String get breakRolesTitle;
+
+  /// No description provided for @breakReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks today'**
+  String get breakReportTitle;
+
+  /// No description provided for @breakNoneToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No breaks today'**
+  String get breakNoneToday;
+
+  /// No description provided for @breakCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} today'**
+  String breakCount(int count);
+
+  /// No description provided for @breakStillAway.
+  ///
+  /// In en, this message translates to:
+  /// **'still away'**
+  String get breakStillAway;
+
+  /// No description provided for @breakMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String breakMinutes(int minutes);
+
+  /// No description provided for @breakEndedEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'ended early'**
+  String get breakEndedEarly;
+
+  /// No description provided for @breakReconciled.
+  ///
+  /// In en, this message translates to:
+  /// **'closed at next sign-in'**
+  String get breakReconciled;
+
+  /// No description provided for @breakOverBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min over'**
+  String breakOverBy(int minutes);
 }
 
 class _AppLocalizationsDelegate

@@ -53,9 +53,9 @@ class _LicenseExpiredScreenState extends ConsumerState<LicenseExpiredScreen> {
       await ref.read(licenseRefresherProvider)();
     } on ActivationCodeException {
       setState(() => _error = l10n.activationInvalid);
-    } catch (_) {
-      // e.g. the code was already used by another store.
-      setState(() => _error = l10n.activationAlreadyUsed);
+    } catch (e) {
+      // A revoked code, or one already used by another store.
+      setState(() => _error = e.toString().contains('revoked') ? l10n.activationRevoked : l10n.activationAlreadyUsed);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

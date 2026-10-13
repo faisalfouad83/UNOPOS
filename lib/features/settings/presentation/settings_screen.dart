@@ -11,6 +11,7 @@ import 'branch_settings_section.dart';
 import 'factory_reset_section.dart';
 import 'general_settings_section.dart';
 import 'invoice_branding_section.dart';
+import '../../breaks/presentation/break_settings_section.dart';
 import 'printer_settings_section.dart';
 
 final _settingsStreamProvider = StreamProvider.autoDispose.family((ref, String storeId) {
@@ -40,6 +41,9 @@ class SettingsScreen extends ConsumerWidget {
               GeneralSettingsSection(storeId: storeId, settings: settings),
               const SizedBox(height: 16),
               BranchSettingsSection(storeId: storeId),
+              const SizedBox(height: 16),
+              BreakSettingsSection(
+                  key: ValueKey('breaks-${settings.breakMaxMinutes}-${settings.breakMaxPerDay}'), settings: settings),
               const SizedBox(height: 16),
               PrinterSettingsSection(storeId: storeId, settings: settings),
               const SizedBox(height: 16),

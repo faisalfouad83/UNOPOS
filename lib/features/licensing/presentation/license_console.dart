@@ -67,7 +67,6 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
     LicenseTier.lifetime,
   ];
 
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -127,7 +126,7 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(l10n.developerLocalStatusNote, style: Theme.of(context).textTheme.bodySmall),
               ),
-            ..._recent.map((code) => _CodeTile(code: code)),
+            ..._recent.map((code) => _CodeTile(code: code, onChanged: _loadRecent)),
           ],
         ),
       ),
@@ -138,25 +137,104 @@ class _LicenseConsoleState extends ConsumerState<LicenseConsole> {
 /// One issued code: who it's for, whether it has been activated (and by
 /// which store), and how long until it expires — counted from when it was
 /// issued, whether or not it has been activated yet.
-class _CodeTile extends StatelessWidget {
-  const _CodeTile({required this.code});
+class _CodeTile extends ConsumerWidget {
+  const _CodeTile({required this.code, required this.onChanged});
   final ActivationCodeRecord code;
+  final VoidCallback onChanged;
+
+  Future<void> _revoke(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    var endStore = false;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          icon: const Icon(Icons.block),
+          title: Text(l10n.codeRevokeTitle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.codeRevokeMessage(code.storeNameRef)),
+              if (code.isActivated)
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: endStore,
+                  onChanged: (v) => setState(() => endStore = v ?? false),
+                  title: Text(l10n.codeRevokeEndStore(code.redeemedByStoreName ?? code.storeNameRef)),
+                  subtitle: Text(l10n.codeRevokeEndStoreHelp),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.actionCancel)),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.codeRevoke),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (ok != true || !context.mounted) return;
+    await _run(context, () => ref.read(licensingRepositoryProvider).revokeCode(code.id, endStoreActivation: endStore));
+  }
+
+  Future<void> _remove(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.delete_outline),
+        title: Text(l10n.codeRemoveTitle),
+        content: Text(l10n.codeRemoveMessage(code.storeNameRef)),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.actionCancel)),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.actionRemove),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) return;
+    await _run(context, () => ref.read(licensingRepositoryProvider).removeCode(code.id));
+  }
+
+  Future<void> _run(BuildContext context, Future<void> Function() action) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await action();
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsSaved)));
+      onChanged();
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(e.toString().contains('revoke it instead') ? l10n.codeRemoveUsed : l10n.errorGeneric)),
+      );
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final days = code.daysRemaining();
+    final revoked = code.status == ActivationCodeStatus.revoked;
     final expired = code.isExpired();
     final activated = code.isActivated;
 
-    final (statusText, statusColor, statusIcon) = activated
-        ? (
-            l10n.developerCodeActivatedBy(code.redeemedByStoreName ?? code.storeNameRef),
-            Colors.green.shade700,
-            Icons.check_circle_outline,
-          )
-        : (l10n.developerCodeNotActivated, Colors.orange.shade800, Icons.hourglass_empty);
+    final (statusText, statusColor, statusIcon) = revoked
+        ? (l10n.codeRevoked, theme.colorScheme.error, Icons.block)
+        : activated
+            ? (
+                l10n.developerCodeActivatedBy(code.redeemedByStoreName ?? code.storeNameRef),
+                Colors.green.shade700,
+                Icons.check_circle_outline,
+              )
+            : (l10n.developerCodeNotActivated, Colors.orange.shade800, Icons.hourglass_empty);
     final expiryText = code.expiresAt == null
         ? l10n.activationLifetime
         : expired
@@ -178,6 +256,13 @@ class _CodeTile extends StatelessWidget {
           ],
         ),
         isThreeLine: true,
+        trailing: PopupMenuButton<String>(
+          onSelected: (v) => v == 'revoke' ? _revoke(context, ref) : _remove(context, ref),
+          itemBuilder: (context) => [
+            if (!revoked) PopupMenuItem(value: 'revoke', child: Text(l10n.codeRevoke)),
+            if (!activated) PopupMenuItem(value: 'remove', child: Text(l10n.actionRemove)),
+          ],
+        ),
       ),
     );
   }

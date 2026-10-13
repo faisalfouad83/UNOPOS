@@ -50,6 +50,9 @@ import '../features/developer/data/developer_repository_supabase.dart';
 import '../features/developer/domain/developer_repository.dart';
 import '../features/notifications/data/notifications_repository_supabase.dart';
 import '../features/notifications/domain/notifications_repository.dart';
+import '../features/breaks/data/breaks_repository_drift.dart';
+import '../features/breaks/data/breaks_repository_supabase.dart';
+import '../features/breaks/domain/breaks_repository.dart';
 
 /// The single AppDatabase instance for the whole app lifetime. Kept alive
 /// for the entire process — never disposed mid-session. Only ever touched
@@ -178,6 +181,11 @@ final notificationsRepositoryProvider = Provider<NotificationsRepository?>((ref)
 final expenseDetailsRepositoryProvider = Provider<ExpenseDetailsRepository>((ref) {
   if (kUseSupabaseBackend) return SupabaseExpenseDetailsRepository(ref.watch(supabaseClientProvider));
   return DriftExpenseDetailsRepository(ref.watch(databaseProvider));
+});
+
+final breaksRepositoryProvider = Provider<BreaksRepository>((ref) {
+  if (kUseSupabaseBackend) return SupabaseBreaksRepository(ref.watch(supabaseClientProvider));
+  return DriftBreaksRepository(ref.watch(databaseProvider));
 });
 
 final offlineSaleQueueProvider = Provider<OfflineSaleQueue>((ref) => OfflineSaleQueue());

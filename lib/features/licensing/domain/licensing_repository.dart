@@ -11,6 +11,15 @@ abstract class LicensingRepository {
 
   Future<List<ActivationCodeRecord>> listRecentCodes({int limit = 50});
 
+  /// Developer only (enforced by the server): the code can no longer be
+  /// redeemed. A store already using it keeps its activation unless
+  /// [endStoreActivation], which locks that store until a new code.
+  Future<void> revokeCode(String codeId, {bool endStoreActivation = false});
+
+  /// Developer only: removes a code that no store ever used. Refused
+  /// (by the server) for a code a store used — revoke that instead.
+  Future<void> removeCode(String codeId);
+
   /// Validates the signature + looks up local redemption state. Does not
   /// mark it redeemed — call [redeemCode] once store creation succeeds.
   Future<ActivationCodeRecord> validateCode(String rawCode);

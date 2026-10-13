@@ -32,6 +32,13 @@ class AppSettingsTable extends Table {
   /// A 100% discount still charges cost + 5% instead of giving the item away.
   BoolColumn get fullDiscountKeepsMargin => boolean().withDefault(const Constant(false))();
 
+  /// Employee breaks: on/off, minutes per break, breaks per day, and the
+  /// roles that may take them (comma-separated role names).
+  BoolColumn get breakEnabled => boolean().withDefault(const Constant(false))();
+  IntColumn get breakMaxMinutes => integer().withDefault(const Constant(15))();
+  IntColumn get breakMaxPerDay => integer().withDefault(const Constant(2))();
+  TextColumn get breakRoles => text().withDefault(const Constant('cashier,warehouseManager'))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

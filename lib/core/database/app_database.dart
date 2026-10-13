@@ -12,6 +12,7 @@ import '../../features/shifts/data/tables/shift_tables.dart';
 import '../../features/settings/data/tables/settings_tables.dart';
 import '../../features/backup/data/tables/backup_tables.dart';
 import '../../features/audit/data/tables/audit_tables.dart';
+import '../../features/breaks/data/tables/break_tables.dart';
 
 part 'app_database.g.dart';
 
@@ -48,6 +49,7 @@ part 'app_database.g.dart';
     AppSettingsTable,
     BackupLogs,
     AuditLogs,
+    EmployeeBreaks,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -58,7 +60,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -94,6 +96,13 @@ class AppDatabase extends _$AppDatabase {
               'UPDATE sale_lines SET quantity_returned = (SELECT COALESCE(SUM(r.quantity_returned), 0) '
               'FROM sale_return_lines r WHERE r.sale_line_id = sale_lines.id)',
             );
+          }
+          if (from < 7) {
+            await m.addColumn(appSettingsTable, appSettingsTable.breakEnabled);
+            await m.addColumn(appSettingsTable, appSettingsTable.breakMaxMinutes);
+            await m.addColumn(appSettingsTable, appSettingsTable.breakMaxPerDay);
+            await m.addColumn(appSettingsTable, appSettingsTable.breakRoles);
+            await m.createTable(employeeBreaks);
           }
         },
       );

@@ -12,6 +12,7 @@ class RoutePaths {
   static const String pinPad = '/accounts/pin';
   static const String developerHome = '/developer';
   static const String licenseExpired = '/license-expired';
+  static const String breakLock = '/break';
 
   static const String home = '/home';
   static const String pos = '/pos';

@@ -2134,4 +2134,181 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get customerInvoices => 'دوایین پسوڵەکان';
+
+  @override
+  String get confirmYourPin => 'ژمارەی نهێنی خۆت';
+
+  @override
+  String get accountOwnerProtected =>
+      'هەژماری خاوەن ناتوانرێت ڕابگیرێت یان ڕۆڵی بگۆڕدرێت. گواستنەوەی خاوەندارێتی بە پرۆسەیەکی جیاواز دەکرێت.';
+
+  @override
+  String get accountOnlyOwnerForManager =>
+      'تەنها خاوەن دەتوانێت بەڕێوەبەرێک ڕابگرێت یان بیگۆڕێت.';
+
+  @override
+  String get accountNotYourself => 'ناتوانیت هەژماری خۆت ڕابگریت.';
+
+  @override
+  String get accountNotAllowed => 'هەژمارەکەت ڕێگەپێدراو نییە بۆ ئەمە.';
+
+  @override
+  String accountDeactivateConfirm(String name) {
+    return '$name ئیتر ناتوانێت بچێتە ژوورەوە. فرۆشتن و مێژووەکەی دەمێنێتەوە. بۆ دڵنیابوونەوە ژمارەی نهێنیت بنووسە.';
+  }
+
+  @override
+  String accountDeactivated(String name) {
+    return 'هەژماری $name ڕاگیرا';
+  }
+
+  @override
+  String accountRoleChangeConfirm(String name) {
+    return 'گۆڕینی ڕۆڵی بەڕێوەبەری $name پێویستی بە خاوەنە. ژمارەی نهێنیت بنووسە.';
+  }
+
+  @override
+  String get activationRevoked =>
+      'ئەم کۆدە لەلایەن گەشەپێدەرەوە هەڵوەشێنراوەتەوە. کۆدێکی نوێ داوا بکە.';
+
+  @override
+  String get codeRevoke => 'هەڵوەشاندنەوە';
+
+  @override
+  String get codeRevoked => 'هەڵوەشاوە';
+
+  @override
+  String get codeRevokeTitle => 'ئەم کۆدە هەڵبوەشێنرێتەوە؟';
+
+  @override
+  String codeRevokeMessage(String store) {
+    return 'کۆدی \"$store\" ئیتر بۆ چالاککردنی هیچ فرۆشگایەک بەکارنایەت.';
+  }
+
+  @override
+  String codeRevokeEndStore(String store) {
+    return 'چالاکی \"$store\"یش کۆتایی پێبهێنە';
+  }
+
+  @override
+  String get codeRevokeEndStoreHelp =>
+      'تەنها ئەو فرۆشگایە دادەخرێت تا کۆدێکی نوێ دەنووسێت. بەبێ نیشانە بیهێڵە بۆ مانەوەی چالاکییەکەی.';
+
+  @override
+  String get codeRemoveTitle => 'ئەم کۆدە لاببرێت؟';
+
+  @override
+  String codeRemoveMessage(String store) {
+    return 'کۆدی بەکارنەهاتووی \"$store\" بە یەکجاری لادەبرێت.';
+  }
+
+  @override
+  String get codeRemoveUsed =>
+      'فرۆشگایەک ئەم کۆدەی بەکارهێناوە — لەجیاتی لابردن هەڵیبوەشێنەرەوە.';
+
+  @override
+  String get breakStart => 'پشوو وەرگرتن';
+
+  @override
+  String breakStartConfirm(int minutes, int perDay) {
+    return 'پشوو تا $minutes خولەک، $perDay جار لە ڕۆژێکدا. ئامێرەکە دادەخرێت تا دەگەڕێیتەوە و ژمارەی نهێنی دەنووسیت؛ شەفتەکەت کراوە دەمێنێت.';
+  }
+
+  @override
+  String get breakOff => 'پشووەکان ناچالاکن.';
+
+  @override
+  String get breakRoleNotAllowed => 'ڕۆڵەکەت ڕێگە بە پشوو نادات.';
+
+  @override
+  String get breakAlreadyOn => 'تۆ پێشتر لە پشوودایت.';
+
+  @override
+  String breakNoneLeft(int max) {
+    return 'ئەمڕۆ هیچ پشوویەک نەماوە ($max لە ڕۆژێکدا).';
+  }
+
+  @override
+  String breakOnBreak(String name) {
+    return '$name لە پشوودایە';
+  }
+
+  @override
+  String get breakTillLocked => 'ئامێرەکە داخراوە تا گەڕانەوە.';
+
+  @override
+  String get breakTimeLeft => 'ماوە';
+
+  @override
+  String get breakOverTime => 'زیاتر لە کاتی ڕێگەپێدراو';
+
+  @override
+  String get breakEnterPinToReturn => 'گەڕایتەوە؟ ژمارەی نهێنیت بنووسە';
+
+  @override
+  String get breakWrongPin =>
+      'تەنها ئەو کارمەندەی لە پشوودایە دەتوانێت بە ژمارەی خۆی کۆتایی پێبهێنێت.';
+
+  @override
+  String get breakExceededTitle => 'پشووەکە کاتی تێپەڕاند';
+
+  @override
+  String breakExceededMessage(int minutes) {
+    return 'ئەم پشووە $minutes خولەک زیاتر بوو. لە ڕاپۆرتی ئەمڕۆ بۆ بەڕێوەبەر تۆمارکرا.';
+  }
+
+  @override
+  String get breakSettingsTitle => 'پشووەکان';
+
+  @override
+  String get breakEnable => 'ڕێگەدان بە پشوو';
+
+  @override
+  String get breakEnableHelp =>
+      'کارمەند دەتوانێت بڕوات بەبێ داخستنی شەفت؛ ئامێرەکە دادەخرێت تا بە ژمارەی نهێنی دەگەڕێتەوە.';
+
+  @override
+  String get breakMaxMinutes => 'خولەکی هەر پشوویەک';
+
+  @override
+  String get breakMaxPerDay => 'ژمارەی پشوو لە ڕۆژێکدا';
+
+  @override
+  String get breakMinutesRange => '١ تا ٢٤٠';
+
+  @override
+  String get breakPerDayRange => '١ تا ١٠';
+
+  @override
+  String get breakRolesTitle => 'کێ دەتوانێت پشوو وەربگرێت';
+
+  @override
+  String get breakReportTitle => 'پشووەکانی ئەمڕۆ';
+
+  @override
+  String get breakNoneToday => 'ئەمڕۆ هیچ پشوویەک نییە';
+
+  @override
+  String breakCount(int count) {
+    return '$count ئەمڕۆ';
+  }
+
+  @override
+  String get breakStillAway => 'هێشتا نەگەڕاوەتەوە';
+
+  @override
+  String breakMinutes(int minutes) {
+    return '$minutes خولەک';
+  }
+
+  @override
+  String get breakEndedEarly => 'زووتر کۆتایی هات';
+
+  @override
+  String get breakReconciled => 'لە چوونەژوورەوەی دواتر داخرا';
+
+  @override
+  String breakOverBy(int minutes) {
+    return '$minutes خولەک زیاتر';
+  }
 }

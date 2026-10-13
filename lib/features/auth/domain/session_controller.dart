@@ -102,6 +102,7 @@ class SessionController extends Notifier<SessionState> {
       if (ok != null && ok.id == selectedEmployee.id) {
         state = state.copyWith(employee: ok, clearDeveloperMode: true);
         await _resolveCurrentBranch(ok);
+        await _closeLeftoverBreak(ok, pin);
         return PinResult.success;
       }
     }
@@ -131,6 +132,18 @@ class SessionController extends Notifier<SessionState> {
 
     state = state.copyWith(developerMode: true);
     return true;
+  }
+
+  /// A break still open from before (the app was closed while the employee
+  /// was away) ends now that they're back with their own PIN — recorded as
+  /// reconciled, with any time over the limit. Best effort: signing in must
+  /// not fail because of it.
+  Future<void> _closeLeftoverBreak(EmployeeRecord employee, String pin) async {
+    try {
+      final breaks = ref.read(breaksRepositoryProvider);
+      final open = await breaks.openBreakFor(employee.storeId, employee.id);
+      if (open != null) await breaks.endBreak(breakId: open.id, pin: pin, reconciled: true);
+    } catch (_) {}
   }
 
   /// Used only right after onboarding creates the founding owner account, so

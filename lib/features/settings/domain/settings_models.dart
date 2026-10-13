@@ -135,6 +135,10 @@ class AppSettingsRecord {
     this.loyaltyPointValueMinor = 0,
     this.loyaltyEnabledFlag = false,
     this.fullDiscountKeepsMargin = false,
+    this.breakEnabled = false,
+    this.breakMaxMinutes = 15,
+    this.breakMaxPerDay = 2,
+    this.breakRoles = 'cashier,warehouseManager',
   });
 
   final String storeId;
@@ -167,6 +171,15 @@ class AppSettingsRecord {
   /// A 100% discount still charges cost + 5% instead of giving goods away.
   final bool fullDiscountKeepsMargin;
 
+  /// Employee breaks: on/off, minutes per break, breaks per employee per
+  /// day, and which roles may take them (comma-separated role names).
+  final bool breakEnabled;
+  final int breakMaxMinutes;
+  final int breakMaxPerDay;
+  final String breakRoles;
+
+  Set<String> get breakRoleNames => breakRoles.split(',').map((r) => r.trim()).where((r) => r.isNotEmpty).toSet();
+
   AppSettingsRecord copyWith({
     String? defaultLanguage,
     AppThemeMode? themeMode,
@@ -183,6 +196,10 @@ class AppSettingsRecord {
     int? loyaltyPointValueMinor,
     bool? loyaltyEnabledFlag,
     bool? fullDiscountKeepsMargin,
+    bool? breakEnabled,
+    int? breakMaxMinutes,
+    int? breakMaxPerDay,
+    String? breakRoles,
   }) =>
       AppSettingsRecord(
         storeId: storeId,
@@ -201,5 +218,9 @@ class AppSettingsRecord {
         loyaltyPointValueMinor: loyaltyPointValueMinor ?? this.loyaltyPointValueMinor,
         loyaltyEnabledFlag: loyaltyEnabledFlag ?? this.loyaltyEnabledFlag,
         fullDiscountKeepsMargin: fullDiscountKeepsMargin ?? this.fullDiscountKeepsMargin,
+        breakEnabled: breakEnabled ?? this.breakEnabled,
+        breakMaxMinutes: breakMaxMinutes ?? this.breakMaxMinutes,
+        breakMaxPerDay: breakMaxPerDay ?? this.breakMaxPerDay,
+        breakRoles: breakRoles ?? this.breakRoles,
       );
 }

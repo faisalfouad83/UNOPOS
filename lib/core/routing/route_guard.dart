@@ -43,10 +43,20 @@ class RouteGuard {
     required bool hasEmployees,
     required SessionState session,
     bool licenseExpired = false,
+    bool onBreak = false,
   }) {
     final isOnboardingRoute = location == RoutePaths.activation ||
         location == RoutePaths.onboardingStore ||
         location == RoutePaths.onboardingManager;
+
+    // On a break the till is locked on the break screen until the same
+    // employee returns with their PIN; nothing else opens meanwhile.
+    if (onBreak && session.employee != null) {
+      return location == RoutePaths.breakLock ? null : RoutePaths.breakLock;
+    }
+    if (location == RoutePaths.breakLock) {
+      return session.employee == null ? RoutePaths.tilePicker : RoutePaths.home;
+    }
 
     // The hidden developer gate (passcode 1313) must win over every other
     // check — that's the whole point of it being reachable before any

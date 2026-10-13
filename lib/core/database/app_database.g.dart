@@ -16220,6 +16220,57 @@ class $AppSettingsTableTable extends AppSettingsTable
         ),
         defaultValue: const Constant(false),
       );
+  static const VerificationMeta _breakEnabledMeta = const VerificationMeta(
+    'breakEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> breakEnabled = GeneratedColumn<bool>(
+    'break_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("break_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _breakMaxMinutesMeta = const VerificationMeta(
+    'breakMaxMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> breakMaxMinutes = GeneratedColumn<int>(
+    'break_max_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(15),
+  );
+  static const VerificationMeta _breakMaxPerDayMeta = const VerificationMeta(
+    'breakMaxPerDay',
+  );
+  @override
+  late final GeneratedColumn<int> breakMaxPerDay = GeneratedColumn<int>(
+    'break_max_per_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(2),
+  );
+  static const VerificationMeta _breakRolesMeta = const VerificationMeta(
+    'breakRoles',
+  );
+  @override
+  late final GeneratedColumn<String> breakRoles = GeneratedColumn<String>(
+    'break_roles',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('cashier,warehouseManager'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -16239,6 +16290,10 @@ class $AppSettingsTableTable extends AppSettingsTable
     loyaltyPointValueMinor,
     loyaltyEnabled,
     fullDiscountKeepsMargin,
+    breakEnabled,
+    breakMaxMinutes,
+    breakMaxPerDay,
+    breakRoles,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -16397,6 +16452,39 @@ class $AppSettingsTableTable extends AppSettingsTable
         ),
       );
     }
+    if (data.containsKey('break_enabled')) {
+      context.handle(
+        _breakEnabledMeta,
+        breakEnabled.isAcceptableOrUnknown(
+          data['break_enabled']!,
+          _breakEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('break_max_minutes')) {
+      context.handle(
+        _breakMaxMinutesMeta,
+        breakMaxMinutes.isAcceptableOrUnknown(
+          data['break_max_minutes']!,
+          _breakMaxMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('break_max_per_day')) {
+      context.handle(
+        _breakMaxPerDayMeta,
+        breakMaxPerDay.isAcceptableOrUnknown(
+          data['break_max_per_day']!,
+          _breakMaxPerDayMeta,
+        ),
+      );
+    }
+    if (data.containsKey('break_roles')) {
+      context.handle(
+        _breakRolesMeta,
+        breakRoles.isAcceptableOrUnknown(data['break_roles']!, _breakRolesMeta),
+      );
+    }
     return context;
   }
 
@@ -16474,6 +16562,22 @@ class $AppSettingsTableTable extends AppSettingsTable
         DriftSqlType.bool,
         data['${effectivePrefix}full_discount_keeps_margin'],
       )!,
+      breakEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}break_enabled'],
+      )!,
+      breakMaxMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}break_max_minutes'],
+      )!,
+      breakMaxPerDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}break_max_per_day'],
+      )!,
+      breakRoles: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}break_roles'],
+      )!,
     );
   }
 
@@ -16512,6 +16616,13 @@ class AppSettingsTableData extends DataClass
 
   /// A 100% discount still charges cost + 5% instead of giving the item away.
   final bool fullDiscountKeepsMargin;
+
+  /// Employee breaks: on/off, minutes per break, breaks per day, and the
+  /// roles that may take them (comma-separated role names).
+  final bool breakEnabled;
+  final int breakMaxMinutes;
+  final int breakMaxPerDay;
+  final String breakRoles;
   const AppSettingsTableData({
     required this.id,
     required this.storeId,
@@ -16530,6 +16641,10 @@ class AppSettingsTableData extends DataClass
     required this.loyaltyPointValueMinor,
     required this.loyaltyEnabled,
     required this.fullDiscountKeepsMargin,
+    required this.breakEnabled,
+    required this.breakMaxMinutes,
+    required this.breakMaxPerDay,
+    required this.breakRoles,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -16557,6 +16672,10 @@ class AppSettingsTableData extends DataClass
     map['loyalty_point_value_minor'] = Variable<int>(loyaltyPointValueMinor);
     map['loyalty_enabled'] = Variable<bool>(loyaltyEnabled);
     map['full_discount_keeps_margin'] = Variable<bool>(fullDiscountKeepsMargin);
+    map['break_enabled'] = Variable<bool>(breakEnabled);
+    map['break_max_minutes'] = Variable<int>(breakMaxMinutes);
+    map['break_max_per_day'] = Variable<int>(breakMaxPerDay);
+    map['break_roles'] = Variable<String>(breakRoles);
     return map;
   }
 
@@ -16581,6 +16700,10 @@ class AppSettingsTableData extends DataClass
       loyaltyPointValueMinor: Value(loyaltyPointValueMinor),
       loyaltyEnabled: Value(loyaltyEnabled),
       fullDiscountKeepsMargin: Value(fullDiscountKeepsMargin),
+      breakEnabled: Value(breakEnabled),
+      breakMaxMinutes: Value(breakMaxMinutes),
+      breakMaxPerDay: Value(breakMaxPerDay),
+      breakRoles: Value(breakRoles),
     );
   }
 
@@ -16621,6 +16744,10 @@ class AppSettingsTableData extends DataClass
       fullDiscountKeepsMargin: serializer.fromJson<bool>(
         json['fullDiscountKeepsMargin'],
       ),
+      breakEnabled: serializer.fromJson<bool>(json['breakEnabled']),
+      breakMaxMinutes: serializer.fromJson<int>(json['breakMaxMinutes']),
+      breakMaxPerDay: serializer.fromJson<int>(json['breakMaxPerDay']),
+      breakRoles: serializer.fromJson<String>(json['breakRoles']),
     );
   }
   @override
@@ -16650,6 +16777,10 @@ class AppSettingsTableData extends DataClass
       'fullDiscountKeepsMargin': serializer.toJson<bool>(
         fullDiscountKeepsMargin,
       ),
+      'breakEnabled': serializer.toJson<bool>(breakEnabled),
+      'breakMaxMinutes': serializer.toJson<int>(breakMaxMinutes),
+      'breakMaxPerDay': serializer.toJson<int>(breakMaxPerDay),
+      'breakRoles': serializer.toJson<String>(breakRoles),
     };
   }
 
@@ -16671,6 +16802,10 @@ class AppSettingsTableData extends DataClass
     int? loyaltyPointValueMinor,
     bool? loyaltyEnabled,
     bool? fullDiscountKeepsMargin,
+    bool? breakEnabled,
+    int? breakMaxMinutes,
+    int? breakMaxPerDay,
+    String? breakRoles,
   }) => AppSettingsTableData(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -16695,6 +16830,10 @@ class AppSettingsTableData extends DataClass
     loyaltyEnabled: loyaltyEnabled ?? this.loyaltyEnabled,
     fullDiscountKeepsMargin:
         fullDiscountKeepsMargin ?? this.fullDiscountKeepsMargin,
+    breakEnabled: breakEnabled ?? this.breakEnabled,
+    breakMaxMinutes: breakMaxMinutes ?? this.breakMaxMinutes,
+    breakMaxPerDay: breakMaxPerDay ?? this.breakMaxPerDay,
+    breakRoles: breakRoles ?? this.breakRoles,
   );
   AppSettingsTableData copyWithCompanion(AppSettingsTableCompanion data) {
     return AppSettingsTableData(
@@ -16743,6 +16882,18 @@ class AppSettingsTableData extends DataClass
       fullDiscountKeepsMargin: data.fullDiscountKeepsMargin.present
           ? data.fullDiscountKeepsMargin.value
           : this.fullDiscountKeepsMargin,
+      breakEnabled: data.breakEnabled.present
+          ? data.breakEnabled.value
+          : this.breakEnabled,
+      breakMaxMinutes: data.breakMaxMinutes.present
+          ? data.breakMaxMinutes.value
+          : this.breakMaxMinutes,
+      breakMaxPerDay: data.breakMaxPerDay.present
+          ? data.breakMaxPerDay.value
+          : this.breakMaxPerDay,
+      breakRoles: data.breakRoles.present
+          ? data.breakRoles.value
+          : this.breakRoles,
     );
   }
 
@@ -16765,13 +16916,17 @@ class AppSettingsTableData extends DataClass
           ..write('loyaltySpendPerPointMinor: $loyaltySpendPerPointMinor, ')
           ..write('loyaltyPointValueMinor: $loyaltyPointValueMinor, ')
           ..write('loyaltyEnabled: $loyaltyEnabled, ')
-          ..write('fullDiscountKeepsMargin: $fullDiscountKeepsMargin')
+          ..write('fullDiscountKeepsMargin: $fullDiscountKeepsMargin, ')
+          ..write('breakEnabled: $breakEnabled, ')
+          ..write('breakMaxMinutes: $breakMaxMinutes, ')
+          ..write('breakMaxPerDay: $breakMaxPerDay, ')
+          ..write('breakRoles: $breakRoles')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     storeId,
     defaultLanguage,
@@ -16789,7 +16944,11 @@ class AppSettingsTableData extends DataClass
     loyaltyPointValueMinor,
     loyaltyEnabled,
     fullDiscountKeepsMargin,
-  );
+    breakEnabled,
+    breakMaxMinutes,
+    breakMaxPerDay,
+    breakRoles,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -16810,7 +16969,11 @@ class AppSettingsTableData extends DataClass
           other.loyaltySpendPerPointMinor == this.loyaltySpendPerPointMinor &&
           other.loyaltyPointValueMinor == this.loyaltyPointValueMinor &&
           other.loyaltyEnabled == this.loyaltyEnabled &&
-          other.fullDiscountKeepsMargin == this.fullDiscountKeepsMargin);
+          other.fullDiscountKeepsMargin == this.fullDiscountKeepsMargin &&
+          other.breakEnabled == this.breakEnabled &&
+          other.breakMaxMinutes == this.breakMaxMinutes &&
+          other.breakMaxPerDay == this.breakMaxPerDay &&
+          other.breakRoles == this.breakRoles);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
@@ -16831,6 +16994,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
   final Value<int> loyaltyPointValueMinor;
   final Value<bool> loyaltyEnabled;
   final Value<bool> fullDiscountKeepsMargin;
+  final Value<bool> breakEnabled;
+  final Value<int> breakMaxMinutes;
+  final Value<int> breakMaxPerDay;
+  final Value<String> breakRoles;
   final Value<int> rowid;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
@@ -16850,6 +17017,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.loyaltyPointValueMinor = const Value.absent(),
     this.loyaltyEnabled = const Value.absent(),
     this.fullDiscountKeepsMargin = const Value.absent(),
+    this.breakEnabled = const Value.absent(),
+    this.breakMaxMinutes = const Value.absent(),
+    this.breakMaxPerDay = const Value.absent(),
+    this.breakRoles = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
@@ -16870,6 +17041,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     this.loyaltyPointValueMinor = const Value.absent(),
     this.loyaltyEnabled = const Value.absent(),
     this.fullDiscountKeepsMargin = const Value.absent(),
+    this.breakEnabled = const Value.absent(),
+    this.breakMaxMinutes = const Value.absent(),
+    this.breakMaxPerDay = const Value.absent(),
+    this.breakRoles = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId);
@@ -16891,6 +17066,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Expression<int>? loyaltyPointValueMinor,
     Expression<bool>? loyaltyEnabled,
     Expression<bool>? fullDiscountKeepsMargin,
+    Expression<bool>? breakEnabled,
+    Expression<int>? breakMaxMinutes,
+    Expression<int>? breakMaxPerDay,
+    Expression<String>? breakRoles,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -16918,6 +17097,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
       if (loyaltyEnabled != null) 'loyalty_enabled': loyaltyEnabled,
       if (fullDiscountKeepsMargin != null)
         'full_discount_keeps_margin': fullDiscountKeepsMargin,
+      if (breakEnabled != null) 'break_enabled': breakEnabled,
+      if (breakMaxMinutes != null) 'break_max_minutes': breakMaxMinutes,
+      if (breakMaxPerDay != null) 'break_max_per_day': breakMaxPerDay,
+      if (breakRoles != null) 'break_roles': breakRoles,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -16940,6 +17123,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     Value<int>? loyaltyPointValueMinor,
     Value<bool>? loyaltyEnabled,
     Value<bool>? fullDiscountKeepsMargin,
+    Value<bool>? breakEnabled,
+    Value<int>? breakMaxMinutes,
+    Value<int>? breakMaxPerDay,
+    Value<String>? breakRoles,
     Value<int>? rowid,
   }) {
     return AppSettingsTableCompanion(
@@ -16965,6 +17152,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
       loyaltyEnabled: loyaltyEnabled ?? this.loyaltyEnabled,
       fullDiscountKeepsMargin:
           fullDiscountKeepsMargin ?? this.fullDiscountKeepsMargin,
+      breakEnabled: breakEnabled ?? this.breakEnabled,
+      breakMaxMinutes: breakMaxMinutes ?? this.breakMaxMinutes,
+      breakMaxPerDay: breakMaxPerDay ?? this.breakMaxPerDay,
+      breakRoles: breakRoles ?? this.breakRoles,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -17037,6 +17228,18 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
         fullDiscountKeepsMargin.value,
       );
     }
+    if (breakEnabled.present) {
+      map['break_enabled'] = Variable<bool>(breakEnabled.value);
+    }
+    if (breakMaxMinutes.present) {
+      map['break_max_minutes'] = Variable<int>(breakMaxMinutes.value);
+    }
+    if (breakMaxPerDay.present) {
+      map['break_max_per_day'] = Variable<int>(breakMaxPerDay.value);
+    }
+    if (breakRoles.present) {
+      map['break_roles'] = Variable<String>(breakRoles.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -17063,6 +17266,10 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
           ..write('loyaltyPointValueMinor: $loyaltyPointValueMinor, ')
           ..write('loyaltyEnabled: $loyaltyEnabled, ')
           ..write('fullDiscountKeepsMargin: $fullDiscountKeepsMargin, ')
+          ..write('breakEnabled: $breakEnabled, ')
+          ..write('breakMaxMinutes: $breakMaxMinutes, ')
+          ..write('breakMaxPerDay: $breakMaxPerDay, ')
+          ..write('breakRoles: $breakRoles, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -18156,6 +18363,624 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
   }
 }
 
+class $EmployeeBreaksTable extends EmployeeBreaks
+    with TableInfo<$EmployeeBreaksTable, EmployeeBreak> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EmployeeBreaksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _branchIdMeta = const VerificationMeta(
+    'branchId',
+  );
+  @override
+  late final GeneratedColumn<String> branchId = GeneratedColumn<String>(
+    'branch_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _shiftIdMeta = const VerificationMeta(
+    'shiftId',
+  );
+  @override
+  late final GeneratedColumn<String> shiftId = GeneratedColumn<String>(
+    'shift_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endedAtMeta = const VerificationMeta(
+    'endedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endedAt = GeneratedColumn<DateTime>(
+    'ended_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _allowedMinutesMeta = const VerificationMeta(
+    'allowedMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> allowedMinutes = GeneratedColumn<int>(
+    'allowed_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endKindMeta = const VerificationMeta(
+    'endKind',
+  );
+  @override
+  late final GeneratedColumn<String> endKind = GeneratedColumn<String>(
+    'end_kind',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _exceededMinutesMeta = const VerificationMeta(
+    'exceededMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> exceededMinutes = GeneratedColumn<int>(
+    'exceeded_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    storeId,
+    branchId,
+    userId,
+    shiftId,
+    startedAt,
+    endedAt,
+    allowedMinutes,
+    endKind,
+    exceededMinutes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'employee_breaks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EmployeeBreak> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('branch_id')) {
+      context.handle(
+        _branchIdMeta,
+        branchId.isAcceptableOrUnknown(data['branch_id']!, _branchIdMeta),
+      );
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('shift_id')) {
+      context.handle(
+        _shiftIdMeta,
+        shiftId.isAcceptableOrUnknown(data['shift_id']!, _shiftIdMeta),
+      );
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('ended_at')) {
+      context.handle(
+        _endedAtMeta,
+        endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta),
+      );
+    }
+    if (data.containsKey('allowed_minutes')) {
+      context.handle(
+        _allowedMinutesMeta,
+        allowedMinutes.isAcceptableOrUnknown(
+          data['allowed_minutes']!,
+          _allowedMinutesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_allowedMinutesMeta);
+    }
+    if (data.containsKey('end_kind')) {
+      context.handle(
+        _endKindMeta,
+        endKind.isAcceptableOrUnknown(data['end_kind']!, _endKindMeta),
+      );
+    }
+    if (data.containsKey('exceeded_minutes')) {
+      context.handle(
+        _exceededMinutesMeta,
+        exceededMinutes.isAcceptableOrUnknown(
+          data['exceeded_minutes']!,
+          _exceededMinutesMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EmployeeBreak map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EmployeeBreak(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      branchId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}branch_id'],
+      ),
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      shiftId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}shift_id'],
+      ),
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      endedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ended_at'],
+      ),
+      allowedMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}allowed_minutes'],
+      )!,
+      endKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}end_kind'],
+      ),
+      exceededMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}exceeded_minutes'],
+      )!,
+    );
+  }
+
+  @override
+  $EmployeeBreaksTable createAlias(String alias) {
+    return $EmployeeBreaksTable(attachedDatabase, alias);
+  }
+}
+
+class EmployeeBreak extends DataClass implements Insertable<EmployeeBreak> {
+  final String id;
+  final String storeId;
+  final String? branchId;
+  final String userId;
+  final String? shiftId;
+  final DateTime startedAt;
+  final DateTime? endedAt;
+  final int allowedMinutes;
+  final String? endKind;
+  final int exceededMinutes;
+  const EmployeeBreak({
+    required this.id,
+    required this.storeId,
+    this.branchId,
+    required this.userId,
+    this.shiftId,
+    required this.startedAt,
+    this.endedAt,
+    required this.allowedMinutes,
+    this.endKind,
+    required this.exceededMinutes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['store_id'] = Variable<String>(storeId);
+    if (!nullToAbsent || branchId != null) {
+      map['branch_id'] = Variable<String>(branchId);
+    }
+    map['user_id'] = Variable<String>(userId);
+    if (!nullToAbsent || shiftId != null) {
+      map['shift_id'] = Variable<String>(shiftId);
+    }
+    map['started_at'] = Variable<DateTime>(startedAt);
+    if (!nullToAbsent || endedAt != null) {
+      map['ended_at'] = Variable<DateTime>(endedAt);
+    }
+    map['allowed_minutes'] = Variable<int>(allowedMinutes);
+    if (!nullToAbsent || endKind != null) {
+      map['end_kind'] = Variable<String>(endKind);
+    }
+    map['exceeded_minutes'] = Variable<int>(exceededMinutes);
+    return map;
+  }
+
+  EmployeeBreaksCompanion toCompanion(bool nullToAbsent) {
+    return EmployeeBreaksCompanion(
+      id: Value(id),
+      storeId: Value(storeId),
+      branchId: branchId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(branchId),
+      userId: Value(userId),
+      shiftId: shiftId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftId),
+      startedAt: Value(startedAt),
+      endedAt: endedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endedAt),
+      allowedMinutes: Value(allowedMinutes),
+      endKind: endKind == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endKind),
+      exceededMinutes: Value(exceededMinutes),
+    );
+  }
+
+  factory EmployeeBreak.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EmployeeBreak(
+      id: serializer.fromJson<String>(json['id']),
+      storeId: serializer.fromJson<String>(json['storeId']),
+      branchId: serializer.fromJson<String?>(json['branchId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      shiftId: serializer.fromJson<String?>(json['shiftId']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
+      allowedMinutes: serializer.fromJson<int>(json['allowedMinutes']),
+      endKind: serializer.fromJson<String?>(json['endKind']),
+      exceededMinutes: serializer.fromJson<int>(json['exceededMinutes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'storeId': serializer.toJson<String>(storeId),
+      'branchId': serializer.toJson<String?>(branchId),
+      'userId': serializer.toJson<String>(userId),
+      'shiftId': serializer.toJson<String?>(shiftId),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'endedAt': serializer.toJson<DateTime?>(endedAt),
+      'allowedMinutes': serializer.toJson<int>(allowedMinutes),
+      'endKind': serializer.toJson<String?>(endKind),
+      'exceededMinutes': serializer.toJson<int>(exceededMinutes),
+    };
+  }
+
+  EmployeeBreak copyWith({
+    String? id,
+    String? storeId,
+    Value<String?> branchId = const Value.absent(),
+    String? userId,
+    Value<String?> shiftId = const Value.absent(),
+    DateTime? startedAt,
+    Value<DateTime?> endedAt = const Value.absent(),
+    int? allowedMinutes,
+    Value<String?> endKind = const Value.absent(),
+    int? exceededMinutes,
+  }) => EmployeeBreak(
+    id: id ?? this.id,
+    storeId: storeId ?? this.storeId,
+    branchId: branchId.present ? branchId.value : this.branchId,
+    userId: userId ?? this.userId,
+    shiftId: shiftId.present ? shiftId.value : this.shiftId,
+    startedAt: startedAt ?? this.startedAt,
+    endedAt: endedAt.present ? endedAt.value : this.endedAt,
+    allowedMinutes: allowedMinutes ?? this.allowedMinutes,
+    endKind: endKind.present ? endKind.value : this.endKind,
+    exceededMinutes: exceededMinutes ?? this.exceededMinutes,
+  );
+  EmployeeBreak copyWithCompanion(EmployeeBreaksCompanion data) {
+    return EmployeeBreak(
+      id: data.id.present ? data.id.value : this.id,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      branchId: data.branchId.present ? data.branchId.value : this.branchId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      shiftId: data.shiftId.present ? data.shiftId.value : this.shiftId,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
+      allowedMinutes: data.allowedMinutes.present
+          ? data.allowedMinutes.value
+          : this.allowedMinutes,
+      endKind: data.endKind.present ? data.endKind.value : this.endKind,
+      exceededMinutes: data.exceededMinutes.present
+          ? data.exceededMinutes.value
+          : this.exceededMinutes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EmployeeBreak(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('branchId: $branchId, ')
+          ..write('userId: $userId, ')
+          ..write('shiftId: $shiftId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('allowedMinutes: $allowedMinutes, ')
+          ..write('endKind: $endKind, ')
+          ..write('exceededMinutes: $exceededMinutes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    storeId,
+    branchId,
+    userId,
+    shiftId,
+    startedAt,
+    endedAt,
+    allowedMinutes,
+    endKind,
+    exceededMinutes,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EmployeeBreak &&
+          other.id == this.id &&
+          other.storeId == this.storeId &&
+          other.branchId == this.branchId &&
+          other.userId == this.userId &&
+          other.shiftId == this.shiftId &&
+          other.startedAt == this.startedAt &&
+          other.endedAt == this.endedAt &&
+          other.allowedMinutes == this.allowedMinutes &&
+          other.endKind == this.endKind &&
+          other.exceededMinutes == this.exceededMinutes);
+}
+
+class EmployeeBreaksCompanion extends UpdateCompanion<EmployeeBreak> {
+  final Value<String> id;
+  final Value<String> storeId;
+  final Value<String?> branchId;
+  final Value<String> userId;
+  final Value<String?> shiftId;
+  final Value<DateTime> startedAt;
+  final Value<DateTime?> endedAt;
+  final Value<int> allowedMinutes;
+  final Value<String?> endKind;
+  final Value<int> exceededMinutes;
+  final Value<int> rowid;
+  const EmployeeBreaksCompanion({
+    this.id = const Value.absent(),
+    this.storeId = const Value.absent(),
+    this.branchId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.shiftId = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.endedAt = const Value.absent(),
+    this.allowedMinutes = const Value.absent(),
+    this.endKind = const Value.absent(),
+    this.exceededMinutes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EmployeeBreaksCompanion.insert({
+    required String id,
+    required String storeId,
+    this.branchId = const Value.absent(),
+    required String userId,
+    this.shiftId = const Value.absent(),
+    required DateTime startedAt,
+    this.endedAt = const Value.absent(),
+    required int allowedMinutes,
+    this.endKind = const Value.absent(),
+    this.exceededMinutes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       storeId = Value(storeId),
+       userId = Value(userId),
+       startedAt = Value(startedAt),
+       allowedMinutes = Value(allowedMinutes);
+  static Insertable<EmployeeBreak> custom({
+    Expression<String>? id,
+    Expression<String>? storeId,
+    Expression<String>? branchId,
+    Expression<String>? userId,
+    Expression<String>? shiftId,
+    Expression<DateTime>? startedAt,
+    Expression<DateTime>? endedAt,
+    Expression<int>? allowedMinutes,
+    Expression<String>? endKind,
+    Expression<int>? exceededMinutes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (storeId != null) 'store_id': storeId,
+      if (branchId != null) 'branch_id': branchId,
+      if (userId != null) 'user_id': userId,
+      if (shiftId != null) 'shift_id': shiftId,
+      if (startedAt != null) 'started_at': startedAt,
+      if (endedAt != null) 'ended_at': endedAt,
+      if (allowedMinutes != null) 'allowed_minutes': allowedMinutes,
+      if (endKind != null) 'end_kind': endKind,
+      if (exceededMinutes != null) 'exceeded_minutes': exceededMinutes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EmployeeBreaksCompanion copyWith({
+    Value<String>? id,
+    Value<String>? storeId,
+    Value<String?>? branchId,
+    Value<String>? userId,
+    Value<String?>? shiftId,
+    Value<DateTime>? startedAt,
+    Value<DateTime?>? endedAt,
+    Value<int>? allowedMinutes,
+    Value<String?>? endKind,
+    Value<int>? exceededMinutes,
+    Value<int>? rowid,
+  }) {
+    return EmployeeBreaksCompanion(
+      id: id ?? this.id,
+      storeId: storeId ?? this.storeId,
+      branchId: branchId ?? this.branchId,
+      userId: userId ?? this.userId,
+      shiftId: shiftId ?? this.shiftId,
+      startedAt: startedAt ?? this.startedAt,
+      endedAt: endedAt ?? this.endedAt,
+      allowedMinutes: allowedMinutes ?? this.allowedMinutes,
+      endKind: endKind ?? this.endKind,
+      exceededMinutes: exceededMinutes ?? this.exceededMinutes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (branchId.present) {
+      map['branch_id'] = Variable<String>(branchId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (shiftId.present) {
+      map['shift_id'] = Variable<String>(shiftId.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (endedAt.present) {
+      map['ended_at'] = Variable<DateTime>(endedAt.value);
+    }
+    if (allowedMinutes.present) {
+      map['allowed_minutes'] = Variable<int>(allowedMinutes.value);
+    }
+    if (endKind.present) {
+      map['end_kind'] = Variable<String>(endKind.value);
+    }
+    if (exceededMinutes.present) {
+      map['exceeded_minutes'] = Variable<int>(exceededMinutes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EmployeeBreaksCompanion(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('branchId: $branchId, ')
+          ..write('userId: $userId, ')
+          ..write('shiftId: $shiftId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('allowedMinutes: $allowedMinutes, ')
+          ..write('endKind: $endKind, ')
+          ..write('exceededMinutes: $exceededMinutes, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -18202,6 +19027,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $BackupLogsTable backupLogs = $BackupLogsTable(this);
   late final $AuditLogsTable auditLogs = $AuditLogsTable(this);
+  late final $EmployeeBreaksTable employeeBreaks = $EmployeeBreaksTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -18238,6 +19064,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     appSettingsTable,
     backupLogs,
     auditLogs,
+    employeeBreaks,
   ];
 }
 
@@ -26088,6 +26915,10 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder =
       Value<int> loyaltyPointValueMinor,
       Value<bool> loyaltyEnabled,
       Value<bool> fullDiscountKeepsMargin,
+      Value<bool> breakEnabled,
+      Value<int> breakMaxMinutes,
+      Value<int> breakMaxPerDay,
+      Value<String> breakRoles,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder =
@@ -26109,6 +26940,10 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder =
       Value<int> loyaltyPointValueMinor,
       Value<bool> loyaltyEnabled,
       Value<bool> fullDiscountKeepsMargin,
+      Value<bool> breakEnabled,
+      Value<int> breakMaxMinutes,
+      Value<int> breakMaxPerDay,
+      Value<String> breakRoles,
       Value<int> rowid,
     });
 
@@ -26203,6 +27038,26 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<bool> get fullDiscountKeepsMargin => $composableBuilder(
     column: $table.fullDiscountKeepsMargin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get breakEnabled => $composableBuilder(
+    column: $table.breakEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get breakMaxMinutes => $composableBuilder(
+    column: $table.breakMaxMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get breakMaxPerDay => $composableBuilder(
+    column: $table.breakMaxPerDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get breakRoles => $composableBuilder(
+    column: $table.breakRoles,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -26300,6 +27155,26 @@ class $$AppSettingsTableTableOrderingComposer
     column: $table.fullDiscountKeepsMargin,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get breakEnabled => $composableBuilder(
+    column: $table.breakEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get breakMaxMinutes => $composableBuilder(
+    column: $table.breakMaxMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get breakMaxPerDay => $composableBuilder(
+    column: $table.breakMaxPerDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get breakRoles => $composableBuilder(
+    column: $table.breakRoles,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -26389,6 +27264,26 @@ class $$AppSettingsTableTableAnnotationComposer
     column: $table.fullDiscountKeepsMargin,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get breakEnabled => $composableBuilder(
+    column: $table.breakEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get breakMaxMinutes => $composableBuilder(
+    column: $table.breakMaxMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get breakMaxPerDay => $composableBuilder(
+    column: $table.breakMaxPerDay,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get breakRoles => $composableBuilder(
+    column: $table.breakRoles,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableTableManager
@@ -26445,6 +27340,10 @@ class $$AppSettingsTableTableTableManager
                 Value<int> loyaltyPointValueMinor = const Value.absent(),
                 Value<bool> loyaltyEnabled = const Value.absent(),
                 Value<bool> fullDiscountKeepsMargin = const Value.absent(),
+                Value<bool> breakEnabled = const Value.absent(),
+                Value<int> breakMaxMinutes = const Value.absent(),
+                Value<int> breakMaxPerDay = const Value.absent(),
+                Value<String> breakRoles = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion(
                 id: id,
@@ -26464,6 +27363,10 @@ class $$AppSettingsTableTableTableManager
                 loyaltyPointValueMinor: loyaltyPointValueMinor,
                 loyaltyEnabled: loyaltyEnabled,
                 fullDiscountKeepsMargin: fullDiscountKeepsMargin,
+                breakEnabled: breakEnabled,
+                breakMaxMinutes: breakMaxMinutes,
+                breakMaxPerDay: breakMaxPerDay,
+                breakRoles: breakRoles,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -26485,6 +27388,10 @@ class $$AppSettingsTableTableTableManager
                 Value<int> loyaltyPointValueMinor = const Value.absent(),
                 Value<bool> loyaltyEnabled = const Value.absent(),
                 Value<bool> fullDiscountKeepsMargin = const Value.absent(),
+                Value<bool> breakEnabled = const Value.absent(),
+                Value<int> breakMaxMinutes = const Value.absent(),
+                Value<int> breakMaxPerDay = const Value.absent(),
+                Value<String> breakRoles = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion.insert(
                 id: id,
@@ -26504,6 +27411,10 @@ class $$AppSettingsTableTableTableManager
                 loyaltyPointValueMinor: loyaltyPointValueMinor,
                 loyaltyEnabled: loyaltyEnabled,
                 fullDiscountKeepsMargin: fullDiscountKeepsMargin,
+                breakEnabled: breakEnabled,
+                breakMaxMinutes: breakMaxMinutes,
+                breakMaxPerDay: breakMaxPerDay,
+                breakRoles: breakRoles,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -27067,6 +27978,307 @@ typedef $$AuditLogsTableProcessedTableManager =
       AuditLog,
       PrefetchHooks Function()
     >;
+typedef $$EmployeeBreaksTableCreateCompanionBuilder =
+    EmployeeBreaksCompanion Function({
+      required String id,
+      required String storeId,
+      Value<String?> branchId,
+      required String userId,
+      Value<String?> shiftId,
+      required DateTime startedAt,
+      Value<DateTime?> endedAt,
+      required int allowedMinutes,
+      Value<String?> endKind,
+      Value<int> exceededMinutes,
+      Value<int> rowid,
+    });
+typedef $$EmployeeBreaksTableUpdateCompanionBuilder =
+    EmployeeBreaksCompanion Function({
+      Value<String> id,
+      Value<String> storeId,
+      Value<String?> branchId,
+      Value<String> userId,
+      Value<String?> shiftId,
+      Value<DateTime> startedAt,
+      Value<DateTime?> endedAt,
+      Value<int> allowedMinutes,
+      Value<String?> endKind,
+      Value<int> exceededMinutes,
+      Value<int> rowid,
+    });
+
+class $$EmployeeBreaksTableFilterComposer
+    extends Composer<_$AppDatabase, $EmployeeBreaksTable> {
+  $$EmployeeBreaksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get branchId => $composableBuilder(
+    column: $table.branchId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get shiftId => $composableBuilder(
+    column: $table.shiftId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get allowedMinutes => $composableBuilder(
+    column: $table.allowedMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endKind => $composableBuilder(
+    column: $table.endKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get exceededMinutes => $composableBuilder(
+    column: $table.exceededMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$EmployeeBreaksTableOrderingComposer
+    extends Composer<_$AppDatabase, $EmployeeBreaksTable> {
+  $$EmployeeBreaksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get branchId => $composableBuilder(
+    column: $table.branchId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get shiftId => $composableBuilder(
+    column: $table.shiftId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get allowedMinutes => $composableBuilder(
+    column: $table.allowedMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endKind => $composableBuilder(
+    column: $table.endKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get exceededMinutes => $composableBuilder(
+    column: $table.exceededMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$EmployeeBreaksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EmployeeBreaksTable> {
+  $$EmployeeBreaksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get storeId =>
+      $composableBuilder(column: $table.storeId, builder: (column) => column);
+
+  GeneratedColumn<String> get branchId =>
+      $composableBuilder(column: $table.branchId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get shiftId =>
+      $composableBuilder(column: $table.shiftId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get allowedMinutes => $composableBuilder(
+    column: $table.allowedMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get endKind =>
+      $composableBuilder(column: $table.endKind, builder: (column) => column);
+
+  GeneratedColumn<int> get exceededMinutes => $composableBuilder(
+    column: $table.exceededMinutes,
+    builder: (column) => column,
+  );
+}
+
+class $$EmployeeBreaksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EmployeeBreaksTable,
+          EmployeeBreak,
+          $$EmployeeBreaksTableFilterComposer,
+          $$EmployeeBreaksTableOrderingComposer,
+          $$EmployeeBreaksTableAnnotationComposer,
+          $$EmployeeBreaksTableCreateCompanionBuilder,
+          $$EmployeeBreaksTableUpdateCompanionBuilder,
+          (
+            EmployeeBreak,
+            BaseReferences<_$AppDatabase, $EmployeeBreaksTable, EmployeeBreak>,
+          ),
+          EmployeeBreak,
+          PrefetchHooks Function()
+        > {
+  $$EmployeeBreaksTableTableManager(
+    _$AppDatabase db,
+    $EmployeeBreaksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EmployeeBreaksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EmployeeBreaksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EmployeeBreaksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> storeId = const Value.absent(),
+                Value<String?> branchId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String?> shiftId = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<int> allowedMinutes = const Value.absent(),
+                Value<String?> endKind = const Value.absent(),
+                Value<int> exceededMinutes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EmployeeBreaksCompanion(
+                id: id,
+                storeId: storeId,
+                branchId: branchId,
+                userId: userId,
+                shiftId: shiftId,
+                startedAt: startedAt,
+                endedAt: endedAt,
+                allowedMinutes: allowedMinutes,
+                endKind: endKind,
+                exceededMinutes: exceededMinutes,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String storeId,
+                Value<String?> branchId = const Value.absent(),
+                required String userId,
+                Value<String?> shiftId = const Value.absent(),
+                required DateTime startedAt,
+                Value<DateTime?> endedAt = const Value.absent(),
+                required int allowedMinutes,
+                Value<String?> endKind = const Value.absent(),
+                Value<int> exceededMinutes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EmployeeBreaksCompanion.insert(
+                id: id,
+                storeId: storeId,
+                branchId: branchId,
+                userId: userId,
+                shiftId: shiftId,
+                startedAt: startedAt,
+                endedAt: endedAt,
+                allowedMinutes: allowedMinutes,
+                endKind: endKind,
+                exceededMinutes: exceededMinutes,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$EmployeeBreaksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EmployeeBreaksTable,
+      EmployeeBreak,
+      $$EmployeeBreaksTableFilterComposer,
+      $$EmployeeBreaksTableOrderingComposer,
+      $$EmployeeBreaksTableAnnotationComposer,
+      $$EmployeeBreaksTableCreateCompanionBuilder,
+      $$EmployeeBreaksTableUpdateCompanionBuilder,
+      (
+        EmployeeBreak,
+        BaseReferences<_$AppDatabase, $EmployeeBreaksTable, EmployeeBreak>,
+      ),
+      EmployeeBreak,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -27133,4 +28345,6 @@ class $AppDatabaseManager {
       $$BackupLogsTableTableManager(_db, _db.backupLogs);
   $$AuditLogsTableTableManager get auditLogs =>
       $$AuditLogsTableTableManager(_db, _db.auditLogs);
+  $$EmployeeBreaksTableTableManager get employeeBreaks =>
+      $$EmployeeBreaksTableTableManager(_db, _db.employeeBreaks);
 }

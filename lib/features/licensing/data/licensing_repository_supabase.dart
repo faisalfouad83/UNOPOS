@@ -57,8 +57,23 @@ class SupabaseLicensingRepository implements LicensingRepository {
     final storeIds = codes.map((c) => c.redeemedByStoreId).whereType<String>().toSet().toList();
     if (storeIds.isEmpty) return codes;
     final stores = await _client.from('stores').select('id, display_name').inFilter('id', storeIds);
-    final names = {for (final s in (stores as List).cast<Map<String, dynamic>>()) s['id'] as String: s['display_name'] as String};
+    final names = {
+      for (final s in (stores as List).cast<Map<String, dynamic>>()) s['id'] as String: s['display_name'] as String
+    };
     return [for (final c in codes) c.withStoreName(names[c.redeemedByStoreId])];
+  }
+
+  @override
+  Future<void> revokeCode(String codeId, {bool endStoreActivation = false}) async {
+    await _client.rpc('developer_revoke_activation_code', params: {
+      'p_code_id': codeId,
+      'p_end_store_activation': endStoreActivation,
+    });
+  }
+
+  @override
+  Future<void> removeCode(String codeId) async {
+    await _client.from('activation_codes').delete().eq('id', codeId);
   }
 
   @override

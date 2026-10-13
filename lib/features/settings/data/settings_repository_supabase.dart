@@ -16,7 +16,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
   AppSettingsRecord _mapRow(Map<String, dynamic> row) => AppSettingsRecord(
         storeId: row['store_id'] as String,
         defaultLanguage: row['default_language'] as String,
-        themeMode: AppThemeMode.values.firstWhere((m) => m.name == row['theme_mode'], orElse: () => AppThemeMode.system),
+        themeMode:
+            AppThemeMode.values.firstWhere((m) => m.name == row['theme_mode'], orElse: () => AppThemeMode.system),
         currencyCode: row['currency_code'] as String,
         currencySymbol: row['currency_symbol'] as String,
         defaultVatRatePercent: (row['default_vat_rate_percent'] as num).toDouble(),
@@ -30,6 +31,10 @@ class SupabaseSettingsRepository implements SettingsRepository {
         loyaltyPointValueMinor: (row['loyalty_point_value_minor'] as num?)?.toInt() ?? 0,
         loyaltyEnabledFlag: row['loyalty_enabled'] as bool? ?? false,
         fullDiscountKeepsMargin: row['full_discount_keeps_margin'] as bool? ?? false,
+        breakEnabled: row['break_enabled'] as bool? ?? false,
+        breakMaxMinutes: (row['break_max_minutes'] as num?)?.toInt() ?? 15,
+        breakMaxPerDay: (row['break_max_per_day'] as num?)?.toInt() ?? 2,
+        breakRoles: row['break_roles'] as String? ?? 'cashier,warehouseManager',
       );
 
   @override
@@ -95,6 +100,10 @@ class SupabaseSettingsRepository implements SettingsRepository {
       'loyalty_point_value_minor': settings.loyaltyPointValueMinor,
       'loyalty_enabled': settings.loyaltyEnabledFlag,
       'full_discount_keeps_margin': settings.fullDiscountKeepsMargin,
+      'break_enabled': settings.breakEnabled,
+      'break_max_minutes': settings.breakMaxMinutes,
+      'break_max_per_day': settings.breakMaxPerDay,
+      'break_roles': settings.breakRoles,
     }).eq('store_id', settings.storeId);
   }
 }

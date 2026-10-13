@@ -28,6 +28,10 @@ class DriftSettingsRepository implements SettingsRepository {
         loyaltyPointValueMinor: row.loyaltyPointValueMinor,
         loyaltyEnabledFlag: row.loyaltyEnabled,
         fullDiscountKeepsMargin: row.fullDiscountKeepsMargin,
+        breakEnabled: row.breakEnabled,
+        breakMaxMinutes: row.breakMaxMinutes,
+        breakMaxPerDay: row.breakMaxPerDay,
+        breakRoles: row.breakRoles,
       );
 
   @override
@@ -51,9 +55,7 @@ class DriftSettingsRepository implements SettingsRepository {
 
   @override
   Stream<AppSettingsRecord> watchSettings(String storeId) {
-    return (_db.select(_db.appSettingsTable)..where((t) => t.storeId.equals(storeId)))
-        .watchSingle()
-        .map(_mapRow);
+    return (_db.select(_db.appSettingsTable)..where((t) => t.storeId.equals(storeId))).watchSingle().map(_mapRow);
   }
 
   @override
@@ -75,6 +77,10 @@ class DriftSettingsRepository implements SettingsRepository {
         loyaltyPointValueMinor: Value(settings.loyaltyPointValueMinor),
         loyaltyEnabled: Value(settings.loyaltyEnabledFlag),
         fullDiscountKeepsMargin: Value(settings.fullDiscountKeepsMargin),
+        breakEnabled: Value(settings.breakEnabled),
+        breakMaxMinutes: Value(settings.breakMaxMinutes),
+        breakMaxPerDay: Value(settings.breakMaxPerDay),
+        breakRoles: Value(settings.breakRoles),
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../../core/constants/roles.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/security/passcode_hasher.dart';
 import '../../../core/utils/id_generator.dart';
+import '../domain/account_rules.dart';
 import '../domain/auth_models.dart';
 import '../domain/auth_repository.dart';
 
@@ -96,9 +97,7 @@ class DriftAuthRepository implements AuthRepository {
 
   @override
   Future<bool> verifyStorePassword(String storeLoginId, String password) async {
-    final row = await (_db.select(_db.stores)
-          ..where((t) => t.storeLoginId.equals(storeLoginId)))
-        .getSingleOrNull();
+    final row = await (_db.select(_db.stores)..where((t) => t.storeLoginId.equals(storeLoginId))).getSingleOrNull();
     if (row == null) return false;
     return PasscodeHasher.verify(password, row.passwordHash);
   }
@@ -216,6 +215,41 @@ class DriftAuthRepository implements AuthRepository {
     );
   }
 
+  Future<(EmployeeRecord actor, EmployeeRecord target)> _actorAndTarget(
+    String employeeId,
+    String actorId,
+    String actorPin,
+  ) async {
+    final targetRow = await (_db.select(_db.users)..where((t) => t.id.equals(employeeId))).getSingleOrNull();
+    if (targetRow == null) throw const AccountChangeException(AccountChangeRefusal.notAllowed);
+    final actor = await findEmployeeByPin(targetRow.storeId, actorPin);
+    if (actor == null || actor.id != actorId) throw const AccountChangeException(null, wrongPin: true);
+    return (actor, _mapEmployee(targetRow));
+  }
+
+  @override
+  Future<void> deactivateEmployee(
+      {required String employeeId, required String actorId, required String actorPin}) async {
+    final (actor, target) = await _actorAndTarget(employeeId, actorId, actorPin);
+    final refusal = canDeactivate(actor, target);
+    if (refusal != null) throw AccountChangeException(refusal);
+    await setEmployeeActive(employeeId, false);
+  }
+
+  @override
+  Future<void> changeEmployeeRole({
+    required String employeeId,
+    required StoreRole newRole,
+    required String actorId,
+    required String actorPin,
+  }) async {
+    final (actor, target) = await _actorAndTarget(employeeId, actorId, actorPin);
+    final refusal = canChangeRole(actor, target, newRole);
+    if (refusal != null) throw AccountChangeException(refusal);
+    await (_db.update(_db.users)..where((t) => t.id.equals(employeeId)))
+        .write(UsersCompanion(role: Value(newRole.name)));
+  }
+
   @override
   Future<void> setEmployeeActive(String employeeId, bool isActive) async {
     await (_db.update(_db.users)..where((t) => t.id.equals(employeeId)))
@@ -233,9 +267,7 @@ class DriftAuthRepository implements AuthRepository {
 
   @override
   Future<EmployeeRecord?> findEmployeeByPin(String storeId, String pin) async {
-    final rows = await (_db.select(_db.users)
-          ..where((t) => t.storeId.equals(storeId) & t.isActive.equals(true)))
-        .get();
+    final rows = await (_db.select(_db.users)..where((t) => t.storeId.equals(storeId) & t.isActive.equals(true))).get();
     for (final row in rows) {
       if (PasscodeHasher.verify(pin, row.pinHash)) {
         return _mapEmployee(row);

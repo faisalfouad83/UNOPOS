@@ -9,7 +9,9 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/auth_models.dart';
+import '../../auth/domain/account_rules.dart';
 import '../../auth/domain/session_controller.dart';
+import '../../auth/presentation/confirm_with_pin.dart';
 
 Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {EmployeeRecord? existing}) async {
   final l10n = AppLocalizations.of(context);
@@ -32,6 +34,19 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
   // Until the permissions are touched, changing the role resets them to
   // that role's defaults.
   var permissionsEdited = existing?.customPermissions != null;
+  final me = session.employee;
+  final isOwner = me?.role == StoreRole.owner;
+  // Roles this account may give: never owner (ownership moves separately);
+  // manager only from the owner. The owner's own role can't change.
+  final roleChoices = [
+    if (existing?.role == StoreRole.owner) StoreRole.owner,
+    if (existing?.role != StoreRole.owner) ...[
+      if (isOwner || existing?.role == StoreRole.manager) StoreRole.manager,
+      StoreRole.cashier,
+      StoreRole.warehouseManager,
+    ],
+  ];
+  final roleLocked = existing?.role == StoreRole.owner || (existing?.role == StoreRole.manager && !isOwner);
 
   await showDialog<void>(
     context: context,
@@ -54,15 +69,23 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                   initialValue: role,
                   decoration: InputDecoration(labelText: l10n.hrRole),
                   items: [
-                    DropdownMenuItem(value: StoreRole.owner, child: Text(l10n.hrRoleOwner)),
-                    DropdownMenuItem(value: StoreRole.manager, child: Text(l10n.hrRoleManager)),
-                    DropdownMenuItem(value: StoreRole.cashier, child: Text(l10n.hrRoleCashier)),
-                    DropdownMenuItem(value: StoreRole.warehouseManager, child: Text(l10n.hrRoleWarehouseManager)),
+                    for (final r in roleChoices)
+                      DropdownMenuItem(
+                        value: r,
+                        child: Text(switch (r) {
+                          StoreRole.owner => l10n.hrRoleOwner,
+                          StoreRole.manager => l10n.hrRoleManager,
+                          StoreRole.cashier => l10n.hrRoleCashier,
+                          StoreRole.warehouseManager => l10n.hrRoleWarehouseManager,
+                        }),
+                      ),
                   ],
-                  onChanged: (v) => setState(() {
-                    role = v ?? role;
-                    if (!permissionsEdited) permissions = {...defaultPermissionsFor(role)};
-                  }),
+                  onChanged: roleLocked
+                      ? null
+                      : (v) => setState(() {
+                            role = v ?? role;
+                            if (!permissionsEdited) permissions = {...defaultPermissionsFor(role)};
+                          }),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -137,9 +160,8 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
               }
 
               final repo = ref.read(authRepositoryProvider);
-              final custom = role == StoreRole.owner || _sameSet(permissions, defaultPermissionsFor(role))
-                  ? null
-                  : permissions;
+              final custom =
+                  role == StoreRole.owner || _sameSet(permissions, defaultPermissionsFor(role)) ? null : permissions;
               if (existing == null) {
                 final created = await repo.createEmployee(
                   storeId: session.store!.id,
@@ -154,6 +176,24 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                 );
                 if (custom != null) await repo.updateEmployee(created.copyWith(customPermissions: custom));
               } else {
+                // Making or unmaking a manager is the owner's call, confirmed
+                // with the owner's PIN and checked again on the server.
+                if (role != existing.role && (role == StoreRole.manager || existing.role == StoreRole.manager)) {
+                  if (me == null) return;
+                  final pin = await confirmWithPin(
+                    context,
+                    title: l10n.hrRole,
+                    message: l10n.accountRoleChangeConfirm(existing.name),
+                  );
+                  if (pin == null) return;
+                  try {
+                    await repo.changeEmployeeRole(
+                        employeeId: existing.id, newRole: role, actorId: me.id, actorPin: pin);
+                  } on AccountChangeException catch (e) {
+                    setState(() => error = accountRefusalMessage(l10n, e));
+                    return;
+                  }
+                }
                 await repo.updateEmployee(
                   EmployeeRecord(
                     id: existing.id,

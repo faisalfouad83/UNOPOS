@@ -14,6 +14,7 @@ import '../../../core/theming/app_theme.dart';
 import '../../../core/routing/route_guard.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/widgets/app_credits.dart';
+import '../../breaks/presentation/break_button.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../../auth/domain/auth_models.dart';
 import '../../pos/presentation/cart_controller.dart';
@@ -112,6 +113,7 @@ class HomeShell extends ConsumerWidget {
               const OfflineSyncIndicator(),
               const _LiveClock(),
               const SizedBox(width: 8),
+              const BreakButton(),
               const FullScreenButton(),
               const _LanguageMenu(),
               const NotificationBell(),
