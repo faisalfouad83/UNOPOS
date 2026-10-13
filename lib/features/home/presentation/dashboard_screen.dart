@@ -25,8 +25,10 @@ final _todaysSalesForDashboardProvider = StreamProvider.autoDispose.family<List<
   return ref.watch(posRepositoryProvider).watchCompletedSales(storeId, from: startOfDay);
 });
 
-final _dashboardOpenDebtsProvider =
-    StreamProvider.autoDispose.family<List<DebtLedgerEntryRecord>, String>((ref, storeId) {
+final _dashboardOpenDebtsProvider = StreamProvider.autoDispose.family<List<DebtLedgerEntryRecord>, String>((
+  ref,
+  storeId,
+) {
   return ref.watch(debtsRepositoryProvider).watchOpenDebts(storeId);
 });
 
@@ -53,15 +55,22 @@ class DashboardScreen extends ConsumerWidget {
         ? const AsyncValue<List<SaleRecord>>.data([])
         : ref.watch(_todaysSalesForDashboardProvider(storeId));
     final debtsAsync = storeId == null ? null : ref.watch(_dashboardOpenDebtsProvider(storeId));
-    final lowStockAsync =
-        (storeId == null || branchId == null) ? null : ref.watch(_dashboardLowStockProvider((storeId: storeId, branchId: branchId)));
+    final lowStockAsync = (storeId == null || branchId == null)
+        ? null
+        : ref.watch(_dashboardLowStockProvider((storeId: storeId, branchId: branchId)));
 
-    final todaysSales = (salesAsync.value ?? const <SaleRecord>[]).where((s) => s.status != SaleStatus.refunded).toList();
+    // Today's sales in the branch being worked in (not all branches mixed).
+    final todaysSales = (salesAsync.value ?? const <SaleRecord>[])
+        .where((s) => s.status != SaleStatus.refunded && (branchId == null || s.branchId == branchId))
+        .toList();
     final todaysTotal = todaysSales.fold<int>(0, (s, sale) => s + sale.netTotalMinorUnits);
-    final debtsTotal =
-        (debtsAsync?.value ?? const <DebtLedgerEntryRecord>[]).fold<int>(0, (s, d) => s + d.balanceRemainingMinorUnits);
+    final debtsTotal = (debtsAsync?.value ?? const <DebtLedgerEntryRecord>[]).fold<int>(
+      0,
+      (s, d) => s + d.balanceRemainingMinorUnits,
+    );
     final lowStockCount = lowStockAsync?.value?.length ?? 0;
-    final products = storeId == null ? const <ProductRecord>[] : ref.watch(_dashboardProductsProvider(storeId)).value ?? const [];
+    final products =
+        storeId == null ? const <ProductRecord>[] : ref.watch(_dashboardProductsProvider(storeId)).value ?? const [];
     final nearExpiry = productsNearExpiry(products);
     final expiredCount = nearExpiry.where((p) => expiryStatusOf(p) == ExpiryStatus.expired).length;
 
@@ -72,10 +81,7 @@ class DashboardScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              session.store?.displayName ?? '',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(session.store?.displayName ?? '', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 4),
             Text(
               '${session.employee?.name ?? ''} · ${roleLabel(l10n, session.role)}',
@@ -133,7 +139,9 @@ class DashboardScreen extends ConsumerWidget {
                   );
                 }
                 return Column(
-                  children: [for (final c in cards) ...[c, const SizedBox(height: 16)]]..removeLast(),
+                  children: [
+                    for (final c in cards) ...[c, const SizedBox(height: 16)],
+                  ]..removeLast(),
                 );
               },
             ),
@@ -188,9 +196,7 @@ class _StatCard extends StatelessWidget {
                     child: Icon(icon, color: onAccent, size: 22),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(label, style: Theme.of(context).textTheme.titleMedium),
-                  ),
+                  Expanded(child: Text(label, style: Theme.of(context).textTheme.titleMedium)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -198,10 +204,9 @@ class _StatCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
               ),
             ],
           ),

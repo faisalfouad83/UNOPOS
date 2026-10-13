@@ -51,7 +51,8 @@ class ReportsDashboardScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text(l10n.errorGeneric)),
         data: (sales) {
-          final summary = SalesSummary.of(sales, period);
+          // Reports follow the branch being worked in.
+          final summary = SalesSummary.of(sales.where((s) => s.branchId == branchId).toList(), period);
           final productNames = {for (final p in (productsAsync.value ?? const <ProductRecord>[])) p.id: p.name};
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -80,7 +81,11 @@ class ReportsDashboardScreen extends ConsumerWidget {
                   }
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Expanded(child: payments), const SizedBox(width: 16), Expanded(child: top)],
+                    children: [
+                      Expanded(child: payments),
+                      const SizedBox(width: 16),
+                      Expanded(child: top),
+                    ],
                   );
                 },
               ),
@@ -185,8 +190,10 @@ class _SalesOverTimeCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(period == ReportPeriod.today ? l10n.reportsSalesByHour : l10n.reportsSalesByDay,
-                style: theme.textTheme.titleMedium),
+            Text(
+              period == ReportPeriod.today ? l10n.reportsSalesByHour : l10n.reportsSalesByDay,
+              style: theme.textTheme.titleMedium,
+            ),
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
@@ -234,10 +241,8 @@ class _SalesOverTimeCard extends StatelessWidget {
                         ),
                         gridData: FlGridData(
                           drawVerticalLine: false,
-                          getDrawingHorizontalLine: (_) => FlLine(
-                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                            strokeWidth: 1,
-                          ),
+                          getDrawingHorizontalLine: (_) =>
+                              FlLine(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5), strokeWidth: 1),
                         ),
                         borderData: FlBorderData(show: false),
                         barGroups: [
@@ -401,13 +406,15 @@ class _LowStockCard extends StatelessWidget {
                 if (products.isEmpty) return Text(l10n.reportsNothingLow);
                 return Column(
                   children: products
-                      .map((p) => ListTile(
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
-                            leading: Icon(Icons.warning_amber_rounded, color: Theme.of(context).colorScheme.error),
-                            title: Text(p.name),
-                            trailing: Text(l10n.reportsReorderAt(p.reorderLevel)),
-                          ))
+                      .map(
+                        (p) => ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(Icons.warning_amber_rounded, color: Theme.of(context).colorScheme.error),
+                          title: Text(p.name),
+                          trailing: Text(l10n.reportsReorderAt(p.reorderLevel)),
+                        ),
+                      )
                       .toList(),
                 );
               },

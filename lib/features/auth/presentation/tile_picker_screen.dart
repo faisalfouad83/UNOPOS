@@ -18,12 +18,13 @@ class TilePickerScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final session = ref.watch(sessionControllerProvider);
     final store = session.store;
-    final employeesAsync = store == null
-        ? const AsyncValue<List<EmployeeRecord>>.data([])
-        : ref.watch(_employeesStreamProvider(store.id));
+    final employeesAsync =
+        store == null ? const AsyncValue<List<EmployeeRecord>>.data([]) : ref.watch(storeEmployeesProvider(store.id));
     final branches = store == null
         ? const <BranchRecord>[]
-        : (ref.watch(_branchesProvider(store.id)).value ?? const <BranchRecord>[]).where((b) => b.isActive).toList();
+        : (ref.watch(storeBranchesProvider(store.id)).value ?? const <BranchRecord>[])
+            .where((b) => b.isActive)
+            .toList();
     final multiBranch = branches.length > 1;
     final branchId = session.currentBranchId;
     final choosingBranch = multiBranch && (branchId == null || !branches.any((b) => b.id == branchId));
@@ -35,8 +36,8 @@ class TilePickerScreen extends ConsumerWidget {
           choosingBranch
               ? l10n.pickBranchTitle
               : currentBranch == null
-              ? l10n.pickAccountTitle
-              : '${l10n.pickAccountTitle} · ${currentBranch.name}',
+                  ? l10n.pickAccountTitle
+                  : '${l10n.pickAccountTitle} · ${currentBranch.name}',
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -61,13 +62,25 @@ class TilePickerScreen extends ConsumerWidget {
             )
           : employeesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, st) => Center(child: Text(l10n.errorGeneric)),
+              error: (e, st) => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.tilePickerLoadFailed, textAlign: TextAlign.center),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      icon: const Icon(Icons.refresh),
+                      label: Text(l10n.actionRetry),
+                      onPressed: () => ref.invalidate(storeEmployeesProvider(store!.id)),
+                    ),
+                  ],
+                ),
+              ),
               data: (all) {
                 // With several branches, show the chosen branch's staff plus
                 // anyone not tied to a branch (e.g. the owner).
-                final employees = multiBranch
-                    ? all.where((e) => e.branchId == null || e.branchId == branchId).toList()
-                    : all;
+                final employees =
+                    multiBranch ? all.where((e) => e.branchId == null || e.branchId == branchId).toList() : all;
                 if (employees.isEmpty) {
                   return Center(child: Text(l10n.tilePickerNoEmployees));
                 }
@@ -102,10 +115,6 @@ class TilePickerScreen extends ConsumerWidget {
     );
   }
 }
-
-final _branchesProvider = FutureProvider.autoDispose.family<List<BranchRecord>, String>((ref, storeId) {
-  return ref.watch(authRepositoryProvider).listBranches(storeId);
-});
 
 class _BranchPicker extends StatelessWidget {
   const _BranchPicker({required this.branches, required this.onPick});
@@ -150,7 +159,11 @@ class _BranchPicker extends StatelessWidget {
   }
 }
 
-final _employeesStreamProvider = StreamProvider.family<List<EmployeeRecord>, String>((ref, storeId) {
+/// The store's accounts for the picker. Disposed when the picker closes, so
+/// signing out and into a store (the same one or another) always opens a
+/// fresh, correctly-authenticated list instead of a cached one that broke
+/// when the previous session ended.
+final storeEmployeesProvider = StreamProvider.autoDispose.family<List<EmployeeRecord>, String>((ref, storeId) {
   return ref.watch(authRepositoryProvider).watchEmployees(storeId);
 });
 

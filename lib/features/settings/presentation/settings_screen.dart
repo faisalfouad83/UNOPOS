@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/widgets/app_credits.dart';
 import '../../../core/providers.dart';
 import '../../auth/domain/session_controller.dart';
 import 'activation_settings_section.dart';
@@ -39,13 +40,16 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               BranchSettingsSection(storeId: storeId),
               const SizedBox(height: 16),
-              PrinterSettingsSection(settings: settings),
+              PrinterSettingsSection(storeId: storeId, settings: settings),
               const SizedBox(height: 16),
               ActivationSettingsSection(storeId: storeId),
               const SizedBox(height: 16),
               BackupSettingsSection(storeId: storeId, settings: settings),
               const SizedBox(height: 16),
               const FactoryResetSection(),
+              const SizedBox(height: 24),
+              const AppCredits(),
+              const SizedBox(height: 8),
             ],
           );
         },

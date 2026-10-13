@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/permissions.dart';
+import '../../../core/offline/offline_cache.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../domain/auth_models.dart';
@@ -78,22 +79,22 @@ class SupabaseAuthRepository implements AuthRepository {
     // register_store reads auth.uid() from the session signUp() just
     // established — the store row, default branch, settings and chart of
     // accounts are all created atomically inside that one function.
-    final row = await _client.rpc('register_store', params: {
-      'p_store_login_id': storeLoginId,
-      'p_display_name': displayName,
-      'p_owner_name': ownerName,
-      'p_phone': phone,
-    }).single();
+    final row = await _client.rpc(
+      'register_store',
+      params: {
+        'p_store_login_id': storeLoginId,
+        'p_display_name': displayName,
+        'p_owner_name': ownerName,
+        'p_phone': phone,
+      },
+    ).single();
     return _mapStore(row);
   }
 
   @override
   Future<bool> verifyStorePassword(String storeLoginId, String password) async {
     try {
-      await _client.auth.signInWithPassword(
-        email: SupabaseConfig.syntheticEmailFor(storeLoginId),
-        password: password,
-      );
+      await _client.auth.signInWithPassword(email: SupabaseConfig.syntheticEmailFor(storeLoginId), password: password);
     } on AuthException {
       return false;
     }
@@ -103,7 +104,9 @@ class SupabaseAuthRepository implements AuthRepository {
     // Console "deactivate") is enforced here, one level up: reject and sign
     // back out rather than leave a disabled store's session live.
     final userId = _client.auth.currentUser?.id;
-    final row = userId == null ? null : await _client.from('stores').select('is_disabled').eq('auth_user_id', userId).maybeSingle();
+    final row = userId == null
+        ? null
+        : await _client.from('stores').select('is_disabled').eq('auth_user_id', userId).maybeSingle();
     if (row != null && row['is_disabled'] == true) {
       await _client.auth.signOut();
       return false;
@@ -119,13 +122,11 @@ class SupabaseAuthRepository implements AuthRepository {
     String phone = '',
     bool isMainBranch = false,
   }) async {
-    final row = await _client.from('branches').insert({
-      'store_id': storeId,
-      'name': name,
-      'address': address,
-      'phone': phone,
-      'is_main_branch': isMainBranch,
-    }).select().single();
+    final row = await _client
+        .from('branches')
+        .insert({'store_id': storeId, 'name': name, 'address': address, 'phone': phone, 'is_main_branch': isMainBranch})
+        .select()
+        .single();
     return _mapBranch(row);
   }
 
@@ -159,17 +160,20 @@ class SupabaseAuthRepository implements AuthRepository {
     int allowancesMinorUnits = 0,
     String avatarColorHex = '#0F6E5C',
   }) async {
-    final row = await _client.rpc('create_employee', params: {
-      'p_branch_id': branchId,
-      'p_name': name,
-      'p_role': role,
-      'p_pin': pin,
-      'p_phone': phone,
-      'p_address': address,
-      'p_salary_minor_units': salaryMinorUnits,
-      'p_allowances_minor_units': allowancesMinorUnits,
-      'p_avatar_color_hex': avatarColorHex,
-    }).single();
+    final row = await _client.rpc(
+      'create_employee',
+      params: {
+        'p_branch_id': branchId,
+        'p_name': name,
+        'p_role': role,
+        'p_pin': pin,
+        'p_phone': phone,
+        'p_address': address,
+        'p_salary_minor_units': salaryMinorUnits,
+        'p_allowances_minor_units': allowancesMinorUnits,
+        'p_avatar_color_hex': avatarColorHex,
+      },
+    ).single();
     return _mapEmployee(row);
   }
 
@@ -200,12 +204,16 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Stream<List<EmployeeRecord>> watchEmployees(String storeId) {
-    return _client
-        .from('users')
-        .stream(primaryKey: ['id'])
-        .eq('store_id', storeId)
-        .order('name')
-        .map((rows) => rows.where((r) => r['is_active'] == true).map(_mapEmployee).toList());
+    // Resilient: a realtime channel that drops (e.g. it was opened under a
+    // session that has since ended) re-subscribes with the current session
+    // instead of leaving the account picker stuck on an error.
+    return resilientRows(
+      'employees.$storeId',
+      () => _client.from('users').stream(primaryKey: ['id']).eq('store_id', storeId).order('name'),
+      retryDelay: const Duration(seconds: 3),
+      // Accounts carry salaries and phone numbers: never kept on disk.
+      cache: false,
+    ).map((rows) => rows.where((r) => r['store_id'] == storeId && r['is_active'] == true).map(_mapEmployee).toList());
   }
 
   @override

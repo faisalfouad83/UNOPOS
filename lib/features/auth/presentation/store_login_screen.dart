@@ -8,6 +8,7 @@ import '../../../core/providers.dart';
 import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/supabase/supabase_config.dart';
+import '../../../core/widgets/app_credits.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../../licensing/presentation/developer_gate.dart';
 import '../domain/session_controller.dart';
@@ -129,6 +130,8 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
                         child: Text(l10n.loginCreateStoreLink, textAlign: TextAlign.center),
                       ),
                     ],
+                    const SizedBox(height: 24),
+                    const AppCredits(),
                   ],
                 ),
               ),

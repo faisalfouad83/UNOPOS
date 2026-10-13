@@ -11,6 +11,12 @@ import 'loyalty.dart';
 import 'pos_models.dart';
 import 'pos_repository.dart';
 
+/// The held sale a cart was resumed from was already sold or discarded
+/// (e.g. on another till) — nothing was charged.
+class HeldSaleClosedException implements Exception {
+  const HeldSaleClosedException();
+}
+
 class CheckoutResult {
   const CheckoutResult({
     required this.sale,
@@ -52,8 +58,15 @@ abstract class CompleteSaleUseCase {
     String? customerId,
     String? holdLabel,
     required List<SaleLineInput> lines,
+
+    /// The held sale this cart was resumed from: holding again updates that
+    /// sale (same number, same place in the list) instead of adding a copy.
+    SaleRecord? replacing,
   });
 
+  /// [resumingHeldSale] is the held sale this cart was resumed from. The
+  /// cart as it is now is what gets sold (anything added or changed after
+  /// resuming included), and that held sale is closed with it.
   Future<CheckoutResult> checkout({
     required String storeId,
     required String branchId,
@@ -99,7 +112,16 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
     String? customerId,
     String? holdLabel,
     required List<SaleLineInput> lines,
+    SaleRecord? replacing,
   }) {
+    if (replacing != null) {
+      return _posRepository.reholdSale(
+        saleId: replacing.id,
+        lines: lines,
+        customerId: customerId,
+        holdLabel: holdLabel ?? replacing.holdLabel,
+      );
+    }
     return _posRepository.createSale(
       storeId: storeId,
       branchId: branchId,
@@ -127,16 +149,19 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
     Map<String, dynamic> extras = const {},
   }) async {
     final chosenCustomerId = extras['customer_id'] as String?;
-    final sale = resumingHeldSale ??
-        await _posRepository.createSale(
-          storeId: storeId,
-          branchId: branchId,
-          cashierId: cashierId,
-          shiftId: shiftId,
-          customerId: chosenCustomerId,
-          status: SaleStatus.completed,
-          lines: lines,
-        );
+    if (resumingHeldSale != null) {
+      final held = await _posRepository.getSale(resumingHeldSale.id);
+      if (held == null || held.status != SaleStatus.held) throw const HeldSaleClosedException();
+    }
+    final sale = await _posRepository.createSale(
+      storeId: storeId,
+      branchId: branchId,
+      cashierId: cashierId,
+      shiftId: shiftId,
+      customerId: chosenCustomerId,
+      status: SaleStatus.completed,
+      lines: lines,
+    );
 
     for (final line in sale.lines) {
       await _inventoryRepository.recordStockMovement(
@@ -203,6 +228,28 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
         receiptRef: sale.saleNumber,
       );
       debtEntryId = debtEntry.id;
+
+      // Money taken up front on a pay-later sale: the debt's first payment.
+      final paidNow = (extras['paid_now_minor_units'] as int?) ?? 0;
+      if (paidNow > 0) {
+        if (paidNow >= sale.grandTotalMinorUnits) throw ArgumentError('paid in full: not a pay-later sale');
+        final paymentId = await _debtsRepository.recordPayment(
+          debtLedgerEntryId: debtEntry.id,
+          amountMinorUnits: paidNow,
+          paymentMethod: 'cash',
+          receivedByUserId: cashierId,
+        );
+        final paymentEntry = await _accountingPostingService.postDebtPaymentReceived(
+          storeId: storeId,
+          branchId: branchId,
+          debtPaymentId: paymentId,
+          createdByUserId: cashierId,
+          amountMinorUnits: paidNow,
+          isCash: true,
+        );
+        await _debtsRepository.attachJournalEntryToPayment(paymentId, paymentEntry.id);
+        amountTenderedMinorUnits = paidNow;
+      }
     }
 
     await _posRepository.completeSale(
@@ -212,6 +259,8 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
       changeGivenMinorUnits: changeGivenMinorUnits,
       journalEntryId: journalEntry.id,
     );
+
+    if (resumingHeldSale != null) await _posRepository.voidSale(resumingHeldSale.id);
 
     final finalSale = await _posRepository.getSale(sale.id);
 
@@ -264,7 +313,16 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
     String? customerId,
     String? holdLabel,
     required List<SaleLineInput> lines,
+    SaleRecord? replacing,
   }) {
+    if (replacing != null) {
+      return _posRepository.reholdSale(
+        saleId: replacing.id,
+        lines: lines,
+        customerId: customerId,
+        holdLabel: holdLabel ?? replacing.holdLabel,
+      );
+    }
     // Holding has no other side effects to make atomic — it's just a plain
     // sale row with status='held', same in both implementations.
     return _posRepository.createSale(
@@ -301,30 +359,33 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       'p_cashier_id': cashierId,
       'p_payment_method': paymentMethod.name,
       'p_shift_id': shiftId,
-      'p_lines': resumingHeldSale != null
-          ? null
-          : lines
-              .map((l) => {
-                    'product_id': l.productId,
-                    'quantity': l.quantity,
-                    'unit_price_minor_units': l.unitPriceMinorUnits,
-                    'discount_amount_minor_units': l.discountAmountMinorUnits,
-                    'tax_amount_minor_units': l.taxAmountMinorUnits,
-                    'cost_price_snapshot_minor_units': l.costPriceSnapshotMinorUnits,
-                  })
-              .toList(),
+      'p_lines': lines
+          .map(
+            (l) => {
+              'product_id': l.productId,
+              'quantity': l.quantity,
+              'unit_price_minor_units': l.unitPriceMinorUnits,
+              'discount_amount_minor_units': l.discountAmountMinorUnits,
+              'tax_amount_minor_units': l.taxAmountMinorUnits,
+              'cost_price_snapshot_minor_units': l.costPriceSnapshotMinorUnits,
+            },
+          )
+          .toList(),
       'p_amount_tendered_minor_units': amountTenderedMinorUnits,
       'p_change_given_minor_units': changeGivenMinorUnits,
       'p_customer_name_for_pay_later': customerNameForPayLater,
-      'p_resuming_sale_id': resumingHeldSale?.id,
+      'p_resuming_sale_id': null,
       'p_sold_at': soldAt.toUtc().toIso8601String(),
-      'p_extras': extras,
+      'p_extras': {...extras, if (resumingHeldSale != null) 'release_held_sale_id': resumingHeldSale.id},
     };
 
     final Map<String, dynamic> json;
     try {
       json = await _client.rpc('checkout_sale_once', params: params) as Map<String, dynamic>;
     } catch (e) {
+      if (e is PostgrestException && e.message.contains('held sale already closed')) {
+        throw const HeldSaleClosedException();
+      }
       if (!isNetworkError(e)) rethrow;
       // No connection: keep the sale on this device and send it later. The
       // client id makes the replay safe even if this request actually got
@@ -380,17 +441,22 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       journalEntryId: saleJson['journal_entry_id'] as String?,
       createdAt: DateTime.parse(saleJson['created_at'] as String),
       completedAt: DateTime.parse(saleJson['completed_at'] as String),
-      lines: (saleJson['lines'] as List).cast<Map<String, dynamic>>().map((l) => SaleLineRecord(
-            id: l['id'] as String,
-            saleId: l['sale_id'] as String,
-            productId: l['product_id'] as String,
-            quantity: (l['quantity'] as num).toInt(),
-            unitPriceMinorUnits: (l['unit_price_minor_units'] as num).toInt(),
-            discountAmountMinorUnits: (l['discount_amount_minor_units'] as num).toInt(),
-            taxAmountMinorUnits: (l['tax_amount_minor_units'] as num).toInt(),
-            lineTotalMinorUnits: (l['line_total_minor_units'] as num).toInt(),
-            costPriceSnapshotMinorUnits: (l['cost_price_snapshot_minor_units'] as num).toInt(),
-          )).toList(),
+      lines: (saleJson['lines'] as List)
+          .cast<Map<String, dynamic>>()
+          .map(
+            (l) => SaleLineRecord(
+              id: l['id'] as String,
+              saleId: l['sale_id'] as String,
+              productId: l['product_id'] as String,
+              quantity: (l['quantity'] as num).toInt(),
+              unitPriceMinorUnits: (l['unit_price_minor_units'] as num).toInt(),
+              discountAmountMinorUnits: (l['discount_amount_minor_units'] as num).toInt(),
+              taxAmountMinorUnits: (l['tax_amount_minor_units'] as num).toInt(),
+              lineTotalMinorUnits: (l['line_total_minor_units'] as num).toInt(),
+              costPriceSnapshotMinorUnits: (l['cost_price_snapshot_minor_units'] as num).toInt(),
+            ),
+          )
+          .toList(),
     );
 
     return CheckoutResult(

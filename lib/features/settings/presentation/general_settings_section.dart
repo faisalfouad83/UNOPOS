@@ -76,9 +76,8 @@ class GeneralSettingsSection extends ConsumerWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    initialValue: settings.currencyCode == CurrencyInfo.usd.code
-                        ? CurrencyInfo.usd.code
-                        : CurrencyInfo.iqd.code,
+                    initialValue:
+                        settings.currencyCode == CurrencyInfo.usd.code ? CurrencyInfo.usd.code : CurrencyInfo.iqd.code,
                     decoration: InputDecoration(labelText: l10n.settingsCurrency),
                     items: [
                       DropdownMenuItem(value: CurrencyInfo.iqd.code, child: Text(l10n.currencyIqd)),
@@ -143,7 +142,11 @@ class GeneralSettingsSection extends ConsumerWidget {
                           : '',
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                      decoration: InputDecoration(labelText: l10n.loyaltySpendPerPoint),
+                      decoration: InputDecoration(
+                        labelText: l10n.loyaltySpendPerPoint,
+                        helperText: l10n.loyaltySpendPerPointHelp,
+                        helperMaxLines: 2,
+                      ),
                       onFieldSubmitted: (value) => _update(
                         ref,
                         settings.copyWith(loyaltySpendPerPointMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),
@@ -153,12 +156,15 @@ class GeneralSettingsSection extends ConsumerWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
-                      initialValue: settings.loyaltyPointValueMinor > 0
-                          ? Money.inputText(settings.loyaltyPointValueMinor)
-                          : '',
+                      initialValue:
+                          settings.loyaltyPointValueMinor > 0 ? Money.inputText(settings.loyaltyPointValueMinor) : '',
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                      decoration: InputDecoration(labelText: l10n.loyaltyPointValue),
+                      decoration: InputDecoration(
+                        labelText: l10n.loyaltyPointValue,
+                        helperText: l10n.loyaltyPointValueHelp,
+                        helperMaxLines: 2,
+                      ),
                       onFieldSubmitted: (value) => _update(
                         ref,
                         settings.copyWith(loyaltyPointValueMinor: Money.toMinorUnits(double.tryParse(value) ?? 0)),

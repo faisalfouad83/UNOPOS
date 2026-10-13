@@ -7,7 +7,8 @@ import '../../../core/providers.dart';
 import '../domain/settings_models.dart';
 
 class PrinterSettingsSection extends ConsumerStatefulWidget {
-  const PrinterSettingsSection({super.key, required this.settings});
+  const PrinterSettingsSection({super.key, required this.storeId, required this.settings});
+  final String storeId;
   final AppSettingsRecord settings;
 
   @override
@@ -15,8 +16,9 @@ class PrinterSettingsSection extends ConsumerStatefulWidget {
 }
 
 class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection> {
-  late final TextEditingController _addressController =
-      TextEditingController(text: widget.settings.printerConfig.connectionAddress);
+  late final TextEditingController _addressController = TextEditingController(
+    text: widget.settings.printerConfig.connectionAddress,
+  );
   String? _testResult;
 
   @override
@@ -33,16 +35,41 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final config = widget.settings.printerConfig;
-    final needsAddress = config.driverType == 'network' || config.driverType == 'usb' || config.driverType == 'bluetooth';
+    final needsAddress =
+        config.driverType == 'network' || config.driverType == 'usb' || config.driverType == 'bluetooth';
 
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.settingsPrinter, style: Theme.of(context).textTheme.titleMedium),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
+            Text(l10n.printModeTitle, style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            SegmentedButton<ReceiptPrintMode>(
+              segments: [
+                ButtonSegment(
+                  value: ReceiptPrintMode.auto,
+                  icon: const Icon(Icons.print),
+                  label: Text(l10n.printModeAuto),
+                ),
+                ButtonSegment(
+                  value: ReceiptPrintMode.ask,
+                  icon: const Icon(Icons.help_outline),
+                  label: Text(l10n.printModeAsk),
+                ),
+                ButtonSegment(
+                  value: ReceiptPrintMode.off,
+                  icon: const Icon(Icons.print_disabled_outlined),
+                  label: Text(l10n.printModeOff),
+                ),
+              ],
+              selected: {config.printMode},
+              onSelectionChanged: (s) => _save(config.copyWith(printMode: s.first)),
+            ),
+            const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: config.driverType,
               decoration: InputDecoration(labelText: context.l10n.printerType),
@@ -60,7 +87,9 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
               TextField(
                 controller: _addressController,
                 decoration: InputDecoration(
-                  labelText: config.driverType == 'network' ? context.l10n.printerAddressNetwork : context.l10n.printerAddressGeneric,
+                  labelText: config.driverType == 'network'
+                      ? context.l10n.printerAddressNetwork
+                      : context.l10n.printerAddressGeneric,
                 ),
                 onSubmitted: (v) => _save(config.copyWith(connectionAddress: v)),
               ),
@@ -88,7 +117,10 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
                 ),
                 if (_testResult != null) ...[
                   const SizedBox(width: 12),
-                  Text(_testResult!, style: TextStyle(color: _testResult == 'OK' ? Colors.green : Theme.of(context).colorScheme.error)),
+                  Text(
+                    _testResult!,
+                    style: TextStyle(color: _testResult == 'OK' ? Colors.green : Theme.of(context).colorScheme.error),
+                  ),
                 ],
               ],
             ),

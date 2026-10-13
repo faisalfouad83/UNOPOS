@@ -1,11 +1,23 @@
 enum AppThemeMode { light, dark, system }
 
+/// What happens after a sale is paid: print the receipt straight away, ask
+/// the cashier, or don't print.
+enum ReceiptPrintMode {
+  auto,
+  ask,
+  off;
+
+  static ReceiptPrintMode fromName(String? name) =>
+      ReceiptPrintMode.values.where((m) => m.name == name).firstOrNull ?? ReceiptPrintMode.auto;
+}
+
 class PrinterConfig {
   const PrinterConfig({
     this.driverType = 'none',
     this.connectionAddress,
     this.paperWidthMm = 58,
     this.showLogo = false,
+    this.printMode = ReceiptPrintMode.auto,
   });
 
   /// none/network/usb/bluetooth/windowsSystem
@@ -14,11 +26,16 @@ class PrinterConfig {
   final int paperWidthMm;
   final bool showLogo;
 
+  /// Stores set up before this setting existed printed every receipt
+  /// automatically, so that stays the default.
+  final ReceiptPrintMode printMode;
+
   Map<String, dynamic> toJson() => {
         'driverType': driverType,
         'connectionAddress': connectionAddress,
         'paperWidthMm': paperWidthMm,
         'showLogo': showLogo,
+        'printMode': printMode.name,
       };
 
   factory PrinterConfig.fromJson(Map<String, dynamic> json) => PrinterConfig(
@@ -26,6 +43,7 @@ class PrinterConfig {
         connectionAddress: json['connectionAddress'] as String?,
         paperWidthMm: json['paperWidthMm'] as int? ?? 58,
         showLogo: json['showLogo'] as bool? ?? false,
+        printMode: ReceiptPrintMode.fromName(json['printMode'] as String?),
       );
 
   PrinterConfig copyWith({
@@ -33,12 +51,14 @@ class PrinterConfig {
     String? connectionAddress,
     int? paperWidthMm,
     bool? showLogo,
+    ReceiptPrintMode? printMode,
   }) =>
       PrinterConfig(
         driverType: driverType ?? this.driverType,
         connectionAddress: connectionAddress ?? this.connectionAddress,
         paperWidthMm: paperWidthMm ?? this.paperWidthMm,
         showLogo: showLogo ?? this.showLogo,
+        printMode: printMode ?? this.printMode,
       );
 }
 

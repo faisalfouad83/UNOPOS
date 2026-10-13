@@ -35,9 +35,8 @@ class DriftPosRepository implements PosRepository {
         discountTotalMinorUnits: row.discountTotalMinorUnits,
         taxTotalMinorUnits: row.taxTotalMinorUnits,
         grandTotalMinorUnits: row.grandTotalMinorUnits,
-        paymentMethod: row.paymentMethod == null
-            ? null
-            : SalePaymentMethod.values.firstWhere((p) => p.name == row.paymentMethod),
+        paymentMethod:
+            row.paymentMethod == null ? null : SalePaymentMethod.values.firstWhere((p) => p.name == row.paymentMethod),
         amountTenderedMinorUnits: row.amountTenderedMinorUnits,
         changeGivenMinorUnits: row.changeGivenMinorUnits,
         shiftId: row.shiftId,
@@ -115,17 +114,19 @@ class DriftPosRepository implements PosRepository {
                 costPriceSnapshotMinorUnits: Value(line.costPriceSnapshotMinorUnits),
               ),
             );
-        mappedLines.add(SaleLineRecord(
-          id: lineId,
-          saleId: saleId,
-          productId: line.productId,
-          quantity: line.quantity,
-          unitPriceMinorUnits: line.unitPriceMinorUnits,
-          discountAmountMinorUnits: line.discountAmountMinorUnits,
-          taxAmountMinorUnits: line.taxAmountMinorUnits,
-          lineTotalMinorUnits: line.lineTotalMinorUnits,
-          costPriceSnapshotMinorUnits: line.costPriceSnapshotMinorUnits,
-        ));
+        mappedLines.add(
+          SaleLineRecord(
+            id: lineId,
+            saleId: saleId,
+            productId: line.productId,
+            quantity: line.quantity,
+            unitPriceMinorUnits: line.unitPriceMinorUnits,
+            discountAmountMinorUnits: line.discountAmountMinorUnits,
+            taxAmountMinorUnits: line.taxAmountMinorUnits,
+            lineTotalMinorUnits: line.lineTotalMinorUnits,
+            costPriceSnapshotMinorUnits: line.costPriceSnapshotMinorUnits,
+          ),
+        );
       }
     });
 
@@ -177,9 +178,58 @@ class DriftPosRepository implements PosRepository {
   }
 
   @override
+  Future<SaleRecord> reholdSale({
+    required String saleId,
+    required List<SaleLineInput> lines,
+    String? customerId,
+    String? holdLabel,
+  }) async {
+    if (lines.isEmpty) throw ArgumentError('a sale needs at least one line');
+    final subtotal = lines.fold<int>(0, (s, l) => s + l.unitPriceMinorUnits * l.quantity);
+    final discountTotal = lines.fold<int>(0, (s, l) => s + l.discountAmountMinorUnits);
+    final taxTotal = lines.fold<int>(0, (s, l) => s + l.taxAmountMinorUnits);
+    await _db.transaction(() async {
+      final sale = await (_db.select(_db.sales)..where((t) => t.id.equals(saleId))).getSingleOrNull();
+      if (sale == null || sale.status != SaleStatus.held.name) throw StateError('held sale not found');
+      await (_db.delete(_db.saleLines)..where((t) => t.saleId.equals(saleId))).go();
+      for (final line in lines) {
+        await _db.into(_db.saleLines).insert(
+              SaleLinesCompanion.insert(
+                id: IdGenerator.newId(),
+                saleId: saleId,
+                productId: line.productId,
+                quantity: line.quantity,
+                unitPriceMinorUnits: line.unitPriceMinorUnits,
+                discountAmountMinorUnits: Value(line.discountAmountMinorUnits),
+                taxAmountMinorUnits: Value(line.taxAmountMinorUnits),
+                lineTotalMinorUnits: line.lineTotalMinorUnits,
+                costPriceSnapshotMinorUnits: Value(line.costPriceSnapshotMinorUnits),
+              ),
+            );
+      }
+      await (_db.update(_db.sales)..where((t) => t.id.equals(saleId))).write(
+        SalesCompanion(
+          customerId: Value(customerId),
+          holdLabel: Value(holdLabel),
+          subtotalMinorUnits: Value(subtotal),
+          discountTotalMinorUnits: Value(discountTotal),
+          taxTotalMinorUnits: Value(taxTotal),
+          grandTotalMinorUnits: Value(subtotal - discountTotal + taxTotal),
+        ),
+      );
+    });
+    return (await getSale(saleId))!;
+  }
+
+  @override
   Future<SaleRecord?> findSaleByNumber(String storeId, String number) async {
     final row = await (_db.select(_db.sales)
-          ..where((t) => t.storeId.equals(storeId) & t.saleNumber.equals(normalizeSaleNumber(number)))
+          ..where(
+            (t) =>
+                t.storeId.equals(storeId) &
+                t.saleNumber.equals(normalizeSaleNumber(number)) &
+                t.status.equals('voided').not(),
+          )
           ..limit(1))
         .getSingleOrNull();
     if (row == null) return null;
@@ -217,8 +267,7 @@ class DriftPosRepository implements PosRepository {
 
   @override
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to}) {
-    final query = _db.select(_db.sales)
-      ..where((t) => t.storeId.equals(storeId) & t.status.isIn(soldStatuses));
+    final query = _db.select(_db.sales)..where((t) => t.storeId.equals(storeId) & t.status.isIn(soldStatuses));
     if (from != null) query.where((t) => t.completedAt.isBiggerOrEqualValue(from));
     if (to != null) query.where((t) => t.completedAt.isSmallerOrEqualValue(to));
     query.orderBy([(t) => OrderingTerm.desc(t.completedAt)]);
@@ -234,7 +283,9 @@ class DriftPosRepository implements PosRepository {
 
   @override
   Future<void> voidSale(String saleId) async {
-    await (_db.update(_db.sales)..where((t) => t.id.equals(saleId)))
+    await (_db.update(
+      _db.sales,
+    )..where((t) => t.id.equals(saleId)))
         .write(const SalesCompanion(status: Value('voided')));
   }
 
@@ -265,8 +316,9 @@ class DriftPosRepository implements PosRepository {
         if (entry.value > line.quantity - line.quantityReturned) {
           throw StateError('return exceeds remaining quantity');
         }
-        await (_db.update(_db.saleLines)..where((t) => t.id.equals(line.id)))
-            .write(SaleLinesCompanion(quantityReturned: Value(line.quantityReturned + entry.value)));
+        await (_db.update(_db.saleLines)..where((t) => t.id.equals(line.id))).write(
+          SaleLinesCompanion(quantityReturned: Value(line.quantityReturned + entry.value)),
+        );
         final unitRefund = line.quantity == 0 ? 0 : (line.lineTotalMinorUnits ~/ line.quantity) * entry.value;
         await _db.into(_db.saleReturnLines).insert(
               SaleReturnLinesCompanion.insert(
@@ -280,8 +332,9 @@ class DriftPosRepository implements PosRepository {
       }
       final lines = await (_db.select(_db.saleLines)..where((t) => t.saleId.equals(originalSaleId))).get();
       final fullyReturned = lines.every((l) => l.quantityReturned >= l.quantity);
-      await (_db.update(_db.sales)..where((t) => t.id.equals(originalSaleId)))
-          .write(SalesCompanion(status: Value(fullyReturned ? 'refunded' : 'partiallyRefunded')));
+      await (_db.update(_db.sales)..where((t) => t.id.equals(originalSaleId))).write(
+        SalesCompanion(status: Value(fullyReturned ? 'refunded' : 'partiallyRefunded')),
+      );
     });
     return returnId;
   }

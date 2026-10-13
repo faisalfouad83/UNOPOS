@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../auth/domain/session_controller.dart';
+import '../../debts/domain/debts_models.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../domain/pos_models.dart';
 
@@ -10,6 +12,7 @@ class CartLine {
     this.discountAmountMinorUnits = 0,
     this.taxRatePercent = 0,
     this.wholesale = false,
+    this.heldUnitPriceMinorUnits,
   });
 
   final ProductRecord product;
@@ -20,7 +23,12 @@ class CartLine {
   /// Priced at the product's wholesale price (when it has one).
   final bool wholesale;
 
-  int get unitPriceMinorUnits => unitPriceFor(product, wholesale: wholesale);
+  /// The price this line was held at, kept when a suspended sale is resumed
+  /// (the product's price may have changed since). Cleared by switching
+  /// between retail and wholesale.
+  final int? heldUnitPriceMinorUnits;
+
+  int get unitPriceMinorUnits => heldUnitPriceMinorUnits ?? unitPriceFor(product, wholesale: wholesale);
 
   static int unitPriceFor(ProductRecord product, {required bool wholesale}) =>
       wholesale ? (product.wholesalePriceMinorUnits ?? product.sellPriceMinorUnits) : product.sellPriceMinorUnits;
@@ -51,6 +59,7 @@ class CartLine {
         discountAmountMinorUnits: discountAmountMinorUnits ?? this.discountAmountMinorUnits,
         taxRatePercent: taxRatePercent,
         wholesale: wholesale ?? this.wholesale,
+        heldUnitPriceMinorUnits: wholesale == null ? heldUnitPriceMinorUnits : null,
       );
 
   SaleLineInput toSaleLineInput() => SaleLineInput(
@@ -88,6 +97,7 @@ class CartState {
     this.resumingHeldSale,
     this.wholesale = false,
     this.invoiceDiscount,
+    this.customer,
   });
 
   /// Lines as entered, each with its own line discount.
@@ -98,6 +108,10 @@ class CartState {
   /// Wholesale pricing for this sale.
   final bool wholesale;
   final InvoiceDiscount? invoiceDiscount;
+
+  /// The registered customer this sale is for (null = walk-in). Kept on the
+  /// cart so holding and resuming a sale keeps its customer.
+  final CustomerRecord? customer;
 
   /// [lines] with the invoice discount spread across them — what is
   /// actually sold, and what every total below is computed from.
@@ -113,7 +127,8 @@ class CartState {
 
   /// Discount coming from the invoice discount alone.
   int get invoiceDiscountMinorUnits =>
-      pricedLines.fold(0, (s, l) => s + l.discountAmountMinorUnits) - lines.fold(0, (s, l) => s + l.discountAmountMinorUnits);
+      pricedLines.fold(0, (s, l) => s + l.discountAmountMinorUnits) -
+      lines.fold(0, (s, l) => s + l.discountAmountMinorUnits);
 
   int get subtotalMinorUnits => pricedLines.fold(0, (s, l) => s + l.grossMinorUnits);
   int get discountTotalMinorUnits => pricedLines.fold(0, (s, l) => s + l.discountAmountMinorUnits);
@@ -129,6 +144,8 @@ class CartState {
     bool? wholesale,
     InvoiceDiscount? invoiceDiscount,
     bool clearInvoiceDiscount = false,
+    CustomerRecord? customer,
+    bool clearCustomer = false,
   }) {
     return CartState(
       lines: lines ?? this.lines,
@@ -136,13 +153,32 @@ class CartState {
       resumingHeldSale: clearHeld ? null : (resumingHeldSale ?? this.resumingHeldSale),
       wholesale: wholesale ?? this.wholesale,
       invoiceDiscount: clearInvoiceDiscount ? null : (invoiceDiscount ?? this.invoiceDiscount),
+      customer: clearCustomer ? null : (customer ?? this.customer),
     );
   }
 }
 
+/// The session a cart belongs to. A cart never outlives its store, branch
+/// or signed-in account: signing out, switching store or switching branch
+/// starts an empty cart, so nothing from one store can show up in another.
+typedef CartOwner = ({String? storeId, String? branchId, String? employeeId});
+
 class CartController extends Notifier<CartState> {
+  late CartOwner _owner;
+
   @override
-  CartState build() => const CartState();
+  CartState build() {
+    _owner = ref.watch(
+      sessionControllerProvider.select(
+        (s) => (storeId: s.store?.id, branchId: s.currentBranchId, employeeId: s.employee?.id),
+      ),
+    );
+    return const CartState();
+  }
+
+  /// The session this cart was opened for. Async work that finishes later
+  /// (e.g. loading a held sale) checks it is still the same before writing.
+  CartOwner get owner => _owner;
 
   void addProduct(ProductRecord product, {double taxRatePercent = 0}) {
     final index = state.lines.indexWhere((l) => l.product.id == product.id);
@@ -151,10 +187,12 @@ class CartController extends Notifier<CartState> {
       updated[index] = updated[index].copyWith(quantity: updated[index].quantity + 1);
       state = state.copyWith(lines: updated);
     } else {
-      state = state.copyWith(lines: [
-        ...state.lines,
-        CartLine(product: product, quantity: 1, taxRatePercent: taxRatePercent, wholesale: state.wholesale),
-      ]);
+      state = state.copyWith(
+        lines: [
+          ...state.lines,
+          CartLine(product: product, quantity: 1, taxRatePercent: taxRatePercent, wholesale: state.wholesale),
+        ],
+      );
     }
   }
 
@@ -169,8 +207,10 @@ class CartController extends Notifier<CartState> {
           // the new line total.
           l.copyWith(
             wholesale: wholesale,
-            discountAmountMinorUnits: l.discountAmountMinorUnits
-                .clamp(0, CartLine.unitPriceFor(l.product, wholesale: wholesale) * l.quantity),
+            discountAmountMinorUnits: l.discountAmountMinorUnits.clamp(
+              0,
+              CartLine.unitPriceFor(l.product, wholesale: wholesale) * l.quantity,
+            ),
           ),
       ],
     );
@@ -181,9 +221,7 @@ class CartController extends Notifier<CartState> {
       removeProduct(productId);
       return;
     }
-    final updated = state.lines
-        .map((l) => l.product.id == productId ? l.copyWith(quantity: quantity) : l)
-        .toList();
+    final updated = state.lines.map((l) => l.product.id == productId ? l.copyWith(quantity: quantity) : l).toList();
     state = state.copyWith(lines: updated);
   }
 
@@ -200,13 +238,29 @@ class CartController extends Notifier<CartState> {
     state = state.copyWith(lines: updated);
   }
 
-  void loadHeldSale(SaleRecord sale, List<ProductRecord> products) {
-    final byId = {for (final p in products) p.id: p};
-    final lines = sale.lines
-        .where((l) => byId.containsKey(l.productId))
-        .map((l) => CartLine(product: byId[l.productId]!, quantity: l.quantity, discountAmountMinorUnits: l.discountAmountMinorUnits))
-        .toList();
-    state = CartState(lines: lines, resumingHeldSale: sale);
+  /// Loads a held sale back into the cart exactly as it was held: same
+  /// items, quantities, prices, discounts, tax and customer. Lines whose
+  /// product was since removed from the catalog are still restored from
+  /// [products] when the caller found them. Ignored if the sale belongs to
+  /// another store/branch than this cart.
+  void loadHeldSale(
+    SaleRecord sale,
+    List<ProductRecord> products, {
+    Map<String, double> taxPercentById = const {},
+    CustomerRecord? customer,
+  }) {
+    if (sale.storeId != _owner.storeId || sale.branchId != _owner.branchId) return;
+    final lines = heldSaleToCartLines(sale, products, taxPercentById: taxPercentById);
+    state = CartState(
+      lines: lines,
+      wholesale: lines.isNotEmpty && lines.every((l) => l.wholesale),
+      resumingHeldSale: sale,
+      customer: customer != null && customer.id == sale.customerId ? customer : null,
+    );
+  }
+
+  void setCustomer(CustomerRecord? customer) {
+    state = customer == null ? state.copyWith(clearCustomer: true) : state.copyWith(customer: customer);
   }
 
   void setInvoiceDiscount(InvoiceDiscount? discount) {
@@ -244,5 +298,29 @@ List<CartLine> spreadDiscount(List<CartLine> lines, int discountMinorUnits) {
   return [
     for (var i = 0; i < lines.length; i++)
       lines[i].copyWith(discountAmountMinorUnits: lines[i].discountAmountMinorUnits + shares[i]),
+  ];
+}
+
+/// The cart lines a held sale was saved from. A line is wholesale when it
+/// was held at the product's wholesale price; its tax rate is the product's.
+List<CartLine> heldSaleToCartLines(
+  SaleRecord sale,
+  List<ProductRecord> products, {
+  Map<String, double> taxPercentById = const {},
+}) {
+  final byId = {for (final p in products) p.id: p};
+  return [
+    for (final l in sale.lines)
+      if (byId[l.productId] case final product?)
+        CartLine(
+          product: product,
+          quantity: l.quantity,
+          discountAmountMinorUnits: l.discountAmountMinorUnits,
+          taxRatePercent: product.taxRateId == null ? 0 : (taxPercentById[product.taxRateId] ?? 0),
+          wholesale: product.wholesalePriceMinorUnits != null &&
+              product.wholesalePriceMinorUnits != product.sellPriceMinorUnits &&
+              l.unitPriceMinorUnits == product.wholesalePriceMinorUnits,
+          heldUnitPriceMinorUnits: l.unitPriceMinorUnits,
+        ),
   ];
 }

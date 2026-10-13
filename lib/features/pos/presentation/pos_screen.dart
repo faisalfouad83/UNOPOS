@@ -15,17 +15,22 @@ import '../../inventory/presentation/tax_rates_section.dart';
 import '../../shifts/presentation/close_shift_dialog.dart';
 import '../../shifts/presentation/open_shift_dialog.dart';
 import '../../shifts/presentation/shift_providers.dart';
+import '../domain/barcode_scan.dart';
 import '../domain/pos_models.dart';
 import 'cart_controller.dart';
 import 'checkout_sheet.dart';
+import 'loyalty_customer_picker.dart';
 import 'process_return_dialog.dart';
+import 'scan_search_field.dart';
 import 'sales_history_screen.dart';
 
 typedef _ProductQueryKey = ({String storeId, String query});
 typedef _BranchKey = ({String storeId, String branchId});
 
 final _posProductsProvider = StreamProvider.autoDispose.family<List<ProductRecord>, _ProductQueryKey>((ref, key) {
-  return ref.watch(inventoryRepositoryProvider).watchProducts(key.storeId, searchQuery: key.query.isEmpty ? null : key.query);
+  return ref
+      .watch(inventoryRepositoryProvider)
+      .watchProducts(key.storeId, searchQuery: key.query.isEmpty ? null : key.query);
 });
 
 final _heldSalesProvider = StreamProvider.autoDispose.family<List<SaleRecord>, _BranchKey>((ref, key) {
@@ -75,9 +80,9 @@ class PosScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.receipt_long_outlined),
             tooltip: l10n.posSalesHistory,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => SalesHistoryScreen(storeId: storeId)),
-            ),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => SalesHistoryScreen(storeId: storeId))),
           ),
           _HeldSalesButton(storeId: storeId, branchId: branchId),
         ],
@@ -117,11 +122,7 @@ class _HeldSalesButton extends ConsumerWidget {
 
     return IconButton(
       tooltip: l10n.posHeldSales,
-      icon: Badge(
-        label: Text('$count'),
-        isLabelVisible: count > 0,
-        child: const Icon(Icons.pause_circle_outline),
-      ),
+      icon: Badge(label: Text('$count'), isLabelVisible: count > 0, child: const Icon(Icons.pause_circle_outline)),
       onPressed: () => _showHeldSales(context, ref, held.value ?? const []),
     );
   }
@@ -130,29 +131,119 @@ class _HeldSalesButton extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     showModalBottomSheet<void>(
       context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(padding: const EdgeInsets.all(16), child: Text(l10n.posHeldSales, style: Theme.of(context).textTheme.titleLarge)),
-            if (heldSales.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(l10n.posEmptyCart)),
-            ...heldSales.map((sale) => ListTile(
-                  title: Text((sale.holdLabel?.isNotEmpty ?? false) ? sale.holdLabel! : sale.saleNumber),
-                  subtitle: Text(Money.format(sale.grandTotalMinorUnits)),
-                  trailing: TextButton(
-                    child: Text(l10n.posResumeSale),
-                    onPressed: () async {
-                      final products = await ref.read(inventoryRepositoryProvider).watchProducts(storeId).first;
-                      ref.read(cartControllerProvider.notifier).loadHeldSale(sale, products);
-                      if (context.mounted) Navigator.of(context).pop();
-                    },
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.75),
+          child: Consumer(
+            builder: (context, ref, _) {
+              // Live list: a sale resumed or sold on another till drops out.
+              final live = ref.watch(_heldSalesProvider((storeId: storeId, branchId: branchId))).value ?? heldSales;
+              final inCart = ref.watch(cartControllerProvider.select((c) => c.resumingHeldSale?.id));
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(l10n.posHeldSales, style: Theme.of(context).textTheme.titleLarge),
                   ),
-                )),
-          ],
+                  if (live.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(l10n.posEmptyCart)),
+                  Flexible(
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        for (final sale in live)
+                          ListTile(
+                            leading: const Icon(Icons.pause_circle_outline),
+                            title: Text((sale.holdLabel?.isNotEmpty ?? false) ? sale.holdLabel! : sale.saleNumber),
+                            subtitle: Text(
+                              '${AppDateFormat.dateTime(sale.createdAt)} · '
+                              '${l10n.posHeldItems(sale.lines.fold(0, (s, l) => s + l.quantity))} · '
+                              '${Money.format(sale.grandTotalMinorUnits)}',
+                            ),
+                            trailing: sale.id == inCart
+                                ? Chip(label: Text(l10n.posHeldInCart))
+                                : FilledButton.tonal(
+                                    child: Text(l10n.posResumeSale),
+                                    onPressed: () async {
+                                      final ok = await resumeHeldSale(context, ref, sale);
+                                      if (ok && sheetContext.mounted) Navigator.of(sheetContext).pop();
+                                    },
+                                  ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
+}
+
+/// Suspends what is in the cart. A cart resumed from a held sale is saved
+/// back into that same held sale (same number, same place in the list), so
+/// suspending again never makes a copy. Returns false if it failed.
+Future<bool> holdCurrentCart(BuildContext context, WidgetRef ref) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final session = ref.read(sessionControllerProvider);
+  final cart = ref.read(cartControllerProvider);
+  if (cart.isEmpty || session.store == null || session.currentBranchId == null || session.employee == null) {
+    return true;
+  }
+  try {
+    await ref.read(completeSaleUseCaseProvider).holdSale(
+          storeId: session.store!.id,
+          branchId: session.currentBranchId!,
+          cashierId: session.employee!.id,
+          customerId: cart.customer?.id,
+          lines: cart.pricedLines.map((l) => l.toSaleLineInput()).toList(),
+          replacing: cart.resumingHeldSale,
+        );
+    ref.read(cartControllerProvider.notifier).clear();
+    messenger.showSnackBar(SnackBar(content: Text(l10n.posSaleHeld)));
+    return true;
+  } catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
+    return false;
+  }
+}
+
+/// Puts a held sale back in the cart exactly as it was suspended. Whatever
+/// is in the cart first is suspended itself, so nothing is lost.
+Future<bool> resumeHeldSale(BuildContext context, WidgetRef ref, SaleRecord sale) async {
+  final cartController = ref.read(cartControllerProvider.notifier);
+  final owner = cartController.owner;
+  if (!ref.read(cartControllerProvider).isEmpty) {
+    if (!await holdCurrentCart(context, ref)) return false;
+  }
+  final inventory = ref.read(inventoryRepositoryProvider);
+  final products = [...await inventory.watchProducts(sale.storeId).first];
+  // Products since taken off the catalog are still part of the held sale.
+  for (final id in sale.lines.map((l) => l.productId).toSet()) {
+    if (products.any((p) => p.id == id)) continue;
+    final product = await inventory.getProduct(id);
+    if (product != null) products.add(product);
+  }
+  final taxRates = await ref.read(inventoryRepositoryProvider).watchTaxRates(sale.storeId).first;
+  final customer = sale.customerId == null
+      ? null
+      : (await ref.read(debtsRepositoryProvider).watchCustomers(sale.storeId).first)
+          .where((c) => c.id == sale.customerId)
+          .firstOrNull;
+  // Signed out or switched store/branch while loading: leave the new cart alone.
+  if (cartController.owner != owner || !ref.read(cartControllerProvider).isEmpty) return false;
+  cartController.loadHeldSale(
+    sale,
+    products,
+    taxPercentById: {for (final t in taxRates) t.id: t.ratePercent},
+    customer: customer,
+  );
+  return true;
 }
 
 class _PosBody extends ConsumerStatefulWidget {
@@ -165,12 +256,46 @@ class _PosBody extends ConsumerStatefulWidget {
 
 class _PosBodyState extends ConsumerState<_PosBody> {
   final _searchController = TextEditingController();
+  final _searchFocus = FocusNode();
   String _query = '';
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocus.dispose();
     super.dispose();
+  }
+
+  /// A scanned code, or text typed + Enter: add the matching product to the
+  /// cart. Unknown codes leave the cart untouched and just say so.
+  Future<void> _onScan(String code) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final storeId = widget.storeId;
+    final owner = ref.read(cartControllerProvider.notifier).owner;
+    final products = ref.read(_posProductsProvider((storeId: storeId, query: ''))).valueOrNull ??
+        await ref.read(inventoryRepositoryProvider).watchProducts(storeId).first;
+    var product = matchScannedProduct(products, code);
+    if (product == null) {
+      // Not in the list loaded on this till (e.g. added a moment ago).
+      try {
+        product = await ref.read(inventoryRepositoryProvider).findByBarcode(storeId, code);
+      } catch (_) {}
+    }
+    product ??= singleSearchMatch(products, code);
+    if (!mounted || ref.read(cartControllerProvider.notifier).owner != owner) return;
+    if (product == null) {
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.posBarcodeNotFound(code)), duration: const Duration(seconds: 3)),
+      );
+      return;
+    }
+    final taxRates = ref.read(taxRatesProvider(storeId)).valueOrNull ??
+        await ref.read(inventoryRepositoryProvider).watchTaxRates(storeId).first;
+    final rate = taxRates.where((t) => t.id == product!.taxRateId).firstOrNull?.ratePercent ?? 0;
+    if (!mounted || ref.read(cartControllerProvider.notifier).owner != owner) return;
+    ref.read(cartControllerProvider.notifier).addProduct(product, taxRatePercent: rate);
   }
 
   @override
@@ -181,8 +306,13 @@ class _PosBodyState extends ConsumerState<_PosBody> {
     final productGrid = _ProductGrid(
       storeId: widget.storeId,
       query: _query,
-      searchController: _searchController,
-      onQueryChanged: (v) => setState(() => _query = v),
+      search: ScanSearchField(
+        controller: _searchController,
+        focusNode: _searchFocus,
+        hintText: AppLocalizations.of(context).posScanHint,
+        onChanged: (v) => setState(() => _query = v),
+        onScan: _onScan,
+      ),
     );
     const cartPanel = _CartPanel();
 
@@ -207,16 +337,10 @@ class _PosBodyState extends ConsumerState<_PosBody> {
 }
 
 class _ProductGrid extends ConsumerWidget {
-  const _ProductGrid({
-    required this.storeId,
-    required this.query,
-    required this.searchController,
-    required this.onQueryChanged,
-  });
+  const _ProductGrid({required this.storeId, required this.query, required this.search});
   final String storeId;
   final String query;
-  final TextEditingController searchController;
-  final ValueChanged<String> onQueryChanged;
+  final Widget search;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -225,23 +349,13 @@ class _ProductGrid extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.search),
-              hintText: l10n.posSearchProducts,
-            ),
-            onChanged: onQueryChanged,
-          ),
-        ),
+        Padding(padding: const EdgeInsets.all(12), child: search),
         Expanded(
           child: productsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) => Center(child: Text(l10n.errorGeneric)),
             data: (products) {
-              if (products.isEmpty) return Center(child: Text(l10n.errorGeneric));
+              if (products.isEmpty) return Center(child: Text(l10n.posNoProductsFound));
               return GridView.builder(
                 padding: const EdgeInsets.all(12),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -324,14 +438,40 @@ class _CartPanel extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: FilterChip(
-              avatar: const Icon(Icons.local_shipping_outlined, size: 18),
-              label: Text(l10n.posWholesalePrices),
-              selected: cart.wholesale,
-              onSelected: (on) => ref.read(cartControllerProvider.notifier).setWholesale(on),
-            ),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              FilterChip(
+                avatar: const Icon(Icons.local_shipping_outlined, size: 18),
+                label: Text(l10n.posWholesalePrices),
+                selected: cart.wholesale,
+                onSelected: (on) => ref.read(cartControllerProvider.notifier).setWholesale(on),
+              ),
+              InputChip(
+                avatar: Icon(cart.customer == null ? Icons.person_outline : Icons.person, size: 18),
+                label: Text(cart.customer?.name ?? l10n.customerWalkIn),
+                onPressed: session.store == null
+                    ? null
+                    : () async {
+                        final picked = await showLoyaltyCustomerPicker(
+                          context,
+                          ref,
+                          session.store!.id,
+                          showPoints: storeSettings?.loyaltyEnabled ?? false,
+                        );
+                        if (picked != null) ref.read(cartControllerProvider.notifier).setCustomer(picked);
+                      },
+                onDeleted:
+                    cart.customer == null ? null : () => ref.read(cartControllerProvider.notifier).setCustomer(null),
+              ),
+              if (cart.resumingHeldSale != null)
+                Chip(
+                  avatar: const Icon(Icons.play_circle_outline, size: 18),
+                  label: Text(cart.resumingHeldSale!.saleNumber),
+                ),
+            ],
           ),
         ),
         Expanded(
@@ -364,8 +504,9 @@ class _CartPanel extends ConsumerWidget {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.add_circle_outline),
-                            onPressed: () =>
-                                ref.read(cartControllerProvider.notifier).setQuantity(line.product.id, line.quantity + 1),
+                            onPressed: () => ref
+                                .read(cartControllerProvider.notifier)
+                                .setQuantity(line.product.id, line.quantity + 1),
                           ),
                           if (canDiscount)
                             IconButton(
@@ -399,18 +540,17 @@ class _CartPanel extends ConsumerWidget {
                     ),
                     const Spacer(),
                     if (cart.invoiceDiscountMinorUnits > 0)
-                      Text('-${Money.format(cart.invoiceDiscountMinorUnits)}',
-                          style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                      Text(
+                        '-${Money.format(cart.invoiceDiscountMinorUnits)}',
+                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                      ),
                   ],
                 ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(l10n.commonTotal, style: Theme.of(context).textTheme.titleMedium),
-                  Text(
-                    Money.format(cart.grandTotalMinorUnits),
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  Text(Money.format(cart.grandTotalMinorUnits), style: Theme.of(context).textTheme.titleLarge),
                 ],
               ),
               if (rate != null && rate.isSet && cart.grandTotalMinorUnits > 0)
@@ -428,15 +568,7 @@ class _CartPanel extends ConsumerWidget {
                     child: OutlinedButton(
                       onPressed: cart.isEmpty || session.store == null || session.currentBranchId == null
                           ? null
-                          : () async {
-                              await ref.read(completeSaleUseCaseProvider).holdSale(
-                                    storeId: session.store!.id,
-                                    branchId: session.currentBranchId!,
-                                    cashierId: session.employee!.id,
-                                    lines: cart.pricedLines.map((l) => l.toSaleLineInput()).toList(),
-                                  );
-                              ref.read(cartControllerProvider.notifier).clear();
-                            },
+                          : () => holdCurrentCart(context, ref),
                       child: Text(l10n.posHoldSale),
                     ),
                   ),
@@ -447,7 +579,8 @@ class _CartPanel extends ConsumerWidget {
                       onPressed: cart.isEmpty
                           ? null
                           : () async {
-                              final settings = await ref.read(settingsRepositoryProvider).ensureSettings(session.store!.id);
+                              final settings =
+                                  await ref.read(settingsRepositoryProvider).ensureSettings(session.store!.id);
                               if (context.mounted) {
                                 await showCheckoutSheet(context, ref, settings: settings);
                               }

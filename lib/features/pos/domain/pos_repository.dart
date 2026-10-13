@@ -25,6 +25,15 @@ abstract class PosRepository {
 
   Future<SaleRecord?> getSale(String saleId);
 
+  /// Replaces what a held sale holds with [lines], keeping its number and
+  /// its place in the held list. Returns the held sale as it is now.
+  Future<SaleRecord> reholdSale({
+    required String saleId,
+    required List<SaleLineInput> lines,
+    String? customerId,
+    String? holdLabel,
+  });
+
   /// Looks an invoice up by the number printed on its receipt. Accepts the
   /// full number ("S-000123") or just its digits ("123").
   Future<SaleRecord?> findSaleByNumber(String storeId, String number);
@@ -59,3 +68,13 @@ String normalizeSaleNumber(String input) {
 
 /// Sale statuses that count as sales (returns are netted out per line).
 const soldStatuses = ['completed', 'partiallyRefunded', 'refunded'];
+
+/// A sale line as the checkout / hold RPCs take it.
+Map<String, dynamic> saleLineJson(SaleLineInput l) => {
+      'product_id': l.productId,
+      'quantity': l.quantity,
+      'unit_price_minor_units': l.unitPriceMinorUnits,
+      'discount_amount_minor_units': l.discountAmountMinorUnits,
+      'tax_amount_minor_units': l.taxAmountMinorUnits,
+      'cost_price_snapshot_minor_units': l.costPriceSnapshotMinorUnits,
+    };

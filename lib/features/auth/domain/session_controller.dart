@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/magic_passcodes.dart';
@@ -9,12 +10,7 @@ import '../../../core/supabase/supabase_config.dart';
 import 'auth_models.dart';
 
 class SessionState {
-  const SessionState({
-    this.store,
-    this.employee,
-    this.developerMode = false,
-    this.currentBranchId,
-  });
+  const SessionState({this.store, this.employee, this.developerMode = false, this.currentBranchId});
 
   final StoreRecord? store;
   final EmployeeRecord? employee;
@@ -62,8 +58,26 @@ class SessionController extends Notifier<SessionState> {
     }
   }
 
+  /// Signs this device into [store]. Anything belonging to a different
+  /// store (account, branch) is dropped first, then the branch last used on
+  /// this device for this store is restored.
   void setStore(StoreRecord store) {
-    state = state.copyWith(store: store);
+    if (state.store?.id != store.id) {
+      state = SessionState(store: store);
+      ref.read(selectedEmployeeForPinProvider.notifier).state = null;
+    } else {
+      state = state.copyWith(store: store);
+    }
+    _restoreBranch(store.id);
+  }
+
+  Future<void> _restoreBranch(String storeId) async {
+    if (state.currentBranchId != null) return;
+    final saved = await BranchPreference.load(storeId);
+    // Only if nothing changed meanwhile (same store, no branch picked yet).
+    if (saved != null && state.store?.id == storeId && state.currentBranchId == null) {
+      state = state.copyWith(currentBranchId: saved);
+    }
   }
 
   /// Called from the PIN pad. Checks the magic developer/reset sequences
@@ -171,14 +185,23 @@ class SessionController extends Notifier<SessionState> {
   /// same store back in on the next app launch despite the user having
   /// "left" it (the same class of bug fixed for signOutDeveloper above).
   Future<void> signOutStore() async {
+    // Clear first so nothing on screen keeps using the old store while the
+    // sign-out request is in flight.
+    state = const SessionState();
+    ref.read(selectedEmployeeForPinProvider.notifier).state = null;
     if (kUseSupabaseBackend) {
       await ref.read(supabaseClientProvider).auth.signOut();
     }
-    state = const SessionState();
   }
 
+  /// Works in [branchId] from now on, and remembers it on this device for
+  /// the next start. An account tied to one branch can't switch away from it.
   void setCurrentBranch(String branchId) {
+    final assigned = state.employee?.branchId;
+    if (assigned != null && assigned != branchId) return;
     state = state.copyWith(currentBranchId: branchId);
+    final storeId = state.store?.id;
+    if (storeId != null) BranchPreference.save(storeId, branchId);
   }
 
   /// Back to the branch list on the account screen.
@@ -188,6 +211,34 @@ class SessionController extends Notifier<SessionState> {
 }
 
 final sessionControllerProvider = NotifierProvider<SessionController, SessionState>(SessionController.new);
+
+/// The branch last worked in on this device, per store, so restarting the
+/// app doesn't reset it.
+class BranchPreference {
+  const BranchPreference._();
+
+  static String _key(String storeId) => 'session.branch.$storeId';
+
+  static Future<String?> load(String storeId) async {
+    try {
+      return (await SharedPreferences.getInstance()).getString(_key(storeId));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> save(String storeId, String branchId) async {
+    try {
+      await (await SharedPreferences.getInstance()).setString(_key(storeId), branchId);
+    } catch (_) {}
+  }
+}
+
+/// The store's branches (active and inactive), for showing and picking the
+/// branch being worked in.
+final storeBranchesProvider = FutureProvider.autoDispose.family<List<BranchRecord>, String>((ref, storeId) {
+  return ref.watch(authRepositoryProvider).listBranches(storeId);
+});
 
 /// The employee tile tapped on the picker, carried over to the PIN pad
 /// screen. Cleared once the PIN attempt resolves.

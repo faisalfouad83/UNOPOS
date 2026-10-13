@@ -63,8 +63,7 @@ import 'app_localizations_en.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -72,8 +71,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -85,20 +83,15 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[
-    Locale('ar'),
-    Locale('ckb'),
-    Locale('en'),
-  ];
+  static const List<Locale> supportedLocales = <Locale>[Locale('ar'), Locale('ckb'), Locale('en')];
 
   /// Application name, shown on splash and title bars
   ///
@@ -2462,13 +2455,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Employees: {employees} · Branches: {branches} · Products: {products} · Daily sales: {daily} · Storage: {storage} MB'**
-  String devPlanSummary(
-    int employees,
-    int branches,
-    int products,
-    int daily,
-    int storage,
-  );
+  String devPlanSummary(int employees, int branches, int products, int daily, int storage);
 
   /// No description provided for @devTotalStores.
   ///
@@ -3459,10 +3446,201 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit full screen (F11)'**
   String get actionExitFullScreen;
+
+  /// No description provided for @posScanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a barcode or search products'**
+  String get posScanHint;
+
+  /// No description provided for @posBarcodeNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No active product with code {code}'**
+  String posBarcodeNotFound(String code);
+
+  /// No description provided for @posNoProductsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No products found'**
+  String get posNoProductsFound;
+
+  /// No description provided for @posHeldItems.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String posHeldItems(int count);
+
+  /// No description provided for @posHeldInCart.
+  ///
+  /// In en, this message translates to:
+  /// **'In the cart now'**
+  String get posHeldInCart;
+
+  /// No description provided for @posHeldSaleClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'This suspended sale was already completed or removed (maybe on another till). Nothing was charged.'**
+  String get posHeldSaleClosed;
+
+  /// No description provided for @posSaleHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale suspended'**
+  String get posSaleHeld;
+
+  /// No description provided for @payAmountDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount due'**
+  String get payAmountDue;
+
+  /// No description provided for @payReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount received'**
+  String get payReceived;
+
+  /// No description provided for @payPaidNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid now (optional)'**
+  String get payPaidNow;
+
+  /// No description provided for @payRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get payRemaining;
+
+  /// No description provided for @payOnAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'On the customer\'s account'**
+  String get payOnAccount;
+
+  /// No description provided for @payExact.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact'**
+  String get payExact;
+
+  /// No description provided for @payClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get payClear;
+
+  /// No description provided for @payInsufficient.
+  ///
+  /// In en, this message translates to:
+  /// **'The amount received is less than the total. Take the rest, or put it on the customer\'s account.'**
+  String get payInsufficient;
+
+  /// No description provided for @payRestOnAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Put the rest on account'**
+  String get payRestOnAccount;
+
+  /// No description provided for @payCustomerNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the customer, or type their name, for a pay-later sale.'**
+  String get payCustomerNeeded;
+
+  /// No description provided for @payPaidNowTooMuch.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid in full: choose cash or card instead.'**
+  String get payPaidNowTooMuch;
+
+  /// No description provided for @printModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'After a sale'**
+  String get printModeTitle;
+
+  /// No description provided for @printModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Print automatically'**
+  String get printModeAuto;
+
+  /// No description provided for @printModeAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask first'**
+  String get printModeAsk;
+
+  /// No description provided for @printModeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t print'**
+  String get printModeOff;
+
+  /// No description provided for @printAskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Print the receipt?'**
+  String get printAskTitle;
+
+  /// No description provided for @printAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get printAction;
+
+  /// No description provided for @printSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get printSkip;
+
+  /// No description provided for @printFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The sale is saved, but printing failed: {reason}'**
+  String printFailed(String reason);
+
+  /// No description provided for @printRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get printRetry;
+
+  /// No description provided for @printNoPrinter.
+  ///
+  /// In en, this message translates to:
+  /// **'No printer is set up (Settings › Printer).'**
+  String get printNoPrinter;
+
+  /// No description provided for @branchCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch you\'re working in'**
+  String get branchCurrent;
+
+  /// No description provided for @tilePickerLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the accounts. Check the connection and try again.'**
+  String get tilePickerLoadFailed;
+
+  /// No description provided for @loyaltySpendPerPointHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Earning: the customer gets 1 point for every this much spent'**
+  String get loyaltySpendPerPointHelp;
+
+  /// No description provided for @loyaltyPointValueHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending: the discount one point gives at the till'**
+  String get loyaltyPointValueHelp;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -3471,8 +3649,7 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['ar', 'ckb', 'en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['ar', 'ckb', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

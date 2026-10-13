@@ -34,6 +34,7 @@ Future<ReceiptDocument> buildSaleReceipt({
   required SaleRecord sale,
   required AppSettingsRecord settings,
   required AppLocalizations l10n,
+  String? customerName,
   List<(String, String)> extraRows = const [],
 }) async {
   final productNames = <String, String>{};
@@ -59,6 +60,7 @@ Future<ReceiptDocument> buildSaleReceipt({
     storeName: session.store?.displayName ?? '',
     branchName: '',
     cashierName: session.employee?.name ?? '',
+    customerName: customerName,
     currencySymbol: settings.currencySymbol,
     footerText: l10n.receiptThankYou,
     labels: receiptLabelsFor(l10n),

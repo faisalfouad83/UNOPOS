@@ -13,7 +13,11 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/theming/app_theme.dart';
 import '../../../core/routing/route_guard.dart';
 import '../../../core/routing/route_paths.dart';
+import '../../../core/widgets/app_credits.dart';
 import '../../../core/widgets/unopos_logo.dart';
+import '../../auth/domain/auth_models.dart';
+import '../../pos/presentation/cart_controller.dart';
+import '../../pos/presentation/pos_screen.dart';
 import '../../pos/presentation/offline_sync_indicator.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../notifications/presentation/notification_bell.dart';
@@ -72,8 +76,9 @@ class HomeShell extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final session = ref.watch(sessionControllerProvider);
     final destinations = _destinationsFor(session);
-    final selectedIndex =
-        destinations.indexWhere((d) => currentPath.startsWith(d.path)).clamp(0, destinations.isEmpty ? 0 : destinations.length - 1);
+    final selectedIndex = destinations
+        .indexWhere((d) => currentPath.startsWith(d.path))
+        .clamp(0, destinations.isEmpty ? 0 : destinations.length - 1);
 
     final width = MediaQuery.sizeOf(context).width;
     final isCompact = AppBreakpoints.isCompact(width);
@@ -100,6 +105,8 @@ class HomeShell extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const _BranchIndicator(),
+              const SizedBox(width: 8),
               const OfflineSyncIndicator(),
               const _LiveClock(),
               const SizedBox(width: 8),
@@ -138,9 +145,9 @@ class HomeShell extends ConsumerWidget {
                         Text(session.employee?.name ?? '', style: Theme.of(context).textTheme.labelMedium),
                         Text(
                           roleLabel(l10n, session.role),
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.primary),
                         ),
                       ],
                     ),
@@ -178,6 +185,10 @@ class HomeShell extends ConsumerWidget {
                   ],
                 ),
         ),
+        const Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(12, 2, 12, 2),
+          child: AppCredits(alignment: AlignmentDirectional.centerEnd),
+        ),
         if (isCompact && destinations.length >= 2)
           NavigationBar(
             selectedIndex: selectedIndex,
@@ -187,6 +198,55 @@ class HomeShell extends ConsumerWidget {
                 .toList(),
           ),
       ],
+    );
+  }
+}
+
+/// The branch being worked in, always visible in the top bar. Accounts not
+/// tied to one branch can switch here when the store has several; a cart in
+/// progress is suspended first so it isn't lost.
+class _BranchIndicator extends ConsumerWidget {
+  const _BranchIndicator();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final session = ref.watch(sessionControllerProvider);
+    final store = session.store;
+    if (store == null) return const SizedBox.shrink();
+    final branches = ref.watch(storeBranchesProvider(store.id)).value ?? const <BranchRecord>[];
+    final current = branches.where((b) => b.id == session.currentBranchId).firstOrNull;
+    final active = branches.where((b) => b.isActive).toList();
+    final canSwitch = session.employee?.branchId == null && active.length > 1;
+    final theme = Theme.of(context);
+
+    final label = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.storefront_outlined, size: 18, color: theme.colorScheme.primary),
+        const SizedBox(width: 4),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 160),
+          child: Text(current?.name ?? '—', overflow: TextOverflow.ellipsis, style: theme.textTheme.labelLarge),
+        ),
+        if (canSwitch) const Icon(Icons.arrow_drop_down, size: 18),
+      ],
+    );
+    if (!canSwitch) return Tooltip(message: l10n.branchCurrent, child: label);
+
+    return PopupMenuButton<String>(
+      tooltip: l10n.pickBranchChange,
+      onSelected: (branchId) async {
+        if (branchId == session.currentBranchId) return;
+        // The cart belongs to the branch it was rung up in.
+        if (!ref.read(cartControllerProvider).isEmpty && !await holdCurrentCart(context, ref)) return;
+        ref.read(sessionControllerProvider.notifier).setCurrentBranch(branchId);
+      },
+      itemBuilder: (context) => [
+        for (final b in active)
+          CheckedPopupMenuItem(value: b.id, checked: b.id == session.currentBranchId, child: Text(b.name)),
+      ],
+      child: label,
     );
   }
 }

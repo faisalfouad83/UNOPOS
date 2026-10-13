@@ -48,11 +48,14 @@ bool isNetworkError(Object error) {
 /// Wraps a backend stream of rows so the till keeps working offline:
 /// the last cached copy is shown immediately, every live update refreshes
 /// the cache, and a dropped connection keeps showing the last data while it
-/// quietly resubscribes, instead of surfacing an error screen.
+/// quietly resubscribes, instead of surfacing an error screen. With
+/// [cache] off nothing is stored on the device (rows with personal data);
+/// the stream still resubscribes after a dropped connection.
 Stream<List<Map<String, dynamic>>> resilientRows(
   String cacheKey,
   Stream<List<Map<String, dynamic>>> Function() subscribe, {
   Duration retryDelay = const Duration(seconds: 10),
+  bool cache = true,
 }) {
   late StreamController<List<Map<String, dynamic>>> controller;
   StreamSubscription<List<Map<String, dynamic>>>? subscription;
@@ -66,7 +69,7 @@ Stream<List<Map<String, dynamic>>> resilientRows(
       (rows) {
         hasValue = true;
         controller.add(rows);
-        OfflineCache.write(cacheKey, rows);
+        if (cache) OfflineCache.write(cacheKey, rows);
       },
       onError: (Object error, StackTrace stack) {
         subscription?.cancel();
@@ -78,7 +81,7 @@ Stream<List<Map<String, dynamic>>> resilientRows(
 
   controller = StreamController<List<Map<String, dynamic>>>(
     onListen: () async {
-      final cached = await OfflineCache.readRows(cacheKey);
+      final cached = cache ? await OfflineCache.readRows(cacheKey) : null;
       if (cached != null && !hasValue && !cancelled) {
         hasValue = true;
         controller.add(cached);

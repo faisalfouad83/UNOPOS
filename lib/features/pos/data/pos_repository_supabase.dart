@@ -71,39 +71,48 @@ class SupabasePosRepository implements PosRepository {
     final taxTotal = lines.fold<int>(0, (s, l) => s + l.taxAmountMinorUnits);
     final grandTotal = subtotal - discountTotal + taxTotal;
 
-    final header = await _client.from('sales').insert({
-      'store_id': storeId,
-      'branch_id': branchId,
-      'sale_number': saleNumber,
-      'status': status.name,
-      'customer_id': customerId,
-      'hold_label': holdLabel,
-      'subtotal_minor_units': subtotal,
-      'discount_total_minor_units': discountTotal,
-      'tax_total_minor_units': taxTotal,
-      'grand_total_minor_units': grandTotal,
-      'shift_id': shiftId,
-      'cashier_id': cashierId,
-    }).select().single();
+    final header = await _client
+        .from('sales')
+        .insert({
+          'store_id': storeId,
+          'branch_id': branchId,
+          'sale_number': saleNumber,
+          'status': status.name,
+          'customer_id': customerId,
+          'hold_label': holdLabel,
+          'subtotal_minor_units': subtotal,
+          'discount_total_minor_units': discountTotal,
+          'tax_total_minor_units': taxTotal,
+          'grand_total_minor_units': grandTotal,
+          'shift_id': shiftId,
+          'cashier_id': cashierId,
+        })
+        .select()
+        .single();
     final saleId = header['id'] as String;
 
     List<SaleLineRecord> mappedLines = const [];
     if (lines.isNotEmpty) {
-      final inserted = await _client.from('sale_lines').insert(
-        lines
-            .map((l) => {
-                  'store_id': storeId,
-                  'sale_id': saleId,
-                  'product_id': l.productId,
-                  'quantity': l.quantity,
-                  'unit_price_minor_units': l.unitPriceMinorUnits,
-                  'discount_amount_minor_units': l.discountAmountMinorUnits,
-                  'tax_amount_minor_units': l.taxAmountMinorUnits,
-                  'line_total_minor_units': l.lineTotalMinorUnits,
-                  'cost_price_snapshot_minor_units': l.costPriceSnapshotMinorUnits,
-                })
-            .toList(),
-      ).select();
+      final inserted = await _client
+          .from('sale_lines')
+          .insert(
+            lines
+                .map(
+                  (l) => {
+                    'store_id': storeId,
+                    'sale_id': saleId,
+                    'product_id': l.productId,
+                    'quantity': l.quantity,
+                    'unit_price_minor_units': l.unitPriceMinorUnits,
+                    'discount_amount_minor_units': l.discountAmountMinorUnits,
+                    'tax_amount_minor_units': l.taxAmountMinorUnits,
+                    'line_total_minor_units': l.lineTotalMinorUnits,
+                    'cost_price_snapshot_minor_units': l.costPriceSnapshotMinorUnits,
+                  },
+                )
+                .toList(),
+          )
+          .select();
       mappedLines = (inserted as List).cast<Map<String, dynamic>>().map(_mapLine).toList();
     }
 
@@ -138,12 +147,32 @@ class SupabasePosRepository implements PosRepository {
   }
 
   @override
+  Future<SaleRecord> reholdSale({
+    required String saleId,
+    required List<SaleLineInput> lines,
+    String? customerId,
+    String? holdLabel,
+  }) async {
+    final result = await _client.rpc(
+      'rehold_sale',
+      params: {
+        'p_sale_id': saleId,
+        'p_lines': lines.map(saleLineJson).toList(),
+        'p_customer_id': customerId,
+        'p_hold_label': holdLabel,
+      },
+    ) as Map<String, dynamic>;
+    return (await getSale(result['sale_id'] as String))!;
+  }
+
+  @override
   Future<SaleRecord?> findSaleByNumber(String storeId, String number) async {
     final row = await _client
         .from('sales')
         .select()
         .eq('store_id', storeId)
         .eq('sale_number', normalizeSaleNumber(number))
+        .neq('status', 'voided')
         .limit(1)
         .maybeSingle();
     if (row == null) return null;
@@ -155,10 +184,15 @@ class SupabasePosRepository implements PosRepository {
     // .stream() allows one server-side filter; status='held' cuts the
     // payload the most (held sales are always a small fraction of all
     // sales), branch_id is applied client-side below.
-    return _client.from('sales').stream(primaryKey: ['id']).eq('status', 'held').order('created_at', ascending: false).asyncMap((rows) async {
-      final filtered = rows.where((r) => r['branch_id'] == branchId).toList();
-      return _withLines(filtered);
-    });
+    return _client
+        .from('sales')
+        .stream(primaryKey: ['id'])
+        .eq('status', 'held')
+        .order('created_at', ascending: false)
+        .asyncMap((rows) async {
+          final filtered = rows.where((r) => r['branch_id'] == branchId).toList();
+          return _withLines(filtered);
+        });
   }
 
   @override
@@ -168,7 +202,9 @@ class SupabasePosRepository implements PosRepository {
     for (var from = 0;; from += pageSize) {
       final page = await _client
           .from('sales')
-          .select('customer_id, grand_total_minor_units, sale_lines(quantity, line_total_minor_units, quantity_returned)')
+          .select(
+            'customer_id, grand_total_minor_units, sale_lines(quantity, line_total_minor_units, quantity_returned)',
+          )
           .eq('store_id', storeId)
           .inFilter('status', soldStatuses)
           .not('customer_id', 'is', null)
@@ -180,7 +216,8 @@ class SupabasePosRepository implements PosRepository {
         for (final l in ((r['sale_lines'] as List?) ?? const []).cast<Map<String, dynamic>>()) {
           final qty = (l['quantity'] as num).toInt();
           if (qty == 0) continue;
-          refunded += ((l['line_total_minor_units'] as num).toInt() ~/ qty) * ((l['quantity_returned'] as num?)?.toInt() ?? 0);
+          refunded +=
+              ((l['line_total_minor_units'] as num).toInt() ~/ qty) * ((l['quantity_returned'] as num?)?.toInt() ?? 0);
         }
         totals[id] = (totals[id] ?? 0) + (r['grand_total_minor_units'] as num).toInt() - refunded;
       }
@@ -191,16 +228,25 @@ class SupabasePosRepository implements PosRepository {
 
   @override
   Stream<List<SaleRecord>> watchCompletedSales(String storeId, {DateTime? from, DateTime? to}) {
-    return _client.from('sales').stream(primaryKey: ['id']).inFilter('status', soldStatuses).order('completed_at', ascending: false).asyncMap((rows) async {
-      var filtered = rows;
-      if (from != null) {
-        filtered = filtered.where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).isBefore(from)).toList();
-      }
-      if (to != null) {
-        filtered = filtered.where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).isAfter(to)).toList();
-      }
-      return _withLines(filtered);
-    });
+    return _client
+        .from('sales')
+        .stream(primaryKey: ['id'])
+        .inFilter('status', soldStatuses)
+        .order('completed_at', ascending: false)
+        .asyncMap((rows) async {
+          var filtered = rows;
+          if (from != null) {
+            filtered = filtered
+                .where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).isBefore(from))
+                .toList();
+          }
+          if (to != null) {
+            filtered = filtered
+                .where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).isAfter(to))
+                .toList();
+          }
+          return _withLines(filtered);
+        });
   }
 
   Future<List<SaleRecord>> _withLines(List<Map<String, dynamic>> rows) async {
@@ -229,13 +275,17 @@ class SupabasePosRepository implements PosRepository {
     required String processedByUserId,
     required List<MapEntry<String, int>> saleLineIdToQuantity,
   }) async {
-    final header = await _client.from('sale_returns').insert({
-      'store_id': storeId,
-      'branch_id': branchId,
-      'original_sale_id': originalSaleId,
-      'refund_method': refundMethod,
-      'processed_by_user_id': processedByUserId,
-    }).select('id').single();
+    final header = await _client
+        .from('sale_returns')
+        .insert({
+          'store_id': storeId,
+          'branch_id': branchId,
+          'original_sale_id': originalSaleId,
+          'refund_method': refundMethod,
+          'processed_by_user_id': processedByUserId,
+        })
+        .select('id')
+        .single();
     final returnId = header['id'] as String;
 
     for (final entry in saleLineIdToQuantity) {
