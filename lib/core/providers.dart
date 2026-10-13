@@ -53,6 +53,7 @@ import '../features/notifications/domain/notifications_repository.dart';
 import '../features/breaks/data/breaks_repository_drift.dart';
 import '../features/breaks/data/breaks_repository_supabase.dart';
 import '../features/breaks/domain/breaks_repository.dart';
+import '../features/support/data/support_repository.dart';
 
 /// The single AppDatabase instance for the whole app lifetime. Kept alive
 /// for the entire process — never disposed mid-session. Only ever touched
@@ -181,6 +182,12 @@ final notificationsRepositoryProvider = Provider<NotificationsRepository?>((ref)
 final expenseDetailsRepositoryProvider = Provider<ExpenseDetailsRepository>((ref) {
   if (kUseSupabaseBackend) return SupabaseExpenseDetailsRepository(ref.watch(supabaseClientProvider));
   return DriftExpenseDetailsRepository(ref.watch(databaseProvider));
+});
+
+/// Support chat and support staff — shared backend only (null locally).
+final supportRepositoryProvider = Provider<SupportRepository?>((ref) {
+  if (!kUseSupabaseBackend) return null;
+  return SupportRepository(ref.watch(supabaseClientProvider));
 });
 
 final breaksRepositoryProvider = Provider<BreaksRepository>((ref) {

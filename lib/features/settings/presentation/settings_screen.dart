@@ -12,6 +12,7 @@ import 'factory_reset_section.dart';
 import 'general_settings_section.dart';
 import 'invoice_branding_section.dart';
 import '../../breaks/presentation/break_settings_section.dart';
+import '../../support/presentation/contact_us_screen.dart';
 import 'printer_settings_section.dart';
 
 final _settingsStreamProvider = StreamProvider.autoDispose.family((ref, String storeId) {
@@ -52,6 +53,16 @@ class SettingsScreen extends ConsumerWidget {
               ActivationSettingsSection(storeId: storeId),
               const SizedBox(height: 16),
               BackupSettingsSection(storeId: storeId, settings: settings),
+              const SizedBox(height: 16),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.support_agent),
+                  title: Text(l10n.contactUs),
+                  subtitle: Text(l10n.contactUsHelp),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => openContactUs(context, ref),
+                ),
+              ),
               const SizedBox(height: 16),
               const FactoryResetSection(),
               const SizedBox(height: 24),

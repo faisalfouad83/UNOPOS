@@ -11,6 +11,7 @@ import '../../../core/supabase/supabase_config.dart';
 import '../../../core/widgets/app_credits.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../../licensing/presentation/developer_gate.dart';
+import '../../support/presentation/contact_us_screen.dart';
 import '../domain/session_controller.dart';
 
 /// Store sign-in. On the shared backend this is also the app's first
@@ -92,8 +93,9 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Center(
-                      child: GestureDetector(
-                        onLongPress: () => showDeveloperGate(context, ref),
+                      // Held for a few seconds: the hidden staff entry.
+                      child: HoldToOpen(
+                        onHeld: () => showDeveloperGate(context, ref),
                         child: const UnoposLogoLockup(width: 220),
                       ),
                     ),
@@ -130,7 +132,13 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
                         child: Text(l10n.loginCreateStoreLink, textAlign: TextAlign.center),
                       ),
                     ],
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      icon: const Icon(Icons.support_agent),
+                      label: Text(l10n.contactUs),
+                      onPressed: () => openContactUs(context, ref),
+                    ),
+                    const SizedBox(height: 16),
                     const AppCredits(),
                   ],
                 ),

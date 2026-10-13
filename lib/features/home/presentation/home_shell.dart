@@ -15,6 +15,7 @@ import '../../../core/routing/route_guard.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/widgets/app_credits.dart';
 import '../../breaks/presentation/break_button.dart';
+import '../../support/presentation/contact_us_screen.dart';
 import '../../../core/widgets/unopos_logo.dart';
 import '../../auth/domain/auth_models.dart';
 import '../../pos/presentation/cart_controller.dart';
@@ -117,6 +118,7 @@ class HomeShell extends ConsumerWidget {
               const FullScreenButton(),
               const _LanguageMenu(),
               const NotificationBell(),
+              const ContactUsButton(),
               PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'signOut') {

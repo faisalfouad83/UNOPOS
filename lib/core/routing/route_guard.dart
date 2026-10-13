@@ -49,6 +49,12 @@ class RouteGuard {
         location == RoutePaths.onboardingStore ||
         location == RoutePaths.onboardingManager;
 
+    // A support employee only ever sees the support portal.
+    if (session.supportAgent != null) {
+      return location == RoutePaths.support ? null : RoutePaths.support;
+    }
+    if (location == RoutePaths.support) return RoutePaths.activation;
+
     // On a break the till is locked on the break screen until the same
     // employee returns with their PIN; nothing else opens meanwhile.
     if (onBreak && session.employee != null) {

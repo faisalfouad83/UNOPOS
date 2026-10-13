@@ -7,12 +7,23 @@ import '../../../core/constants/roles.dart';
 import '../../../core/providers.dart';
 import '../../../core/supabase/supabase_client_provider.dart';
 import '../../../core/supabase/supabase_config.dart';
+import '../../support/domain/support_models.dart';
 import 'auth_models.dart';
 
 class SessionState {
-  const SessionState({this.store, this.employee, this.developerMode = false, this.currentBranchId});
+  const SessionState({
+    this.store,
+    this.employee,
+    this.developerMode = false,
+    this.currentBranchId,
+    this.supportAgent,
+  });
 
   final StoreRecord? store;
+
+  /// Signed in to the support portal as this support employee (their own
+  /// account, not a store).
+  final SupportAgentRecord? supportAgent;
   final EmployeeRecord? employee;
   final bool developerMode;
   final String? currentBranchId;
@@ -41,6 +52,7 @@ class SessionState {
       employee: clearEmployee ? null : (employee ?? this.employee),
       developerMode: clearDeveloperMode ? false : (developerMode ?? this.developerMode),
       currentBranchId: clearBranch ? null : (currentBranchId ?? this.currentBranchId),
+      supportAgent: supportAgent,
     );
   }
 }
@@ -168,6 +180,37 @@ class SessionController extends Notifier<SessionState> {
     if (branches.isEmpty) return;
     final main = branches.where((b) => b.isMainBranch).toList();
     state = state.copyWith(currentBranchId: (main.isNotEmpty ? main.first : branches.first).id);
+  }
+
+  /// The support portal's sign-in: the support employee's own account
+  /// (email + password), which the server must recognise as active support
+  /// staff — the 1414 entry code only opens this form. Anything else is
+  /// signed straight back out.
+  Future<bool> signInSupport(String email, String password) async {
+    final client = ref.read(supabaseClientProvider);
+    final repo = ref.read(supportRepositoryProvider);
+    if (repo == null) return false;
+    try {
+      await client.auth.signInWithPassword(email: email, password: password);
+    } on AuthException {
+      return false;
+    }
+    final agent = await repo.isSupportAgent() ? await repo.myAgentRecord() : null;
+    if (agent == null) {
+      await client.auth.signOut();
+      return false;
+    }
+    ref.read(selectedEmployeeForPinProvider.notifier).state = null;
+    state = SessionState(supportAgent: agent);
+    return true;
+  }
+
+  Future<void> signOutSupport() async {
+    try {
+      await ref.read(supportRepositoryProvider)?.heartbeat('signed_out');
+    } catch (_) {}
+    state = const SessionState();
+    if (kUseSupabaseBackend) await ref.read(supabaseClientProvider).auth.signOut();
   }
 
   /// Sign out returns to the employee tile picker — the store-level session

@@ -4359,6 +4359,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes} min over'**
   String breakOverBy(int minutes);
+
+  /// No description provided for @gateLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many wrong codes. Try again in a few minutes.'**
+  String get gateLocked;
+
+  /// No description provided for @supportSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support staff sign-in'**
+  String get supportSignInTitle;
+
+  /// No description provided for @supportPhoneCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Number copied'**
+  String get supportPhoneCopied;
+
+  /// No description provided for @supportPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Support phone'**
+  String get supportPhoneLabel;
+
+  /// No description provided for @supportNoMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get supportNoMessages;
+
+  /// No description provided for @supportStartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your question below — the support team will answer here, and the whole conversation stays saved.'**
+  String get supportStartHint;
+
+  /// No description provided for @supportYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get supportYou;
+
+  /// No description provided for @supportTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Support team'**
+  String get supportTeam;
+
+  /// No description provided for @supportNotSent.
+  ///
+  /// In en, this message translates to:
+  /// **'not sent'**
+  String get supportNotSent;
+
+  /// No description provided for @supportSending.
+  ///
+  /// In en, this message translates to:
+  /// **'sending…'**
+  String get supportSending;
+
+  /// No description provided for @supportInternalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal note'**
+  String get supportInternalNote;
+
+  /// No description provided for @supportNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Note for the support team only — the store won\'t see it'**
+  String get supportNoteHint;
+
+  /// No description provided for @supportMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message'**
+  String get supportMessageHint;
+
+  /// No description provided for @supportSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get supportSend;
+
+  /// No description provided for @supportTapToRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'tap to retry'**
+  String get supportTapToRetry;
+
+  /// No description provided for @contactUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get contactUs;
+
+  /// No description provided for @contactUsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with the support team'**
+  String get contactUsHelp;
+
+  /// No description provided for @contactUsSignInToChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to your store to chat with support, or call us.'**
+  String get contactUsSignInToChat;
+
+  /// No description provided for @supportOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach support. Check the connection, or call the number above.'**
+  String get supportOffline;
+
+  /// No description provided for @supportStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get supportStatusOpen;
+
+  /// No description provided for @supportStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get supportStatusPending;
+
+  /// No description provided for @supportStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get supportStatusClosed;
+
+  /// No description provided for @supportPickConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a conversation'**
+  String get supportPickConversation;
+
+  /// No description provided for @supportPortalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get supportPortalTitle;
+
+  /// No description provided for @supportPresenceOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get supportPresenceOnline;
+
+  /// No description provided for @supportPresenceBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'On a break'**
+  String get supportPresenceBreak;
+
+  /// No description provided for @supportPresenceSignedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed out'**
+  String get supportPresenceSignedOut;
+
+  /// No description provided for @supportPresenceDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get supportPresenceDisconnected;
+
+  /// No description provided for @supportSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Store name, ID or phone'**
+  String get supportSearchHint;
+
+  /// No description provided for @supportNoConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations'**
+  String get supportNoConversations;
+
+  /// No description provided for @supportStoreId.
+  ///
+  /// In en, this message translates to:
+  /// **'Store ID'**
+  String get supportStoreId;
+
+  /// No description provided for @supportActivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Activation'**
+  String get supportActivation;
+
+  /// No description provided for @supportOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened'**
+  String get supportOpened;
+
+  /// No description provided for @supportLastMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Last message'**
+  String get supportLastMessage;
+
+  /// No description provided for @supportAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Handled by'**
+  String get supportAssigned;
+
+  /// No description provided for @supportTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Take'**
+  String get supportTake;
+
+  /// No description provided for @supportTakeOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Take over'**
+  String get supportTakeOver;
+
+  /// No description provided for @supportEmploymentActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get supportEmploymentActive;
+
+  /// No description provided for @supportEmploymentSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get supportEmploymentSuspended;
+
+  /// No description provided for @supportEmploymentTerminated.
+  ///
+  /// In en, this message translates to:
+  /// **'Employment ended'**
+  String get supportEmploymentTerminated;
+
+  /// No description provided for @supportAgentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support employee accounts'**
+  String get supportAgentsTitle;
+
+  /// No description provided for @supportCheckedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked {time}'**
+  String supportCheckedAt(String time);
+
+  /// No description provided for @supportNoAgents.
+  ///
+  /// In en, this message translates to:
+  /// **'No support employees yet'**
+  String get supportNoAgents;
+
+  /// No description provided for @supportLastSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'last seen {time}'**
+  String supportLastSeen(String time);
+
+  /// No description provided for @supportAddAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add support employee'**
+  String get supportAddAgent;
+
+  /// No description provided for @supportAgentCredentialsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email and a password of at least 8 characters.'**
+  String get supportAgentCredentialsHint;
+
+  /// No description provided for @supportResetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a new password'**
+  String get supportResetPassword;
+
+  /// No description provided for @supportPasswordRule.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get supportPasswordRule;
+
+  /// No description provided for @supportEmploymentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {status}? A suspended or ended account can\'t sign in; its messages and records stay.'**
+  String supportEmploymentConfirm(String name, String status);
+
+  /// No description provided for @supportSalaryAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary adjustment'**
+  String get supportSalaryAdjustment;
+
+  /// No description provided for @supportSalaryAdjustments.
+  ///
+  /// In en, this message translates to:
+  /// **'Deductions and bonuses'**
+  String get supportSalaryAdjustments;
+
+  /// No description provided for @supportDeduction.
+  ///
+  /// In en, this message translates to:
+  /// **'Deduction'**
+  String get supportDeduction;
+
+  /// No description provided for @supportBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus'**
+  String get supportBonus;
+
+  /// No description provided for @supportReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get supportReason;
+
+  /// No description provided for @supportAdjustmentRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount and a reason.'**
+  String get supportAdjustmentRule;
+
+  /// No description provided for @supportCreatedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'since {date}'**
+  String supportCreatedOn(String date);
+
+  /// No description provided for @supportFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get supportFullName;
+
+  /// No description provided for @supportJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get supportJobTitle;
+
+  /// No description provided for @supportNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get supportNotes;
+
+  /// No description provided for @supportReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get supportReactivate;
+
+  /// No description provided for @supportSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend'**
+  String get supportSuspend;
+
+  /// No description provided for @supportTerminate.
+  ///
+  /// In en, this message translates to:
+  /// **'End employment'**
+  String get supportTerminate;
 }
 
 class _AppLocalizationsDelegate

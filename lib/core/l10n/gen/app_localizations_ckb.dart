@@ -2311,4 +2311,203 @@ class AppLocalizationsCkb extends AppLocalizations {
   String breakOverBy(int minutes) {
     return '$minutes خولەک زیاتر';
   }
+
+  @override
+  String get gateLocked => 'کۆدی هەڵەی زۆر. دوای چەند خولەکێک هەوڵبدەرەوە.';
+
+  @override
+  String get supportSignInTitle => 'چوونەژوورەوەی ستافی پشتگیری';
+
+  @override
+  String get supportPhoneCopied => 'ژمارەکە کۆپی کرا';
+
+  @override
+  String get supportPhoneLabel => 'تەلەفۆنی پشتگیری';
+
+  @override
+  String get supportNoMessages => 'هێشتا هیچ نامەیەک نییە';
+
+  @override
+  String get supportStartHint =>
+      'پرسیارەکەت لە خوارەوە بنووسە — تیمی پشتگیری لێرە وەڵام دەداتەوە و هەموو گفتوگۆکە پاشەکەوت دەمێنێت.';
+
+  @override
+  String get supportYou => 'تۆ';
+
+  @override
+  String get supportTeam => 'تیمی پشتگیری';
+
+  @override
+  String get supportNotSent => 'نەنێردرا';
+
+  @override
+  String get supportSending => 'دەنێردرێت…';
+
+  @override
+  String get supportInternalNote => 'تێبینی ناوخۆیی';
+
+  @override
+  String get supportNoteHint =>
+      'تێبینی تەنها بۆ تیمی پشتگیری — فرۆشگا نایبینێت';
+
+  @override
+  String get supportMessageHint => 'نامەیەک بنووسە';
+
+  @override
+  String get supportSend => 'ناردن';
+
+  @override
+  String get supportTapToRetry => 'دابگرە بۆ دووبارە ناردن';
+
+  @override
+  String get contactUs => 'پەیوەندیمان پێوە بکە';
+
+  @override
+  String get contactUsHelp => 'قسە لەگەڵ تیمی پشتگیری بکە';
+
+  @override
+  String get contactUsSignInToChat =>
+      'بچۆ ژوورەوەی فرۆشگاکەت بۆ قسەکردن لەگەڵ پشتگیری، یان پەیوەندیمان پێوە بکە.';
+
+  @override
+  String get supportOffline =>
+      'نەتوانرا بگەیەنرێت بە پشتگیری. پەیوەندی بپشکنە یان ژمارەی سەرەوە بگرە.';
+
+  @override
+  String get supportStatusOpen => 'کراوە';
+
+  @override
+  String get supportStatusPending => 'چاوەڕوان';
+
+  @override
+  String get supportStatusClosed => 'داخراو';
+
+  @override
+  String get supportPickConversation => 'گفتوگۆیەک هەڵبژێرە';
+
+  @override
+  String get supportPortalTitle => 'پشتگیری';
+
+  @override
+  String get supportPresenceOnline => 'سەرهێڵ';
+
+  @override
+  String get supportPresenceBreak => 'لە پشوودا';
+
+  @override
+  String get supportPresenceSignedOut => 'چووەتە دەرەوە';
+
+  @override
+  String get supportPresenceDisconnected => 'پچڕاو';
+
+  @override
+  String get supportSearchHint => 'ناوی فرۆشگا، ناسنامە یان تەلەفۆن';
+
+  @override
+  String get supportNoConversations => 'هیچ گفتوگۆیەک نییە';
+
+  @override
+  String get supportStoreId => 'ناسنامەی فرۆشگا';
+
+  @override
+  String get supportActivation => 'چالاککردن';
+
+  @override
+  String get supportOpened => 'دەستیپێکرد';
+
+  @override
+  String get supportLastMessage => 'دوایین نامە';
+
+  @override
+  String get supportAssigned => 'بەرپرس';
+
+  @override
+  String get supportTake => 'وەرگرتن';
+
+  @override
+  String get supportTakeOver => 'وەرگرتنی گفتوگۆ';
+
+  @override
+  String get supportEmploymentActive => 'چالاک';
+
+  @override
+  String get supportEmploymentSuspended => 'ڕاگیراو';
+
+  @override
+  String get supportEmploymentTerminated => 'کۆتایی کار';
+
+  @override
+  String get supportAgentsTitle => 'هەژمارەکانی ستافی پشتگیری';
+
+  @override
+  String supportCheckedAt(String time) {
+    return 'نوێکرایەوە $time';
+  }
+
+  @override
+  String get supportNoAgents => 'هێشتا هیچ ستافێکی پشتگیری نییە';
+
+  @override
+  String supportLastSeen(String time) {
+    return 'دوایین بینین $time';
+  }
+
+  @override
+  String get supportAddAgent => 'زیادکردنی ستافی پشتگیری';
+
+  @override
+  String get supportAgentCredentialsHint =>
+      'ئیمەیڵێکی دروست و وشەی نهێنی لانیکەم ٨ پیت بنووسە.';
+
+  @override
+  String get supportResetPassword => 'دانانی وشەی نهێنی نوێ';
+
+  @override
+  String get supportPasswordRule => 'لانیکەم ٨ پیت';
+
+  @override
+  String supportEmploymentConfirm(String name, String status) {
+    return '$name: $status؟ هەژماری ڕاگیراو یان کۆتاییهاتوو ناتوانێت بچێتە ژوورەوە؛ نامە و تۆمارەکانی دەمێنن.';
+  }
+
+  @override
+  String get supportSalaryAdjustment => 'گۆڕانکاری مووچە';
+
+  @override
+  String get supportSalaryAdjustments => 'بڕین و پاداشتەکان';
+
+  @override
+  String get supportDeduction => 'بڕین';
+
+  @override
+  String get supportBonus => 'پاداشت';
+
+  @override
+  String get supportReason => 'هۆکار';
+
+  @override
+  String get supportAdjustmentRule => 'بڕ و هۆکار بنووسە.';
+
+  @override
+  String supportCreatedOn(String date) {
+    return 'لە $dateەوە';
+  }
+
+  @override
+  String get supportFullName => 'ناوی تەواو';
+
+  @override
+  String get supportJobTitle => 'ناونیشانی کار';
+
+  @override
+  String get supportNotes => 'تێبینی';
+
+  @override
+  String get supportReactivate => 'چالاککردنەوە';
+
+  @override
+  String get supportSuspend => 'ڕاگرتن';
+
+  @override
+  String get supportTerminate => 'کۆتاییهێنان بە کار';
 }

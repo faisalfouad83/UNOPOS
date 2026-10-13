@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'app_bootstrap.dart';
 import '../../features/breaks/presentation/break_lock_screen.dart';
 import '../../features/breaks/presentation/break_providers.dart';
+import '../../features/support/presentation/support_portal_screen.dart';
 import 'route_guard.dart';
 import 'route_paths.dart';
 import '../../features/auth/domain/auth_models.dart';
@@ -87,6 +88,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: RoutePaths.developerHome, builder: (context, state) => const DeveloperHomeScreen()),
       GoRoute(path: RoutePaths.licenseExpired, builder: (context, state) => const LicenseExpiredScreen()),
       GoRoute(path: RoutePaths.breakLock, builder: (context, state) => const BreakLockScreen()),
+      GoRoute(path: RoutePaths.support, builder: (context, state) => const SupportPortalScreen()),
       ShellRoute(
         builder: (context, state, child) => HomeShell(currentPath: state.matchedLocation, child: child),
         routes: [

@@ -7,6 +7,7 @@ import '../../../core/providers.dart';
 import '../../../core/security/activation_code_codec.dart';
 import '../../../core/utils/formatters.dart';
 import '../../licensing/presentation/license_console.dart';
+import '../../support/presentation/support_agents_tab.dart';
 import '../domain/developer_models.dart';
 
 // This whole console is internal admin/operator tooling, never seen by a
@@ -22,7 +23,7 @@ class DeveloperConsoleScreen extends StatefulWidget {
 }
 
 class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with SingleTickerProviderStateMixin {
-  late final TabController _tabController = TabController(length: 6, vsync: this);
+  late final TabController _tabController = TabController(length: 7, vsync: this);
 
   @override
   void dispose() {
@@ -46,6 +47,7 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
               Tab(text: context.l10n.devLicenses),
               Tab(text: context.l10n.notificationsTitle),
               Tab(text: context.l10n.devAuditLog),
+              Tab(text: context.l10n.supportAgentsTitle),
             ],
           ),
         ),
@@ -59,6 +61,7 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
               LicenseConsole(),
               _NotificationsTab(),
               _AuditLogTab(),
+              SupportAgentsTab(),
             ],
           ),
         ),

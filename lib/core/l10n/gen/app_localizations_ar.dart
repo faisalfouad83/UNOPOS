@@ -2325,4 +2325,202 @@ class AppLocalizationsAr extends AppLocalizations {
   String breakOverBy(int minutes) {
     return 'تجاوز $minutes دقيقة';
   }
+
+  @override
+  String get gateLocked => 'رموز خاطئة كثيرة. حاول بعد بضع دقائق.';
+
+  @override
+  String get supportSignInTitle => 'دخول موظفي الدعم الفني';
+
+  @override
+  String get supportPhoneCopied => 'تم نسخ الرقم';
+
+  @override
+  String get supportPhoneLabel => 'هاتف الدعم الفني';
+
+  @override
+  String get supportNoMessages => 'لا توجد رسائل بعد';
+
+  @override
+  String get supportStartHint =>
+      'اكتب سؤالك في الأسفل — سيرد فريق الدعم هنا، وتبقى المحادثة كاملة محفوظة.';
+
+  @override
+  String get supportYou => 'أنت';
+
+  @override
+  String get supportTeam => 'فريق الدعم';
+
+  @override
+  String get supportNotSent => 'لم تُرسل';
+
+  @override
+  String get supportSending => 'جارٍ الإرسال…';
+
+  @override
+  String get supportInternalNote => 'ملاحظة داخلية';
+
+  @override
+  String get supportNoteHint => 'ملاحظة لفريق الدعم فقط — لن يراها المتجر';
+
+  @override
+  String get supportMessageHint => 'اكتب رسالة';
+
+  @override
+  String get supportSend => 'إرسال';
+
+  @override
+  String get supportTapToRetry => 'اضغط لإعادة الإرسال';
+
+  @override
+  String get contactUs => 'اتصل بنا';
+
+  @override
+  String get contactUsHelp => 'تحدث مع فريق الدعم الفني';
+
+  @override
+  String get contactUsSignInToChat =>
+      'سجّل الدخول إلى متجرك للمحادثة مع الدعم، أو اتصل بنا.';
+
+  @override
+  String get supportOffline =>
+      'تعذّر الوصول إلى الدعم. تحقق من الاتصال أو اتصل بالرقم أعلاه.';
+
+  @override
+  String get supportStatusOpen => 'مفتوحة';
+
+  @override
+  String get supportStatusPending => 'قيد الانتظار';
+
+  @override
+  String get supportStatusClosed => 'مغلقة';
+
+  @override
+  String get supportPickConversation => 'اختر محادثة';
+
+  @override
+  String get supportPortalTitle => 'الدعم الفني';
+
+  @override
+  String get supportPresenceOnline => 'متصل';
+
+  @override
+  String get supportPresenceBreak => 'في استراحة';
+
+  @override
+  String get supportPresenceSignedOut => 'سجّل الخروج';
+
+  @override
+  String get supportPresenceDisconnected => 'منقطع';
+
+  @override
+  String get supportSearchHint => 'اسم المتجر أو المعرّف أو الهاتف';
+
+  @override
+  String get supportNoConversations => 'لا توجد محادثات';
+
+  @override
+  String get supportStoreId => 'معرّف المتجر';
+
+  @override
+  String get supportActivation => 'التفعيل';
+
+  @override
+  String get supportOpened => 'بدأت';
+
+  @override
+  String get supportLastMessage => 'آخر رسالة';
+
+  @override
+  String get supportAssigned => 'المسؤول';
+
+  @override
+  String get supportTake => 'استلام';
+
+  @override
+  String get supportTakeOver => 'استلام المحادثة';
+
+  @override
+  String get supportEmploymentActive => 'فعّال';
+
+  @override
+  String get supportEmploymentSuspended => 'موقوف';
+
+  @override
+  String get supportEmploymentTerminated => 'منتهي الخدمة';
+
+  @override
+  String get supportAgentsTitle => 'حسابات موظفي الدعم الفني';
+
+  @override
+  String supportCheckedAt(String time) {
+    return 'آخر تحديث $time';
+  }
+
+  @override
+  String get supportNoAgents => 'لا يوجد موظفو دعم بعد';
+
+  @override
+  String supportLastSeen(String time) {
+    return 'آخر ظهور $time';
+  }
+
+  @override
+  String get supportAddAgent => 'إضافة موظف دعم';
+
+  @override
+  String get supportAgentCredentialsHint =>
+      'أدخل بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل.';
+
+  @override
+  String get supportResetPassword => 'تعيين كلمة مرور جديدة';
+
+  @override
+  String get supportPasswordRule => '8 أحرف على الأقل';
+
+  @override
+  String supportEmploymentConfirm(String name, String status) {
+    return '$name: $status؟ الحساب الموقوف أو المنتهي لا يستطيع الدخول، وتبقى رسائله وسجلاته.';
+  }
+
+  @override
+  String get supportSalaryAdjustment => 'تعديل على الراتب';
+
+  @override
+  String get supportSalaryAdjustments => 'الخصومات والمكافآت';
+
+  @override
+  String get supportDeduction => 'خصم';
+
+  @override
+  String get supportBonus => 'مكافأة';
+
+  @override
+  String get supportReason => 'السبب';
+
+  @override
+  String get supportAdjustmentRule => 'أدخل المبلغ والسبب.';
+
+  @override
+  String supportCreatedOn(String date) {
+    return 'منذ $date';
+  }
+
+  @override
+  String get supportFullName => 'الاسم الكامل';
+
+  @override
+  String get supportJobTitle => 'المسمى الوظيفي';
+
+  @override
+  String get supportNotes => 'ملاحظات';
+
+  @override
+  String get supportReactivate => 'إعادة التفعيل';
+
+  @override
+  String get supportSuspend => 'إيقاف مؤقت';
+
+  @override
+  String get supportTerminate => 'إنهاء الخدمة';
 }

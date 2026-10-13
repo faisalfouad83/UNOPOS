@@ -2328,4 +2328,203 @@ class AppLocalizationsEn extends AppLocalizations {
   String breakOverBy(int minutes) {
     return '$minutes min over';
   }
+
+  @override
+  String get gateLocked => 'Too many wrong codes. Try again in a few minutes.';
+
+  @override
+  String get supportSignInTitle => 'Support staff sign-in';
+
+  @override
+  String get supportPhoneCopied => 'Number copied';
+
+  @override
+  String get supportPhoneLabel => 'Support phone';
+
+  @override
+  String get supportNoMessages => 'No messages yet';
+
+  @override
+  String get supportStartHint =>
+      'Write your question below — the support team will answer here, and the whole conversation stays saved.';
+
+  @override
+  String get supportYou => 'You';
+
+  @override
+  String get supportTeam => 'Support team';
+
+  @override
+  String get supportNotSent => 'not sent';
+
+  @override
+  String get supportSending => 'sending…';
+
+  @override
+  String get supportInternalNote => 'Internal note';
+
+  @override
+  String get supportNoteHint =>
+      'Note for the support team only — the store won\'t see it';
+
+  @override
+  String get supportMessageHint => 'Write a message';
+
+  @override
+  String get supportSend => 'Send';
+
+  @override
+  String get supportTapToRetry => 'tap to retry';
+
+  @override
+  String get contactUs => 'Contact us';
+
+  @override
+  String get contactUsHelp => 'Chat with the support team';
+
+  @override
+  String get contactUsSignInToChat =>
+      'Sign in to your store to chat with support, or call us.';
+
+  @override
+  String get supportOffline =>
+      'Couldn\'t reach support. Check the connection, or call the number above.';
+
+  @override
+  String get supportStatusOpen => 'Open';
+
+  @override
+  String get supportStatusPending => 'Waiting';
+
+  @override
+  String get supportStatusClosed => 'Closed';
+
+  @override
+  String get supportPickConversation => 'Choose a conversation';
+
+  @override
+  String get supportPortalTitle => 'Support';
+
+  @override
+  String get supportPresenceOnline => 'Online';
+
+  @override
+  String get supportPresenceBreak => 'On a break';
+
+  @override
+  String get supportPresenceSignedOut => 'Signed out';
+
+  @override
+  String get supportPresenceDisconnected => 'Disconnected';
+
+  @override
+  String get supportSearchHint => 'Store name, ID or phone';
+
+  @override
+  String get supportNoConversations => 'No conversations';
+
+  @override
+  String get supportStoreId => 'Store ID';
+
+  @override
+  String get supportActivation => 'Activation';
+
+  @override
+  String get supportOpened => 'Opened';
+
+  @override
+  String get supportLastMessage => 'Last message';
+
+  @override
+  String get supportAssigned => 'Handled by';
+
+  @override
+  String get supportTake => 'Take';
+
+  @override
+  String get supportTakeOver => 'Take over';
+
+  @override
+  String get supportEmploymentActive => 'Active';
+
+  @override
+  String get supportEmploymentSuspended => 'Suspended';
+
+  @override
+  String get supportEmploymentTerminated => 'Employment ended';
+
+  @override
+  String get supportAgentsTitle => 'Support employee accounts';
+
+  @override
+  String supportCheckedAt(String time) {
+    return 'Checked $time';
+  }
+
+  @override
+  String get supportNoAgents => 'No support employees yet';
+
+  @override
+  String supportLastSeen(String time) {
+    return 'last seen $time';
+  }
+
+  @override
+  String get supportAddAgent => 'Add support employee';
+
+  @override
+  String get supportAgentCredentialsHint =>
+      'Enter a valid email and a password of at least 8 characters.';
+
+  @override
+  String get supportResetPassword => 'Set a new password';
+
+  @override
+  String get supportPasswordRule => 'At least 8 characters';
+
+  @override
+  String supportEmploymentConfirm(String name, String status) {
+    return '$name: $status? A suspended or ended account can\'t sign in; its messages and records stay.';
+  }
+
+  @override
+  String get supportSalaryAdjustment => 'Salary adjustment';
+
+  @override
+  String get supportSalaryAdjustments => 'Deductions and bonuses';
+
+  @override
+  String get supportDeduction => 'Deduction';
+
+  @override
+  String get supportBonus => 'Bonus';
+
+  @override
+  String get supportReason => 'Reason';
+
+  @override
+  String get supportAdjustmentRule => 'Enter an amount and a reason.';
+
+  @override
+  String supportCreatedOn(String date) {
+    return 'since $date';
+  }
+
+  @override
+  String get supportFullName => 'Full name';
+
+  @override
+  String get supportJobTitle => 'Job title';
+
+  @override
+  String get supportNotes => 'Notes';
+
+  @override
+  String get supportReactivate => 'Reactivate';
+
+  @override
+  String get supportSuspend => 'Suspend';
+
+  @override
+  String get supportTerminate => 'End employment';
 }

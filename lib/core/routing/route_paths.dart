@@ -13,6 +13,7 @@ class RoutePaths {
   static const String developerHome = '/developer';
   static const String licenseExpired = '/license-expired';
   static const String breakLock = '/break';
+  static const String support = '/support';
 
   static const String home = '/home';
   static const String pos = '/pos';
