@@ -2642,4 +2642,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posSetQuantity => 'Quantity';
+
+  @override
+  String pinDeviceInUse(String device) {
+    return 'This account is already open on another device ($device). Sign out there first, or ask the owner or a manager to release it.';
+  }
+
+  @override
+  String hrOpenOnDevice(String device) {
+    return 'Open on: $device';
+  }
+
+  @override
+  String get hrReleaseDevice => 'Sign out from device';
+
+  @override
+  String hrReleaseDeviceConfirm(String name) {
+    return 'Sign $name out of the device holding the account, so they can sign in on another one?';
+  }
+
+  @override
+  String hrDeviceReleased(String name) {
+    return '$name can now sign in on another device';
+  }
 }

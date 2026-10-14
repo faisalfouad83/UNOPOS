@@ -855,5 +855,11 @@
   "posStockCartAdjusted": "کۆگا گۆڕا و بڕەکان کەمکرانەوە: {items}. سەبەتەکە بپشکنە و دووبارە هەوڵ بدەرەوە.",
   "posStockBadge": "کۆگا: {count}",
   "posStockOutBadge": "نەماوە",
-  "posSetQuantity": "بڕ"
+  "posSetQuantity": "بڕ",
+
+  "pinDeviceInUse": "ئەم هەژمارە لە ئامێرێکی تر کراوەتەوە ({device}). سەرەتا لەوێ بچۆ دەرەوە، یان با خاوەن یان بەڕێوەبەر ئازادی بکات.",
+  "hrOpenOnDevice": "کراوەیە لە: {device}",
+  "hrReleaseDevice": "دەرکردن لە ئامێر",
+  "hrReleaseDeviceConfirm": "{name} لەو ئامێرەی هەژمارەکەی لێ کراوەتەوە دەربکرێت، بۆ ئەوەی لە ئامێرێکی تر بچێتە ژوورەوە؟",
+  "hrDeviceReleased": "{name} ئێستا دەتوانێت لە ئامێرێکی تر بچێتە ژوورەوە"
 }

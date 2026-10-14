@@ -934,5 +934,15 @@
   "posStockBadge": "Stock: {count}",
   "@posStockBadge": {"placeholders": {"count": {"type": "int"}}},
   "posStockOutBadge": "Out of stock",
-  "posSetQuantity": "Quantity"
+  "posSetQuantity": "Quantity",
+
+  "pinDeviceInUse": "This account is already open on another device ({device}). Sign out there first, or ask the owner or a manager to release it.",
+  "@pinDeviceInUse": {"placeholders": {"device": {"type": "String"}}},
+  "hrOpenOnDevice": "Open on: {device}",
+  "@hrOpenOnDevice": {"placeholders": {"device": {"type": "String"}}},
+  "hrReleaseDevice": "Sign out from device",
+  "hrReleaseDeviceConfirm": "Sign {name} out of the device holding the account, so they can sign in on another one?",
+  "@hrReleaseDeviceConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "hrDeviceReleased": "{name} can now sign in on another device",
+  "@hrDeviceReleased": {"placeholders": {"name": {"type": "String"}}}
 }

@@ -25,6 +25,9 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
   bool _checking = false;
   String? _error;
 
+  /// Set when the account is open on another device (its name).
+  String? _inUseOn;
+
   static const _maxAttemptsBeforeLock = 5;
   static const _lockDurationSeconds = 30;
 
@@ -51,6 +54,7 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
     setState(() {
       _checking = true;
       _error = null;
+      _inUseOn = null;
     });
     final selectedEmployee = ref.read(selectedEmployeeForPinProvider);
     final PinResult result;
@@ -84,6 +88,12 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
         });
         final signedIn = await showDeveloperSignInDialog(context, ref);
         if (signedIn && mounted) context.go(RoutePaths.developerHome);
+      case PinResult.deviceInUse:
+        setState(() {
+          _pin = '';
+          _checking = false;
+          _inUseOn = ref.read(sessionControllerProvider.notifier).blockedByDevice ?? '';
+        });
       case PinResult.incorrect:
         _wrongAttempts++;
         setState(() {
@@ -131,6 +141,15 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
               Text(
                 l10n.pinPadIncorrect,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
+              )
+            else if (_inUseOn != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  l10n.pinDeviceInUse(_inUseOn!.isEmpty ? '—' : _inUseOn!),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               )
             else if (_error != null)
               Text(

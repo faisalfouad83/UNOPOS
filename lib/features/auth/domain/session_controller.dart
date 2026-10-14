@@ -8,6 +8,7 @@ import '../../../core/providers.dart';
 import '../../../core/supabase/supabase_client_provider.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../../support/domain/support_models.dart';
+import '../data/device_lock.dart';
 import 'auth_models.dart';
 
 class SessionState {
@@ -57,11 +58,23 @@ class SessionState {
   }
 }
 
-enum PinResult { success, incorrect, developerGate, developerGateNeedsAuth }
+enum PinResult {
+  success,
+  incorrect,
+  developerGate,
+  developerGateNeedsAuth,
+
+  /// Right PIN, but this cashier account is open on another device
+  /// ([SessionController.blockedByDevice]).
+  deviceInUse,
+}
 
 class SessionController extends Notifier<SessionState> {
   @override
   SessionState build() => const SessionState();
+
+  /// The device holding the account after a [PinResult.deviceInUse].
+  String? blockedByDevice;
 
   Future<void> loadExistingStore() async {
     final store = await ref.read(authRepositoryProvider).getCurrentStore();
@@ -112,6 +125,15 @@ class SessionController extends Notifier<SessionState> {
     if (selectedEmployee != null) {
       final ok = await ref.read(authRepositoryProvider).findEmployeeByPin(selectedEmployee.storeId, pin);
       if (ok != null && ok.id == selectedEmployee.id) {
+        // A cashier works on one device at a time.
+        final lock = ref.read(deviceLockProvider);
+        if (lock != null && ok.role == StoreRole.cashier) {
+          final claim = await lock.claim(ok.id, pin);
+          if (!claim.allowed) {
+            blockedByDevice = claim.otherDevice;
+            return PinResult.deviceInUse;
+          }
+        }
         state = state.copyWith(employee: ok, clearDeveloperMode: true);
         await _resolveCurrentBranch(ok);
         await _closeLeftoverBreak(ok, pin);
@@ -216,6 +238,7 @@ class SessionController extends Notifier<SessionState> {
   /// Sign out returns to the employee tile picker — the store-level session
   /// persists until the whole app process restarts.
   void signOutToTilePicker() {
+    _releaseDevice();
     state = state.copyWith(clearEmployee: true, clearDeveloperMode: true);
   }
 
@@ -243,10 +266,23 @@ class SessionController extends Notifier<SessionState> {
   Future<void> signOutStore() async {
     // Clear first so nothing on screen keeps using the old store while the
     // sign-out request is in flight.
+    final release = _releaseDevice();
     state = const SessionState();
     ref.read(selectedEmployeeForPinProvider.notifier).state = null;
     if (kUseSupabaseBackend) {
+      await release; // needs the store session, so before signing out
       await ref.read(supabaseClientProvider).auth.signOut();
+    }
+  }
+
+  /// Frees a cashier account on this device so it can sign in elsewhere.
+  Future<void> _releaseDevice() async {
+    final employee = state.employee;
+    if (employee == null || employee.role != StoreRole.cashier) return;
+    try {
+      await ref.read(deviceLockProvider)?.release(employee.id);
+    } catch (_) {
+      // Best effort: signing out never fails because of it.
     }
   }
 

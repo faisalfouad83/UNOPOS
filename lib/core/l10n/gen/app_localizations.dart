@@ -4899,6 +4899,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quantity'**
   String get posSetQuantity;
+
+  /// No description provided for @pinDeviceInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is already open on another device ({device}). Sign out there first, or ask the owner or a manager to release it.'**
+  String pinDeviceInUse(String device);
+
+  /// No description provided for @hrOpenOnDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Open on: {device}'**
+  String hrOpenOnDevice(String device);
+
+  /// No description provided for @hrReleaseDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out from device'**
+  String get hrReleaseDevice;
+
+  /// No description provided for @hrReleaseDeviceConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign {name} out of the device holding the account, so they can sign in on another one?'**
+  String hrReleaseDeviceConfirm(String name);
+
+  /// No description provided for @hrDeviceReleased.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} can now sign in on another device'**
+  String hrDeviceReleased(String name);
 }
 
 class _AppLocalizationsDelegate

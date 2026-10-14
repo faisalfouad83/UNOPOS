@@ -2637,4 +2637,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get posSetQuantity => 'الكمية';
+
+  @override
+  String pinDeviceInUse(String device) {
+    return 'هذا الحساب مفتوح على جهاز ثاني ($device). سجّل خروج من هناك أول، أو خلي المالك أو المدير يطلّعه.';
+  }
+
+  @override
+  String hrOpenOnDevice(String device) {
+    return 'مفتوح على: $device';
+  }
+
+  @override
+  String get hrReleaseDevice => 'تطليع من الجهاز';
+
+  @override
+  String hrReleaseDeviceConfirm(String name) {
+    return 'تطلّع $name من الجهاز المفتوح عليه، حتى يكدر يدخل من جهاز ثاني؟';
+  }
+
+  @override
+  String hrDeviceReleased(String name) {
+    return '$name هسه يكدر يدخل من جهاز ثاني';
+  }
 }

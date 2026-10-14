@@ -2625,4 +2625,27 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get posSetQuantity => 'بڕ';
+
+  @override
+  String pinDeviceInUse(String device) {
+    return 'ئەم هەژمارە لە ئامێرێکی تر کراوەتەوە ($device). سەرەتا لەوێ بچۆ دەرەوە، یان با خاوەن یان بەڕێوەبەر ئازادی بکات.';
+  }
+
+  @override
+  String hrOpenOnDevice(String device) {
+    return 'کراوەیە لە: $device';
+  }
+
+  @override
+  String get hrReleaseDevice => 'دەرکردن لە ئامێر';
+
+  @override
+  String hrReleaseDeviceConfirm(String name) {
+    return '$name لەو ئامێرەی هەژمارەکەی لێ کراوەتەوە دەربکرێت، بۆ ئەوەی لە ئامێرێکی تر بچێتە ژوورەوە؟';
+  }
+
+  @override
+  String hrDeviceReleased(String name) {
+    return '$name ئێستا دەتوانێت لە ئامێرێکی تر بچێتە ژوورەوە';
+  }
 }
