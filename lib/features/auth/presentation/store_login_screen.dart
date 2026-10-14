@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/window/full_screen_button.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/offline/offline_warmup.dart';
 import '../../../core/providers.dart';
 import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/routing/route_paths.dart';
@@ -56,6 +59,8 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
         final employees = await authRepo.watchEmployees(store.id).first;
         ref.read(storeHasEmployeesProvider.notifier).state = employees.isNotEmpty;
         ref.read(sessionControllerProvider.notifier).setStore(store);
+        // A fresh copy for working offline, in the background.
+        unawaited(warmOfflineCopy(ref.read, store.id));
         if (mounted) context.go(employees.isEmpty ? RoutePaths.onboardingManager : RoutePaths.tilePicker);
       } else {
         // Password verified but no matching store row came back — surface

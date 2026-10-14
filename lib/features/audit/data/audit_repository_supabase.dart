@@ -17,7 +17,7 @@ class SupabaseAuditRepository implements AuditRepository {
         entityId: row['entity_id'] as String?,
         beforeValueJson: row['before_value_json'] as String?,
         afterValueJson: row['after_value_json'] as String?,
-        timestamp: DateTime.parse(row['timestamp'] as String),
+        timestamp: DateTime.parse(row['timestamp'] as String).toLocal(),
       );
 
   @override

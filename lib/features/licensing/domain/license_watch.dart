@@ -34,7 +34,7 @@ Future<void> refreshLicenseState(Ref ref) async {
     if (!isNetworkError(e)) rethrow;
     final cached = await OfflineCache.read(cacheKey);
     if (cached is! Map) return;
-    expiresAt = cached['expiresAt'] == null ? null : DateTime.parse(cached['expiresAt'] as String);
+    expiresAt = cached['expiresAt'] == null ? null : DateTime.parse(cached['expiresAt'] as String).toLocal();
     licensed = (cached['licensed'] as bool? ?? true) && (expiresAt == null || DateTime.now().isBefore(expiresAt));
   }
   ref.read(licenseExpiresAtProvider.notifier).state = expiresAt;

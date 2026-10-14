@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/offline/connectivity.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
@@ -282,7 +283,10 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
       ];
 
       ref.read(cartControllerProvider.notifier).clear();
-      if (result.queuedOffline) ref.read(offlineSaleSyncProvider.notifier).refresh();
+      if (result.queuedOffline) {
+        ref.read(offlineSaleSyncProvider.notifier).refresh();
+        ref.read(connectivityProvider.notifier).check();
+      }
 
       final receipt = await buildSaleReceipt(
         inventory: inventory,

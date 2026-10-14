@@ -23,7 +23,7 @@ class QueuedSale {
   factory QueuedSale.fromJson(Map<String, dynamic> json) => QueuedSale(
         clientSaleId: json['clientSaleId'] as String,
         params: (json['params'] as Map).cast<String, dynamic>(),
-        queuedAt: DateTime.parse(json['queuedAt'] as String),
+        queuedAt: DateTime.parse(json['queuedAt'] as String).toLocal(),
         lastError: json['lastError'] as String?,
       );
 

@@ -17,8 +17,8 @@ String breakRefusalMessage(AppLocalizations l10n, BreakRefusal? r, int maxPerDay
       null => l10n.errorGeneric,
     };
 
-/// "Break" in the top bar, for accounts whose role may take breaks (when
-/// breaks are switched on). Starts the break after a confirmation; the till
+/// "Break" in the top bar, always shown to a signed-in employee; when breaks
+/// are off (or not for their role) it says so and how to switch them on. Starts the break after a confirmation; the till
 /// then locks until the same employee returns with their PIN.
 class BreakButton extends ConsumerWidget {
   const BreakButton({super.key});
@@ -29,14 +29,24 @@ class BreakButton extends ConsumerWidget {
     final settings = ref.watch(currentStoreSettingsProvider).valueOrNull;
     final session = ref.watch(sessionControllerProvider);
     final employee = session.employee;
-    if (settings == null || employee == null || !settings.breakEnabled) return const SizedBox.shrink();
-    if (!settings.breakRoleNames.contains(employee.role.name)) return const SizedBox.shrink();
+    if (settings == null || employee == null) return const SizedBox.shrink();
 
     return IconButton(
       tooltip: l10n.breakStart,
       icon: const Icon(Icons.free_breakfast_outlined),
       onPressed: () async {
         final messenger = ScaffoldMessenger.of(context);
+        // Always in the top bar; says why when breaks can't be taken.
+        if (!settings.breakEnabled || !settings.breakRoleNames.contains(employee.role.name)) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(
+                !settings.breakEnabled ? l10n.breakOffHowTo : l10n.breakRoleNotAllowed,
+              ),
+            ),
+          );
+          return;
+        }
         final ok = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(

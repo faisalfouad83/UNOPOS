@@ -10,6 +10,7 @@ import '../domain/inventory_models.dart';
 import '../domain/product_expiry.dart';
 import '../domain/product_units.dart';
 import 'product_edit_dialog.dart';
+import 'stock_receive_dialog.dart';
 import 'product_thumb.dart';
 import 'product_import_dialog.dart';
 import 'qr_label_dialog.dart';
@@ -64,6 +65,12 @@ class ProductsTab extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 if (canEdit) ...[
+                  FilledButton.tonalIcon(
+                    icon: const Icon(Icons.add_box_outlined),
+                    label: Text(l10n.stockReceiveTitle),
+                    onPressed: () => showStockReceiveDialog(context, ref),
+                  ),
+                  const SizedBox(width: 4),
                   IconButton(
                     icon: const Icon(Icons.auto_awesome),
                     tooltip: l10n.inventoryGenerateMissingBarcodes,
@@ -140,6 +147,12 @@ class ProductsTab extends ConsumerWidget {
                               icon: const Icon(Icons.edit_outlined),
                               onPressed: () => showProductEditDialog(context, ref, existing: product),
                             ),
+                          if (canEdit)
+                            IconButton(
+                              icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                              tooltip: l10n.productDelete,
+                              onPressed: () => _deleteProduct(context, ref, product),
+                            ),
                         ],
                       ),
                     );
@@ -174,5 +187,36 @@ Future<void> _generateMissingBarcodes(BuildContext context, WidgetRef ref, Strin
   }
   if (context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.inventoryBarcodesGenerated(count))));
+  }
+}
+
+/// Removes a product from the catalog after confirmation. Past invoices,
+/// returns and stock history still refer to it, so it is taken off sale
+/// (hidden everywhere) rather than erased.
+Future<void> _deleteProduct(BuildContext context, WidgetRef ref, ProductRecord product) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+      title: Text(l10n.productDeleteTitle(product.name)),
+      content: Text(l10n.productDeleteMessage),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.actionCancel)),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.productDelete),
+        ),
+      ],
+    ),
+  );
+  if (ok != true) return;
+  try {
+    await ref.read(inventoryRepositoryProvider).setProductActive(product.id, false);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.productDeleted(product.name))));
+  } catch (_) {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
   }
 }

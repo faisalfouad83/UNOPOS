@@ -825,5 +825,27 @@
   "supportNotes": "تێبینی",
   "supportReactivate": "چالاککردنەوە",
   "supportSuspend": "ڕاگرتن",
-  "supportTerminate": "کۆتاییهێنان بە کار"
+  "supportTerminate": "کۆتاییهێنان بە کار",
+
+  "breakOffHowTo": "پشووەکان ناچالاکن. خاوەن یان بەڕێوەبەر دەتوانێت لە ڕێکخستنەکان › پشووەکان چالاکیان بکات.",
+  "productDelete": "سڕینەوەی کاڵا",
+  "productDeleteTitle": "\"{name}\" بسڕدرێتەوە؟",
+  "productDeleteMessage": "لە لیستی کاڵاکان و شاشەی فرۆشتن نامێنێت. پسوڵە کۆنەکان و گەڕاندنەوەکان و مێژووی کۆگا هەر پیشانی دەدەن.",
+  "productDeleted": "\"{name}\" سڕایەوە",
+  "stockReceiveTitle": "زیادکردنی کاڵا بۆ کۆگا",
+  "stockReceiveHelp": "هەر کاڵایەک کە گەیشتووە بیخوێنەرەوە یان بەدوایدا بگەڕێ، بڕەکەی بنووسە، و نرخی نوێ تەنها ئەگەر گۆڕاوە — بەتاڵی بهێڵە بۆ مانەوەی نرخی ئێستا.",
+  "stockReceiveEmpty": "هێشتا هیچ کاڵایەک زیاد نەکراوە",
+  "stockReceiveNewCost": "تێچووی نوێ",
+  "stockReceiveNewPrice": "نرخی فرۆشتنی نوێ",
+  "stockReceiveKeepIfEmpty": "بەتاڵ = بێ گۆڕان",
+  "stockReceiveSave": "زیادکردن بۆ کۆگا ({count})",
+  "stockReceiveDone": "کۆگا بۆ {count} کاڵا زیادکرا",
+  "stockReceiveInvalid": "بڕ و نرخەکانی \"{name}\" بپشکنە",
+  "stockReceivePartial": "{done} لە {total} پاشەکەوت کرا. پەیوەندی بپشکنە و ئەوانی تر دووبارە پاشەکەوت بکە.",
+  "statusOnline": "سەرهێڵ",
+  "statusOffline": "بێ ئینتەرنێت",
+  "offlineWithPending": "بێ ئینتەرنێت · {count} چاوەڕوان",
+  "syncInProgress": "هاوکاتکردن ({count})…",
+  "statusOnlineHelp": "پەیوەستە — هەموو شتێک لە سێرڤەر پاشەکەوت دەکرێت.",
+  "statusOfflineHelp": "ئینتەرنێت نییە — بەردەوام بە لە فرۆشتن. فرۆشتنەکان لەم ئامێرە دەمێننەوە و کاتێک پەیوەندی گەڕایەوە خۆکارانە دەنێردرێن. دابگرە بۆ پشکنین."
 }

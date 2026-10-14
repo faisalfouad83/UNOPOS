@@ -2527,4 +2527,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportTerminate => 'End employment';
+
+  @override
+  String get breakOffHowTo =>
+      'Breaks are off. The owner or a manager can switch them on in Settings › Breaks.';
+
+  @override
+  String get productDelete => 'Delete product';
+
+  @override
+  String productDeleteTitle(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get productDeleteMessage =>
+      'It disappears from the products list and the till. Past invoices, returns and stock history keep showing it.';
+
+  @override
+  String productDeleted(String name) {
+    return '\"$name\" deleted';
+  }
+
+  @override
+  String get stockReceiveTitle => 'Receive stock';
+
+  @override
+  String get stockReceiveHelp =>
+      'Scan or search each product you received, enter the quantity, and a new cost or selling price only if it changed — leave them empty to keep the current prices.';
+
+  @override
+  String get stockReceiveEmpty => 'No products added yet';
+
+  @override
+  String get stockReceiveNewCost => 'New cost';
+
+  @override
+  String get stockReceiveNewPrice => 'New selling price';
+
+  @override
+  String get stockReceiveKeepIfEmpty => 'Empty = no change';
+
+  @override
+  String stockReceiveSave(int count) {
+    return 'Add to stock ($count)';
+  }
+
+  @override
+  String stockReceiveDone(int count) {
+    return 'Stock added for $count products';
+  }
+
+  @override
+  String stockReceiveInvalid(String name) {
+    return 'Check the quantity and prices of \"$name\"';
+  }
+
+  @override
+  String stockReceivePartial(int done, int total) {
+    return 'Saved $done of $total. Check the connection and save the rest again.';
+  }
+
+  @override
+  String get statusOnline => 'Online';
+
+  @override
+  String get statusOffline => 'Offline';
+
+  @override
+  String offlineWithPending(int count) {
+    return 'Offline · $count waiting';
+  }
+
+  @override
+  String syncInProgress(int count) {
+    return 'Syncing $count…';
+  }
+
+  @override
+  String get statusOnlineHelp =>
+      'Connected — everything is saved to the server as you work.';
+
+  @override
+  String get statusOfflineHelp =>
+      'No internet — keep selling. Sales are kept on this device and sent automatically when the connection is back. Tap to check now.';
 }

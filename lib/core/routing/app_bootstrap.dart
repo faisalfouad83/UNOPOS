@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../offline/offline_cache.dart';
+import '../offline/offline_warmup.dart';
 import '../providers.dart';
 import '../../features/auth/domain/auth_models.dart';
 import '../../features/auth/domain/session_controller.dart';
@@ -35,13 +39,28 @@ final appBootstrapProvider = FutureProvider<AppBootstrapResult>((ref) async {
   final gate = ref.watch(licenseGateServiceProvider);
 
   final store = await authRepo.getCurrentStore();
-  final valid = await gate.hasValidLicense(storeId: store?.id);
+  bool valid;
+  try {
+    valid = await gate.hasValidLicense(storeId: store?.id);
+  } catch (e) {
+    // Offline: the license lock decides from the last known end date
+    // (license_watch), so don't stop the app from opening here.
+    if (!isNetworkError(e)) rethrow;
+    valid = true;
+  }
 
   var hasEmployees = false;
   if (store != null) {
     ref.read(sessionControllerProvider.notifier).setStore(store);
-    final employees = await authRepo.watchEmployees(store.id).first;
-    hasEmployees = employees.isNotEmpty;
+    // A fresh copy for working offline, in the background.
+    unawaited(warmOfflineCopy(ref.read, store.id));
+    try {
+      final employees = await authRepo.watchEmployees(store.id).first.timeout(const Duration(seconds: 12));
+      hasEmployees = employees.isNotEmpty;
+    } catch (e) {
+      // Offline with no copy yet: an existing store has its accounts.
+      hasEmployees = true;
+    }
   }
   ref.read(licenseValidProvider.notifier).state = valid;
   ref.read(storeHasEmployeesProvider.notifier).state = hasEmployees;

@@ -4731,6 +4731,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'End employment'**
   String get supportTerminate;
+
+  /// No description provided for @breakOffHowTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks are off. The owner or a manager can switch them on in Settings › Breaks.'**
+  String get breakOffHowTo;
+
+  /// No description provided for @productDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete product'**
+  String get productDelete;
+
+  /// No description provided for @productDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String productDeleteTitle(String name);
+
+  /// No description provided for @productDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'It disappears from the products list and the till. Past invoices, returns and stock history keep showing it.'**
+  String get productDeleteMessage;
+
+  /// No description provided for @productDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" deleted'**
+  String productDeleted(String name);
+
+  /// No description provided for @stockReceiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive stock'**
+  String get stockReceiveTitle;
+
+  /// No description provided for @stockReceiveHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan or search each product you received, enter the quantity, and a new cost or selling price only if it changed — leave them empty to keep the current prices.'**
+  String get stockReceiveHelp;
+
+  /// No description provided for @stockReceiveEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No products added yet'**
+  String get stockReceiveEmpty;
+
+  /// No description provided for @stockReceiveNewCost.
+  ///
+  /// In en, this message translates to:
+  /// **'New cost'**
+  String get stockReceiveNewCost;
+
+  /// No description provided for @stockReceiveNewPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'New selling price'**
+  String get stockReceiveNewPrice;
+
+  /// No description provided for @stockReceiveKeepIfEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty = no change'**
+  String get stockReceiveKeepIfEmpty;
+
+  /// No description provided for @stockReceiveSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to stock ({count})'**
+  String stockReceiveSave(int count);
+
+  /// No description provided for @stockReceiveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock added for {count} products'**
+  String stockReceiveDone(int count);
+
+  /// No description provided for @stockReceiveInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the quantity and prices of \"{name}\"'**
+  String stockReceiveInvalid(String name);
+
+  /// No description provided for @stockReceivePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {done} of {total}. Check the connection and save the rest again.'**
+  String stockReceivePartial(int done, int total);
+
+  /// No description provided for @statusOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get statusOnline;
+
+  /// No description provided for @statusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get statusOffline;
+
+  /// No description provided for @offlineWithPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline · {count} waiting'**
+  String offlineWithPending(int count);
+
+  /// No description provided for @syncInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing {count}…'**
+  String syncInProgress(int count);
+
+  /// No description provided for @statusOnlineHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected — everything is saved to the server as you work.'**
+  String get statusOnlineHelp;
+
+  /// No description provided for @statusOfflineHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet — keep selling. Sales are kept on this device and sent automatically when the connection is back. Tap to check now.'**
+  String get statusOfflineHelp;
 }
 
 class _AppLocalizationsDelegate

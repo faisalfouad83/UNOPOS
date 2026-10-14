@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/connectivity.dart';
 import '../../../core/offline/offline_cache.dart';
 import '../../../core/providers.dart';
 import '../../../core/supabase/supabase_client_provider.dart';
@@ -74,8 +75,13 @@ class OfflineSaleSync extends StateNotifier<OfflineSyncState> {
 }
 
 final offlineSaleSyncProvider = StateNotifierProvider<OfflineSaleSync, OfflineSyncState>((ref) {
-  return OfflineSaleSync(
+  final sync = OfflineSaleSync(
     ref.watch(offlineSaleQueueProvider),
     kUseSupabaseBackend ? ref.watch(supabaseClientProvider) : null,
   );
+  // Back online: send what was sold meanwhile straight away.
+  ref.listen<bool>(connectivityProvider, (was, now) {
+    if (now && was == false) sync.syncNow();
+  });
+  return sync;
 });

@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/permissions.dart';
 import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/offline_pins.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../domain/account_rules.dart';
@@ -25,7 +26,7 @@ class SupabaseAuthRepository implements AuthRepository {
         passwordHash: '', // never exposed by Supabase Auth
         displayName: row['display_name'] as String,
         activationCodeId: row['activation_code_id'] as String?,
-        createdAt: DateTime.parse(row['created_at'] as String),
+        createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
         isActive: !(row['is_disabled'] as bool),
         ownerName: (row['owner_name'] as String?) ?? '',
         phone: (row['phone'] as String?) ?? '',
@@ -61,9 +62,14 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<StoreRecord?> getCurrentStore() async {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return null;
-    final row = await _client.from('stores').select().eq('auth_user_id', userId).maybeSingle();
-    if (row == null) return null;
-    return _mapStore(row);
+    // Offline: the store this device was last signed in to, so the till
+    // still opens without internet.
+    final rows = await fetchRowsOrCached('store.$userId', () async {
+      final row = await _client.from('stores').select().eq('auth_user_id', userId).maybeSingle();
+      return row == null ? <Map<String, dynamic>>[] : [row];
+    });
+    if (rows == null || rows.isEmpty) return null;
+    return _mapStore(rows.first);
   }
 
   @override
@@ -133,8 +139,11 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<List<BranchRecord>> listBranches(String storeId) async {
-    final rows = await _client.from('branches').select().eq('store_id', storeId);
-    return (rows as List).cast<Map<String, dynamic>>().map(_mapBranch).toList();
+    final rows = await fetchRowsOrCached('branches.$storeId', () async {
+      final rows = await _client.from('branches').select().eq('store_id', storeId);
+      return (rows as List).cast<Map<String, dynamic>>();
+    });
+    return (rows ?? const <Map<String, dynamic>>[]).map(_mapBranch).toList();
   }
 
   @override
@@ -257,8 +266,12 @@ class SupabaseAuthRepository implements AuthRepository {
       'employees.$storeId',
       () => _client.from('users').stream(primaryKey: ['id']).eq('store_id', storeId).order('name'),
       retryDelay: const Duration(seconds: 3),
-      // Accounts carry salaries and phone numbers: never kept on disk.
-      cache: false,
+      // Kept on the device for signing in offline — names and roles only;
+      // salaries, phones and addresses are never stored.
+      cacheRow: (r) => {
+        for (final k in const ['id', 'store_id', 'branch_id', 'name', 'role', 'avatar_color_hex', 'is_active', 'permissions'])
+          k: r[k],
+      },
     ).map((rows) => rows.where((r) => r['store_id'] == storeId && r['is_active'] == true).map(_mapEmployee).toList());
   }
 
@@ -269,8 +282,23 @@ class SupabaseAuthRepository implements AuthRepository {
     // the caller's own authenticated session (auth.uid()), never from a
     // client-supplied id — that's what stops one store from probing another
     // store's PINs by passing an arbitrary storeId.
-    final row = await _client.rpc('verify_employee_pin', params: {'p_pin': pin});
+    final Object? row;
+    try {
+      row = await _client.rpc('verify_employee_pin', params: {'p_pin': pin}).timeout(const Duration(seconds: 8));
+    } catch (e) {
+      if (!isNetworkError(e)) rethrow;
+      // Offline: accept the PIN of an account that signed in on this
+      // device before (checked against the hash kept from then).
+      final cached = await OfflineCache.readRows('employees.$storeId') ?? const [];
+      for (final r in cached) {
+        if (r['is_active'] != true) continue;
+        if (await OfflinePins.matches(r['id'] as String, pin)) return _mapEmployee(r);
+      }
+      return null;
+    }
     if (row == null) return null;
-    return _mapEmployee(row as Map<String, dynamic>);
+    final employee = _mapEmployee(row as Map<String, dynamic>);
+    await OfflinePins.remember(employee.id, pin);
+    return employee;
   }
 }

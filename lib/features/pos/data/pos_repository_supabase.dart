@@ -50,8 +50,8 @@ class SupabasePosRepository implements PosRepository {
         shiftId: row['shift_id'] as String?,
         cashierId: row['cashier_id'] as String,
         journalEntryId: row['journal_entry_id'] as String?,
-        createdAt: DateTime.parse(row['created_at'] as String),
-        completedAt: row['completed_at'] == null ? null : DateTime.parse(row['completed_at'] as String),
+        createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
+        completedAt: row['completed_at'] == null ? null : DateTime.parse(row['completed_at'] as String).toLocal(),
         lines: lines,
       );
 
@@ -271,7 +271,7 @@ class SupabasePosRepository implements PosRepository {
         amountPaidMinorUnits: (row['amount_paid_minor_units'] as num?)?.toInt() ?? 0,
         receiptRef: row['receipt_ref'] as String?,
         status: DebtStatus.values.firstWhere((s) => s.name == row['status']),
-        createdAt: DateTime.parse(row['created_at'] as String),
+        createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
       );
 
   @override
@@ -316,12 +316,12 @@ class SupabasePosRepository implements PosRepository {
           var filtered = rows;
           if (from != null) {
             filtered = filtered
-                .where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).isBefore(from))
+                .where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).toLocal().isBefore(from))
                 .toList();
           }
           if (to != null) {
             filtered = filtered
-                .where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).isAfter(to))
+                .where((r) => r['completed_at'] != null && !DateTime.parse(r['completed_at'] as String).toLocal().isAfter(to))
                 .toList();
           }
           return _withLines(filtered);

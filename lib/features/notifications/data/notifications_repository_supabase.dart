@@ -29,8 +29,8 @@ class SupabaseNotificationsRepository implements NotificationsRepository {
               notificationId: r['notification_id'] as String,
               title: notif['title'] as String,
               body: notif['body'] as String,
-              createdAt: DateTime.parse(notif['created_at'] as String),
-              readAt: r['read_at'] == null ? null : DateTime.parse(r['read_at'] as String),
+              createdAt: DateTime.parse(notif['created_at'] as String).toLocal(),
+              readAt: r['read_at'] == null ? null : DateTime.parse(r['read_at'] as String).toLocal(),
             );
           })
           .whereType<StoreNotificationRecord>()

@@ -32,14 +32,14 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
         id: json['id'] as String,
         storeId: json['store_id'] as String,
         branchId: json['branch_id'] as String,
-        entryDate: DateTime.parse(json['entry_date'] as String),
+        entryDate: DateTime.parse(json['entry_date'] as String).toLocal(),
         referenceType: _referenceTypeFromDb(json['reference_type'] as String),
         referenceId: json['reference_id'] as String?,
         memo: json['memo'] as String? ?? '',
         createdByUserId: json['created_by_user_id'] as String,
         isReversal: json['is_reversal'] as bool? ?? false,
         reversalOfEntryId: json['reversal_of_entry_id'] as String?,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
         lines: (json['lines'] as List).cast<Map<String, dynamic>>().map(_mapLineJson).toList(),
       );
 
@@ -134,7 +134,7 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
       var filtered = rows;
       if (range != null) {
         filtered = rows.where((r) {
-          final date = DateTime.parse(r['entry_date'] as String);
+          final date = DateTime.parse(r['entry_date'] as String).toLocal();
           return !date.isBefore(range.start) && !date.isAfter(range.end);
         }).toList();
       }
@@ -165,14 +165,14 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
                 id: row['id'] as String,
                 storeId: row['store_id'] as String,
                 branchId: row['branch_id'] as String,
-                entryDate: DateTime.parse(row['entry_date'] as String),
+                entryDate: DateTime.parse(row['entry_date'] as String).toLocal(),
                 referenceType: _referenceTypeFromDb(row['reference_type'] as String),
                 referenceId: row['reference_id'] as String?,
                 memo: row['memo'] as String? ?? '',
                 createdByUserId: row['created_by_user_id'] as String,
                 isReversal: row['is_reversal'] as bool? ?? false,
                 reversalOfEntryId: row['reversal_of_entry_id'] as String?,
-                createdAt: DateTime.parse(row['created_at'] as String),
+                createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
                 lines: linesByEntry[row['id']] ?? const [],
               ))
           .toList();

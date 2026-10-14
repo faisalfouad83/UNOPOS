@@ -47,7 +47,8 @@ bool isNetworkError(Object error) {
 
 /// Wraps a backend stream of rows so the till keeps working offline:
 /// the last cached copy is shown immediately, every live update refreshes
-/// the cache, and a dropped connection keeps showing the last data while it
+/// the cache ([cacheRow] can drop fields that must not be kept on the
+/// device), and a dropped connection keeps showing the last data while it
 /// quietly resubscribes, instead of surfacing an error screen. With
 /// [cache] off nothing is stored on the device (rows with personal data);
 /// the stream still resubscribes after a dropped connection.
@@ -56,6 +57,7 @@ Stream<List<Map<String, dynamic>>> resilientRows(
   Stream<List<Map<String, dynamic>>> Function() subscribe, {
   Duration retryDelay = const Duration(seconds: 10),
   bool cache = true,
+  Map<String, dynamic> Function(Map<String, dynamic> row)? cacheRow,
 }) {
   late StreamController<List<Map<String, dynamic>>> controller;
   StreamSubscription<List<Map<String, dynamic>>>? subscription;
@@ -69,7 +71,7 @@ Stream<List<Map<String, dynamic>>> resilientRows(
       (rows) {
         hasValue = true;
         controller.add(rows);
-        if (cache) OfflineCache.write(cacheKey, rows);
+        if (cache) OfflineCache.write(cacheKey, cacheRow == null ? rows : rows.map(cacheRow).toList());
       },
       onError: (Object error, StackTrace stack) {
         subscription?.cancel();
@@ -95,4 +97,20 @@ Stream<List<Map<String, dynamic>>> resilientRows(
     },
   );
   return controller.stream;
+}
+
+/// Runs [fetch] and caches its rows under [key]; with no connection, the
+/// last cached rows are returned instead (null when never cached).
+Future<List<Map<String, dynamic>>?> fetchRowsOrCached(
+  String key,
+  Future<List<Map<String, dynamic>>> Function() fetch,
+) async {
+  try {
+    final rows = await fetch().timeout(const Duration(seconds: 10));
+    await OfflineCache.write(key, rows);
+    return rows;
+  } catch (e) {
+    if (!isNetworkError(e)) rethrow;
+    return OfflineCache.readRows(key);
+  }
 }

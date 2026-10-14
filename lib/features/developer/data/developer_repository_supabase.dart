@@ -40,9 +40,9 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
         subscriptionStatus: row['subscription_status'] as String,
         activationStatus: row['activation_status'] as String,
         licenseKey: row['license_key'] as String?,
-        createdAt: DateTime.parse(row['created_at'] as String),
-        expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String),
-        lastLoginAt: row['last_login_at'] == null ? null : DateTime.parse(row['last_login_at'] as String),
+        createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
+        expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String).toLocal(),
+        lastLoginAt: row['last_login_at'] == null ? null : DateTime.parse(row['last_login_at'] as String).toLocal(),
         isDisabled: row['is_disabled'] as bool? ?? false,
         isSuspended: row['is_suspended'] as bool? ?? false,
       );
@@ -52,11 +52,11 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
         code: row['code'] as String,
         storeNameRef: row['store_name_ref'] as String,
         tier: LicenseTier.values.firstWhere((t) => t.name == row['tier']),
-        issuedAt: DateTime.parse(row['issued_at'] as String),
-        expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String),
+        issuedAt: DateTime.parse(row['issued_at'] as String).toLocal(),
+        expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String).toLocal(),
         status: ActivationCodeStatus.values.firstWhere((s) => s.name == row['status']),
         redeemedByStoreId: row['redeemed_by_store_id'] as String?,
-        redeemedAt: row['redeemed_at'] == null ? null : DateTime.parse(row['redeemed_at'] as String),
+        redeemedAt: row['redeemed_at'] == null ? null : DateTime.parse(row['redeemed_at'] as String).toLocal(),
       );
 
   @override
@@ -223,7 +223,7 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
         action: row['action'] as String,
         targetStoreId: row['target_store_id'] as String?,
         detailsJson: row['details_json'] as String?,
-        createdAt: DateTime.parse(row['created_at'] as String),
+        createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
       );
 
   @override

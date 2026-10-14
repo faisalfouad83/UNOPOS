@@ -2523,4 +2523,87 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get supportTerminate => 'إنهاء الخدمة';
+
+  @override
+  String get breakOffHowTo =>
+      'الاستراحات متوقفة. يستطيع المالك أو المدير تفعيلها من الإعدادات ← الاستراحات.';
+
+  @override
+  String get productDelete => 'حذف المنتج';
+
+  @override
+  String productDeleteTitle(String name) {
+    return 'حذف \"$name\"؟';
+  }
+
+  @override
+  String get productDeleteMessage =>
+      'سيختفي من قائمة المنتجات ومن شاشة البيع. تبقى الفواتير السابقة والمرتجعات وسجل المخزون تعرضه.';
+
+  @override
+  String productDeleted(String name) {
+    return 'تم حذف \"$name\"';
+  }
+
+  @override
+  String get stockReceiveTitle => 'إضافة بضاعة للمخزون';
+
+  @override
+  String get stockReceiveHelp =>
+      'امسح أو ابحث عن كل منتج وصلك، اكتب الكمية، والسعر الجديد (الكلفة أو البيع) فقط إذا تغيّر — اتركه فارغاً ليبقى السعر الحالي.';
+
+  @override
+  String get stockReceiveEmpty => 'لم تُضف منتجات بعد';
+
+  @override
+  String get stockReceiveNewCost => 'كلفة جديدة';
+
+  @override
+  String get stockReceiveNewPrice => 'سعر بيع جديد';
+
+  @override
+  String get stockReceiveKeepIfEmpty => 'فارغ = بدون تغيير';
+
+  @override
+  String stockReceiveSave(int count) {
+    return 'إضافة للمخزون ($count)';
+  }
+
+  @override
+  String stockReceiveDone(int count) {
+    return 'تمت إضافة المخزون لـ $count منتج';
+  }
+
+  @override
+  String stockReceiveInvalid(String name) {
+    return 'تحقق من الكمية والأسعار لـ \"$name\"';
+  }
+
+  @override
+  String stockReceivePartial(int done, int total) {
+    return 'حُفظ $done من $total. تحقق من الاتصال واحفظ الباقي مرة أخرى.';
+  }
+
+  @override
+  String get statusOnline => 'متصل';
+
+  @override
+  String get statusOffline => 'بدون إنترنت';
+
+  @override
+  String offlineWithPending(int count) {
+    return 'بدون إنترنت · $count بانتظار المزامنة';
+  }
+
+  @override
+  String syncInProgress(int count) {
+    return 'جارٍ المزامنة ($count)…';
+  }
+
+  @override
+  String get statusOnlineHelp => 'متصل — كل شيء يُحفظ على السيرفر أثناء العمل.';
+
+  @override
+  String get statusOfflineHelp =>
+      'لا يوجد إنترنت — استمر بالبيع. تُحفظ المبيعات على هذا الجهاز وتُرسل تلقائياً عند عودة الاتصال. اضغط للتحقق الآن.';
 }

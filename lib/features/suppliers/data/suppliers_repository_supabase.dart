@@ -24,10 +24,10 @@ class SupabaseSuppliersRepository implements SuppliersRepository {
         type: SupplierTransactionType.values.firstWhere((t) => t.name == row['type']),
         amountMinorUnits: (row['amount_minor_units'] as num).toInt(),
         relatedPurchaseOrderId: row['related_purchase_order_id'] as String?,
-        deliveryDate: row['delivery_date'] == null ? null : DateTime.parse(row['delivery_date'] as String),
+        deliveryDate: row['delivery_date'] == null ? null : DateTime.parse(row['delivery_date'] as String).toLocal(),
         journalEntryId: row['journal_entry_id'] as String?,
         createdByUserId: row['created_by_user_id'] as String,
-        createdAt: DateTime.parse(row['created_at'] as String),
+        createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
       );
 
   @override

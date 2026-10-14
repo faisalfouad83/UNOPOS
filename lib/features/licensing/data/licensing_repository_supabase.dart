@@ -25,11 +25,11 @@ class SupabaseLicensingRepository implements LicensingRepository {
         code: row['code'] as String,
         storeNameRef: row['store_name_ref'] as String,
         tier: LicenseTier.values.firstWhere((t) => t.name == row['tier']),
-        issuedAt: DateTime.parse(row['issued_at'] as String),
-        expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String),
+        issuedAt: DateTime.parse(row['issued_at'] as String).toLocal(),
+        expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String).toLocal(),
         status: ActivationCodeStatus.values.firstWhere((s) => s.name == row['status']),
         redeemedByStoreId: row['redeemed_by_store_id'] as String?,
-        redeemedAt: row['redeemed_at'] == null ? null : DateTime.parse(row['redeemed_at'] as String),
+        redeemedAt: row['redeemed_at'] == null ? null : DateTime.parse(row['redeemed_at'] as String).toLocal(),
       );
 
   @override
@@ -123,7 +123,7 @@ class SupabaseLicensingRepository implements LicensingRepository {
   Future<({bool licensed, DateTime? expiresAt})> licenseFor(String storeId) async {
     final row = await _client.from('stores').select('expires_at').eq('id', storeId).maybeSingle();
     if (row == null) return (licensed: false, expiresAt: null);
-    final expiresAt = row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String);
+    final expiresAt = row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String).toLocal();
     return (licensed: expiresAt == null || DateTime.now().isBefore(expiresAt), expiresAt: expiresAt);
   }
 
@@ -145,8 +145,8 @@ class SupabaseLicensingRepository implements LicensingRepository {
       code: row['license_key'] as String? ?? '',
       storeNameRef: row['display_name'] as String,
       tier: LicenseTier.lifetime,
-      issuedAt: DateTime.parse(row['created_at'] as String),
-      expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String),
+      issuedAt: DateTime.parse(row['created_at'] as String).toLocal(),
+      expiresAt: row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String).toLocal(),
       status: ActivationCodeStatus.active,
       redeemedByStoreId: storeId,
     );

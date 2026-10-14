@@ -2510,4 +2510,88 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get supportTerminate => 'کۆتاییهێنان بە کار';
+
+  @override
+  String get breakOffHowTo =>
+      'پشووەکان ناچالاکن. خاوەن یان بەڕێوەبەر دەتوانێت لە ڕێکخستنەکان › پشووەکان چالاکیان بکات.';
+
+  @override
+  String get productDelete => 'سڕینەوەی کاڵا';
+
+  @override
+  String productDeleteTitle(String name) {
+    return '\"$name\" بسڕدرێتەوە؟';
+  }
+
+  @override
+  String get productDeleteMessage =>
+      'لە لیستی کاڵاکان و شاشەی فرۆشتن نامێنێت. پسوڵە کۆنەکان و گەڕاندنەوەکان و مێژووی کۆگا هەر پیشانی دەدەن.';
+
+  @override
+  String productDeleted(String name) {
+    return '\"$name\" سڕایەوە';
+  }
+
+  @override
+  String get stockReceiveTitle => 'زیادکردنی کاڵا بۆ کۆگا';
+
+  @override
+  String get stockReceiveHelp =>
+      'هەر کاڵایەک کە گەیشتووە بیخوێنەرەوە یان بەدوایدا بگەڕێ، بڕەکەی بنووسە، و نرخی نوێ تەنها ئەگەر گۆڕاوە — بەتاڵی بهێڵە بۆ مانەوەی نرخی ئێستا.';
+
+  @override
+  String get stockReceiveEmpty => 'هێشتا هیچ کاڵایەک زیاد نەکراوە';
+
+  @override
+  String get stockReceiveNewCost => 'تێچووی نوێ';
+
+  @override
+  String get stockReceiveNewPrice => 'نرخی فرۆشتنی نوێ';
+
+  @override
+  String get stockReceiveKeepIfEmpty => 'بەتاڵ = بێ گۆڕان';
+
+  @override
+  String stockReceiveSave(int count) {
+    return 'زیادکردن بۆ کۆگا ($count)';
+  }
+
+  @override
+  String stockReceiveDone(int count) {
+    return 'کۆگا بۆ $count کاڵا زیادکرا';
+  }
+
+  @override
+  String stockReceiveInvalid(String name) {
+    return 'بڕ و نرخەکانی \"$name\" بپشکنە';
+  }
+
+  @override
+  String stockReceivePartial(int done, int total) {
+    return '$done لە $total پاشەکەوت کرا. پەیوەندی بپشکنە و ئەوانی تر دووبارە پاشەکەوت بکە.';
+  }
+
+  @override
+  String get statusOnline => 'سەرهێڵ';
+
+  @override
+  String get statusOffline => 'بێ ئینتەرنێت';
+
+  @override
+  String offlineWithPending(int count) {
+    return 'بێ ئینتەرنێت · $count چاوەڕوان';
+  }
+
+  @override
+  String syncInProgress(int count) {
+    return 'هاوکاتکردن ($count)…';
+  }
+
+  @override
+  String get statusOnlineHelp =>
+      'پەیوەستە — هەموو شتێک لە سێرڤەر پاشەکەوت دەکرێت.';
+
+  @override
+  String get statusOfflineHelp =>
+      'ئینتەرنێت نییە — بەردەوام بە لە فرۆشتن. فرۆشتنەکان لەم ئامێرە دەمێننەوە و کاتێک پەیوەندی گەڕایەوە خۆکارانە دەنێردرێن. دابگرە بۆ پشکنین.';
 }

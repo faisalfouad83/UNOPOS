@@ -40,7 +40,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
         imagePath: row['image_path'] as String?,
         isActive: row['is_active'] as bool? ?? true,
         wholesalePriceMinorUnits: (row['wholesale_price_minor_units'] as num?)?.toInt(),
-        expiryDate: row['expiry_date'] == null ? null : DateTime.parse(row['expiry_date'] as String),
+        expiryDate: row['expiry_date'] == null ? null : DateTime.parse(row['expiry_date'] as String).toLocal(),
       );
 
   static String? _dateOnly(DateTime? d) => d == null
@@ -64,8 +64,8 @@ class SupabaseInventoryRepository implements InventoryRepository {
         value: (row['value'] as num).toInt(),
         appliedScope: row['applied_scope'] as String? ?? 'cart',
         scopeTargetId: row['scope_target_id'] as String?,
-        startDate: row['start_date'] == null ? null : DateTime.parse(row['start_date'] as String),
-        endDate: row['end_date'] == null ? null : DateTime.parse(row['end_date'] as String),
+        startDate: row['start_date'] == null ? null : DateTime.parse(row['start_date'] as String).toLocal(),
+        endDate: row['end_date'] == null ? null : DateTime.parse(row['end_date'] as String).toLocal(),
         isActive: row['is_active'] as bool? ?? true,
       );
 
@@ -75,8 +75,8 @@ class SupabaseInventoryRepository implements InventoryRepository {
         branchId: row['branch_id'] as String,
         supplierId: row['supplier_id'] as String,
         status: row['status'] as String? ?? 'draft',
-        orderDate: DateTime.parse(row['order_date'] as String),
-        expectedDate: row['expected_date'] == null ? null : DateTime.parse(row['expected_date'] as String),
+        orderDate: DateTime.parse(row['order_date'] as String).toLocal(),
+        expectedDate: row['expected_date'] == null ? null : DateTime.parse(row['expected_date'] as String).toLocal(),
         totalCostMinorUnits: (row['total_cost_minor_units'] as num?)?.toInt() ?? 0,
         paidImmediately: row['paid_immediately'] as bool? ?? false,
       );
@@ -313,8 +313,8 @@ class SupabaseInventoryRepository implements InventoryRepository {
                 status: row['status'] as String? ?? 'pending',
                 requestedByUserId: row['requested_by_user_id'] as String,
                 receivedByUserId: row['received_by_user_id'] as String?,
-                createdAt: DateTime.parse(row['created_at'] as String),
-                receivedAt: row['received_at'] == null ? null : DateTime.parse(row['received_at'] as String),
+                createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
+                receivedAt: row['received_at'] == null ? null : DateTime.parse(row['received_at'] as String).toLocal(),
                 lines: linesByTransfer[row['id']] ?? const [],
               ))
           .toList();

@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
+
 import '../domain/debts_models.dart';
 import '../domain/debts_repository.dart';
 
@@ -28,7 +30,7 @@ class SupabaseDebtsRepository implements DebtsRepository {
         amountPaidMinorUnits: (row['amount_paid_minor_units'] as num?)?.toInt() ?? 0,
         receiptRef: row['receipt_ref'] as String?,
         status: DebtStatus.values.firstWhere((s) => s.name == row['status']),
-        createdAt: DateTime.parse(row['created_at'] as String),
+        createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
       );
 
   DebtPaymentRecord _mapPayment(Map<String, dynamic> row) => DebtPaymentRecord(
@@ -38,7 +40,7 @@ class SupabaseDebtsRepository implements DebtsRepository {
         paymentMethod: row['payment_method'] as String,
         receivedByUserId: row['received_by_user_id'] as String,
         journalEntryId: row['journal_entry_id'] as String?,
-        paidAt: DateTime.parse(row['paid_at'] as String),
+        paidAt: DateTime.parse(row['paid_at'] as String).toLocal(),
       );
 
   @override
@@ -54,7 +56,11 @@ class SupabaseDebtsRepository implements DebtsRepository {
 
   @override
   Stream<List<CustomerRecord>> watchCustomers(String storeId) {
-    return _client.from('customers').stream(primaryKey: ['id']).order('name').map((rows) => rows.map(_mapCustomer).toList());
+    // Cached so customers can still be picked at the till offline.
+    return resilientRows(
+      'customers.$storeId',
+      () => _client.from('customers').stream(primaryKey: ['id']).order('name'),
+    ).map((rows) => rows.where((r) => r['store_id'] == storeId).map(_mapCustomer).toList());
   }
 
   @override

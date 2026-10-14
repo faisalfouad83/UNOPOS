@@ -825,5 +825,27 @@
   "supportNotes": "ملاحظات",
   "supportReactivate": "إعادة التفعيل",
   "supportSuspend": "إيقاف مؤقت",
-  "supportTerminate": "إنهاء الخدمة"
+  "supportTerminate": "إنهاء الخدمة",
+
+  "breakOffHowTo": "الاستراحات متوقفة. يستطيع المالك أو المدير تفعيلها من الإعدادات ← الاستراحات.",
+  "productDelete": "حذف المنتج",
+  "productDeleteTitle": "حذف \"{name}\"؟",
+  "productDeleteMessage": "سيختفي من قائمة المنتجات ومن شاشة البيع. تبقى الفواتير السابقة والمرتجعات وسجل المخزون تعرضه.",
+  "productDeleted": "تم حذف \"{name}\"",
+  "stockReceiveTitle": "إضافة بضاعة للمخزون",
+  "stockReceiveHelp": "امسح أو ابحث عن كل منتج وصلك، اكتب الكمية، والسعر الجديد (الكلفة أو البيع) فقط إذا تغيّر — اتركه فارغاً ليبقى السعر الحالي.",
+  "stockReceiveEmpty": "لم تُضف منتجات بعد",
+  "stockReceiveNewCost": "كلفة جديدة",
+  "stockReceiveNewPrice": "سعر بيع جديد",
+  "stockReceiveKeepIfEmpty": "فارغ = بدون تغيير",
+  "stockReceiveSave": "إضافة للمخزون ({count})",
+  "stockReceiveDone": "تمت إضافة المخزون لـ {count} منتج",
+  "stockReceiveInvalid": "تحقق من الكمية والأسعار لـ \"{name}\"",
+  "stockReceivePartial": "حُفظ {done} من {total}. تحقق من الاتصال واحفظ الباقي مرة أخرى.",
+  "statusOnline": "متصل",
+  "statusOffline": "بدون إنترنت",
+  "offlineWithPending": "بدون إنترنت · {count} بانتظار المزامنة",
+  "syncInProgress": "جارٍ المزامنة ({count})…",
+  "statusOnlineHelp": "متصل — كل شيء يُحفظ على السيرفر أثناء العمل.",
+  "statusOfflineHelp": "لا يوجد إنترنت — استمر بالبيع. تُحفظ المبيعات على هذا الجهاز وتُرسل تلقائياً عند عودة الاتصال. اضغط للتحقق الآن."
 }

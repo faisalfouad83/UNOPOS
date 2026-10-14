@@ -381,7 +381,10 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
 
     final Map<String, dynamic> json;
     try {
-      json = await _client.rpc('checkout_sale_once', params: params) as Map<String, dynamic>;
+      // A bad connection mustn't hold the till: after 15 s the sale is kept
+      // on this device (its client id makes a late duplicate harmless).
+      json = await _client.rpc('checkout_sale_once', params: params).timeout(const Duration(seconds: 15))
+          as Map<String, dynamic>;
     } catch (e) {
       if (e is PostgrestException && e.message.contains('held sale already closed')) {
         throw const HeldSaleClosedException();
@@ -439,8 +442,8 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       shiftId: saleJson['shift_id'] as String?,
       cashierId: saleJson['cashier_id'] as String,
       journalEntryId: saleJson['journal_entry_id'] as String?,
-      createdAt: DateTime.parse(saleJson['created_at'] as String),
-      completedAt: DateTime.parse(saleJson['completed_at'] as String),
+      createdAt: DateTime.parse(saleJson['created_at'] as String).toLocal(),
+      completedAt: DateTime.parse(saleJson['completed_at'] as String).toLocal(),
       lines: (saleJson['lines'] as List)
           .cast<Map<String, dynamic>>()
           .map(
