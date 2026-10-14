@@ -1,12 +1,16 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/sync_service.dart';
+
 import '../domain/audit_models.dart';
 import '../domain/audit_repository.dart';
 
 class SupabaseAuditRepository implements AuditRepository {
-  SupabaseAuditRepository(this._client);
+  SupabaseAuditRepository(this._client, this._writer);
 
   final SupabaseClient _client;
+  final OfflineWriter _writer;
 
   AuditLogRecord _mapRow(Map<String, dynamic> row) => AuditLogRecord(
         id: row['id'] as String,
@@ -30,9 +34,9 @@ class SupabaseAuditRepository implements AuditRepository {
     String? beforeValueJson,
     String? afterValueJson,
   }) async {
-    // id/timestamp left to Postgres defaults (gen_random_uuid()/now()),
-    // same precedent as SupabaseAuthRepository.createBranch.
-    await _client.from('audit_logs').insert({
+    // Kept (and sent later) when offline, like every other change.
+    await _writer.insert('audit_logs', {
+      'timestamp': DateTime.now().toUtc().toIso8601String(),
       'store_id': storeId,
       'user_id': userId,
       'action': action,
@@ -45,12 +49,16 @@ class SupabaseAuditRepository implements AuditRepository {
 
   @override
   Stream<List<AuditLogRecord>> watchLog(String storeId, {int limit = 200}) {
-    return _client
-        .from('audit_logs')
-        .stream(primaryKey: ['id'])
-        .eq('store_id', storeId)
-        .order('timestamp', ascending: false)
-        .limit(limit)
-        .map((rows) => rows.map(_mapRow).toList());
+    return resilientRows(
+      'audit_logs.$storeId',
+      () => _client
+          .from('audit_logs')
+          .stream(primaryKey: ['id'])
+          .eq('store_id', storeId)
+          .order('timestamp', ascending: false)
+          .limit(limit),
+      table: 'audit_logs',
+      where: (r) => r['store_id'] == storeId,
+    ).map((rows) => rows.map(_mapRow).toList());
   }
 }

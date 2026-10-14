@@ -1,14 +1,20 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/outbox.dart';
+import '../../../core/offline/sync_service.dart';
+import '../domain/stock_overlay.dart';
 
 import '../domain/inventory_models.dart';
 import '../domain/inventory_repository.dart';
 
 class SupabaseInventoryRepository implements InventoryRepository {
-  SupabaseInventoryRepository(this._client);
+  SupabaseInventoryRepository(this._client, this._writer);
 
   final SupabaseClient _client;
+  final OfflineWriter _writer;
+
+  static String _now() => DateTime.now().toUtc().toIso8601String();
 
   CategoryRecord _mapCategory(Map<String, dynamic> row) => CategoryRecord(
         id: row['id'] as String,
@@ -83,40 +89,48 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Future<CategoryRecord> createCategory(String storeId, String name, {String? parentCategoryId}) async {
-    final row = await _client.from('categories').insert({
+    final row = await _writer.insert('categories', {
       'store_id': storeId,
       'name': name,
       'parent_category_id': parentCategoryId,
-    }).select().single();
+    });
     return _mapCategory(row);
   }
 
   @override
   Stream<List<CategoryRecord>> watchCategories(String storeId) {
-    return _client.from('categories').stream(primaryKey: ['id']).map((rows) => rows.map(_mapCategory).toList());
+    return resilientRows(
+      'categories.$storeId',
+      () => _client.from('categories').stream(primaryKey: ['id']),
+      table: 'categories',
+    ).map((rows) => rows.map(_mapCategory).toList());
   }
 
   @override
   Future<TaxRateRecord> createTaxRate(String storeId, String name, double ratePercent, {bool isDefault = false}) async {
-    final row = await _client.from('tax_rates').insert({
+    final row = await _writer.insert('tax_rates', {
       'store_id': storeId,
       'name': name,
       'rate_percent': ratePercent,
       'is_default': isDefault,
-    }).select().single();
+    });
     return _mapTaxRate(row);
   }
 
   @override
   Stream<List<TaxRateRecord>> watchTaxRates(String storeId) {
-    return resilientRows('tax_rates.$storeId', () => _client.from('tax_rates').stream(primaryKey: ['id']))
-        .map((rows) => rows.map(_mapTaxRate).toList());
+    return resilientRows(
+      'tax_rates.$storeId',
+      () => _client.from('tax_rates').stream(primaryKey: ['id']),
+      table: 'tax_rates',
+    ).map((rows) => rows.map(_mapTaxRate).toList());
   }
 
   @override
   Future<ProductRecord> createProduct(ProductRecord product) async {
-    final row = await _client.from('products').insert({
+    final row = await _writer.insert('products', {
       if (product.id.isNotEmpty) 'id': product.id,
+      'is_active': true,
       'store_id': product.storeId,
       'category_id': product.categoryId,
       'sku': product.sku,
@@ -130,32 +144,35 @@ class SupabaseInventoryRepository implements InventoryRepository {
       'image_path': product.imagePath,
       'wholesale_price_minor_units': product.wholesalePriceMinorUnits,
       'expiry_date': _dateOnly(product.expiryDate),
-    }).select().single();
+    });
     return _mapProduct(row);
   }
 
   @override
   Future<void> updateProduct(ProductRecord product) async {
-    await _client.from('products').update({
-      'category_id': product.categoryId,
-      'sku': product.sku,
-      'barcode': product.barcode,
-      'name': product.name,
-      'unit': product.unit,
-      'cost_price_minor_units': product.costPriceMinorUnits,
-      'sell_price_minor_units': product.sellPriceMinorUnits,
-      'tax_rate_id': product.taxRateId,
-      'reorder_level': product.reorderLevel,
-      'image_path': product.imagePath,
-      'is_active': product.isActive,
-      'wholesale_price_minor_units': product.wholesalePriceMinorUnits,
-      'expiry_date': _dateOnly(product.expiryDate),
-    }).eq('id', product.id);
+    await _writer.update(
+        'products',
+        {
+          'category_id': product.categoryId,
+          'sku': product.sku,
+          'barcode': product.barcode,
+          'name': product.name,
+          'unit': product.unit,
+          'cost_price_minor_units': product.costPriceMinorUnits,
+          'sell_price_minor_units': product.sellPriceMinorUnits,
+          'tax_rate_id': product.taxRateId,
+          'reorder_level': product.reorderLevel,
+          'image_path': product.imagePath,
+          'is_active': product.isActive,
+          'wholesale_price_minor_units': product.wholesalePriceMinorUnits,
+          'expiry_date': _dateOnly(product.expiryDate),
+        },
+        value: product.id);
   }
 
   @override
   Future<void> setProductActive(String productId, bool isActive) async {
-    await _client.from('products').update({'is_active': isActive}).eq('id', productId);
+    await _writer.update('products', {'is_active': isActive}, value: productId);
   }
 
   @override
@@ -166,6 +183,8 @@ class SupabaseInventoryRepository implements InventoryRepository {
     return resilientRows(
       'products.$storeId',
       () => _client.from('products').stream(primaryKey: ['id']).eq('is_active', true).order('name'),
+      table: 'products',
+      where: (r) => r['is_active'] != false && r['store_id'] == storeId,
     ).map((rows) {
       var filtered = rows;
       if (categoryId != null) {
@@ -186,35 +205,67 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Future<ProductRecord?> findByBarcode(String storeId, String barcode) async {
-    final row = await _client
-        .from('products')
-        .select()
-        .eq('store_id', storeId)
-        .eq('barcode', barcode)
-        .eq('is_active', true)
-        .maybeSingle();
+    final rows = await _productsOrCached(storeId);
+    final row = rows.where((r) => r['barcode'] == barcode && r['is_active'] != false).firstOrNull;
     return row == null ? null : _mapProduct(row);
   }
 
   @override
   Future<ProductRecord?> getProduct(String productId) async {
-    final row = await _client.from('products').select().eq('id', productId).maybeSingle();
-    return row == null ? null : _mapProduct(row);
+    final rows = await fetchRowsOrCached(
+      'product.$productId',
+      () async => (await _client.from('products').select().eq('id', productId)).cast<Map<String, dynamic>>(),
+      table: 'products',
+      where: (r) => r['id'] == productId,
+    );
+    return (rows == null || rows.isEmpty) ? null : _mapProduct(rows.first);
+  }
+
+  /// The store's active products, fresh when online, else this device's copy.
+  Future<List<Map<String, dynamic>>> _productsOrCached(String storeId) async {
+    return await fetchRowsOrCached(
+          'products.$storeId',
+          () async => (await _client.from('products').select().eq('is_active', true).order('name'))
+              .cast<Map<String, dynamic>>(),
+          table: 'products',
+          where: (r) => r['is_active'] != false && r['store_id'] == storeId,
+        ) ??
+        const [];
   }
 
   @override
   Stream<List<StockItemRecord>> watchStock(String storeId, String branchId) {
     // Cached so the till still knows what is on the shelf while offline.
+    // Stock changes made on this device and not yet sent (sales, receipts,
+    // adjustments) are applied on top, so the numbers are right offline.
     return resilientRows(
       'stock.$storeId.$branchId',
       () => _client.from('stock_items').stream(primaryKey: ['id']).eq('branch_id', branchId),
-    ).map((rows) => rows.map(_mapStockItem).toList());
+      table: 'stock_items',
+    ).map(
+      (rows) => withUnsyncedStock(
+        rows.map(_mapStockItem).toList(),
+        Outbox.shared.pending,
+        storeId: storeId,
+        branchId: branchId,
+      ),
+    );
   }
 
   @override
   Future<StockItemRecord?> getStockItem(String productId, String branchId) async {
-    final row = await _client.from('stock_items').select().eq('product_id', productId).eq('branch_id', branchId).maybeSingle();
-    return row == null ? null : _mapStockItem(row);
+    final rows = await fetchRowsOrCached(
+      'stock_item.$productId.$branchId',
+      () async => (await _client.from('stock_items').select().eq('product_id', productId).eq('branch_id', branchId))
+          .cast<Map<String, dynamic>>(),
+    );
+    final items = withUnsyncedStock(
+      (rows ?? const []).map(_mapStockItem).toList(),
+      Outbox.shared.pending,
+      storeId: rows?.firstOrNull?['store_id'] as String? ?? '',
+      branchId: branchId,
+    );
+    return items.where((i) => i.productId == productId).firstOrNull;
   }
 
   @override
@@ -229,7 +280,9 @@ class SupabaseInventoryRepository implements InventoryRepository {
     String? referenceId,
     required String createdByUserId,
   }) async {
-    final result = await _client.rpc('record_stock_movement', params: {
+    // Works offline: the movement is applied to the stock shown at once and
+    // recorded on the server — exactly once — when the connection is back.
+    final result = await _writer.rpc('record_stock_movement', offline: () => 0, {
       'p_product_id': productId,
       'p_branch_id': branchId,
       'p_type': type.name,
@@ -248,9 +301,16 @@ class SupabaseInventoryRepository implements InventoryRepository {
     // each emission re-queries the low_stock_items view, since the
     // quantity_on_hand <= reorder_level comparison is column-to-column and
     // can't be expressed as a PostgREST stream filter.
-    return _client.from('stock_items').stream(primaryKey: ['id']).eq('branch_id', branchId).asyncMap((_) async {
-      final rows = await _client.from('low_stock_items').select().eq('store_id', storeId).eq('branch_id', branchId);
-      return (rows as List).cast<Map<String, dynamic>>().map(_mapProduct).toList();
+    return resilientRows(
+      'stock.$storeId.$branchId',
+      () => _client.from('stock_items').stream(primaryKey: ['id']).eq('branch_id', branchId),
+    ).asyncMap((_) async {
+      final rows = await fetchRowsOrCached(
+        'low_stock.$storeId.$branchId',
+        () async => (await _client.from('low_stock_items').select().eq('store_id', storeId).eq('branch_id', branchId))
+            .cast<Map<String, dynamic>>(),
+      );
+      return (rows ?? const []).map(_mapProduct).toList();
     });
   }
 
@@ -262,46 +322,60 @@ class SupabaseInventoryRepository implements InventoryRepository {
     required String requestedByUserId,
     required List<MapEntry<String, int>> productQuantities,
   }) async {
-    final header = await _client.from('stock_transfers').insert({
+    final header = await _writer.insert('stock_transfers', {
       'store_id': storeId,
       'from_branch_id': fromBranchId,
       'to_branch_id': toBranchId,
       'requested_by_user_id': requestedByUserId,
-    }).select('id').single();
+      'status': 'pending',
+      'created_at': _now(),
+    });
     final transferId = header['id'] as String;
-
-    if (productQuantities.isNotEmpty) {
-      await _client.from('stock_transfer_lines').insert(
-        productQuantities
-            .map((e) => {
-                  'store_id': storeId,
-                  'stock_transfer_id': transferId,
-                  'product_id': e.key,
-                  'quantity': e.value,
-                })
-            .toList(),
-      );
+    for (final e in productQuantities) {
+      await _writer.insert('stock_transfer_lines', {
+        'store_id': storeId,
+        'stock_transfer_id': transferId,
+        'product_id': e.key,
+        'quantity': e.value,
+      });
     }
     return transferId;
   }
 
   @override
   Future<void> receiveStockTransfer(String transferId, String receivedByUserId) async {
-    await _client.rpc('receive_stock_transfer', params: {
-      'p_transfer_id': transferId,
-      'p_received_by_user_id': receivedByUserId,
-    });
+    await _writer.rpc(
+      'receive_stock_transfer',
+      {'p_transfer_id': transferId, 'p_received_by_user_id': receivedByUserId},
+      offline: () => null,
+      increments: [
+        {
+          'table': 'stock_transfers',
+          'id': transferId,
+          'set': {'status': 'received', 'received_by_user_id': receivedByUserId, 'received_at': _now()},
+        },
+      ],
+    );
   }
 
   @override
   Stream<List<StockTransferRecord>> watchStockTransfers(String storeId) {
-    return _client.from('stock_transfers').stream(primaryKey: ['id']).order('created_at', ascending: false).asyncMap((rows) async {
+    return resilientRows(
+      'stock_transfers.$storeId',
+      () => _client.from('stock_transfers').stream(primaryKey: ['id']).order('created_at', ascending: false),
+      table: 'stock_transfers',
+    ).asyncMap((rows) async {
       if (rows.isEmpty) return <StockTransferRecord>[];
-      final ids = rows.map((r) => r['id'] as String).toList();
-      final lineRows = await _client.from('stock_transfer_lines').select().inFilter('stock_transfer_id', ids);
+      final ids = rows.map((r) => r['id'] as String).toSet();
+      final lineRows = await fetchRowsOrCached(
+            'stock_transfer_lines.$storeId',
+            () async => (await _client.from('stock_transfer_lines').select()).cast<Map<String, dynamic>>(),
+            table: 'stock_transfer_lines',
+          ) ??
+          const [];
 
       final linesByTransfer = <String, List<StockTransferLineRecord>>{};
-      for (final lr in (lineRows as List).cast<Map<String, dynamic>>()) {
+      for (final lr in lineRows.where((l) => ids.contains(l['stock_transfer_id']))) {
         final tid = lr['stock_transfer_id'] as String;
         (linesByTransfer[tid] ??= []).add(
           StockTransferLineRecord(productId: lr['product_id'] as String, quantity: (lr['quantity'] as num).toInt()),
@@ -334,14 +408,15 @@ class SupabaseInventoryRepository implements InventoryRepository {
     String appliedScope = 'cart',
     String? scopeTargetId,
   }) async {
-    final row = await _client.from('discounts').insert({
+    final row = await _writer.insert('discounts', {
       'store_id': storeId,
       'name': name,
       'type': type.name,
       'value': value,
       'applied_scope': appliedScope,
       'scope_target_id': scopeTargetId,
-    }).select().single();
+      'is_active': true,
+    });
     return _mapDiscount(row);
   }
 
@@ -350,12 +425,14 @@ class SupabaseInventoryRepository implements InventoryRepository {
     return resilientRows(
       'discounts.$storeId',
       () => _client.from('discounts').stream(primaryKey: ['id']).eq('is_active', true),
+      table: 'discounts',
+      where: (r) => r['is_active'] != false,
     ).map((rows) => rows.map(_mapDiscount).toList());
   }
 
   @override
   Future<void> setDiscountActive(String discountId, bool isActive) async {
-    await _client.from('discounts').update({'is_active': isActive}).eq('id', discountId);
+    await _writer.update('discounts', {'is_active': isActive}, value: discountId);
   }
 
   @override
@@ -368,42 +445,51 @@ class SupabaseInventoryRepository implements InventoryRepository {
     required bool paidImmediately,
   }) async {
     final total = lines.fold<int>(0, (sum, l) => sum + l.quantity * l.unitCostMinorUnits);
-    final header = await _client.from('purchase_orders').insert({
+    final header = await _writer.insert('purchase_orders', {
       'store_id': storeId,
       'branch_id': branchId,
       'supplier_id': supplierId,
-      'expected_date': expectedDate?.toIso8601String(),
+      'status': 'draft',
+      'order_date': _now(),
+      'expected_date': expectedDate?.toUtc().toIso8601String(),
       'total_cost_minor_units': total,
       'paid_immediately': paidImmediately,
-    }).select().single();
-
-    if (lines.isNotEmpty) {
-      await _client.from('purchase_order_lines').insert(
-        lines
-            .map((l) => {
-                  'store_id': storeId,
-                  'purchase_order_id': header['id'],
-                  'product_id': l.productId,
-                  'quantity_ordered': l.quantity,
-                  'unit_cost_minor_units': l.unitCostMinorUnits,
-                })
-            .toList(),
-      );
+    });
+    for (final l in lines) {
+      await _writer.insert('purchase_order_lines', {
+        'store_id': storeId,
+        'purchase_order_id': header['id'],
+        'product_id': l.productId,
+        'quantity_ordered': l.quantity,
+        'unit_cost_minor_units': l.unitCostMinorUnits,
+      });
     }
     return _mapPo(header);
   }
 
   @override
   Future<int> receivePurchaseOrder(String purchaseOrderId, String receivedByUserId) async {
-    final result = await _client.rpc('receive_purchase_order', params: {
-      'p_purchase_order_id': purchaseOrderId,
-      'p_received_by_user_id': receivedByUserId,
-    });
-    return (result as num).toInt();
+    final result = await _writer.rpc(
+      'receive_purchase_order',
+      {'p_purchase_order_id': purchaseOrderId, 'p_received_by_user_id': receivedByUserId},
+      offline: () => 0,
+      increments: [
+        {
+          'table': 'purchase_orders',
+          'id': purchaseOrderId,
+          'set': {'status': 'received'},
+        },
+      ],
+    );
+    return (result as num?)?.toInt() ?? 0;
   }
 
   @override
   Stream<List<PurchaseOrderRecord>> watchPurchaseOrders(String storeId) {
-    return _client.from('purchase_orders').stream(primaryKey: ['id']).order('order_date', ascending: false).map((rows) => rows.map(_mapPo).toList());
+    return resilientRows(
+      'purchase_orders.$storeId',
+      () => _client.from('purchase_orders').stream(primaryKey: ['id']).order('order_date', ascending: false),
+      table: 'purchase_orders',
+    ).map((rows) => rows.map(_mapPo).toList());
   }
 }

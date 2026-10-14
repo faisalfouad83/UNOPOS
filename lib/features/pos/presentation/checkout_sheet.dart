@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
-import '../../../core/offline/connectivity.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
@@ -14,7 +13,6 @@ import '../../printing/presentation/sale_receipt.dart';
 import '../../printing/presentation/whatsapp_receipt_dialog.dart';
 import '../../settings/domain/settings_models.dart';
 import '../../shifts/presentation/shift_providers.dart';
-import '../data/offline_sale_sync.dart';
 import '../domain/complete_sale_use_case.dart';
 import '../domain/loyalty.dart';
 import '../domain/payment_math.dart';
@@ -283,10 +281,6 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
       ];
 
       ref.read(cartControllerProvider.notifier).clear();
-      if (result.queuedOffline) {
-        ref.read(offlineSaleSyncProvider.notifier).refresh();
-        ref.read(connectivityProvider.notifier).check();
-      }
 
       final receipt = await buildSaleReceipt(
         inventory: inventory,

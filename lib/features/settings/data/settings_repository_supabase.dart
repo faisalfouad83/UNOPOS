@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/sync_service.dart';
 import '../domain/settings_models.dart';
 import '../domain/settings_repository.dart';
 
 class SupabaseSettingsRepository implements SettingsRepository {
-  SupabaseSettingsRepository(this._client);
+  SupabaseSettingsRepository(this._client, this._writer);
 
   final SupabaseClient _client;
+  final OfflineWriter _writer;
 
   static String _cacheKey(String storeId) => 'app_settings.$storeId';
 
@@ -39,19 +41,15 @@ class SupabaseSettingsRepository implements SettingsRepository {
 
   @override
   Future<AppSettingsRecord> ensureSettings(String storeId) async {
-    final Map<String, dynamic>? existing;
-    try {
-      existing = await _client.from('app_settings').select().eq('store_id', storeId).maybeSingle();
-    } catch (e) {
-      // Offline: fall back to the last settings this device saw.
-      final cached = await OfflineCache.readRows(_cacheKey(storeId));
-      if (isNetworkError(e) && cached != null && cached.isNotEmpty) return _mapRow(cached.first);
-      rethrow;
-    }
-    if (existing != null) {
-      await OfflineCache.write(_cacheKey(storeId), [existing]);
-      return _mapRow(existing);
-    }
+    // Offline: the last settings this device saw, with changes made here.
+    final rows = await fetchRowsOrCached(
+      _cacheKey(storeId),
+      () async => (await _client.from('app_settings').select().eq('store_id', storeId)).cast<Map<String, dynamic>>(),
+      table: 'app_settings',
+      where: (r) => r['store_id'] == storeId,
+    );
+    if (rows != null && rows.isNotEmpty) return _mapRow(rows.first);
+    if (rows == null) return AppSettingsRecord(storeId: storeId);
 
     // register_store() already inserts this row at store-creation time, so
     // this path is defensive-only — but two callers racing to create it
@@ -79,31 +77,37 @@ class SupabaseSettingsRepository implements SettingsRepository {
     return resilientRows(
       _cacheKey(storeId),
       () => _client.from('app_settings').stream(primaryKey: ['id']).eq('store_id', storeId),
+      table: 'app_settings',
+      where: (r) => r['store_id'] == storeId,
     ).where((rows) => rows.isNotEmpty).map((rows) => _mapRow(rows.first));
   }
 
   @override
   Future<void> updateSettings(AppSettingsRecord settings) async {
-    await _client.from('app_settings').update({
-      'default_language': settings.defaultLanguage,
-      'theme_mode': settings.themeMode.name,
-      'currency_code': settings.currencyCode,
-      'currency_symbol': settings.currencySymbol,
-      'default_vat_rate_percent': settings.defaultVatRatePercent,
-      'printer_config_json': jsonEncode(settings.printerConfig.toJson()),
-      'auto_backup_enabled': settings.autoBackupEnabled,
-      'auto_backup_time_of_day': settings.autoBackupTimeOfDay,
-      'auto_backup_folder_path': settings.autoBackupFolderPath,
-      'low_stock_threshold_default': settings.lowStockThresholdDefault,
-      'usd_exchange_rate': settings.usdExchangeRate,
-      'loyalty_spend_per_point_minor': settings.loyaltySpendPerPointMinor,
-      'loyalty_point_value_minor': settings.loyaltyPointValueMinor,
-      'loyalty_enabled': settings.loyaltyEnabledFlag,
-      'full_discount_keeps_margin': settings.fullDiscountKeepsMargin,
-      'break_enabled': settings.breakEnabled,
-      'break_max_minutes': settings.breakMaxMinutes,
-      'break_max_per_day': settings.breakMaxPerDay,
-      'break_roles': settings.breakRoles,
-    }).eq('store_id', settings.storeId);
+    await _writer.update(
+        'app_settings',
+        {
+          'default_language': settings.defaultLanguage,
+          'theme_mode': settings.themeMode.name,
+          'currency_code': settings.currencyCode,
+          'currency_symbol': settings.currencySymbol,
+          'default_vat_rate_percent': settings.defaultVatRatePercent,
+          'printer_config_json': jsonEncode(settings.printerConfig.toJson()),
+          'auto_backup_enabled': settings.autoBackupEnabled,
+          'auto_backup_time_of_day': settings.autoBackupTimeOfDay,
+          'auto_backup_folder_path': settings.autoBackupFolderPath,
+          'low_stock_threshold_default': settings.lowStockThresholdDefault,
+          'usd_exchange_rate': settings.usdExchangeRate,
+          'loyalty_spend_per_point_minor': settings.loyaltySpendPerPointMinor,
+          'loyalty_point_value_minor': settings.loyaltyPointValueMinor,
+          'loyalty_enabled': settings.loyaltyEnabledFlag,
+          'full_discount_keeps_margin': settings.fullDiscountKeepsMargin,
+          'break_enabled': settings.breakEnabled,
+          'break_max_minutes': settings.breakMaxMinutes,
+          'break_max_per_day': settings.breakMaxPerDay,
+          'break_roles': settings.breakRoles,
+        },
+        column: 'store_id',
+        value: settings.storeId);
   }
 }

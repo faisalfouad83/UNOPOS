@@ -4,22 +4,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unopos/core/offline/offline_cache.dart';
-import 'package:unopos/features/pos/data/offline_sale_queue.dart';
 
 void main() {
-  setUp(() => SharedPreferences.setMockInitialValues({}));
-
-  test('queued sales survive a reload and can be removed', () async {
-    final queue = OfflineSaleQueue();
-    await queue.add(QueuedSale(clientSaleId: 'a', params: const {'p_branch_id': 'b1'}, queuedAt: DateTime(2026)));
-    await queue.add(QueuedSale(clientSaleId: 'b', params: const {'p_branch_id': 'b1'}, queuedAt: DateTime(2026)));
-
-    final reloaded = await OfflineSaleQueue().all();
-    expect(reloaded.map((s) => s.clientSaleId), ['a', 'b']);
-    expect(reloaded.first.params['p_branch_id'], 'b1');
-
-    await queue.remove('a');
-    expect((await queue.all()).map((s) => s.clientSaleId), ['b']);
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    OfflineCache.resetMemory();
   });
 
   test('network failures are told apart from server rejections', () {

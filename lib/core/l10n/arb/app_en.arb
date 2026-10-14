@@ -944,5 +944,13 @@
   "hrReleaseDeviceConfirm": "Sign {name} out of the device holding the account, so they can sign in on another one?",
   "@hrReleaseDeviceConfirm": {"placeholders": {"name": {"type": "String"}}},
   "hrDeviceReleased": "{name} can now sign in on another device",
-  "@hrDeviceReleased": {"placeholders": {"name": {"type": "String"}}}
+  "@hrDeviceReleased": {"placeholders": {"name": {"type": "String"}}},
+
+  "syncFailedCount": "{count} not saved",
+  "@syncFailedCount": {"placeholders": {"count": {"type": "int"}}},
+  "syncFailedTitle": "Changes the server refused",
+  "syncFailedHelp": "These were made on this device but the server didn't accept them (for example the item was changed or removed on another device). They are kept here. Retry once the cause is fixed.",
+  "needsConnection": "This needs an internet connection. Try again when you're back online.",
+
+  "returnWaitSync": "This sale was made offline and hasn't reached the server yet. Return it once it has synced."
 }

@@ -1,4 +1,5 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/offline/outbox.dart';
+import '../../../core/offline/sync_service.dart';
 
 import '../../accounting/domain/accounting_posting_service.dart';
 import '../../debts/domain/debts_repository.dart';
@@ -111,10 +112,17 @@ class OrchestratedProcessSaleReturnUseCase implements ProcessSaleReturnUseCase {
 /// `process_sale_return` RPC — return + lines, restocking, the reversing
 /// journal entry, and (for a pay-later original sale) the debt reduction
 /// either all commit together or none of them do.
+///
+/// Offline, the return is kept on this device and sent (exactly once) when
+/// the connection is back. A sale that itself hasn't reached the server
+/// yet can't be returned until it has.
 class SupabaseAtomicProcessSaleReturnUseCase implements ProcessSaleReturnUseCase {
-  SupabaseAtomicProcessSaleReturnUseCase({required SupabaseClient client}) : _client = client;
+  SupabaseAtomicProcessSaleReturnUseCase({required OfflineWriter writer, Outbox? outbox})
+      : _writer = writer,
+        _outbox = outbox ?? Outbox.shared;
 
-  final SupabaseClient _client;
+  final OfflineWriter _writer;
+  final Outbox _outbox;
 
   @override
   Future<void> processReturn({
@@ -126,13 +134,21 @@ class SupabaseAtomicProcessSaleReturnUseCase implements ProcessSaleReturnUseCase
     final lines = returnLines.where((l) => l.quantityReturned > 0).toList();
     if (lines.isEmpty) return;
 
-    await _client.rpc('process_sale_return', params: {
+    await _outbox.load();
+    if (_outbox.pending.any((o) => o.kind == OutboxKind.checkout && o.id == originalSale.id)) {
+      throw const SaleNotSyncedException();
+    }
+    await _writer.rpc('process_sale_return', offline: () => null, {
       'p_original_sale_id': originalSale.id,
-      'p_return_lines': lines
-          .map((l) => {'sale_line_id': l.saleLine.id, 'quantity_returned': l.quantityReturned})
-          .toList(),
+      'p_return_lines':
+          lines.map((l) => {'sale_line_id': l.saleLine.id, 'quantity_returned': l.quantityReturned}).toList(),
       'p_processed_by_user_id': processedByUserId,
       'p_refund_to_cash': refundToCash,
     });
   }
+}
+
+/// The sale was made offline and hasn't reached the server yet.
+class SaleNotSyncedException implements Exception {
+  const SaleNotSyncedException();
 }

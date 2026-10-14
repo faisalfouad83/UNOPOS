@@ -6,8 +6,10 @@ import '../providers.dart';
 import '../supabase/supabase_config.dart';
 
 /// Takes a copy of what the till needs to keep working without internet,
-/// every time a store is opened: products, tax rates, discounts, settings,
-/// customers, accounts, branches and their stock. Each is kept on the device by its own
+/// every time a store is opened: products, categories, tax rates,
+/// discounts, settings, customers and debts, accounts, branches with their
+/// stock and held sales, recent invoices, expenses, the books, shifts and
+/// suppliers. Each is kept on the device by its own
 /// repository and refreshed live while online. Best effort and in the
 /// background — it never holds the app up.
 typedef ProviderReader = T Function<T>(ProviderListenable<T> provider);
@@ -22,17 +24,35 @@ Future<void> warmOfflineCopy(ProviderReader read, String storeId) async {
 
   final inventory = read(inventoryRepositoryProvider);
   final auth = read(authRepositoryProvider);
+  final pos = read(posRepositoryProvider);
+  final debts = read(debtsRepositoryProvider);
+  final now = DateTime.now();
   await Future.wait([
     take(() => liveValue(inventory.watchProducts(storeId))),
+    take(() => liveValue(inventory.watchCategories(storeId))),
     take(() => liveValue(inventory.watchTaxRates(storeId))),
     take(() => liveValue(inventory.watchDiscounts(storeId))),
     take(() => read(settingsRepositoryProvider).ensureSettings(storeId)),
-    take(() => liveValue(read(debtsRepositoryProvider).watchCustomers(storeId))),
+    take(() => liveValue(debts.watchCustomers(storeId))),
+    take(() => liveValue(debts.watchOpenDebts(storeId))),
     take(() => liveValue(auth.watchEmployees(storeId))),
+    // Recent invoices and the books, so lists, totals and shift closing
+    // work offline too.
+    take(() => liveValue(pos.watchCompletedSales(storeId, from: DateTime(now.year, now.month - 1)))),
+    take(() => liveValue(read(expenseDetailsRepositoryProvider).watch(storeId, from: DateTime(now.year)))),
+    take(() => liveValue(read(accountingRepositoryProvider).watchJournalEntries(storeId))),
+    take(() => liveValue(read(shiftsRepositoryProvider).watchShiftHistory(storeId))),
+    take(() => liveValue(read(suppliersRepositoryProvider).watchSuppliers(storeId))),
     take(() async {
-      // Each branch's stock, so the till knows what is left while offline.
+      // Each branch's stock and held sales, so the till knows what is left
+      // and can resume a held sale while offline.
       final branches = await auth.listBranches(storeId);
-      await Future.wait([for (final b in branches) liveValue(inventory.watchStock(storeId, b.id))]);
+      await Future.wait([
+        for (final b in branches) ...[
+          liveValue(inventory.watchStock(storeId, b.id)),
+          liveValue(pos.watchHeldSales(storeId, b.id)),
+        ],
+      ]);
       return null;
     }),
   ]);

@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/offline/sync_service.dart';
+import '../core/supabase/supabase_config.dart';
+
 import '../core/l10n/gen/app_localizations.dart';
 import '../core/l10n/kurdish_locale_fallback.dart';
 import '../core/providers.dart';
@@ -114,6 +117,9 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
     }
 
     ref.watch(licenseWatcherProvider);
+    // Sends changes made offline as soon as there is a connection, on any
+    // screen (not only where the status button is shown).
+    if (kUseSupabaseBackend) ref.watch(syncServiceProvider);
     final storeSettings = ref.watch(currentStoreSettingsProvider).valueOrNull;
     if (storeSettings != null) {
       Money.currency = CurrencyInfo(storeSettings.currencyCode, storeSettings.currencySymbol);

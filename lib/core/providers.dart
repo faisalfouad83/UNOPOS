@@ -19,7 +19,7 @@ import '../features/inventory/data/inventory_repository_supabase.dart';
 import '../features/inventory/domain/inventory_repository.dart';
 import '../features/accounting/data/expense_details_repository.dart';
 import '../features/accounting/domain/expense_categories.dart';
-import '../features/pos/data/offline_sale_queue.dart';
+import 'offline/sync_service.dart';
 import '../features/pos/data/pos_repository_drift.dart';
 import '../features/pos/data/pos_repository_supabase.dart';
 import '../features/pos/domain/pos_repository.dart';
@@ -90,7 +90,7 @@ final licenseGateServiceProvider = Provider<LicenseGateService>((ref) {
 
 final accountingRepositoryProvider = Provider<AccountingRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseAccountingRepository(ref.watch(supabaseClientProvider));
+    return SupabaseAccountingRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftAccountingRepository(ref.watch(databaseProvider));
 });
@@ -101,42 +101,42 @@ final accountingPostingServiceProvider = Provider<AccountingPostingService>((ref
 
 final inventoryRepositoryProvider = Provider<InventoryRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseInventoryRepository(ref.watch(supabaseClientProvider));
+    return SupabaseInventoryRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftInventoryRepository(ref.watch(databaseProvider));
 });
 
 final posRepositoryProvider = Provider<PosRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabasePosRepository(ref.watch(supabaseClientProvider));
+    return SupabasePosRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftPosRepository(ref.watch(databaseProvider));
 });
 
 final debtsRepositoryProvider = Provider<DebtsRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseDebtsRepository(ref.watch(supabaseClientProvider));
+    return SupabaseDebtsRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftDebtsRepository(ref.watch(databaseProvider));
 });
 
 final suppliersRepositoryProvider = Provider<SuppliersRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseSuppliersRepository(ref.watch(supabaseClientProvider));
+    return SupabaseSuppliersRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftSuppliersRepository(ref.watch(databaseProvider));
 });
 
 final shiftsRepositoryProvider = Provider<ShiftsRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseShiftsRepository(ref.watch(supabaseClientProvider));
+    return SupabaseShiftsRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftShiftsRepository(ref.watch(databaseProvider));
 });
 
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseSettingsRepository(ref.watch(supabaseClientProvider));
+    return SupabaseSettingsRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftSettingsRepository(ref.watch(databaseProvider));
 });
@@ -149,7 +149,7 @@ final backupRepositoryProvider = Provider<BackupRepository>((ref) {
 
 final auditRepositoryProvider = Provider<AuditRepository>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseAuditRepository(ref.watch(supabaseClientProvider));
+    return SupabaseAuditRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
   }
   return DriftAuditRepository(ref.watch(databaseProvider));
 });
@@ -172,7 +172,7 @@ final developerRepositoryProvider = Provider<DeveloperRepository?>((ref) {
 /// Null on the local Drift build — same reasoning as developerRepositoryProvider.
 final notificationsRepositoryProvider = Provider<NotificationsRepository?>((ref) {
   if (!kUseSupabaseBackend) return null;
-  return SupabaseNotificationsRepository(ref.watch(supabaseClientProvider));
+  return SupabaseNotificationsRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
 });
 
 /// On Supabase, checkout/return run as one Postgres transaction each (see
@@ -180,7 +180,9 @@ final notificationsRepositoryProvider = Provider<NotificationsRepository?>((ref)
 /// multi-repository orchestration — see complete_sale_use_case.dart's class
 /// doc for why that's a deliberate improvement, not just a port.
 final expenseDetailsRepositoryProvider = Provider<ExpenseDetailsRepository>((ref) {
-  if (kUseSupabaseBackend) return SupabaseExpenseDetailsRepository(ref.watch(supabaseClientProvider));
+  if (kUseSupabaseBackend) {
+    return SupabaseExpenseDetailsRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
+  }
   return DriftExpenseDetailsRepository(ref.watch(databaseProvider));
 });
 
@@ -191,18 +193,17 @@ final supportRepositoryProvider = Provider<SupportRepository?>((ref) {
 });
 
 final breaksRepositoryProvider = Provider<BreaksRepository>((ref) {
-  if (kUseSupabaseBackend) return SupabaseBreaksRepository(ref.watch(supabaseClientProvider));
+  if (kUseSupabaseBackend) {
+    return SupabaseBreaksRepository(ref.watch(supabaseClientProvider), ref.watch(offlineWriterProvider));
+  }
   return DriftBreaksRepository(ref.watch(databaseProvider));
 });
-
-final offlineSaleQueueProvider = Provider<OfflineSaleQueue>((ref) => OfflineSaleQueue());
 
 final completeSaleUseCaseProvider = Provider<CompleteSaleUseCase>((ref) {
   if (kUseSupabaseBackend) {
     return SupabaseAtomicCompleteSaleUseCase(
-      client: ref.watch(supabaseClientProvider),
       posRepository: ref.watch(posRepositoryProvider),
-      offlineQueue: ref.watch(offlineSaleQueueProvider),
+      writer: ref.watch(offlineWriterProvider),
     );
   }
   return OrchestratedCompleteSaleUseCase(
@@ -215,7 +216,7 @@ final completeSaleUseCaseProvider = Provider<CompleteSaleUseCase>((ref) {
 
 final processSaleReturnUseCaseProvider = Provider<ProcessSaleReturnUseCase>((ref) {
   if (kUseSupabaseBackend) {
-    return SupabaseAtomicProcessSaleReturnUseCase(client: ref.watch(supabaseClientProvider));
+    return SupabaseAtomicProcessSaleReturnUseCase(writer: ref.watch(offlineWriterProvider));
   }
   return OrchestratedProcessSaleReturnUseCase(
     posRepository: ref.watch(posRepositoryProvider),

@@ -1,14 +1,16 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/sync_service.dart';
 
 import '../domain/shifts_models.dart';
 import '../domain/shifts_repository.dart';
 
 class SupabaseShiftsRepository implements ShiftsRepository {
-  SupabaseShiftsRepository(this._client);
+  SupabaseShiftsRepository(this._client, this._writer);
 
   final SupabaseClient _client;
+  final OfflineWriter _writer;
 
   ShiftRecord _mapRow(Map<String, dynamic> row) => ShiftRecord(
         id: row['id'] as String,
@@ -31,35 +33,35 @@ class SupabaseShiftsRepository implements ShiftsRepository {
     required String cashierId,
     required int openingCashFloatMinorUnits,
   }) async {
-    final row = await _client.from('shifts').insert({
+    // Works offline too: the shift is opened on this device and sent later.
+    final row = await _writer.insert('shifts', {
       'store_id': storeId,
       'branch_id': branchId,
       'cashier_id': cashierId,
       'opening_cash_float_minor_units': openingCashFloatMinorUnits,
-    }).select().single();
+      'opened_at': DateTime.now().toUtc().toIso8601String(),
+      'status': 'open',
+    });
     return _mapRow(row);
   }
 
   @override
   Future<ShiftRecord?> getOpenShift(String storeId, String cashierId) async {
-    final cacheKey = 'open_shift.$storeId.$cashierId';
-    final Map<String, dynamic>? row;
-    try {
-      row = await _client
-          .from('shifts')
-          .select()
-          .eq('store_id', storeId)
-          .eq('cashier_id', cashierId)
-          .eq('status', 'open')
-          .maybeSingle();
-    } catch (e) {
-      // Offline: keep selling on the shift this device last saw open.
-      if (!isNetworkError(e)) rethrow;
-      final cached = await OfflineCache.readRows(cacheKey);
-      return (cached == null || cached.isEmpty) ? null : _mapRow(cached.first);
-    }
-    await OfflineCache.write(cacheKey, row == null ? <Object>[] : [row]);
-    return row == null ? null : _mapRow(row);
+    // Offline: the shift this device last saw open, with any shift opened
+    // or closed here since.
+    final rows = await fetchRowsOrCached(
+      'open_shift.$storeId.$cashierId',
+      () async => (await _client
+              .from('shifts')
+              .select()
+              .eq('store_id', storeId)
+              .eq('cashier_id', cashierId)
+              .eq('status', 'open'))
+          .cast<Map<String, dynamic>>(),
+      table: 'shifts',
+      where: (r) => r['store_id'] == storeId && r['cashier_id'] == cashierId && r['status'] == 'open',
+    );
+    return (rows == null || rows.isEmpty) ? null : _mapRow(rows.first);
   }
 
   @override
@@ -68,13 +70,16 @@ class SupabaseShiftsRepository implements ShiftsRepository {
     required int expectedCashAtCloseMinorUnits,
     required int countedCashAtCloseMinorUnits,
   }) async {
-    await _client.from('shifts').update({
-      'status': 'closed',
-      'closed_at': DateTime.now().toIso8601String(),
-      'expected_cash_at_close_minor_units': expectedCashAtCloseMinorUnits,
-      'counted_cash_at_close_minor_units': countedCashAtCloseMinorUnits,
-      'discrepancy_minor_units': countedCashAtCloseMinorUnits - expectedCashAtCloseMinorUnits,
-    }).eq('id', shiftId);
+    await _writer.update(
+        'shifts',
+        {
+          'status': 'closed',
+          'closed_at': DateTime.now().toIso8601String(),
+          'expected_cash_at_close_minor_units': expectedCashAtCloseMinorUnits,
+          'counted_cash_at_close_minor_units': countedCashAtCloseMinorUnits,
+          'discrepancy_minor_units': countedCashAtCloseMinorUnits - expectedCashAtCloseMinorUnits,
+        },
+        value: shiftId);
   }
 
   @override
@@ -82,9 +87,14 @@ class SupabaseShiftsRepository implements ShiftsRepository {
     // .stream() only supports one server-side filter — RLS already scopes
     // rows to this store, so that slot goes to branch_id (when given)
     // instead; storeId itself needs no filtering here.
-    final stream = branchId == null
-        ? _client.from('shifts').stream(primaryKey: ['id'])
-        : _client.from('shifts').stream(primaryKey: ['id']).eq('branch_id', branchId);
-    return stream.order('opened_at', ascending: false).map((rows) => rows.map(_mapRow).toList());
+    return resilientRows(
+      'shifts.$storeId.${branchId ?? 'all'}',
+      () => (branchId == null
+              ? _client.from('shifts').stream(primaryKey: ['id'])
+              : _client.from('shifts').stream(primaryKey: ['id']).eq('branch_id', branchId))
+          .order('opened_at', ascending: false),
+      table: 'shifts',
+      where: (r) => branchId == null || r['branch_id'] == branchId,
+    ).map((rows) => rows.map(_mapRow).toList());
   }
 }

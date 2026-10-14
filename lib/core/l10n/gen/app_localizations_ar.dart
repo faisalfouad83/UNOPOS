@@ -2660,4 +2660,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String hrDeviceReleased(String name) {
     return '$name هسه يكدر يدخل من جهاز ثاني';
   }
+
+  @override
+  String syncFailedCount(int count) {
+    return '$count ما انحفظت';
+  }
+
+  @override
+  String get syncFailedTitle => 'تغييرات رفضها السيرفر';
+
+  @override
+  String get syncFailedHelp =>
+      'هذي انعملت على هذا الجهاز بس السيرفر ما قبلها (مثلاً المادة تغيرت أو انحذفت من جهاز ثاني). محفوظة هنا، عيد المحاولة بعد ما تصلح السبب.';
+
+  @override
+  String get needsConnection =>
+      'هذي العملية تحتاج إنترنت. جربها لمن يرجع الاتصال.';
+
+  @override
+  String get returnWaitSync =>
+      'هاي الفاتورة انعملت بدون إنترنت وبعدها ما وصلت للسيرفر. سوّي الإرجاع بعد ما تتزامن.';
 }

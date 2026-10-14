@@ -5,28 +5,12 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_models.dart';
-import '../data/offline_sale_sync.dart';
 import 'cart_controller.dart';
 
 typedef _BranchKey = ({String storeId, String branchId});
 
 final _branchStockProvider = StreamProvider.autoDispose.family<List<StockItemRecord>, _BranchKey>((ref, key) {
   return ref.watch(inventoryRepositoryProvider).watchStock(key.storeId, key.branchId);
-});
-
-/// Quantities sold on this till while offline and not yet sent: the server
-/// hasn't taken them off its stock yet, so the till does.
-final _unsyncedSoldProvider = FutureProvider.autoDispose.family<Map<String, int>, String>((ref, branchId) async {
-  ref.watch(offlineSaleSyncProvider.select((s) => s.pending));
-  final sold = <String, int>{};
-  for (final sale in await ref.watch(offlineSaleQueueProvider).all()) {
-    if (sale.params['p_branch_id'] != branchId) continue;
-    for (final line in (sale.params['p_lines'] as List? ?? const [])) {
-      final id = line['product_id'] as String;
-      sold[id] = (sold[id] ?? 0) + (line['quantity'] as num).toInt();
-    }
-  }
-  return sold;
 });
 
 /// What the current branch has on hand, by product id (a product with no
@@ -39,10 +23,10 @@ final posStockProvider = Provider.autoDispose<Map<String, int>?>((ref) {
     ),
   );
   if (key == null) return null;
+  // Already includes this device's unsent sales and stock changes.
   final stock = ref.watch(_branchStockProvider(key)).valueOrNull;
   if (stock == null) return null;
-  final unsynced = ref.watch(_unsyncedSoldProvider(key.branchId)).valueOrNull ?? const {};
-  return {for (final s in stock) s.productId: s.quantityOnHand - (unsynced[s.productId] ?? 0)};
+  return {for (final s in stock) s.productId: s.quantityOnHand};
 });
 
 /// On hand for [productId]; null when stock hasn't loaded yet.

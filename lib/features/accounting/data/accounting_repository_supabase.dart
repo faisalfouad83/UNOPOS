@@ -1,12 +1,18 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/outbox.dart';
+import '../../../core/offline/sync_service.dart';
+import '../../../core/utils/id_generator.dart';
+
 import '../domain/accounting_models.dart';
 import '../domain/accounting_repository.dart' as domain;
 
 class SupabaseAccountingRepository implements domain.AccountingRepository {
-  SupabaseAccountingRepository(this._client);
+  SupabaseAccountingRepository(this._client, this._writer);
 
   final SupabaseClient _client;
+  final OfflineWriter _writer;
 
   ChartOfAccountEntry _mapAccount(Map<String, dynamic> row) => ChartOfAccountEntry(
         id: row['id'] as String,
@@ -57,8 +63,12 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
 
   @override
   Future<List<ChartOfAccountEntry>> listAccounts(String storeId) async {
-    final rows = await _client.from('chart_of_accounts').select().eq('store_id', storeId);
-    return (rows as List).cast<Map<String, dynamic>>().map(_mapAccount).toList();
+    final rows = await fetchRowsOrCached(
+      'chart_of_accounts.$storeId',
+      () async =>
+          (await _client.from('chart_of_accounts').select().eq('store_id', storeId)).cast<Map<String, dynamic>>(),
+    );
+    return (rows ?? const []).map(_mapAccount).toList();
   }
 
   @override
@@ -92,23 +102,57 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
       throw UnbalancedJournalEntryException(debitTotal, creditTotal);
     }
 
-    final json = await _client.rpc('post_journal_entry', params: {
-      'p_branch_id': branchId,
-      'p_reference_type': _referenceTypeToDb(referenceType),
-      'p_reference_id': referenceId,
-      'p_memo': memo,
-      'p_created_by_user_id': createdByUserId,
-      'p_lines': lines
-          .map((l) => {
-                'account_code': l.accountCode,
-                'debit_minor_units': l.debitMinorUnits,
-                'credit_minor_units': l.creditMinorUnits,
-                'description': l.description,
-              })
-          .toList(),
-      'p_entry_date': entryDate?.toIso8601String(),
-    });
-    return _mapEntryJson(json as Map<String, dynamic>);
+    // Works offline: the entry is shown at once and posted on the server —
+    // exactly once — when the connection is back. Until then its id is a
+    // reference that later changes (e.g. the expense's details) can use.
+    final opId = IdGenerator.newId();
+    final at = entryDate ?? DateTime.now();
+    final preview = {
+      'id': Outbox.ref(opId),
+      'store_id': storeId,
+      'branch_id': branchId,
+      'entry_date': at.toUtc().toIso8601String(),
+      'reference_type': _referenceTypeToDb(referenceType),
+      'reference_id': referenceId,
+      'memo': memo,
+      'created_by_user_id': createdByUserId,
+      'is_reversal': false,
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+      'lines': [
+        for (final l in lines)
+          {
+            'id': IdGenerator.newId(),
+            'account_id': '',
+            'account_code': l.accountCode,
+            'debit_minor_units': l.debitMinorUnits,
+            'credit_minor_units': l.creditMinorUnits,
+            'description': l.description,
+          },
+      ],
+    };
+    final json = await _writer.rpc(
+        'post_journal_entry',
+        offline: () => preview,
+        opId: opId,
+        previewTable: 'journal_entries',
+        preview: preview,
+        {
+          'p_branch_id': branchId,
+          'p_reference_type': _referenceTypeToDb(referenceType),
+          'p_reference_id': referenceId,
+          'p_memo': memo,
+          'p_created_by_user_id': createdByUserId,
+          'p_lines': lines
+              .map((l) => {
+                    'account_code': l.accountCode,
+                    'debit_minor_units': l.debitMinorUnits,
+                    'credit_minor_units': l.creditMinorUnits,
+                    'description': l.description,
+                  })
+              .toList(),
+          'p_entry_date': entryDate?.toUtc().toIso8601String(),
+        });
+    return _mapEntryJson((json as Map).cast<String, dynamic>());
   }
 
   @override
@@ -117,20 +161,27 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
     required String createdByUserId,
     String memo = 'Reversal',
   }) async {
-    final json = await _client.rpc('post_reversing_entry', params: {
+    // Needs the original entry's lines, which only the server has in full.
+    final json = await _writer.rpc('post_reversing_entry', {
       'p_original_entry_id': originalEntryId,
       'p_created_by_user_id': createdByUserId,
       'p_memo': memo,
     });
-    return _mapEntryJson(json as Map<String, dynamic>);
+    return _mapEntryJson((json as Map).cast<String, dynamic>());
   }
 
   @override
   Stream<List<JournalEntryRecord>> watchJournalEntries(String storeId, {domain.DateTimeRange? range}) {
     // .stream() supports only one server-side filter; RLS already scopes to
     // this store, so an optional date range (needing two conditions) is
-    // applied client-side in the map below instead.
-    return _client.from('journal_entries').stream(primaryKey: ['id']).order('entry_date', ascending: false).asyncMap((rows) async {
+    // applied client-side in the map below instead. Cached, with entries
+    // made on this device and not yet sent laid over.
+    return resilientRows(
+      'journal_entries.$storeId',
+      () => _client.from('journal_entries').stream(primaryKey: ['id']).order('entry_date', ascending: false),
+      table: 'journal_entries',
+      cacheTake: 2000,
+    ).asyncMap((rows) async {
       var filtered = rows;
       if (range != null) {
         filtered = rows.where((r) {
@@ -140,14 +191,16 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
       }
       if (filtered.isEmpty) return <JournalEntryRecord>[];
 
-      final entryIds = filtered.map((r) => r['id'] as String).toList();
-      final lineRows = await _client
-          .from('journal_lines')
-          .select('*, chart_of_accounts(code)')
-          .inFilter('journal_entry_id', entryIds);
-
       final linesByEntry = <String, List<PostedJournalLine>>{};
-      for (final lr in (lineRows as List).cast<Map<String, dynamic>>()) {
+      // An entry made on this device carries its lines.
+      for (final r in filtered) {
+        final own = r['lines'];
+        if (own is List) {
+          linesByEntry[r['id'] as String] = own.cast<Map<String, dynamic>>().map(_mapLineJson).toList();
+        }
+      }
+      final entryIds = filtered.map((r) => r['id'] as String).where((id) => !linesByEntry.containsKey(id)).toList();
+      for (final lr in await _journalLines(storeId, entryIds)) {
         final entryId = lr['journal_entry_id'] as String;
         final accountCode = (lr['chart_of_accounts'] as Map<String, dynamic>?)?['code'] as String? ?? '?';
         (linesByEntry[entryId] ??= []).add(PostedJournalLine(
@@ -179,11 +232,46 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
     });
   }
 
+  /// Lines of [entryIds], kept on this device for offline use.
+  Future<List<Map<String, dynamic>>> _journalLines(String storeId, List<String> entryIds) async {
+    if (entryIds.isEmpty) return const [];
+    final key = 'journal_lines.$storeId';
+    try {
+      final rows = <Map<String, dynamic>>[];
+      for (var i = 0; i < entryIds.length; i += 150) {
+        final chunk = entryIds.sublist(i, i + 150 > entryIds.length ? entryIds.length : i + 150);
+        rows.addAll(
+          (await _client
+                  .from('journal_lines')
+                  .select('*, chart_of_accounts(code)')
+                  .inFilter('journal_entry_id', chunk)
+                  .timeout(const Duration(seconds: 12)))
+              .cast<Map<String, dynamic>>(),
+        );
+      }
+      await OfflineCache.write(key, rows);
+      return rows;
+    } catch (e) {
+      if (!isNetworkError(e)) rethrow;
+      final ids = entryIds.toSet();
+      return (await OfflineCache.readRows(key) ?? const []).where((r) => ids.contains(r['journal_entry_id'])).toList();
+    }
+  }
+
   @override
   Future<Map<String, int>> trialBalance(String storeId, {DateTime? asOf}) async {
-    final rows = await _client.rpc('trial_balance', params: {'p_as_of': asOf?.toIso8601String()});
+    List<dynamic> rows;
+    final key = 'trial_balance.$storeId';
+    try {
+      rows = await _client.rpc('trial_balance',
+          params: {'p_as_of': asOf?.toUtc().toIso8601String()}).timeout(const Duration(seconds: 15)) as List;
+      if (asOf == null) await OfflineCache.write(key, rows);
+    } catch (e) {
+      if (!isNetworkError(e)) rethrow;
+      rows = await OfflineCache.readRows(key) ?? const [];
+    }
     final balances = <String, int>{};
-    for (final row in (rows as List).cast<Map<String, dynamic>>()) {
+    for (final row in rows.cast<Map<String, dynamic>>()) {
       balances[row['account_code'] as String] = (row['balance_minor_units'] as num).toInt();
     }
     return balances;

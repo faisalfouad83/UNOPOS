@@ -7,7 +7,10 @@ import 'package:unopos/core/offline/offline_pins.dart';
 import 'package:unopos/core/offline/offline_warmup.dart';
 
 void main() {
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    OfflineCache.resetMemory();
+  });
 
   test('an account that signed in online can sign in offline, with that PIN only', () async {
     expect(await OfflinePins.matches('e1', '1234'), isFalse);

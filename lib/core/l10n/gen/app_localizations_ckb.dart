@@ -2648,4 +2648,24 @@ class AppLocalizationsCkb extends AppLocalizations {
   String hrDeviceReleased(String name) {
     return '$name ئێستا دەتوانێت لە ئامێرێکی تر بچێتە ژوورەوە';
   }
+
+  @override
+  String syncFailedCount(int count) {
+    return '$count پاشەکەوت نەکرا';
+  }
+
+  @override
+  String get syncFailedTitle => 'گۆڕانکارییەکانی ڕەتکرانەوە';
+
+  @override
+  String get syncFailedHelp =>
+      'ئەمانە لەم ئامێرە کران بەڵام سێرڤەر وەریانەگرت (بۆ نموونە لە ئامێرێکی تر گۆڕدرا یان سڕایەوە). لێرە پارێزراون. دوای چاککردنی هۆکارەکە دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get needsConnection =>
+      'ئەمە پێویستی بە ئینتەرنێتە. کاتێک پەیوەندی گەڕایەوە هەوڵ بدەرەوە.';
+
+  @override
+  String get returnWaitSync =>
+      'ئەم فرۆشتنە بێ ئینتەرنێت کراوە و هێشتا نەگەیشتووەتە سێرڤەر. دوای هاوکاتکردن بیگەڕێنەرەوە.';
 }

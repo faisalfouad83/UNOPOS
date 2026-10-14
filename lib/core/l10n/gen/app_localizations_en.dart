@@ -2665,4 +2665,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String hrDeviceReleased(String name) {
     return '$name can now sign in on another device';
   }
+
+  @override
+  String syncFailedCount(int count) {
+    return '$count not saved';
+  }
+
+  @override
+  String get syncFailedTitle => 'Changes the server refused';
+
+  @override
+  String get syncFailedHelp =>
+      'These were made on this device but the server didn\'t accept them (for example the item was changed or removed on another device). They are kept here. Retry once the cause is fixed.';
+
+  @override
+  String get needsConnection =>
+      'This needs an internet connection. Try again when you\'re back online.';
+
+  @override
+  String get returnWaitSync =>
+      'This sale was made offline and hasn\'t reached the server yet. Return it once it has synced.';
 }

@@ -1,12 +1,11 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/sync_service.dart';
 import '../../../core/utils/id_generator.dart';
 import '../../accounting/domain/accounting_posting_service.dart';
 import '../../debts/domain/debts_repository.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../../inventory/domain/inventory_repository.dart';
-import '../data/offline_sale_queue.dart';
 import 'loyalty.dart';
 import 'pos_models.dart';
 import 'pos_repository.dart';
@@ -293,16 +292,13 @@ class OrchestratedCompleteSaleUseCase implements CompleteSaleUseCase {
 /// money/stock-critical path of a commercial product.
 class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
   SupabaseAtomicCompleteSaleUseCase({
-    required SupabaseClient client,
     required PosRepository posRepository,
-    required OfflineSaleQueue offlineQueue,
-  })  : _client = client,
-        _posRepository = posRepository,
-        _offlineQueue = offlineQueue;
+    required OfflineWriter writer,
+  })  : _posRepository = posRepository,
+        _writer = writer;
 
-  final SupabaseClient _client;
   final PosRepository _posRepository;
-  final OfflineSaleQueue _offlineQueue;
+  final OfflineWriter _writer;
 
   @override
   Future<SaleRecord> holdSale({
@@ -379,33 +375,34 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       'p_extras': {...extras, if (resumingHeldSale != null) 'release_held_sale_id': resumingHeldSale.id},
     };
 
-    final Map<String, dynamic> json;
+    final provisional = _provisionalSale(
+      clientSaleId: clientSaleId,
+      storeId: storeId,
+      branchId: branchId,
+      cashierId: cashierId,
+      shiftId: shiftId,
+      paymentMethod: paymentMethod,
+      lines: lines,
+      amountTenderedMinorUnits: amountTenderedMinorUnits,
+      changeGivenMinorUnits: changeGivenMinorUnits,
+      soldAt: soldAt,
+    );
+    final Map<String, dynamic>? sent;
     try {
-      // A bad connection mustn't hold the till: after 15 s the sale is kept
-      // on this device (its client id makes a late duplicate harmless).
-      json = await _client.rpc('checkout_sale_once', params: params).timeout(const Duration(seconds: 15))
-          as Map<String, dynamic>;
-    } catch (e) {
-      if (e is PostgrestException && e.message.contains('held sale already closed')) {
-        throw const HeldSaleClosedException();
-      }
-      if (!isNetworkError(e)) rethrow;
-      // No connection: keep the sale on this device and send it later. The
-      // client id makes the replay safe even if this request actually got
-      // through before the connection dropped.
-      await _offlineQueue.add(QueuedSale(clientSaleId: clientSaleId, params: params, queuedAt: soldAt));
-      final provisional = _provisionalSale(
-        clientSaleId: clientSaleId,
-        storeId: storeId,
-        branchId: branchId,
-        cashierId: cashierId,
-        shiftId: shiftId,
-        paymentMethod: paymentMethod,
-        lines: lines,
-        amountTenderedMinorUnits: amountTenderedMinorUnits,
-        changeGivenMinorUnits: changeGivenMinorUnits,
-        soldAt: soldAt,
+      // Sent now when online with nothing older waiting; otherwise kept on
+      // this device and sent in order when the connection is back (its
+      // client id makes a late duplicate harmless). Until then it shows in
+      // the invoices and shift totals as made.
+      sent = await _writer.checkout(
+        clientSaleId,
+        params,
+        preview: saleRow(provisional, customerId: extras['customer_id'] as String?, releases: resumingHeldSale?.id),
       );
+    } on PostgrestException catch (e) {
+      if (e.message.contains('held sale already closed')) throw const HeldSaleClosedException();
+      rethrow;
+    }
+    if (sent == null || (sent['duplicate'] == true && sent['sale_id'] == null)) {
       return CheckoutResult(
         sale: provisional,
         queuedOffline: true,
@@ -419,6 +416,7 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       );
     }
 
+    final json = sent;
     if (json['duplicate'] == true) {
       final existing = await _posRepository.getSale(json['sale_id'] as String);
       if (existing != null) return CheckoutResult(sale: existing);
@@ -523,3 +521,43 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
     );
   }
 }
+
+/// [sale] as a `sales` row (lines under `_lines`), the shape the
+/// invoice lists read — used to show a sale made offline until the server's
+/// copy arrives. [releases]: the held sale it closes.
+Map<String, dynamic> saleRow(SaleRecord sale, {String? customerId, String? releases}) => {
+      'id': sale.id,
+      'client_sale_id': sale.id,
+      'store_id': sale.storeId,
+      'branch_id': sale.branchId,
+      'sale_number': sale.saleNumber,
+      'status': sale.status.name,
+      'customer_id': customerId ?? sale.customerId,
+      'hold_label': sale.holdLabel,
+      'subtotal_minor_units': sale.subtotalMinorUnits,
+      'discount_total_minor_units': sale.discountTotalMinorUnits,
+      'tax_total_minor_units': sale.taxTotalMinorUnits,
+      'grand_total_minor_units': sale.grandTotalMinorUnits,
+      'payment_method': sale.paymentMethod?.name,
+      'amount_tendered_minor_units': sale.amountTenderedMinorUnits,
+      'change_given_minor_units': sale.changeGivenMinorUnits,
+      'shift_id': sale.shiftId,
+      'cashier_id': sale.cashierId,
+      'created_at': sale.createdAt.toUtc().toIso8601String(),
+      'completed_at': sale.completedAt?.toUtc().toIso8601String(),
+      if (releases != null) '_releases': releases,
+      '_lines': [
+        for (final l in sale.lines)
+          {
+            'id': l.id,
+            'sale_id': sale.id,
+            'product_id': l.productId,
+            'quantity': l.quantity,
+            'unit_price_minor_units': l.unitPriceMinorUnits,
+            'discount_amount_minor_units': l.discountAmountMinorUnits,
+            'tax_amount_minor_units': l.taxAmountMinorUnits,
+            'line_total_minor_units': l.lineTotalMinorUnits,
+            'cost_price_snapshot_minor_units': l.costPriceSnapshotMinorUnits,
+          },
+      ],
+    };

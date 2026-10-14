@@ -1,24 +1,37 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/sync_service.dart';
+
 import '../domain/notification_models.dart';
 import '../domain/notifications_repository.dart';
 
 class SupabaseNotificationsRepository implements NotificationsRepository {
-  SupabaseNotificationsRepository(this._client);
+  SupabaseNotificationsRepository(this._client, this._writer);
 
   final SupabaseClient _client;
+  final OfflineWriter _writer;
 
   @override
   Stream<List<StoreNotificationRecord>> watchMyNotifications() {
     // .stream() can't embed a join, so each emission does one batched
     // follow-up fetch of the referenced platform_notifications rows — same
     // pattern used for journal entries / sale lines elsewhere.
-    return _client.from('notification_recipients').stream(primaryKey: ['id']).asyncMap((rows) async {
+    return resilientRows(
+      'notification_recipients',
+      () => _client.from('notification_recipients').stream(primaryKey: ['id']),
+      table: 'notification_recipients',
+    ).asyncMap((rows) async {
       if (rows.isEmpty) return const <StoreNotificationRecord>[];
 
       final notificationIds = rows.map((r) => r['notification_id'] as String).toSet().toList();
-      final notifRows = await _client.from('platform_notifications').select().inFilter('id', notificationIds);
-      final byId = {for (final n in (notifRows as List).cast<Map<String, dynamic>>()) n['id'] as String: n};
+      final notifRows = await fetchRowsOrCached(
+            'platform_notifications',
+            () async => (await _client.from('platform_notifications').select().inFilter('id', notificationIds))
+                .cast<Map<String, dynamic>>(),
+          ) ??
+          const [];
+      final byId = {for (final n in notifRows) n['id'] as String: n};
 
       final result = rows
           .map((r) {
@@ -43,6 +56,10 @@ class SupabaseNotificationsRepository implements NotificationsRepository {
 
   @override
   Future<void> markRead(String recipientId) async {
-    await _client.from('notification_recipients').update({'read_at': DateTime.now().toIso8601String()}).eq('id', recipientId);
+    await _writer.update(
+      'notification_recipients',
+      {'read_at': DateTime.now().toUtc().toIso8601String()},
+      value: recipientId,
+    );
   }
 }

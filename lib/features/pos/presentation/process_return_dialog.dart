@@ -150,9 +150,7 @@ class _ReturnDialogState extends ConsumerState<_ReturnDialog> {
       _error = null;
     });
     try {
-      await ref
-          .read(processSaleReturnUseCaseProvider)
-          .processReturn(
+      await ref.read(processSaleReturnUseCaseProvider).processReturn(
             originalSale: widget.sale,
             processedByUserId: widget.processedByUserId,
             refundToCash: _refundToCash,
@@ -161,6 +159,8 @@ class _ReturnDialogState extends ConsumerState<_ReturnDialog> {
                 .toList(),
           );
       if (mounted) Navigator.of(context).pop(_refund);
+    } on SaleNotSyncedException {
+      if (mounted) setState(() => _error = l10n.returnWaitSync);
     } catch (_) {
       if (mounted) setState(() => _error = l10n.returnFailed);
     } finally {

@@ -4929,6 +4929,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} can now sign in on another device'**
   String hrDeviceReleased(String name);
+
+  /// No description provided for @syncFailedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} not saved'**
+  String syncFailedCount(int count);
+
+  /// No description provided for @syncFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes the server refused'**
+  String get syncFailedTitle;
+
+  /// No description provided for @syncFailedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'These were made on this device but the server didn\'t accept them (for example the item was changed or removed on another device). They are kept here. Retry once the cause is fixed.'**
+  String get syncFailedHelp;
+
+  /// No description provided for @needsConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'This needs an internet connection. Try again when you\'re back online.'**
+  String get needsConnection;
+
+  /// No description provided for @returnWaitSync.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale was made offline and hasn\'t reached the server yet. Return it once it has synced.'**
+  String get returnWaitSync;
 }
 
 class _AppLocalizationsDelegate
