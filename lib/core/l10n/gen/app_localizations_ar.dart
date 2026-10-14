@@ -2606,4 +2606,35 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get statusOfflineHelp =>
       'لا يوجد إنترنت — استمر بالبيع. تُحفظ المبيعات على هذا الجهاز وتُرسل تلقائياً عند عودة الاتصال. اضغط للتحقق الآن.';
+
+  @override
+  String posStockLeft(String name, int count) {
+    return '$name: باقي $count بالمخزن';
+  }
+
+  @override
+  String posStockOut(String name) {
+    return '$name نفد من المخزن — ما انضاف';
+  }
+
+  @override
+  String posStockMaxReached(String name, int count) {
+    return '$name: الموجود بالمخزن $count بس';
+  }
+
+  @override
+  String posStockCartAdjusted(String items) {
+    return 'المخزن تغيّر وتعدّلت الكميات: $items. راجع السلة وعيد المحاولة.';
+  }
+
+  @override
+  String posStockBadge(int count) {
+    return 'المخزن: $count';
+  }
+
+  @override
+  String get posStockOutBadge => 'نفد';
+
+  @override
+  String get posSetQuantity => 'الكمية';
 }

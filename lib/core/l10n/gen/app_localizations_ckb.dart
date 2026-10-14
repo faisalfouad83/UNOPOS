@@ -2594,4 +2594,35 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get statusOfflineHelp =>
       'ئینتەرنێت نییە — بەردەوام بە لە فرۆشتن. فرۆشتنەکان لەم ئامێرە دەمێننەوە و کاتێک پەیوەندی گەڕایەوە خۆکارانە دەنێردرێن. دابگرە بۆ پشکنین.';
+
+  @override
+  String posStockLeft(String name, int count) {
+    return '$name: $count ماوە لە کۆگا';
+  }
+
+  @override
+  String posStockOut(String name) {
+    return '$name لە کۆگا نەماوە — زیاد نەکرا';
+  }
+
+  @override
+  String posStockMaxReached(String name, int count) {
+    return '$name: تەنها $count لە کۆگا هەیە';
+  }
+
+  @override
+  String posStockCartAdjusted(String items) {
+    return 'کۆگا گۆڕا و بڕەکان کەمکرانەوە: $items. سەبەتەکە بپشکنە و دووبارە هەوڵ بدەرەوە.';
+  }
+
+  @override
+  String posStockBadge(int count) {
+    return 'کۆگا: $count';
+  }
+
+  @override
+  String get posStockOutBadge => 'نەماوە';
+
+  @override
+  String get posSetQuantity => 'بڕ';
 }

@@ -21,6 +21,7 @@ import '../domain/pos_models.dart';
 import 'cart_controller.dart';
 import 'checkout_sheet.dart';
 import 'loyalty_customer_picker.dart';
+import 'pos_stock.dart';
 import 'process_return_dialog.dart';
 import 'scan_search_field.dart';
 import 'sales_history_screen.dart';
@@ -244,6 +245,8 @@ Future<bool> resumeHeldSale(BuildContext context, WidgetRef ref, SaleRecord sale
     taxPercentById: {for (final t in taxRates) t.id: t.ratePercent},
     customer: customer,
   );
+  // Stock may have run low since the sale was held.
+  if (context.mounted) fitCartToStock(context, ref);
   return true;
 }
 
@@ -296,11 +299,13 @@ class _PosBodyState extends ConsumerState<_PosBody> {
         await ref.read(inventoryRepositoryProvider).watchTaxRates(storeId).first;
     final rate = taxRates.where((t) => t.id == product!.taxRateId).firstOrNull?.ratePercent ?? 0;
     if (!mounted || ref.read(cartControllerProvider.notifier).owner != owner) return;
-    ref.read(cartControllerProvider.notifier).addProduct(product, taxRatePercent: rate);
+    addToCartWithinStock(context, ref, product, taxRatePercent: rate);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Keeps the branch's stock loaded (and current) while the till is open.
+    ref.watch(posStockProvider);
     final width = MediaQuery.sizeOf(context).width;
     final isCompact = AppBreakpoints.isCompact(width);
 
@@ -387,6 +392,9 @@ class _ProductTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final taxRates = ref.watch(taxRatesProvider(product.storeId)).value ?? const [];
     final wholesale = ref.watch(cartControllerProvider.select((c) => c.wholesale));
+    final stock = ref.watch(posStockProvider.select((s) => s == null ? null : (s[product.id] ?? 0)));
+    final out = stock != null && stock <= 0;
+    final theme = Theme.of(context);
     final taxRatePercent = product.taxRateId == null
         ? 0.0
         : (taxRates.where((t) => t.id == product.taxRateId).isEmpty
@@ -394,11 +402,11 @@ class _ProductTile extends ConsumerWidget {
             : taxRates.firstWhere((t) => t.id == product.taxRateId).ratePercent);
 
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      color: out ? theme.colorScheme.errorContainer.withValues(alpha: 0.35) : theme.colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => ref.read(cartControllerProvider.notifier).addProduct(product, taxRatePercent: taxRatePercent),
+        onTap: () => addToCartWithinStock(context, ref, product, taxRatePercent: taxRatePercent),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -410,8 +418,22 @@ class _ProductTile extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 Money.format(CartLine.unitPriceFor(product, wholesale: wholesale)),
-                style: Theme.of(context).textTheme.labelLarge,
+                style: theme.textTheme.labelLarge,
               ),
+              if (stock != null)
+                Text(
+                  out
+                      ? AppLocalizations.of(context).posStockOutBadge
+                      : AppLocalizations.of(context).posStockBadge(stock),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: out
+                        ? theme.colorScheme.error
+                        : stock <= product.reorderLevel
+                            ? Colors.orange.shade800
+                            : theme.colorScheme.onSurfaceVariant,
+                    fontWeight: out ? FontWeight.bold : null,
+                  ),
+                ),
             ],
           ),
         ),
@@ -427,6 +449,7 @@ class _CartPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final cart = ref.watch(cartControllerProvider);
+    final stock = ref.watch(posStockProvider);
     final session = ref.watch(sessionControllerProvider);
     final storeSettings = ref.watch(currentStoreSettingsProvider).valueOrNull;
     final canDiscount = session.employee?.can(AppPermission.giveDiscount) ?? false;
@@ -482,32 +505,41 @@ class _CartPanel extends ConsumerWidget {
                   itemCount: cart.lines.length,
                   itemBuilder: (context, index) {
                     final line = cart.lines[index];
+                    final onHand = stock == null ? null : (stock[line.product.id] ?? 0);
                     return ListTile(
                       onTap: canDiscount ? () => _showLineDiscountDialog(context, ref, line, keepMargin) : null,
                       leading: IconButton(
                         icon: const Icon(Icons.remove_circle_outline),
-                        onPressed: () =>
-                            ref.read(cartControllerProvider.notifier).setQuantity(line.product.id, line.quantity - 1),
+                        onPressed: () => setCartQuantityWithinStock(context, ref, line, line.quantity - 1),
                       ),
                       title: Row(
                         children: [
                           Expanded(child: Text(line.product.name, overflow: TextOverflow.ellipsis)),
-                          Text('${line.quantity}'),
+                          InkWell(
+                            onTap: () => _showQuantityDialog(context, ref, line),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              child: Text('${line.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                          ),
                         ],
                       ),
                       subtitle: Text(
-                        line.discountAmountMinorUnits > 0
-                            ? '${Money.format(line.unitPriceMinorUnits)} · -${Money.format(line.discountAmountMinorUnits)}'
-                            : Money.format(line.unitPriceMinorUnits),
+                        [
+                          Money.format(line.unitPriceMinorUnits),
+                          if (line.discountAmountMinorUnits > 0) '-${Money.format(line.discountAmountMinorUnits)}',
+                          if (onHand != null) l10n.posStockBadge(onHand),
+                        ].join(' · '),
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.add_circle_outline),
-                            onPressed: () => ref
-                                .read(cartControllerProvider.notifier)
-                                .setQuantity(line.product.id, line.quantity + 1),
+                            onPressed: onHand != null && line.quantity >= onHand
+                                ? null
+                                : () => setCartQuantityWithinStock(context, ref, line, line.quantity + 1),
                           ),
                           if (canDiscount)
                             IconButton(
@@ -580,6 +612,8 @@ class _CartPanel extends ConsumerWidget {
                       onPressed: cart.isEmpty
                           ? null
                           : () async {
+                              // Another till may have sold some meanwhile.
+                              if (!fitCartToStock(context, ref)) return;
                               final settings =
                                   await ref.read(settingsRepositoryProvider).ensureSettings(session.store!.id);
                               if (context.mounted) {
@@ -597,6 +631,40 @@ class _CartPanel extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// Type a line's quantity straight in, kept within the branch's stock.
+Future<void> _showQuantityDialog(BuildContext context, WidgetRef ref, CartLine line) async {
+  final l10n = AppLocalizations.of(context);
+  final controller = TextEditingController(text: '${line.quantity}');
+  final available = stockOnHand(ref, line.product.id);
+  final quantity = await showDialog<int>(
+    context: context,
+    builder: (context) {
+      void submit() => Navigator.of(context).pop(int.tryParse(controller.text.trim()));
+      return AlertDialog(
+        title: Text(line.product.name),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: InputDecoration(
+            labelText: l10n.posSetQuantity,
+            helperText: available == null ? null : l10n.posStockBadge(available),
+          ),
+          onSubmitted: (_) => submit(),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
+          FilledButton(onPressed: submit, child: Text(l10n.actionSave)),
+        ],
+      );
+    },
+  );
+  controller.dispose();
+  if (quantity == null || !context.mounted) return;
+  setCartQuantityWithinStock(context, ref, line, quantity);
 }
 
 /// Discount on one cart line: one of the store's saved discounts, or a

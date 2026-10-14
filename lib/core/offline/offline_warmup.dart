@@ -7,7 +7,7 @@ import '../supabase/supabase_config.dart';
 
 /// Takes a copy of what the till needs to keep working without internet,
 /// every time a store is opened: products, tax rates, discounts, settings,
-/// customers, accounts and branches. Each is kept on the device by its own
+/// customers, accounts, branches and their stock. Each is kept on the device by its own
 /// repository and refreshed live while online. Best effort and in the
 /// background — it never holds the app up.
 typedef ProviderReader = T Function<T>(ProviderListenable<T> provider);
@@ -29,7 +29,12 @@ Future<void> warmOfflineCopy(ProviderReader read, String storeId) async {
     take(() => read(settingsRepositoryProvider).ensureSettings(storeId)),
     take(() => liveValue(read(debtsRepositoryProvider).watchCustomers(storeId))),
     take(() => liveValue(auth.watchEmployees(storeId))),
-    take(() => auth.listBranches(storeId)),
+    take(() async {
+      // Each branch's stock, so the till knows what is left while offline.
+      final branches = await auth.listBranches(storeId);
+      await Future.wait([for (final b in branches) liveValue(inventory.watchStock(storeId, b.id))]);
+      return null;
+    }),
   ]);
 }
 

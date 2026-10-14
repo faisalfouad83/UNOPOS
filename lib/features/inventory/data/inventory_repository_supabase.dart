@@ -204,7 +204,11 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Stream<List<StockItemRecord>> watchStock(String storeId, String branchId) {
-    return _client.from('stock_items').stream(primaryKey: ['id']).eq('branch_id', branchId).map((rows) => rows.map(_mapStockItem).toList());
+    // Cached so the till still knows what is on the shelf while offline.
+    return resilientRows(
+      'stock.$storeId.$branchId',
+      () => _client.from('stock_items').stream(primaryKey: ['id']).eq('branch_id', branchId),
+    ).map((rows) => rows.map(_mapStockItem).toList());
   }
 
   @override

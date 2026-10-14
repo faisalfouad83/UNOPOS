@@ -4857,6 +4857,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No internet — keep selling. Sales are kept on this device and sent automatically when the connection is back. Tap to check now.'**
   String get statusOfflineHelp;
+
+  /// No description provided for @posStockLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {count} left in stock'**
+  String posStockLeft(String name, int count);
+
+  /// No description provided for @posStockOut.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is out of stock — not added'**
+  String posStockOut(String name);
+
+  /// No description provided for @posStockMaxReached.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: only {count} in stock'**
+  String posStockMaxReached(String name, int count);
+
+  /// No description provided for @posStockCartAdjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock changed, quantities lowered: {items}. Check the cart and try again.'**
+  String posStockCartAdjusted(String items);
+
+  /// No description provided for @posStockBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock: {count}'**
+  String posStockBadge(int count);
+
+  /// No description provided for @posStockOutBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of stock'**
+  String get posStockOutBadge;
+
+  /// No description provided for @posSetQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get posSetQuantity;
 }
 
 class _AppLocalizationsDelegate

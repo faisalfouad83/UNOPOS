@@ -5,6 +5,17 @@ import '../../debts/domain/debts_models.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../domain/pos_models.dart';
 
+/// What happened to a request to put more of a product in the cart.
+enum StockCheck {
+  ok,
+
+  /// Lowered to (or kept at) what the branch has on hand.
+  capped,
+
+  /// None left: not added.
+  outOfStock,
+}
+
 class CartLine {
   const CartLine({
     required this.product,
@@ -180,11 +191,18 @@ class CartController extends Notifier<CartState> {
   /// (e.g. loading a held sale) checks it is still the same before writing.
   CartOwner get owner => _owner;
 
-  void addProduct(ProductRecord product, {double taxRatePercent = 0}) {
+  /// Adds one more of [product]. [available] is how many the branch has on
+  /// hand (null = not known yet): an item that ran out is not added, and
+  /// the cart never holds more of it than there is.
+  StockCheck addProduct(ProductRecord product, {double taxRatePercent = 0, int? available}) {
     final index = state.lines.indexWhere((l) => l.product.id == product.id);
+    final inCart = index >= 0 ? state.lines[index].quantity : 0;
+    if (available != null && inCart + 1 > available) {
+      return available <= 0 && inCart == 0 ? StockCheck.outOfStock : StockCheck.capped;
+    }
     if (index >= 0) {
       final updated = [...state.lines];
-      updated[index] = updated[index].copyWith(quantity: updated[index].quantity + 1);
+      updated[index] = updated[index].copyWith(quantity: inCart + 1);
       state = state.copyWith(lines: updated);
     } else {
       state = state.copyWith(
@@ -194,6 +212,7 @@ class CartController extends Notifier<CartState> {
         ],
       );
     }
+    return StockCheck.ok;
   }
 
   /// Switches the whole sale between retail and wholesale prices,
@@ -216,13 +235,48 @@ class CartController extends Notifier<CartState> {
     );
   }
 
-  void setQuantity(String productId, int quantity) {
+  /// Sets a line's quantity (0 or less removes it), never above
+  /// [available] when that is known.
+  StockCheck setQuantity(String productId, int quantity, {int? available}) {
+    var result = StockCheck.ok;
+    if (available != null && quantity > available) {
+      quantity = available;
+      result = StockCheck.capped;
+    }
     if (quantity <= 0) {
       removeProduct(productId);
-      return;
+      return result == StockCheck.ok ? result : StockCheck.outOfStock;
     }
     final updated = state.lines.map((l) => l.product.id == productId ? l.copyWith(quantity: quantity) : l).toList();
     state = state.copyWith(lines: updated);
+    return result;
+  }
+
+  /// Brings every line within the branch's stock ([onHand] by product id;
+  /// a product missing from it has none): lines above it are lowered, lines
+  /// with nothing left are taken out. Returns the lines that changed, as
+  /// they were before.
+  List<CartLine> fitToStock(Map<String, int> onHand) {
+    final changed = <CartLine>[];
+    final fitted = <CartLine>[];
+    for (final l in state.lines) {
+      final available = onHand[l.product.id] ?? 0;
+      if (l.quantity <= available) {
+        fitted.add(l);
+        continue;
+      }
+      changed.add(l);
+      if (available > 0) {
+        fitted.add(
+          l.copyWith(
+            quantity: available,
+            discountAmountMinorUnits: l.discountAmountMinorUnits.clamp(0, l.unitPriceMinorUnits * available),
+          ),
+        );
+      }
+    }
+    if (changed.isNotEmpty) state = state.copyWith(lines: fitted);
+    return changed;
   }
 
   void removeProduct(String productId) {

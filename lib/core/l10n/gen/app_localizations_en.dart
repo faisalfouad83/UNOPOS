@@ -2611,4 +2611,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get statusOfflineHelp =>
       'No internet — keep selling. Sales are kept on this device and sent automatically when the connection is back. Tap to check now.';
+
+  @override
+  String posStockLeft(String name, int count) {
+    return '$name: $count left in stock';
+  }
+
+  @override
+  String posStockOut(String name) {
+    return '$name is out of stock — not added';
+  }
+
+  @override
+  String posStockMaxReached(String name, int count) {
+    return '$name: only $count in stock';
+  }
+
+  @override
+  String posStockCartAdjusted(String items) {
+    return 'Stock changed, quantities lowered: $items. Check the cart and try again.';
+  }
+
+  @override
+  String posStockBadge(int count) {
+    return 'Stock: $count';
+  }
+
+  @override
+  String get posStockOutBadge => 'Out of stock';
+
+  @override
+  String get posSetQuantity => 'Quantity';
 }

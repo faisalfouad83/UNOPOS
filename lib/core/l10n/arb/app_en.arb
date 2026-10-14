@@ -921,5 +921,18 @@
   "syncInProgress": "Syncing {count}…",
   "@syncInProgress": {"placeholders": {"count": {"type": "int"}}},
   "statusOnlineHelp": "Connected — everything is saved to the server as you work.",
-  "statusOfflineHelp": "No internet — keep selling. Sales are kept on this device and sent automatically when the connection is back. Tap to check now."
+  "statusOfflineHelp": "No internet — keep selling. Sales are kept on this device and sent automatically when the connection is back. Tap to check now.",
+
+  "posStockLeft": "{name}: {count} left in stock",
+  "@posStockLeft": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "posStockOut": "{name} is out of stock — not added",
+  "@posStockOut": {"placeholders": {"name": {"type": "String"}}},
+  "posStockMaxReached": "{name}: only {count} in stock",
+  "@posStockMaxReached": {"placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}},
+  "posStockCartAdjusted": "Stock changed, quantities lowered: {items}. Check the cart and try again.",
+  "@posStockCartAdjusted": {"placeholders": {"items": {"type": "String"}}},
+  "posStockBadge": "Stock: {count}",
+  "@posStockBadge": {"placeholders": {"count": {"type": "int"}}},
+  "posStockOutBadge": "Out of stock",
+  "posSetQuantity": "Quantity"
 }

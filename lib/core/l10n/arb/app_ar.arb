@@ -847,5 +847,13 @@
   "offlineWithPending": "بدون إنترنت · {count} بانتظار المزامنة",
   "syncInProgress": "جارٍ المزامنة ({count})…",
   "statusOnlineHelp": "متصل — كل شيء يُحفظ على السيرفر أثناء العمل.",
-  "statusOfflineHelp": "لا يوجد إنترنت — استمر بالبيع. تُحفظ المبيعات على هذا الجهاز وتُرسل تلقائياً عند عودة الاتصال. اضغط للتحقق الآن."
+  "statusOfflineHelp": "لا يوجد إنترنت — استمر بالبيع. تُحفظ المبيعات على هذا الجهاز وتُرسل تلقائياً عند عودة الاتصال. اضغط للتحقق الآن.",
+
+  "posStockLeft": "{name}: باقي {count} بالمخزن",
+  "posStockOut": "{name} نفد من المخزن — ما انضاف",
+  "posStockMaxReached": "{name}: الموجود بالمخزن {count} بس",
+  "posStockCartAdjusted": "المخزن تغيّر وتعدّلت الكميات: {items}. راجع السلة وعيد المحاولة.",
+  "posStockBadge": "المخزن: {count}",
+  "posStockOutBadge": "نفد",
+  "posSetQuantity": "الكمية"
 }
