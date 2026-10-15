@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/outbox.dart';
 import '../../../core/offline/sync_service.dart';
 import '../../../core/utils/id_generator.dart';
 
@@ -157,14 +158,19 @@ class SupabaseDebtsRepository implements DebtsRepository {
 
   @override
   Stream<List<DebtLedgerEntryRecord>> watchOpenDebts(String storeId) {
+    // Filtered here, not on the server: a live filter on the status would
+    // never pass on the change that makes a debt paid, so it would stay on
+    // screen as unpaid. Only the open ones are kept on the device.
     return resilientRows(
       'debts.open.$storeId',
       () => _client
           .from('debt_ledger_entries')
           .stream(primaryKey: ['id'])
-          .neq('status', 'paid')
+          .eq('store_id', storeId)
           .order('created_at', ascending: false),
       table: 'debt_ledger_entries',
+      where: (r) => r['store_id'] == storeId,
+      cacheWhere: (r) => _status(r) != DebtStatus.paid,
     ).map((rows) => rows.map(_mapEntry).where((e) => e.status != DebtStatus.paid).toList());
   }
 
@@ -206,7 +212,11 @@ class SupabaseDebtsRepository implements DebtsRepository {
   }) async {
     // Works offline: the payment shows at once (and on the debt) and is
     // recorded on the server — exactly once — when the connection is back.
-    final localId = IdGenerator.newId();
+    // Until then its id stands for the one the server gives it (the
+    // function's whole result), so the journal entry posted for it and its
+    // link to the payment reach the right row.
+    final opId = IdGenerator.newId();
+    final localId = Outbox.ref(opId, '.');
     final id = await _writer.rpc(
       'record_debt_payment',
       {
@@ -216,7 +226,7 @@ class SupabaseDebtsRepository implements DebtsRepository {
         'p_received_by_user_id': receivedByUserId,
       },
       offline: () => localId,
-      opId: localId,
+      opId: opId,
       previewTable: 'debt_payments',
       preview: {
         'id': localId,

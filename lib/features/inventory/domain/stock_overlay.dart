@@ -1,14 +1,30 @@
 import '../../../core/offline/outbox.dart';
 import 'inventory_models.dart';
 
+/// What a queued server function will add to (negative: take from) the
+/// stock of [productId] at [branchId], as an [OutboxOp.increments] entry:
+/// e.g. receiving a purchase order or transfer, or a return. Shown on the
+/// stock until the function has run.
+Map<String, dynamic> stockIncrement(String productId, String branchId, int quantity) => {
+      'table': 'stock_items',
+      'product_id': productId,
+      'branch_id': branchId,
+      'column': 'quantity_on_hand',
+      'by': quantity,
+    };
+
 /// Stock changes made on this device and not yet sent (sales, receipts,
-/// adjustments) for [branchId], by product id. Positive = taken off the
-/// shelf.
+/// adjustments, returns) for [branchId], by product id. Positive = taken
+/// off the shelf.
 Map<String, int> unsyncedStockOut(List<OutboxOp> ops, String branchId) {
   const incoming = {'purchaseIn', 'transferIn', 'adjustmentIn', 'returnIn'};
   final out = <String, int>{};
   void add(String id, int qty) => out[id] = (out[id] ?? 0) + qty;
   for (final op in ops) {
+    for (final inc in op.increments) {
+      if (inc['table'] != 'stock_items' || inc['branch_id'] != branchId || inc['product_id'] == null) continue;
+      add(inc['product_id'] as String, -(inc['by'] as num).toInt());
+    }
     final p = op.params;
     if (p == null || p['p_branch_id'] != branchId) continue;
     if (op.kind == OutboxKind.checkout) {
@@ -24,7 +40,8 @@ Map<String, int> unsyncedStockOut(List<OutboxOp> ops, String branchId) {
 }
 
 /// [items] (the server's last figures) with this device's unsent stock
-/// changes applied; a product first stocked here gets an entry.
+/// changes applied; a product first stocked here gets an entry. [ops] is
+/// usually [Outbox.stockChanges] for when the figures were fetched.
 List<StockItemRecord> withUnsyncedStock(
   List<StockItemRecord> items,
   List<OutboxOp> ops, {

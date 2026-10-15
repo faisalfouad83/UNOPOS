@@ -72,7 +72,9 @@ class SupabaseBreaksRepository implements BreaksRepository {
         previewTable: 'employee_breaks',
         preview: preview,
       );
-      return _map((row as Map).cast<String, dynamic>());
+      final started = (row as Map).cast<String, dynamic>();
+      _keep(started);
+      return _map(started);
     } on PostgrestException catch (e) {
       _rethrow(e);
     }
@@ -80,7 +82,17 @@ class SupabaseBreaksRepository implements BreaksRepository {
 
   @override
   Future<EmployeeBreakRecord> endBreak({required String breakId, required String pin, bool reconciled = false}) async {
-    final current = await _breakById(breakId);
+    // A break started offline is known by a reference to the server's id
+    // until that arrives; once it has, the server's id is used.
+    final given = breakId;
+    breakId = _writer.resolve(given) as String;
+    var current = await _breakById(breakId);
+    final startOp = Outbox.refOp(given);
+    if (current == null && startOp != null) {
+      // Sent since, and not looked up online yet: the server returned it.
+      final row = _writer.resolve(Outbox.ref(startOp, '.'));
+      if (row is Map) current = row.cast<String, dynamic>();
+    }
     if (!_writer.sendsNow) {
       // Offline: the PIN is checked against this device's copy of it (the
       // server checks it again when the change is sent).
@@ -153,7 +165,15 @@ class SupabaseBreaksRepository implements BreaksRepository {
       table: 'employee_breaks',
       where: (r) => r['store_id'] == storeId && r['user_id'] == userId && r['ended_at'] == null,
     );
-    return (rows == null || rows.isEmpty) ? null : _map(rows.first);
+    if (rows == null || rows.isEmpty) return null;
+    _keep(rows.first);
+    return _map(rows.first);
+  }
+
+  /// Keeps a copy of [row] by its id, so the break can be ended offline.
+  static void _keep(Map<String, dynamic> row) {
+    final id = row['id'];
+    if (id is String && Outbox.refOp(id) == null) OfflineCache.write('break.$id', [row]);
   }
 
   @override

@@ -163,11 +163,17 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
     String memo = 'Reversal',
   }) async {
     // Needs the original entry's lines, which only the server has in full.
-    final json = await _writer.rpc('post_reversing_entry', {
-      'p_original_entry_id': originalEntryId,
-      'p_created_by_user_id': createdByUserId,
-      'p_memo': memo,
-    });
+    // Run once per entry: asking again (e.g. after a lost reply) returns the
+    // reversal already posted instead of reversing it twice.
+    final json = await _writer.rpc(
+      'post_reversing_entry',
+      {
+        'p_original_entry_id': originalEntryId,
+        'p_created_by_user_id': createdByUserId,
+        'p_memo': memo,
+      },
+      opId: 'reverse.$originalEntryId',
+    );
     return _mapEntryJson((json as Map).cast<String, dynamic>());
   }
 

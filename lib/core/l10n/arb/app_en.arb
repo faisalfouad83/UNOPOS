@@ -979,5 +979,15 @@
   "storeSignOutPendingWarning": "Some changes made on this device haven't reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?",
 
   "breakManagerUnlock": "Unlock by a manager",
-  "breakManagerUnlockHelp": "The owner or a manager enters their PIN to unlock the till. The break ends when the employee next signs in."
+  "breakManagerUnlockHelp": "The owner or a manager enters their PIN to unlock the till. The break ends when the employee next signs in.",
+
+  "syncDiscard": "Discard",
+  "syncDiscardTitle": "Discard this change?",
+  "syncDiscardBody": "It won't be sent to the server and is removed from this device{count, plural, =0{.} =1{, with 1 later change that depends on it.} other{, with {count} later changes that depend on it.}} This can't be undone.",
+  "@syncDiscardBody": {"placeholders": {"count": {"type": "int"}}},
+  "syncHeldBehind": "{count, plural, =1{1 later change waits for this one} other{{count} later changes wait for this one}}",
+  "@syncHeldBehind": {"placeholders": {"count": {"type": "int"}}},
+  "syncOtherStores": "{count} waiting for another store",
+  "@syncOtherStores": {"placeholders": {"count": {"type": "int"}}},
+  "syncOtherStoresHelp": "Changes made on this device while another store was signed in. They are sent when that store signs in here again."
 }

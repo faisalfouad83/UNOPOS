@@ -5,6 +5,7 @@ import '../../accounting/domain/accounting_posting_service.dart';
 import '../../debts/domain/debts_repository.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../../inventory/domain/inventory_repository.dart';
+import '../../inventory/domain/stock_overlay.dart';
 import 'pos_models.dart';
 import 'pos_repository.dart';
 
@@ -138,13 +139,21 @@ class SupabaseAtomicProcessSaleReturnUseCase implements ProcessSaleReturnUseCase
     if (_outbox.pending.any((o) => o.kind == OutboxKind.checkout && o.id == originalSale.id)) {
       throw const SaleNotSyncedException();
     }
-    await _writer.rpc('process_sale_return', offline: () => null, {
-      'p_original_sale_id': originalSale.id,
-      'p_return_lines':
-          lines.map((l) => {'sale_line_id': l.saleLine.id, 'quantity_returned': l.quantityReturned}).toList(),
-      'p_processed_by_user_id': processedByUserId,
-      'p_refund_to_cash': refundToCash,
-    });
+    await _writer.rpc(
+      'process_sale_return',
+      offline: () => null,
+      {
+        'p_original_sale_id': originalSale.id,
+        'p_return_lines':
+            lines.map((l) => {'sale_line_id': l.saleLine.id, 'quantity_returned': l.quantityReturned}).toList(),
+        'p_processed_by_user_id': processedByUserId,
+        'p_refund_to_cash': refundToCash,
+      },
+      // Back on the shelf at once, while it waits to be sent.
+      increments: [
+        for (final l in lines) stockIncrement(l.saleLine.productId, originalSale.branchId, l.quantityReturned),
+      ],
+    );
   }
 }
 

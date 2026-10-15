@@ -17,6 +17,11 @@ import 'outbox.dart';
 /// — thousands of invoices — and are refreshed often), written shortly
 /// after the last change and read from memory once loaded. Where there is
 /// no data folder (tests), the app's preferences are used instead.
+///
+/// The day each copy was last used (read or written) is noted, and copies
+/// not used for [maxUnusedAge] are dropped ([prune]) — e.g. one product or
+/// break looked up once, long ago. What the till needs is used every time
+/// a store opens, so it is never dropped.
 class OfflineCache {
   OfflineCache._();
 
@@ -28,6 +33,87 @@ class OfflineCache {
   static final _memory = <String, Object?>{};
   static final _timers = <String, Timer>{};
   static Future<Directory?>? _dir;
+
+  /// How long a copy is kept without being used.
+  static const Duration maxUnusedAge = Duration(days: 60);
+  static const String _indexKey = 'offline_cache_index.v1';
+
+  /// The day (since 1970) each copy was last used, by file name.
+  static Map<String, int>? _index;
+  static Future<void>? _indexSave;
+  static bool _pruned = false;
+
+  static int _today() => DateTime.now().millisecondsSinceEpoch ~/ Duration.millisecondsPerDay;
+
+  static Future<Map<String, int>> _loadIndex() async {
+    final existing = _index;
+    if (existing != null) return existing;
+    final raw = (await SharedPreferences.getInstance()).getString(_indexKey);
+    final loaded = raw == null ? <String, int>{} : (jsonDecode(raw) as Map).map((k, v) => MapEntry('$k', v as int));
+    return _index ??= loaded;
+  }
+
+  /// Notes that [key] was used today (saved at most once a day per copy).
+  static Future<void> _touch(String key) async {
+    try {
+      final index = await _loadIndex();
+      final name = _fileName(key);
+      final today = _today();
+      if (index[name] == today) return;
+      index[name] = today;
+      _saveIndex();
+    } catch (_) {}
+  }
+
+  static void _saveIndex() {
+    _indexSave ??= Future.microtask(() async {
+      _indexSave = null;
+      final index = _index;
+      if (index == null) return;
+      await (await SharedPreferences.getInstance()).setString(_indexKey, jsonEncode(index));
+    });
+  }
+
+  /// Drops copies not used for [maxAge] (once per run; best effort). A copy
+  /// kept from before uses were noted counts as used today.
+  static Future<void> prune({Duration maxAge = maxUnusedAge}) async {
+    if (_pruned) return;
+    _pruned = true;
+    try {
+      final index = await _loadIndex();
+      final today = _today();
+      final oldest = today - maxAge.inDays;
+      final kept = <String>{};
+      final dropped = <String>{};
+      bool keep(String name) {
+        final used = index.putIfAbsent(name, () => today);
+        if (used >= oldest) {
+          kept.add(name);
+          return true;
+        }
+        dropped.add(name);
+        return false;
+      }
+
+      final dir = await _folder();
+      if (dir != null) {
+        await for (final entry in dir.list()) {
+          if (entry is! File || !entry.path.endsWith('.json')) continue;
+          if (!keep(p.basename(entry.path))) await entry.delete();
+        }
+      }
+      final prefs = await SharedPreferences.getInstance();
+      for (final k in prefs.getKeys().where((k) => k.startsWith(_prefix)).toList()) {
+        final name = _fileName(k.substring(_prefix.length));
+        if (kept.contains(name)) continue;
+        if (dropped.contains(name) || !keep(name)) await prefs.remove(k);
+      }
+      _memory.removeWhere((key, _) => dropped.contains(_fileName(key)));
+      // Notes about copies that no longer exist.
+      index.removeWhere((name, _) => !kept.contains(name));
+      _saveIndex();
+    } catch (_) {}
+  }
 
   /// Where the copies are kept; null = use preferences.
   static Future<Directory?> _folder() => _dir ??= () async {
@@ -46,6 +132,7 @@ class OfflineCache {
   static Future<void> write(String key, Object? rows) async {
     final value = jsonDecode(jsonEncode(rows));
     _memory[key] = value;
+    unawaited(_touch(key));
     final dir = await _folder();
     if (dir == null) {
       final prefs = await SharedPreferences.getInstance();
@@ -66,7 +153,10 @@ class OfflineCache {
   }
 
   static Future<Object?> read(String key) async {
-    if (_memory.containsKey(key)) return _memory[key];
+    if (_memory.containsKey(key)) {
+      unawaited(_touch(key));
+      return _memory[key];
+    }
     final dir = await _folder();
     Object? value;
     if (dir == null) {
@@ -85,7 +175,10 @@ class OfflineCache {
         value = raw == null ? null : jsonDecode(raw);
       }
     }
-    if (value != null) _memory[key] = value;
+    if (value != null) {
+      _memory[key] = value;
+      unawaited(_touch(key));
+    }
     return value;
   }
 
@@ -98,6 +191,8 @@ class OfflineCache {
   /// Forgets what is held in memory (tests).
   static void resetMemory() {
     _memory.clear();
+    _index = null;
+    _pruned = false;
     for (final t in _timers.values) {
       t.cancel();
     }
@@ -130,6 +225,7 @@ bool isNetworkError(Object error) {
 /// With [table], changes made on this device to that table and not yet
 /// sent ([Outbox]) are laid over the rows (new rows that match [where]
 /// included), and the stream updates as they are made and sent.
+/// [cacheWhere] keeps only some rows on the device (e.g. debts still open).
 Stream<List<Map<String, dynamic>>> resilientRows(
   String cacheKey,
   Stream<List<Map<String, dynamic>>> Function() subscribe, {
@@ -140,6 +236,7 @@ Stream<List<Map<String, dynamic>>> resilientRows(
   bool Function(Map<String, dynamic> row)? where,
   Outbox? outbox,
   int? cacheTake,
+  bool Function(Map<String, dynamic> row)? cacheWhere,
 }) {
   late StreamController<List<Map<String, dynamic>>> controller;
   StreamSubscription<List<Map<String, dynamic>>>? subscription;
@@ -148,11 +245,14 @@ Stream<List<Map<String, dynamic>>> resilientRows(
   var hasValue = false;
   var cancelled = false;
   List<Map<String, dynamic>>? last;
+  // When the server sent [last] (null: the copy on the device).
+  DateTime? lastAt;
   final box = table == null ? null : (outbox ?? Outbox.shared);
 
-  void emit(List<Map<String, dynamic>> rows) {
+  void emit(List<Map<String, dynamic>> rows, DateTime? at) {
     last = rows;
-    controller.add(box == null ? rows : box.applyTo(table!, rows, where: where));
+    lastAt = at;
+    controller.add(box == null ? rows : box.applyTo(table!, rows, where: where, asOf: at));
   }
 
   void listen() {
@@ -160,9 +260,10 @@ Stream<List<Map<String, dynamic>>> resilientRows(
     subscription = subscribe().listen(
       (rows) {
         hasValue = true;
-        emit(rows);
+        emit(rows, DateTime.now());
         if (cache) {
-          final kept = cacheTake == null ? rows : rows.take(cacheTake);
+          final wanted = cacheWhere == null ? rows : rows.where(cacheWhere);
+          final kept = cacheTake == null ? wanted : wanted.take(cacheTake);
           OfflineCache.write(cacheKey, cacheRow == null ? kept.toList() : kept.map(cacheRow).toList());
         }
       },
@@ -180,17 +281,17 @@ Stream<List<Map<String, dynamic>>> resilientRows(
         await box.load();
         local = box.changes.listen((_) {
           final rows = last;
-          if (rows != null && !cancelled) emit(rows);
+          if (rows != null && !cancelled) emit(rows, lastAt);
         });
       }
       final cached = cache ? await OfflineCache.readRows(cacheKey) : null;
       if (cached != null && !hasValue && !cancelled) {
         hasValue = true;
-        emit(cached);
+        emit(cached, null);
       } else if (box != null && !hasValue && !cancelled && box.pending.any((o) => o.table == table)) {
         // Nothing from the server yet (offline, first time): show at least
         // what was made on this device.
-        emit(const []);
+        emit(const [], null);
       }
       listen();
     },
@@ -216,11 +317,14 @@ Future<List<Map<String, dynamic>>?> fetchRowsOrCached(
   Outbox? outbox,
 }) async {
   List<Map<String, dynamic>>? rows;
+  DateTime? fetchedAt;
   if (OfflineCache.knownOffline) {
     rows = await OfflineCache.readRows(key);
   } else {
     try {
+      final started = DateTime.now();
       rows = await fetch().timeout(const Duration(seconds: 10));
+      fetchedAt = started;
       await OfflineCache.write(key, rows);
     } catch (e) {
       if (!isNetworkError(e)) rethrow;
@@ -231,5 +335,5 @@ Future<List<Map<String, dynamic>>?> fetchRowsOrCached(
   final box = outbox ?? Outbox.shared;
   await box.load();
   if (rows == null && !box.pending.any((o) => o.table == table)) return null;
-  return box.applyTo(table, rows ?? const [], where: where);
+  return box.applyTo(table, rows ?? const [], where: where, asOf: fetchedAt);
 }

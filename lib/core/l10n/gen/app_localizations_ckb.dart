@@ -2730,4 +2730,42 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get breakManagerUnlockHelp =>
       'خاوەن یان بەڕێوەبەر ژمارەی نهێنی خۆی دەنووسێت بۆ کردنەوەی کاشێر. پشووەکە کۆتایی دێت کاتێک کارمەندەکە دووبارە دەچێتە ژوورەوە.';
+
+  @override
+  String get syncDiscard => 'فڕێدان';
+
+  @override
+  String get syncDiscardTitle => 'ئەم گۆڕانکارییە فڕێ بدرێت؟';
+
+  @override
+  String syncDiscardBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '، لەگەڵ $count گۆڕانکاری دواتر کە پشتیان پێ دەبەستن.',
+      one: '، لەگەڵ ١ گۆڕانکاری دواتر کە پشتی پێ دەبەستێت.',
+      zero: '.',
+    );
+    return 'بۆ سێرڤەر نانێردرێت و لەم ئامێرە لادەبرێت$_temp0 ناگەڕێتەوە.';
+  }
+
+  @override
+  String syncHeldBehind(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count گۆڕانکاری دواتر چاوەڕێی ئەمە دەکەن',
+      one: '١ گۆڕانکاری دواتر چاوەڕێی ئەمە دەکات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncOtherStores(int count) {
+    return '$count چاوەڕێی فرۆشگایەکی تر';
+  }
+
+  @override
+  String get syncOtherStoresHelp =>
+      'گۆڕانکاری کە لەم ئامێرە کران کاتێک فرۆشگایەکی تر چووبووە ژوورەوە. کاتێک ئەو فرۆشگایە دووبارە لێرە بچێتە ژوورەوە دەنێردرێن.';
 }

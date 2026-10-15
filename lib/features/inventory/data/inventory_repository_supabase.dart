@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
@@ -237,15 +239,21 @@ class SupabaseInventoryRepository implements InventoryRepository {
   Stream<List<StockItemRecord>> watchStock(String storeId, String branchId) {
     // Cached so the till still knows what is on the shelf while offline.
     // Stock changes made on this device and not yet sent (sales, receipts,
-    // adjustments) are applied on top, so the numbers are right offline.
+    // transfers, returns, adjustments) are applied on top, so the numbers
+    // are right offline — and just after sending, until the server's new
+    // figures arrive.
+    DateTime? serverAt;
     return resilientRows(
       'stock.$storeId.$branchId',
-      () => _client.from('stock_items').stream(primaryKey: ['id']).eq('branch_id', branchId),
+      () => _client.from('stock_items').stream(primaryKey: ['id']).eq('branch_id', branchId).map((rows) {
+            serverAt = DateTime.now();
+            return rows;
+          }),
       table: 'stock_items',
     ).map(
       (rows) => withUnsyncedStock(
         rows.map(_mapStockItem).toList(),
-        Outbox.shared.pending,
+        Outbox.shared.stockChanges(asOf: serverAt),
         storeId: storeId,
         branchId: branchId,
       ),
@@ -254,18 +262,50 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Future<StockItemRecord?> getStockItem(String productId, String branchId) async {
-    final rows = await fetchRowsOrCached(
+    DateTime? fetchedAt;
+    var rows = await fetchRowsOrCached(
       'stock_item.$productId.$branchId',
-      () async => (await _client.from('stock_items').select().eq('product_id', productId).eq('branch_id', branchId))
-          .cast<Map<String, dynamic>>(),
+      () async {
+        final started = DateTime.now();
+        final fresh = (await _client.from('stock_items').select().eq('product_id', productId).eq('branch_id', branchId))
+            .cast<Map<String, dynamic>>();
+        fetchedAt = started;
+        return fresh;
+      },
     );
+    // Offline and never looked up on its own: the branch's stock list kept
+    // on the device has it.
+    final storeId = _writer.storeId;
+    if (rows == null && storeId != null) {
+      rows = (await OfflineCache.readRows('stock.$storeId.$branchId'))
+          ?.where((r) => r['product_id'] == productId)
+          .toList();
+    }
     final items = withUnsyncedStock(
       (rows ?? const []).map(_mapStockItem).toList(),
-      Outbox.shared.pending,
-      storeId: rows?.firstOrNull?['store_id'] as String? ?? '',
+      Outbox.shared.stockChanges(asOf: fetchedAt),
+      storeId: rows?.firstOrNull?['store_id'] as String? ?? storeId ?? '',
       branchId: branchId,
     );
     return items.where((i) => i.productId == productId).firstOrNull;
+  }
+
+  /// Rows of [table] for the signed-in store: fresh when online, else this
+  /// device's copy, with changes not yet sent laid over.
+  Future<List<Map<String, dynamic>>> _storeRowsOrCached(String table) async {
+    final storeId = _writer.storeId;
+    if (storeId == null) return const [];
+    try {
+      return await fetchRowsOrCached(
+            '$table.$storeId',
+            () async => (await _client.from(table).select().eq('store_id', storeId)).cast<Map<String, dynamic>>(),
+            table: table,
+            where: (r) => r['store_id'] == storeId,
+          ) ??
+          const [];
+    } catch (_) {
+      return const [];
+    }
   }
 
   @override
@@ -344,6 +384,21 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Future<void> receiveStockTransfer(String transferId, String receivedByUserId) async {
+    // Kept to send later: the stock it moves shows on both branches at once.
+    final stock = <Map<String, dynamic>>[];
+    if (!_writer.sendsNow) {
+      final transfer = (await _storeRowsOrCached('stock_transfers')).where((t) => t['id'] == transferId).firstOrNull;
+      if (transfer != null) {
+        for (final l in await _storeRowsOrCached('stock_transfer_lines')) {
+          if (l['stock_transfer_id'] != transferId) continue;
+          final qty = (l['quantity'] as num).toInt();
+          if (qty <= 0) continue;
+          stock
+            ..add(stockIncrement(l['product_id'] as String, transfer['from_branch_id'] as String, -qty))
+            ..add(stockIncrement(l['product_id'] as String, transfer['to_branch_id'] as String, qty));
+        }
+      }
+    }
     await _writer.rpc(
       'receive_stock_transfer',
       {'p_transfer_id': transferId, 'p_received_by_user_id': receivedByUserId},
@@ -354,6 +409,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
           'id': transferId,
           'set': {'status': 'received', 'received_by_user_id': receivedByUserId, 'received_at': _now()},
         },
+        ...stock,
       ],
     );
   }
@@ -469,6 +525,18 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Future<int> receivePurchaseOrder(String purchaseOrderId, String receivedByUserId) async {
+    // Kept to send later: what it adds shows on the branch's stock at once.
+    final stock = <Map<String, dynamic>>[];
+    if (!_writer.sendsNow) {
+      final po = (await _storeRowsOrCached('purchase_orders')).where((o) => o['id'] == purchaseOrderId).firstOrNull;
+      if (po != null) {
+        for (final l in await _storeRowsOrCached('purchase_order_lines')) {
+          if (l['purchase_order_id'] != purchaseOrderId) continue;
+          final qty = (l['quantity_ordered'] as num).toInt();
+          if (qty > 0) stock.add(stockIncrement(l['product_id'] as String, po['branch_id'] as String, qty));
+        }
+      }
+    }
     final result = await _writer.rpc(
       'receive_purchase_order',
       {'p_purchase_order_id': purchaseOrderId, 'p_received_by_user_id': receivedByUserId},
@@ -479,6 +547,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
           'id': purchaseOrderId,
           'set': {'status': 'received'},
         },
+        ...stock,
       ],
     );
     return (result as num?)?.toInt() ?? 0;
@@ -486,9 +555,19 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Stream<List<PurchaseOrderRecord>> watchPurchaseOrders(String storeId) {
+    var linesKept = false;
     return resilientRows(
       'purchase_orders.$storeId',
-      () => _client.from('purchase_orders').stream(primaryKey: ['id']).order('order_date', ascending: false),
+      () =>
+          _client.from('purchase_orders').stream(primaryKey: ['id']).order('order_date', ascending: false).map((rows) {
+                // A copy of the orders' lines, so receiving one offline can show
+                // what it adds to the stock.
+                if (!linesKept) {
+                  linesKept = true;
+                  unawaited(_storeRowsOrCached('purchase_order_lines'));
+                }
+                return rows;
+              }),
       table: 'purchase_orders',
     ).map((rows) => rows.map(_mapPo).toList());
   }
