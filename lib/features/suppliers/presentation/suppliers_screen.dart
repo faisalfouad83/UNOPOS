@@ -36,36 +36,47 @@ class SuppliersScreen extends ConsumerWidget {
         data: (suppliers) {
           if (suppliers.isEmpty) return Center(child: Text(l10n.suppliersAddSupplier));
           return ListView.builder(
+            // Room for the add button over the last row.
+            padding: const EdgeInsets.only(bottom: 88),
             itemCount: suppliers.length,
             itemBuilder: (context, index) {
               final supplier = suppliers[index];
               final balanceAsync = ref.watch(_supplierBalanceProvider(supplier.id));
+              final contact = [
+                if (supplier.contactPhone?.isNotEmpty ?? false) supplier.contactPhone!,
+                if (supplier.contactPerson?.isNotEmpty ?? false) supplier.contactPerson!,
+              ].join(' · ');
+              final balance = balanceAsync.valueOrNull;
               return ListTile(
                 leading: const Icon(Icons.local_shipping_outlined),
-                title: Text(supplier.name),
-                subtitle: Text([
-                  if (supplier.contactPhone?.isNotEmpty ?? false) supplier.contactPhone!,
-                  if (supplier.contactPerson?.isNotEmpty ?? false) supplier.contactPerson!,
-                ].join(' · ')),
-                trailing: balanceAsync.when(
-                  loading: () => const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-                  error: (e, st) => const Icon(Icons.error_outline),
-                  data: (balance) => Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
+                title: Text(supplier.name, maxLines: 2, overflow: TextOverflow.ellipsis),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (contact.isNotEmpty) Text(contact, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    balanceAsync.when(
+                      loading: () => const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+                      error: (e, st) => Text(l10n.errorGeneric),
+                      data: (balance) => Text(
                         '${l10n.suppliersBalanceOwed}: ${Money.format(balance)}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      if (balance > 0)
-                        TextButton(
-                          onPressed: () => showSupplierPaymentDialog(context, ref, supplier, balance),
-                          child: Text(l10n.suppliersRecordPayment),
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+                trailing: balance == null || balance <= 0
+                    ? null
+                    : IconButton.filledTonal(
+                        tooltip: l10n.suppliersRecordPayment,
+                        icon: const Icon(Icons.payments_outlined),
+                        onPressed: () async {
+                          final recorded = await showSupplierPaymentDialog(context, ref, supplier, balance);
+                          if (recorded) ref.invalidate(_supplierBalanceProvider(supplier.id));
+                        },
+                      ),
               );
             },
           );

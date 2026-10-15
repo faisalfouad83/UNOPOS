@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/outbox.dart';
 import '../../../core/offline/sync_service.dart';
 
 import '../domain/suppliers_models.dart';
@@ -106,14 +107,26 @@ class SupabaseSuppliersRepository implements SuppliersRepository {
   @override
   Future<int> balanceOwed(String supplierId) async {
     final key = 'supplier_balance.$supplierId';
+    int balance;
     try {
       final result = await _client
           .rpc('supplier_balance_owed', params: {'p_supplier_id': supplierId}).timeout(const Duration(seconds: 10));
       await OfflineCache.write(key, result);
-      return (result as num).toInt();
+      balance = (result as num).toInt();
     } catch (e) {
       if (!isNetworkError(e)) rethrow;
-      return ((await OfflineCache.read(key)) as num?)?.toInt() ?? 0;
+      balance = ((await OfflineCache.read(key)) as num?)?.toInt() ?? 0;
     }
+    // Purchases and payments made on this device and not sent yet.
+    await Outbox.shared.load();
+    for (final op in Outbox.shared.pending) {
+      final row = op.row;
+      if (op.kind != OutboxKind.insert || op.table != 'supplier_transactions' || row?['supplier_id'] != supplierId) {
+        continue;
+      }
+      final amount = (row!['amount_minor_units'] as num?)?.toInt() ?? 0;
+      balance += row['type'] == SupplierTransactionType.payment.name ? -amount : amount;
+    }
+    return balance;
   }
 }

@@ -20,44 +20,70 @@ class TaxRatesSection extends ConsumerWidget {
     final nameController = TextEditingController();
     final rateController = TextEditingController();
     bool isDefault = false;
+    var saving = false;
+    String? error;
 
     await showDialog<void>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text(l10n.actionAdd),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.commonName)),
-              const SizedBox(height: 12),
-              TextField(
-                controller: rateController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                decoration: InputDecoration(labelText: context.l10n.taxRatePercent),
-              ),
-              CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(context.l10n.taxDefaultForNew),
-                value: isDefault,
-                onChanged: (v) => setState(() => isDefault = v ?? false),
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.commonName)),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: rateController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                  decoration: InputDecoration(
+                    labelText: context.l10n.taxRatePercent,
+                    errorText: error,
+                    errorMaxLines: 2,
+                  ),
+                  onChanged: (_) => setState(() => error = null),
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(context.l10n.taxDefaultForNew),
+                  value: isDefault,
+                  onChanged: (v) => setState(() => isDefault = v ?? false),
+                ),
+              ],
+            ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
+            TextButton(onPressed: saving ? null : () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
             FilledButton(
-              onPressed: () async {
-                if (nameController.text.trim().isEmpty) return;
-                await ref.read(inventoryRepositoryProvider).createTaxRate(
-                      storeId,
-                      nameController.text.trim(),
-                      double.tryParse(rateController.text) ?? 0,
-                      isDefault: isDefault,
-                    );
-                if (context.mounted) Navigator.of(context).pop();
-              },
+              onPressed: saving
+                  ? null
+                  : () async {
+                      if (nameController.text.trim().isEmpty) return;
+                      final rate = double.tryParse(rateController.text.trim());
+                      if (rate == null || rate < 0 || rate > 100) {
+                        setState(() => error = context.l10n.invTaxRateInvalid);
+                        return;
+                      }
+                      setState(() => saving = true);
+                      try {
+                        // A new default replaces the old one (see createTaxRate).
+                        await ref.read(inventoryRepositoryProvider).createTaxRate(
+                              storeId,
+                              nameController.text.trim(),
+                              rate,
+                              isDefault: isDefault,
+                            );
+                        if (context.mounted) Navigator.of(context).pop();
+                      } catch (_) {
+                        if (!context.mounted) return;
+                        setState(() {
+                          saving = false;
+                          error = l10n.errorGeneric;
+                        });
+                      }
+                    },
               child: Text(l10n.actionSave),
             ),
           ],

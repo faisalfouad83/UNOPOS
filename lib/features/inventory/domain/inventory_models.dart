@@ -239,3 +239,26 @@ class PurchaseOrderRecord {
   final int totalCostMinorUnits;
   final bool paidImmediately;
 }
+
+/// Why a purchase order or stock transfer can't be received.
+enum ReceiptRefusal { alreadyReceived, cancelled }
+
+/// A purchase order or stock transfer that was already received (maybe on
+/// another device) or was cancelled, so its stock isn't added again.
+class ReceiptRefusedException implements Exception {
+  const ReceiptRefusedException(this.reason);
+  final ReceiptRefusal reason;
+
+  /// The refusal [error] means — the server says "… already received" or
+  /// "… was cancelled" — or null for any other error.
+  static ReceiptRefusedException? from(Object error) {
+    if (error is ReceiptRefusedException) return error;
+    final text = '$error'.toLowerCase();
+    if (text.contains('already received')) return const ReceiptRefusedException(ReceiptRefusal.alreadyReceived);
+    if (text.contains('was cancelled')) return const ReceiptRefusedException(ReceiptRefusal.cancelled);
+    return null;
+  }
+
+  @override
+  String toString() => 'ReceiptRefusedException(${reason.name})';
+}

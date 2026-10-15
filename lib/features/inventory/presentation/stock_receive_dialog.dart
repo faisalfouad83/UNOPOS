@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/barcode_input_field.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../pos/domain/barcode_scan.dart';
 import '../domain/inventory_models.dart';
@@ -19,6 +20,10 @@ class _Line {
   final quantity = TextEditingController(text: '1');
   final cost = TextEditingController();
   final price = TextEditingController();
+
+  /// Its stock movement is saved; a retry after a later failure (e.g. the
+  /// price change) must not add the stock again.
+  bool stockRecorded = false;
 
   void dispose() {
     quantity.dispose();
@@ -90,8 +95,20 @@ class _StockReceiveDialogState extends ConsumerState<_StockReceiveDialog> {
       existing.quantity.text = '${(int.tryParse(existing.quantity.text) ?? 0) + 1}';
     } else {
       final branchId = ref.read(sessionControllerProvider).currentBranchId!;
-      final stock = await ref.read(inventoryRepositoryProvider).getStockItem(product.id, branchId);
-      _lines.add(_Line(product, stock?.quantityOnHand ?? 0));
+      int onHand;
+      try {
+        onHand = (await ref.read(inventoryRepositoryProvider).getStockItem(product.id, branchId))?.quantityOnHand ?? 0;
+      } catch (_) {
+        onHand = 0;
+      }
+      if (!mounted) return;
+      // Scanned twice while the stock was being looked up.
+      final again = _lines.where((l) => l.product.id == product.id).firstOrNull;
+      if (again != null) {
+        again.quantity.text = '${(int.tryParse(again.quantity.text) ?? 0) + 1}';
+      } else {
+        _lines.add(_Line(product, onHand));
+      }
     }
     setState(() {
       _search.clear();
@@ -108,6 +125,21 @@ class _StockReceiveDialogState extends ConsumerState<_StockReceiveDialog> {
       return;
     }
     _add(product);
+  }
+
+  /// Receives with the phone's camera, one product after another (each
+  /// scan of the same product counts one more).
+  Future<void> _scanWithCamera() async {
+    final l10n = AppLocalizations.of(context);
+    await scanBarcodesContinuously(
+      context,
+      onCode: (code) async {
+        final product = matchScannedProduct(widget.products, code);
+        if (product == null) return l10n.posBarcodeNotFound(code);
+        await _add(product);
+        return '✓ ${product.name}';
+      },
+    );
   }
 
   int? _money(String text) => text.trim().isEmpty ? null : Money.toMinorUnits(double.tryParse(text.trim()) ?? -1);
@@ -137,16 +169,19 @@ class _StockReceiveDialogState extends ConsumerState<_StockReceiveDialog> {
         final newCost = _money(l.cost.text);
         final newPrice = _money(l.price.text);
         final p = l.product;
-        await repo.recordStockMovement(
-          storeId: p.storeId,
-          productId: p.id,
-          branchId: session.currentBranchId!,
-          type: StockMovementType.purchaseIn,
-          quantity: qty,
-          unitCostMinorUnits: newCost ?? p.costPriceMinorUnits,
-          referenceType: 'STOCK_RECEIPT',
-          createdByUserId: session.employee?.id ?? p.storeId,
-        );
+        if (!l.stockRecorded) {
+          await repo.recordStockMovement(
+            storeId: p.storeId,
+            productId: p.id,
+            branchId: session.currentBranchId!,
+            type: StockMovementType.purchaseIn,
+            quantity: qty,
+            unitCostMinorUnits: newCost ?? p.costPriceMinorUnits,
+            referenceType: 'STOCK_RECEIPT',
+            createdByUserId: session.employee?.id ?? p.storeId,
+          );
+          l.stockRecorded = true;
+        }
         if ((newCost != null && newCost != p.costPriceMinorUnits) ||
             (newPrice != null && newPrice != p.sellPriceMinorUnits)) {
           await repo.updateProduct(
@@ -173,11 +208,15 @@ class _StockReceiveDialogState extends ConsumerState<_StockReceiveDialog> {
       }
       if (mounted) Navigator.of(context).pop(done);
     } catch (_) {
-      // Lines already saved stay saved; show which one stopped.
+      // Lines already saved stay saved (and go from the list); the one
+      // that stopped keeps its place, without its stock added twice.
       if (mounted) {
         setState(() {
           _saving = false;
           _error = l10n.stockReceivePartial(done, _lines.length);
+          for (final l in _lines.take(done)) {
+            l.dispose();
+          }
           _lines.removeRange(0, done);
         });
       }
@@ -195,118 +234,128 @@ class _StockReceiveDialogState extends ConsumerState<_StockReceiveDialog> {
       title: Text(l10n.stockReceiveTitle),
       content: SizedBox(
         width: 640,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.stockReceiveHelp, style: theme.textTheme.bodySmall),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _search,
-              focusNode: _searchFocus,
-              autofocus: true,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.qr_code_scanner),
-                hintText: l10n.posScanHint,
-                errorText: _error,
-              ),
-              onChanged: (_) => setState(() => _error = null),
-              onSubmitted: _onSubmitted,
-              onEditingComplete: () {},
-            ),
-            if (matches.isNotEmpty)
-              Card(
-                margin: const EdgeInsets.only(top: 4),
-                child: Column(
-                  children: [
-                    for (final p in matches)
-                      ListTile(
-                        dense: true,
-                        leading: ProductThumb(imagePath: p.imagePath, size: 32),
-                        title: Text(p.name),
-                        subtitle: Text('${p.barcode ?? p.sku} · ${Money.format(p.sellPriceMinorUnits)}'),
-                        onTap: () => _add(p),
-                      ),
-                  ],
+        // Everything scrolls together, so on a phone (with the keyboard
+        // open) every line can still be reached.
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l10n.stockReceiveHelp, style: theme.textTheme.bodySmall),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _search,
+                focusNode: _searchFocus,
+                autofocus: true,
+                decoration: InputDecoration(
+                  prefixIcon: cameraScanAvailable
+                      ? IconButton(
+                          icon: const Icon(Icons.photo_camera_outlined),
+                          tooltip: l10n.posScanCamera,
+                          onPressed: _saving ? null : _scanWithCamera,
+                        )
+                      : const Icon(Icons.qr_code_scanner),
+                  errorMaxLines: 3,
+                  hintText: l10n.posScanHint,
+                  errorText: _error,
                 ),
+                onChanged: (_) => setState(() => _error = null),
+                onSubmitted: _onSubmitted,
+                onEditingComplete: () {},
               ),
-            const SizedBox(height: 8),
-            Flexible(
-              child: _lines.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(l10n.stockReceiveEmpty, textAlign: TextAlign.center),
-                    )
-                  : ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: _lines.length,
-                      separatorBuilder: (_, __) => const Divider(height: 16),
-                      itemBuilder: (context, i) {
-                        final l = _lines[i];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children: [
-                                ProductThumb(imagePath: l.product.imagePath, size: 32),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    '${l.product.name} · ${l10n.inventoryStockLevel}: ${l.onHand}',
-                                    style: theme.textTheme.titleSmall,
+              if (matches.isNotEmpty)
+                Card(
+                  margin: const EdgeInsets.only(top: 4),
+                  child: Column(
+                    children: [
+                      for (final p in matches)
+                        ListTile(
+                          dense: true,
+                          leading: ProductThumb(imagePath: p.imagePath, size: 32),
+                          title: Text(p.name),
+                          subtitle: Text('${p.barcode ?? p.sku} · ${Money.format(p.sellPriceMinorUnits)}'),
+                          onTap: () => _add(p),
+                        ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 8),
+              if (_lines.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(l10n.stockReceiveEmpty, textAlign: TextAlign.center),
+                )
+              else
+                for (var i = 0; i < _lines.length; i++)
+                  Builder(
+                    builder: (context) {
+                      final l = _lines[i];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (i > 0) const Divider(height: 16),
+                          Row(
+                            children: [
+                              ProductThumb(imagePath: l.product.imagePath, size: 32),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  '${l.product.name} · ${l10n.inventoryStockLevel}: ${l.onHand}',
+                                  style: theme.textTheme.titleSmall,
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: l10n.actionRemove,
+                                icon: const Icon(Icons.close),
+                                onPressed: _saving ? null : () => setState(() => _lines.removeAt(i).dispose()),
+                              ),
+                            ],
+                          ),
+                          AdaptiveRow(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: l.quantity,
+                                  enabled: !l.stockRecorded,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  decoration: InputDecoration(labelText: l10n.commonQuantity),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: TextField(
+                                  controller: l.cost,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  inputFormatters: money,
+                                  decoration: InputDecoration(
+                                    labelText: l10n.stockReceiveNewCost,
+                                    hintText: Money.inputText(l.product.costPriceMinorUnits),
+                                    helperText: l10n.stockReceiveKeepIfEmpty,
                                   ),
                                 ),
-                                IconButton(
-                                  tooltip: l10n.actionRemove,
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () => setState(() => _lines.removeAt(i).dispose()),
-                                ),
-                              ],
-                            ),
-                            AdaptiveRow(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: l.quantity,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                    decoration: InputDecoration(labelText: l10n.commonQuantity),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: TextField(
+                                  controller: l.price,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  inputFormatters: money,
+                                  decoration: InputDecoration(
+                                    labelText: l10n.stockReceiveNewPrice,
+                                    hintText: Money.inputText(l.product.sellPriceMinorUnits),
+                                    helperText: l10n.stockReceiveKeepIfEmpty,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: TextField(
-                                    controller: l.cost,
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                    inputFormatters: money,
-                                    decoration: InputDecoration(
-                                      labelText: l10n.stockReceiveNewCost,
-                                      hintText: Money.inputText(l.product.costPriceMinorUnits),
-                                      helperText: l10n.stockReceiveKeepIfEmpty,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: TextField(
-                                    controller: l.price,
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                    inputFormatters: money,
-                                    decoration: InputDecoration(
-                                      labelText: l10n.stockReceiveNewPrice,
-                                      hintText: Money.inputText(l.product.sellPriceMinorUnits),
-                                      helperText: l10n.stockReceiveKeepIfEmpty,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-            ),
-          ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+            ],
+          ),
         ),
       ),
       actions: [

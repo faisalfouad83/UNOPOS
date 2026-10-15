@@ -21,49 +21,92 @@ class DiscountsSection extends ConsumerWidget {
     final nameController = TextEditingController();
     final valueController = TextEditingController();
     DiscountType type = DiscountType.percentOff;
+    var saving = false;
+    String? error;
 
     await showDialog<void>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text(l10n.actionAdd),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.commonName)),
-              SizedBox(height: 12),
-              SegmentedButton<DiscountType>(
-                segments: [
-                  ButtonSegment(value: DiscountType.percentOff, label: Text(context.l10n.discountPercentOff)),
-                  ButtonSegment(value: DiscountType.amountOff, label: Text(context.l10n.discountAmountOff)),
-                ],
-                selected: {type},
-                onSelectionChanged: (s) => setState(() => type = s.first),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: valueController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                decoration: InputDecoration(labelText: type == DiscountType.percentOff ? context.l10n.posDiscountPercent : l10n.commonAmount),
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.commonName)),
+                const SizedBox(height: 12),
+                SegmentedButton<DiscountType>(
+                  segments: [
+                    ButtonSegment(value: DiscountType.percentOff, label: Text(context.l10n.discountPercentOff)),
+                    ButtonSegment(value: DiscountType.amountOff, label: Text(context.l10n.discountAmountOff)),
+                  ],
+                  selected: {type},
+                  onSelectionChanged: (s) => setState(() {
+                    type = s.first;
+                    valueController.clear();
+                    error = null;
+                  }),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: valueController,
+                  // A percentage is a whole number (it's stored as one).
+                  keyboardType: type == DiscountType.percentOff
+                      ? TextInputType.number
+                      : const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    type == DiscountType.percentOff
+                        ? FilteringTextInputFormatter.digitsOnly
+                        : FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: type == DiscountType.percentOff ? context.l10n.posDiscountPercent : l10n.commonAmount,
+                    errorText: error,
+                    errorMaxLines: 2,
+                  ),
+                  onChanged: (_) => setState(() => error = null),
+                ),
+              ],
+            ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
+            TextButton(onPressed: saving ? null : () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
             FilledButton(
-              onPressed: () async {
-                if (nameController.text.trim().isEmpty) return;
-                final rawValue = double.tryParse(valueController.text) ?? 0;
-                final value = type == DiscountType.percentOff ? rawValue.round() : Money.toMinorUnits(rawValue);
-                await ref.read(inventoryRepositoryProvider).createDiscount(
-                      storeId: storeId,
-                      name: nameController.text.trim(),
-                      type: type,
-                      value: value,
-                    );
-                if (context.mounted) Navigator.of(context).pop();
-              },
+              onPressed: saving
+                  ? null
+                  : () async {
+                      if (nameController.text.trim().isEmpty) return;
+                      final int value;
+                      if (type == DiscountType.percentOff) {
+                        value = int.tryParse(valueController.text.trim()) ?? 0;
+                        if (value < 1 || value > 100) {
+                          setState(() => error = context.l10n.invDiscountPercentInvalid);
+                          return;
+                        }
+                      } else {
+                        value = Money.toMinorUnits(double.tryParse(valueController.text.trim()) ?? 0);
+                        if (value <= 0) {
+                          setState(() => error = context.l10n.invAmountInvalid);
+                          return;
+                        }
+                      }
+                      setState(() => saving = true);
+                      try {
+                        await ref.read(inventoryRepositoryProvider).createDiscount(
+                              storeId: storeId,
+                              name: nameController.text.trim(),
+                              type: type,
+                              value: value,
+                            );
+                        if (context.mounted) Navigator.of(context).pop();
+                      } catch (_) {
+                        if (!context.mounted) return;
+                        setState(() {
+                          saving = false;
+                          error = l10n.errorGeneric;
+                        });
+                      }
+                    },
               child: Text(l10n.actionSave),
             ),
           ],
