@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/widgets/numeric_pin_pad.dart';
+import '../domain/account_rules.dart';
 import '../domain/session_controller.dart';
 import 'developer_signin_dialog.dart';
 
@@ -37,8 +38,9 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
     super.dispose();
   }
 
-  void _startLock() {
-    setState(() => _lockedSeconds = _lockDurationSeconds);
+  void _startLock([int seconds = _lockDurationSeconds]) {
+    _lockTimer?.cancel();
+    setState(() => _lockedSeconds = seconds);
     _lockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return;
       setState(() => _lockedSeconds--);
@@ -60,6 +62,16 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
     final PinResult result;
     try {
       result = await ref.read(sessionControllerProvider.notifier).submitPin(_pin, selectedEmployee: selectedEmployee);
+    } on PinLockedException catch (e) {
+      // The server counts wrong PINs too (on every device), and asks to wait.
+      if (mounted) {
+        setState(() {
+          _pin = '';
+          _checking = false;
+        });
+        _startLock(e.seconds);
+      }
+      return;
     } catch (e) {
       // Without this, any server-side failure (e.g. a stale/mismatched auth
       // session) left _checking stuck true forever — the pad looked frozen
@@ -122,55 +134,59 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
           },
         ),
       ),
+      // Scrolls when a phone is held sideways and the pad doesn't fit.
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (employee != null) ...[
-              Text(employee.name, style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 8),
-            ],
-            Text(l10n.pinPadTitle, style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 24),
-            if (locked)
-              Text(
-                l10n.pinPadLocked(_lockedSeconds),
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              )
-            else if (_wrongAttempts > 0)
-              Text(
-                l10n.pinPadIncorrect,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              )
-            else if (_inUseOn != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  l10n.pinDeviceInUse(_inUseOn!.isEmpty ? '—' : _inUseOn!),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (employee != null) ...[
+                Text(employee.name, style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 8),
+              ],
+              Text(l10n.pinPadTitle, style: Theme.of(context).textTheme.bodyLarge),
+              const SizedBox(height: 24),
+              if (locked)
+                Text(
+                  l10n.pinPadLocked(_lockedSeconds),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                )
+              else if (_wrongAttempts > 0)
+                Text(
+                  l10n.pinPadIncorrect,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                )
+              else if (_inUseOn != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    l10n.pinDeviceInUse(_inUseOn!.isEmpty ? '—' : _inUseOn!),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
+                )
+              else if (_error != null)
+                Text(
+                  '${l10n.errorGeneric}\n$_error',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
-              )
-            else if (_error != null)
-              Text(
-                '${l10n.errorGeneric}\n$_error',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            const SizedBox(height: 16),
-            IgnorePointer(
-              ignoring: locked || _checking,
-              child: Opacity(
-                opacity: locked ? 0.4 : 1,
-                child: NumericPinPad(
-                  value: _pin,
-                  maxLength: 4,
-                  onChanged: (v) => setState(() => _pin = v),
-                  onSubmit: _onComplete,
+              const SizedBox(height: 16),
+              IgnorePointer(
+                ignoring: locked || _checking,
+                child: Opacity(
+                  opacity: locked ? 0.4 : 1,
+                  child: NumericPinPad(
+                    value: _pin,
+                    maxLength: 4,
+                    onChanged: (v) => setState(() => _pin = v),
+                    onSubmit: _onComplete,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

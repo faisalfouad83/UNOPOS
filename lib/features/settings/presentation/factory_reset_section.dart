@@ -59,7 +59,16 @@ class FactoryResetSection extends ConsumerWidget {
       await dbFile.delete();
     }
     final prefs = await SharedPreferences.getInstance();
+    // Changes made on this device and not yet sent to the server are kept:
+    // they belong to the store's records, not to this device's setup.
+    final unsent = {
+      for (final key in prefs.getKeys())
+        if (key.startsWith('outbox.')) key: prefs.getString(key),
+    };
     await prefs.clear();
+    for (final e in unsent.entries) {
+      if (e.value != null) await prefs.setString(e.key, e.value!);
+    }
 
     if (context.mounted) {
       await showDialog<void>(

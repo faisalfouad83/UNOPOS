@@ -111,6 +111,31 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
       );
     }
 
+    // Start-up failed (not just a missing connection): say so and offer to
+    // try again, instead of opening screens whose checks never ran.
+    if (bootstrap.hasError) {
+      final isRtl = locale.languageCode == 'ar' || locale.languageCode == 'ckb';
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: themeMode,
+        locale: locale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          KurdishFallbackMaterialLocalizationsDelegate(),
+          KurdishFallbackWidgetsLocalizationsDelegate(),
+          KurdishFallbackCupertinoLocalizationsDelegate(),
+        ],
+        builder: (context, child) => Directionality(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+          child: GlassBackground(child: child ?? const SizedBox.shrink()),
+        ),
+        home: _StartupFailedScreen(onRetry: () => ref.invalidate(appBootstrapProvider)),
+      );
+    }
+
     final storeId = bootstrap.value?.store?.id;
     if (storeId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _syncSettingsOnce(storeId));
@@ -184,6 +209,33 @@ class _SplashScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const CircularProgressIndicator(),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StartupFailedScreen extends StatelessWidget {
+  const _StartupFailedScreen({required this.onRetry});
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const UnoposLogo(size: 64),
+              const SizedBox(height: 16),
+              Text(l10n.errorGeneric, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              FilledButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.actionRetry)),
+            ],
+          ),
         ),
       ),
     );

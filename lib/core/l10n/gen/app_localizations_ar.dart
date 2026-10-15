@@ -2719,4 +2719,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String debtsPayMoreThanOwed(String amount) {
     return 'المبلغ أكثر من الدين المتبقي ($amount)';
   }
+
+  @override
+  String get hrPinFourDigits => 'رمز الدخول 4 أرقام';
+
+  @override
+  String hrPinChangeConfirm(String name) {
+    return 'أكّد برمزك أنت لتغيير رمز $name.';
+  }
+
+  @override
+  String get storeSignOutConfirm =>
+      'تسجيل خروج هذا الجهاز من المتجر؟ ستحتاج بيانات دخول المتجر للرجوع.';
+
+  @override
+  String get storeSignOutPendingWarning =>
+      'توجد تغييرات على هذا الجهاز لم تصل للخادم بعد. ستبقى محفوظة وتُرسل عند تسجيل دخول هذا المتجر هنا مرة أخرى. تسجيل الخروج على أي حال؟';
 }

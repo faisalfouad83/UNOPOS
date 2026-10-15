@@ -36,7 +36,9 @@ Set<AppPermission> defaultPermissionsFor(StoreRole role) => switch (role) {
 String encodePermissions(Set<AppPermission> permissions) => permissions.map((p) => p.name).join(',');
 
 Set<AppPermission>? decodePermissions(String? text) {
-  if (text == null || text.trim().isEmpty) return null;
+  if (text == null) return null;
+  // Saved with every permission taken away: none, not the role's defaults.
+  if (text.trim().isEmpty) return <AppPermission>{};
   final names = text.split(',').map((s) => s.trim()).toSet();
   return AppPermission.values.where((p) => names.contains(p.name)).toSet();
 }

@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/offline/offline_cache.dart';
 import '../../../core/offline/sync_service.dart';
 import '../domain/settings_models.dart';
+import 'device_settings.dart';
 import '../domain/settings_repository.dart';
 
 class SupabaseSettingsRepository implements SettingsRepository {
@@ -48,8 +49,8 @@ class SupabaseSettingsRepository implements SettingsRepository {
       table: 'app_settings',
       where: (r) => r['store_id'] == storeId,
     );
-    if (rows != null && rows.isNotEmpty) return _mapRow(rows.first);
-    if (rows == null) return AppSettingsRecord(storeId: storeId);
+    if (rows != null && rows.isNotEmpty) return DeviceSettings.applyTo(_mapRow(rows.first));
+    if (rows == null) return DeviceSettings.applyTo(AppSettingsRecord(storeId: storeId));
 
     // register_store() already inserts this row at store-creation time, so
     // this path is defensive-only — but two callers racing to create it
@@ -79,11 +80,14 @@ class SupabaseSettingsRepository implements SettingsRepository {
       () => _client.from('app_settings').stream(primaryKey: ['id']).eq('store_id', storeId),
       table: 'app_settings',
       where: (r) => r['store_id'] == storeId,
-    ).where((rows) => rows.isNotEmpty).map((rows) => _mapRow(rows.first));
+    ).where((rows) => rows.isNotEmpty).asyncMap((rows) => DeviceSettings.applyTo(_mapRow(rows.first)));
   }
 
   @override
   Future<void> updateSettings(AppSettingsRecord settings) async {
+    // The printer and backups are this device's own (see DeviceSettings);
+    // the store row keeps them only as the starting point for new devices.
+    await DeviceSettings.save(settings);
     await _writer.update(
         'app_settings',
         {

@@ -31,9 +31,29 @@ AccountChangeRefusal? canChangeRole(EmployeeRecord actor, EmployeeRecord target,
   return null;
 }
 
+/// Whether [actor] may change [target]'s PIN: anyone their own; the owner
+/// anyone's; a manager anyone's but the owner's or another manager's.
+AccountChangeRefusal? canChangePin(EmployeeRecord actor, EmployeeRecord target) {
+  if (actor.id == target.id || actor.role == StoreRole.owner) return null;
+  if (actor.role != StoreRole.manager) return AccountChangeRefusal.notAllowed;
+  if (target.role == StoreRole.owner || target.role == StoreRole.manager) {
+    return AccountChangeRefusal.onlyOwnerForManager;
+  }
+  return null;
+}
+
 /// A refused account change, from the server or the local rules.
 class AccountChangeException implements Exception {
   const AccountChangeException(this.refusal, {this.wrongPin = false});
   final AccountChangeRefusal? refusal;
   final bool wrongPin;
 }
+
+/// Too many wrong PINs in a row: sign-in waits [seconds] before trying again.
+class PinLockedException implements Exception {
+  const PinLockedException(this.seconds);
+  final int seconds;
+}
+
+/// A PIN is four digits (what the sign-in pad takes).
+bool isValidPin(String pin) => RegExp(r'^[0-9]{4}$').hasMatch(pin);

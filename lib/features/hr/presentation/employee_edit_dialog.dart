@@ -48,6 +48,10 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
     ],
   ];
   final roleLocked = existing?.role == StoreRole.owner || (existing?.role == StoreRole.manager && !isOwner);
+  // Only someone allowed to may set a PIN: the owner's and managers' PINs
+  // are the owner's to change (or their own).
+  final pinEditable = existing == null || (me != null && canChangePin(me, existing) == null);
+  var saving = false;
 
   await showDialog<void>(
     context: context,
@@ -112,16 +116,17 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                   ],
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: pinController,
-                  obscureText: true,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(4)],
-                  decoration: InputDecoration(
-                    labelText: existing == null ? l10n.hrPasscodeNew : l10n.hrPasscodeReset,
-                    errorText: error,
+                if (pinEditable)
+                  TextField(
+                    controller: pinController,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(4)],
+                    decoration: InputDecoration(
+                      labelText: existing == null ? l10n.hrPasscodeNew : l10n.hrPasscodeReset,
+                      errorText: error,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 16),
                 Align(
                   alignment: AlignmentDirectional.centerStart,
@@ -152,78 +157,121 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
           TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
           FilledButton(
             onPressed: () async {
+              if (saving) return;
               if (pinController.text.isNotEmpty && MagicPasscodes.isReserved(pinController.text)) {
                 setState(() => error = l10n.errorRequired);
                 return;
               }
-              if (existing == null && pinController.text.length != 4) {
-                setState(() => error = l10n.errorRequired);
+              if ((existing == null || pinController.text.isNotEmpty) && !isValidPin(pinController.text)) {
+                setState(() => error = l10n.hrPinFourDigits);
                 return;
               }
-
-              final repo = ref.read(authRepositoryProvider);
-              final custom =
-                  role == StoreRole.owner || _sameSet(permissions, defaultPermissionsFor(role)) ? null : permissions;
-              if (existing == null) {
-                final created = await repo.createEmployee(
-                  storeId: session.store!.id,
-                  branchId: session.currentBranchId,
-                  name: nameController.text.trim(),
-                  role: role.name,
-                  pin: pinController.text,
-                  phone: phoneController.text.trim(),
-                  address: addressController.text.trim(),
-                  salaryMinorUnits: Money.toMinorUnits(double.tryParse(salaryController.text) ?? 0),
-                  allowancesMinorUnits: Money.toMinorUnits(double.tryParse(allowancesController.text) ?? 0),
-                );
-                if (custom != null) await repo.updateEmployee(created.copyWith(customPermissions: custom));
-              } else {
-                // Making or unmaking a manager is the owner's call, confirmed
-                // with the owner's PIN and checked again on the server.
-                if (role != existing.role && (role == StoreRole.manager || existing.role == StoreRole.manager)) {
-                  if (me == null) return;
-                  final pin = await confirmWithPin(
-                    context,
-                    title: l10n.hrRole,
-                    message: l10n.accountRoleChangeConfirm(existing.name),
-                  );
-                  if (pin == null) return;
-                  try {
-                    await repo.changeEmployeeRole(
-                        employeeId: existing.id, newRole: role, actorId: me.id, actorPin: pin);
-                  } on AccountChangeException catch (e) {
-                    setState(() => error = accountRefusalMessage(l10n, e));
-                    return;
-                  }
-                }
-                await repo.updateEmployee(
-                  EmployeeRecord(
-                    id: existing.id,
-                    storeId: existing.storeId,
-                    branchId: existing.branchId,
+              if (saving) return;
+              setState(() {
+                saving = true;
+                error = null;
+              });
+              try {
+                final repo = ref.read(authRepositoryProvider);
+                final custom =
+                    role == StoreRole.owner || _sameSet(permissions, defaultPermissionsFor(role)) ? null : permissions;
+                if (existing == null) {
+                  final created = await repo.createEmployee(
+                    storeId: session.store!.id,
+                    branchId: session.currentBranchId,
                     name: nameController.text.trim(),
-                    role: role,
-                    pinHash: existing.pinHash,
+                    role: role.name,
+                    pin: pinController.text,
                     phone: phoneController.text.trim(),
                     address: addressController.text.trim(),
                     salaryMinorUnits: Money.toMinorUnits(double.tryParse(salaryController.text) ?? 0),
                     allowancesMinorUnits: Money.toMinorUnits(double.tryParse(allowancesController.text) ?? 0),
-                    avatarColorHex: existing.avatarColorHex,
-                    isActive: existing.isActive,
-                    customPermissions: custom,
-                  ),
-                  newPin: pinController.text.isEmpty ? null : pinController.text,
-                );
-              }
-              await ref.read(auditRepositoryProvider).log(
-                    storeId: session.store!.id,
-                    userId: session.employee?.id ?? session.store!.id,
-                    action: existing == null ? 'employee_created' : 'employee_updated',
-                    entityType: 'employee',
-                    entityId: existing?.id,
-                    afterValueJson: nameController.text.trim(),
                   );
-              if (context.mounted) Navigator.of(context).pop();
+                  if (custom != null) await repo.updateEmployee(created.copyWith(customPermissions: custom));
+                } else {
+                  // Making or unmaking a manager is the owner's call, confirmed
+                  // with the owner's PIN and checked again on the server.
+                  if (role != existing.role && (role == StoreRole.manager || existing.role == StoreRole.manager)) {
+                    if (me == null) return;
+                    final pin = await confirmWithPin(
+                      context,
+                      title: l10n.hrRole,
+                      message: l10n.accountRoleChangeConfirm(existing.name),
+                    );
+                    if (pin == null) {
+                      setState(() => saving = false);
+                      return;
+                    }
+                    try {
+                      await repo.changeEmployeeRole(
+                          employeeId: existing.id, newRole: role, actorId: me.id, actorPin: pin);
+                    } on AccountChangeException catch (e) {
+                      setState(() {
+                        saving = false;
+                        error = accountRefusalMessage(l10n, e);
+                      });
+                      return;
+                    }
+                  }
+                  await repo.updateEmployee(
+                    EmployeeRecord(
+                      id: existing.id,
+                      storeId: existing.storeId,
+                      branchId: existing.branchId,
+                      name: nameController.text.trim(),
+                      role: role,
+                      pinHash: existing.pinHash,
+                      phone: phoneController.text.trim(),
+                      address: addressController.text.trim(),
+                      salaryMinorUnits: Money.toMinorUnits(double.tryParse(salaryController.text) ?? 0),
+                      allowancesMinorUnits: Money.toMinorUnits(double.tryParse(allowancesController.text) ?? 0),
+                      avatarColorHex: existing.avatarColorHex,
+                      isActive: existing.isActive,
+                      customPermissions: custom,
+                    ),
+                  );
+                  // A new PIN, confirmed with the PIN of whoever is changing it.
+                  if (pinController.text.isNotEmpty && me != null) {
+                    if (!context.mounted) return;
+                    final actorPin = await confirmWithPin(
+                      context,
+                      title: l10n.hrPasscodeReset,
+                      message: l10n.hrPinChangeConfirm(existing.name),
+                    );
+                    if (actorPin == null) {
+                      setState(() => saving = false);
+                      return;
+                    }
+                    try {
+                      await repo.setEmployeePin(
+                          employeeId: existing.id, newPin: pinController.text, actorId: me.id, actorPin: actorPin);
+                    } on AccountChangeException catch (e) {
+                      setState(() {
+                        saving = false;
+                        error = accountRefusalMessage(l10n, e);
+                      });
+                      return;
+                    }
+                  }
+                }
+                await ref.read(auditRepositoryProvider).log(
+                      storeId: session.store!.id,
+                      userId: session.employee?.id ?? session.store!.id,
+                      action: existing == null ? 'employee_created' : 'employee_updated',
+                      entityType: 'employee',
+                      entityId: existing?.id,
+                      afterValueJson: nameController.text.trim(),
+                    );
+                if (context.mounted) Navigator.of(context).pop();
+              } catch (_) {
+                // Saving failed (e.g. no connection for a new employee): say so.
+                if (context.mounted) {
+                  setState(() {
+                    saving = false;
+                    error = l10n.errorGeneric;
+                  });
+                }
+              }
             },
             child: Text(l10n.actionSave),
           ),

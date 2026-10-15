@@ -969,5 +969,12 @@
   "@shiftDifference": {"placeholders": {"amount": {"type": "String"}}},
 
   "debtsPayMoreThanOwed": "That's more than what is owed ({amount})",
-  "@debtsPayMoreThanOwed": {"placeholders": {"amount": {"type": "String"}}}
+  "@debtsPayMoreThanOwed": {"placeholders": {"amount": {"type": "String"}}},
+
+  "hrPinFourDigits": "The PIN is 4 digits",
+  "hrPinChangeConfirm": "Confirm with your own PIN to change {name}'s PIN.",
+  "@hrPinChangeConfirm": {"placeholders": {"name": {"type": "String"}}},
+
+  "storeSignOutConfirm": "Sign this device out of the store? You will need the store's login to come back.",
+  "storeSignOutPendingWarning": "Some changes made on this device haven't reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?"
 }

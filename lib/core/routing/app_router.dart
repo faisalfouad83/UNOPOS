@@ -52,7 +52,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: refresh,
     redirect: (context, state) {
       final bootstrap = ref.read(appBootstrapProvider);
-      if (!bootstrap.hasValue) return null; // wait for bootstrap to resolve
+      // Until start-up has finished (or if it failed), only the first
+      // screen opens: no other screen is reachable without its checks.
+      if (!bootstrap.hasValue) {
+        return state.matchedLocation == RoutePaths.activation ? null : RoutePaths.activation;
+      }
       final session = ref.read(sessionControllerProvider);
       final hasValidLicense = ref.read(licenseValidProvider);
       return RouteGuard.redirect(

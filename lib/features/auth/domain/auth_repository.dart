@@ -48,7 +48,17 @@ abstract class AuthRepository {
     String avatarColorHex = '#0F6E5C',
   });
 
-  Future<void> updateEmployee(EmployeeRecord employee, {String? newPin});
+  /// Saves [employee]'s details. A PIN is changed with [setEmployeePin].
+  Future<void> updateEmployee(EmployeeRecord employee);
+
+  /// Changes [employeeId]'s PIN on behalf of [actorId], who proves it with
+  /// their own PIN (see `canChangePin`). Refused with AccountChangeException.
+  Future<void> setEmployeePin({
+    required String employeeId,
+    required String newPin,
+    required String actorId,
+    required String actorPin,
+  });
 
   Future<void> setEmployeeActive(String employeeId, bool isActive);
 
@@ -68,5 +78,8 @@ abstract class AuthRepository {
 
   Stream<List<EmployeeRecord>> watchEmployees(String storeId);
 
-  Future<EmployeeRecord?> findEmployeeByPin(String storeId, String pin);
+  /// The active employee with [pin]; with [employeeId], only that employee
+  /// (two employees may share a PIN). Throws [PinLockedException] after too
+  /// many wrong PINs in a row.
+  Future<EmployeeRecord?> findEmployeeByPin(String storeId, String pin, {String? employeeId});
 }

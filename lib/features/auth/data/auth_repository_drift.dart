@@ -197,7 +197,7 @@ class DriftAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> updateEmployee(EmployeeRecord employee, {String? newPin}) async {
+  Future<void> updateEmployee(EmployeeRecord employee) async {
     await (_db.update(_db.users)..where((t) => t.id.equals(employee.id))).write(
       UsersCompanion(
         name: Value(employee.name),
@@ -210,7 +210,6 @@ class DriftAuthRepository implements AuthRepository {
         avatarColorHex: Value(employee.avatarColorHex),
         isActive: Value(employee.isActive),
         permissions: Value(employee.customPermissions == null ? null : encodePermissions(employee.customPermissions!)),
-        pinHash: newPin != null ? Value(PasscodeHasher.hash(newPin)) : const Value.absent(),
       ),
     );
   }
@@ -222,7 +221,7 @@ class DriftAuthRepository implements AuthRepository {
   ) async {
     final targetRow = await (_db.select(_db.users)..where((t) => t.id.equals(employeeId))).getSingleOrNull();
     if (targetRow == null) throw const AccountChangeException(AccountChangeRefusal.notAllowed);
-    final actor = await findEmployeeByPin(targetRow.storeId, actorPin);
+    final actor = await findEmployeeByPin(targetRow.storeId, actorPin, employeeId: actorId);
     if (actor == null || actor.id != actorId) throw const AccountChangeException(null, wrongPin: true);
     return (actor, _mapEmployee(targetRow));
   }
@@ -266,8 +265,25 @@ class DriftAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<EmployeeRecord?> findEmployeeByPin(String storeId, String pin) async {
-    final rows = await (_db.select(_db.users)..where((t) => t.storeId.equals(storeId) & t.isActive.equals(true))).get();
+  Future<void> setEmployeePin({
+    required String employeeId,
+    required String newPin,
+    required String actorId,
+    required String actorPin,
+  }) async {
+    if (!isValidPin(newPin)) throw const AccountChangeException(AccountChangeRefusal.notAllowed);
+    final (actor, target) = await _actorAndTarget(employeeId, actorId, actorPin);
+    final refusal = canChangePin(actor, target);
+    if (refusal != null) throw AccountChangeException(refusal);
+    await (_db.update(_db.users)..where((t) => t.id.equals(employeeId)))
+        .write(UsersCompanion(pinHash: Value(PasscodeHasher.hash(newPin))));
+  }
+
+  @override
+  Future<EmployeeRecord?> findEmployeeByPin(String storeId, String pin, {String? employeeId}) async {
+    final query = _db.select(_db.users)..where((t) => t.storeId.equals(storeId) & t.isActive.equals(true));
+    if (employeeId != null) query.where((t) => t.id.equals(employeeId));
+    final rows = await query.get();
     for (final row in rows) {
       if (PasscodeHasher.verify(pin, row.pinHash)) {
         return _mapEmployee(row);

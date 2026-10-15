@@ -5019,6 +5019,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That\'s more than what is owed ({amount})'**
   String debtsPayMoreThanOwed(String amount);
+
+  /// No description provided for @hrPinFourDigits.
+  ///
+  /// In en, this message translates to:
+  /// **'The PIN is 4 digits'**
+  String get hrPinFourDigits;
+
+  /// No description provided for @hrPinChangeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm with your own PIN to change {name}\'s PIN.'**
+  String hrPinChangeConfirm(String name);
+
+  /// No description provided for @storeSignOutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign this device out of the store? You will need the store\'s login to come back.'**
+  String get storeSignOutConfirm;
+
+  /// No description provided for @storeSignOutPendingWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Some changes made on this device haven\'t reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?'**
+  String get storeSignOutPendingWarning;
 }
 
 class _AppLocalizationsDelegate

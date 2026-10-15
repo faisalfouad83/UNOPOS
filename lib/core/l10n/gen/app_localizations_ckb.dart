@@ -2707,4 +2707,20 @@ class AppLocalizationsCkb extends AppLocalizations {
   String debtsPayMoreThanOwed(String amount) {
     return 'بڕەکە زیاترە لە قەرزی ماوە ($amount)';
   }
+
+  @override
+  String get hrPinFourDigits => 'ژمارەی نهێنی 4 ژمارەیە';
+
+  @override
+  String hrPinChangeConfirm(String name) {
+    return 'بە ژمارەی نهێنی خۆت پشتڕاستی بکەرەوە بۆ گۆڕینی ژمارەی نهێنی $name.';
+  }
+
+  @override
+  String get storeSignOutConfirm =>
+      'ئەم ئامێرە لە فرۆشگاکە دەربچێت؟ بۆ گەڕانەوە پێویستت بە زانیاریی چوونەژوورەوەی فرۆشگا دەبێت.';
+
+  @override
+  String get storeSignOutPendingWarning =>
+      'هەندێک گۆڕانکاری لەم ئامێرەدا هێشتا نەگەیشتوونەتە سێرڤەر. پارێزراو دەمێننەوە و کاتێک ئەم فرۆشگایە دووبارە لێرە دەچێتە ژوورەوە دەنێردرێن. هەر دەرچوون؟';
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/offline/sync_service.dart';
 import '../../../core/providers.dart';
 import '../../../core/routing/route_paths.dart';
 import '../../../core/constants/roles.dart';
@@ -41,7 +42,23 @@ class TilePickerScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: l10n.actionSignOut,
           onPressed: () async {
+            // Leaving here signs the whole store out of this device: ask
+            // first, and warn when changes made here are still unsent.
+            final pending = ref.read(outboxProvider).hasPending;
+            final ok = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text(l10n.actionSignOut),
+                content: Text(pending ? l10n.storeSignOutPendingWarning : l10n.storeSignOutConfirm),
+                actions: [
+                  TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.actionCancel)),
+                  FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.actionSignOut)),
+                ],
+              ),
+            );
+            if (ok != true) return;
             await ref.read(sessionControllerProvider.notifier).signOutStore();
             if (context.mounted) context.go(RoutePaths.activation);
           },
@@ -84,16 +101,18 @@ class TilePickerScreen extends ConsumerWidget {
                 if (employees.isEmpty) {
                   return Center(child: Text(l10n.tilePickerNoEmployees));
                 }
+                // Two tiles a row on a phone, three on wider screens.
+                final phone = MediaQuery.sizeOf(context).width < 520;
                 return Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 720),
                     child: GridView.builder(
-                      padding: const EdgeInsets.all(32),
+                      padding: EdgeInsets.all(phone ? 16 : 32),
                       shrinkWrap: true,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: phone ? 2 : 3,
+                        mainAxisSpacing: phone ? 12 : 20,
+                        crossAxisSpacing: phone ? 12 : 20,
                         childAspectRatio: 0.9,
                       ),
                       itemCount: employees.length,

@@ -123,7 +123,9 @@ class SessionController extends Notifier<SessionState> {
     }
 
     if (selectedEmployee != null) {
-      final ok = await ref.read(authRepositoryProvider).findEmployeeByPin(selectedEmployee.storeId, pin);
+      final ok = await ref
+          .read(authRepositoryProvider)
+          .findEmployeeByPin(selectedEmployee.storeId, pin, employeeId: selectedEmployee.id);
       if (ok != null && ok.id == selectedEmployee.id) {
         // A cashier works on one device at a time.
         final lock = ref.read(deviceLockProvider);

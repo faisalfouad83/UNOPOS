@@ -2724,4 +2724,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String debtsPayMoreThanOwed(String amount) {
     return 'That\'s more than what is owed ($amount)';
   }
+
+  @override
+  String get hrPinFourDigits => 'The PIN is 4 digits';
+
+  @override
+  String hrPinChangeConfirm(String name) {
+    return 'Confirm with your own PIN to change $name\'s PIN.';
+  }
+
+  @override
+  String get storeSignOutConfirm =>
+      'Sign this device out of the store? You will need the store\'s login to come back.';
+
+  @override
+  String get storeSignOutPendingWarning =>
+      'Some changes made on this device haven\'t reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?';
 }

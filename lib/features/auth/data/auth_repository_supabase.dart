@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/permissions.dart';
@@ -188,7 +190,7 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> updateEmployee(EmployeeRecord employee, {String? newPin}) async {
+  Future<void> updateEmployee(EmployeeRecord employee) async {
     await _client.from('users').update({
       'name': employee.name,
       'role': employee.role.name,
@@ -201,9 +203,24 @@ class SupabaseAuthRepository implements AuthRepository {
       'is_active': employee.isActive,
       'permissions': employee.customPermissions == null ? null : encodePermissions(employee.customPermissions!),
     }).eq('id', employee.id);
+  }
 
-    if (newPin != null) {
-      await _client.rpc('update_employee_pin', params: {'p_user_id': employee.id, 'p_new_pin': newPin});
+  @override
+  Future<void> setEmployeePin({
+    required String employeeId,
+    required String newPin,
+    required String actorId,
+    required String actorPin,
+  }) async {
+    try {
+      await _client.rpc('set_employee_pin', params: {
+        'p_employee_id': employeeId,
+        'p_new_pin': newPin,
+        'p_actor_id': actorId,
+        'p_actor_pin': actorPin,
+      });
+    } on PostgrestException catch (e) {
+      _accountError(e);
     }
   }
 
@@ -269,29 +286,46 @@ class SupabaseAuthRepository implements AuthRepository {
       // Kept on the device for signing in offline — names and roles only;
       // salaries, phones and addresses are never stored.
       cacheRow: (r) => {
-        for (final k in const ['id', 'store_id', 'branch_id', 'name', 'role', 'avatar_color_hex', 'is_active', 'permissions'])
+        for (final k in const [
+          'id',
+          'store_id',
+          'branch_id',
+          'name',
+          'role',
+          'avatar_color_hex',
+          'is_active',
+          'permissions'
+        ])
           k: r[k],
       },
     ).map((rows) => rows.where((r) => r['store_id'] == storeId && r['is_active'] == true).map(_mapEmployee).toList());
   }
 
   @override
-  Future<EmployeeRecord?> findEmployeeByPin(String storeId, String pin) async {
-    // storeId is accepted for interface parity with DriftAuthRepository, but
-    // deliberately unused here: verify_employee_pin derives the store from
-    // the caller's own authenticated session (auth.uid()), never from a
-    // client-supplied id — that's what stops one store from probing another
-    // store's PINs by passing an arbitrary storeId.
+  Future<EmployeeRecord?> findEmployeeByPin(String storeId, String pin, {String? employeeId}) async {
+    // The store is never taken from the caller: the server derives it from
+    // this device's own signed-in session (auth.uid()), which is what stops
+    // one store from probing another store's PINs. storeId is only used for
+    // this device's offline copy.
     final Object? row;
     try {
-      row = await _client.rpc('verify_employee_pin', params: {'p_pin': pin}).timeout(const Duration(seconds: 8));
+      row = await (employeeId == null
+              ? _client.rpc('verify_employee_pin', params: {'p_pin': pin})
+              : _client.rpc('verify_employee_pin_for', params: {'p_employee_id': employeeId, 'p_pin': pin}))
+          .timeout(const Duration(seconds: 8));
+    } on PostgrestException catch (e) {
+      if (e.message.contains('too many PIN attempts')) {
+        throw PinLockedException(int.tryParse('${e.details ?? ''}') ?? 30);
+      }
+      rethrow;
     } catch (e) {
-      if (!isNetworkError(e)) rethrow;
+      if (!isNetworkError(e) && e is! TimeoutException) rethrow;
       // Offline: accept the PIN of an account that signed in on this
       // device before (checked against the hash kept from then).
       final cached = await OfflineCache.readRows('employees.$storeId') ?? const [];
       for (final r in cached) {
         if (r['is_active'] != true) continue;
+        if (employeeId != null && r['id'] != employeeId) continue;
         if (await OfflinePins.matches(r['id'] as String, pin)) return _mapEmployee(r);
       }
       return null;
