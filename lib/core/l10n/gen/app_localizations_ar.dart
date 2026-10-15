@@ -2694,4 +2694,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get posScanCamera => 'امسح بالكاميرا';
+
+  @override
+  String get invPoAlreadyReceived =>
+      'تم استلام طلب الشراء هذا مسبقاً (ربما من جهاز آخر). لم يُضَف مخزونه مرة ثانية.';
+
+  @override
+  String get invPoCancelled => 'تم إلغاء طلب الشراء هذا، لذلك لا يمكن استلامه.';
+
+  @override
+  String get invTransferAlreadyReceived =>
+      'تم استلام هذا التحويل مسبقاً (ربما من جهاز آخر). لم يُنقَل مخزونه مرة ثانية.';
+
+  @override
+  String get invTransferCancelled =>
+      'تم إلغاء هذا التحويل، لذلك لا يمكن استلامه.';
+
+  @override
+  String get invPoReceived => 'تم استلام طلب الشراء — أُضيف المخزون';
+
+  @override
+  String get invPhotoNotSaved =>
+      'تم حفظ المنتج بدون الصورة الجديدة — لا يوجد اتصال بالإنترنت. أضف الصورة مرة أخرى عند عودة الاتصال.';
+
+  @override
+  String get invDiscountPercentInvalid => 'أدخل نسبة صحيحة من 1 إلى 100';
+
+  @override
+  String get invAmountInvalid => 'أدخل مبلغاً أكبر من صفر';
+
+  @override
+  String get invTaxRateInvalid => 'أدخل نسبة من 0 إلى 100';
+
+  @override
+  String get invImportMatchHelp =>
+      'المنتجات الموجودة يتم العثور عليها بالباركود، ثم بالرمز، أو بالاسم المطابق تماماً إذا لم يكن في الصف أي منهما، ويتم تحديثها؛ والخانات الفارغة تُبقي ما في المنتج. الكمية تجعل مخزون هذا الفرع مساوياً لها، لذلك استيراد الملف نفسه مرة أخرى لا يضيف المخزون مرتين.';
+
+  @override
+  String get invPaymentNotPosted =>
+      'تم تسجيل الدفعة، لكن تعذّر حفظ قيدها المحاسبي. راجع دفتر اليومية.';
 }

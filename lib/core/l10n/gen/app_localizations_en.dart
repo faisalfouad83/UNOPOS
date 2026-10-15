@@ -2699,4 +2699,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posScanCamera => 'Scan with the camera';
+
+  @override
+  String get invPoAlreadyReceived =>
+      'This purchase order was already received (maybe on another device). Its stock wasn\'t added again.';
+
+  @override
+  String get invPoCancelled =>
+      'This purchase order was cancelled, so it can\'t be received.';
+
+  @override
+  String get invTransferAlreadyReceived =>
+      'This transfer was already received (maybe on another device). Its stock wasn\'t moved again.';
+
+  @override
+  String get invTransferCancelled =>
+      'This transfer was cancelled, so it can\'t be received.';
+
+  @override
+  String get invPoReceived => 'Purchase order received — stock added';
+
+  @override
+  String get invPhotoNotSaved =>
+      'Product saved without the new photo — no internet connection. Add the photo again when you\'re back online.';
+
+  @override
+  String get invDiscountPercentInvalid =>
+      'Enter a whole percentage from 1 to 100';
+
+  @override
+  String get invAmountInvalid => 'Enter an amount more than zero';
+
+  @override
+  String get invTaxRateInvalid => 'Enter a rate from 0 to 100';
+
+  @override
+  String get invImportMatchHelp =>
+      'Products already in the list are found by barcode, then by code, or by their exact name when a row has neither, and updated; empty cells keep what the product has. The quantity sets this branch\'s stock to that number, so importing the same file again doesn\'t add stock twice.';
+
+  @override
+  String get invPaymentNotPosted =>
+      'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.';
 }

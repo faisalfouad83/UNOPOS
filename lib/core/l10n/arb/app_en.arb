@@ -958,5 +958,17 @@
   "posCartSummary": "{count} items · {total}",
   "@posCartSummary": {"placeholders": {"count": {"type": "int"}, "total": {"type": "String"}}},
   "posMoreActions": "More",
-  "posScanCamera": "Scan with the camera"
+  "posScanCamera": "Scan with the camera",
+
+  "invPoAlreadyReceived": "This purchase order was already received (maybe on another device). Its stock wasn't added again.",
+  "invPoCancelled": "This purchase order was cancelled, so it can't be received.",
+  "invTransferAlreadyReceived": "This transfer was already received (maybe on another device). Its stock wasn't moved again.",
+  "invTransferCancelled": "This transfer was cancelled, so it can't be received.",
+  "invPoReceived": "Purchase order received — stock added",
+  "invPhotoNotSaved": "Product saved without the new photo — no internet connection. Add the photo again when you're back online.",
+  "invDiscountPercentInvalid": "Enter a whole percentage from 1 to 100",
+  "invAmountInvalid": "Enter an amount more than zero",
+  "invTaxRateInvalid": "Enter a rate from 0 to 100",
+  "invImportMatchHelp": "Products already in the list are found by barcode, then by code, or by their exact name when a row has neither, and updated; empty cells keep what the product has. The quantity sets this branch's stock to that number, so importing the same file again doesn't add stock twice.",
+  "invPaymentNotPosted": "Payment recorded, but its accounting entry couldn't be saved. Check the journal."
 }
