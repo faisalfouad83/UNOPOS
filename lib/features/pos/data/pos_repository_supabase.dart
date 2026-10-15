@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
@@ -492,7 +494,7 @@ class SupabasePosRepository implements PosRepository {
       cacheTake: 2000,
     ).asyncMap((rows) async {
       _knownStores.add(storeId);
-      var filtered = rows;
+      var filtered = from == null ? rows : [...rows, ...await _olderSold(storeId, rows, from)];
       if (from != null) {
         filtered = filtered
             .where((r) =>
@@ -508,6 +510,56 @@ class SupabasePosRepository implements PosRepository {
       return _withLines(filtered);
     });
   }
+
+  /// The live list holds the newest sales only (the server sends at most
+  /// 1,000 rows at a time). For a period reaching further back — a busy
+  /// store's month — the older sales in it are fetched page by page,
+  /// re-used for a few minutes, and kept for offline use.
+  Future<List<Map<String, dynamic>>> _olderSold(String storeId, List<Map<String, dynamic>> rows, DateTime from) async {
+    if (rows.length < 1000) return const [];
+    DateTime? oldest;
+    for (final r in rows) {
+      final at = r['completed_at'] == null ? null : DateTime.tryParse(r['completed_at'] as String);
+      if (at != null && (oldest == null || at.isBefore(oldest))) oldest = at;
+    }
+    if (oldest == null || !oldest.isAfter(from)) return const [];
+    final key = 'sales.older.$storeId.${from.toUtc().toIso8601String()}';
+    final cached = _olderMemory[key];
+    final List<Map<String, dynamic>> older;
+    if (cached != null && DateTime.now().difference(cached.$1) < const Duration(minutes: 5)) {
+      older = cached.$2;
+    } else {
+      try {
+        final fetched = <Map<String, dynamic>>[];
+        const pageSize = 1000;
+        for (var start = 0;; start += pageSize) {
+          final page = (await _client
+                  .from('sales')
+                  .select()
+                  .eq('store_id', storeId)
+                  .inFilter('status', soldStatuses)
+                  .gte('completed_at', from.toUtc().toIso8601String())
+                  .lt('completed_at', oldest.toUtc().toIso8601String())
+                  .order('completed_at', ascending: false)
+                  .range(start, start + pageSize - 1)
+                  .timeout(const Duration(seconds: 20)))
+              .cast<Map<String, dynamic>>();
+          fetched.addAll(page);
+          if (page.length < pageSize) break;
+        }
+        older = fetched;
+        _olderMemory[key] = (DateTime.now(), older);
+        await OfflineCache.write(key, older);
+      } catch (e) {
+        if (!isNetworkError(e) && e is! TimeoutException) rethrow;
+        return await OfflineCache.readRows(key) ?? const [];
+      }
+    }
+    final seen = {for (final r in rows) r['id']};
+    return older.where((r) => !seen.contains(r['id'])).toList();
+  }
+
+  static final _olderMemory = <String, (DateTime, List<Map<String, dynamic>>)>{};
 
   static String _completedKey(String storeId) => 'sales.completed.$storeId';
   static String _heldKey(String storeId) => 'sales.held.$storeId';

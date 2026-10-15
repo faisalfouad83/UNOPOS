@@ -182,16 +182,17 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Stream<List<ProductRecord>> watchProducts(String storeId, {String? categoryId, String? searchQuery}) {
-    // .stream() supports only one server-side filter; is_active is always
-    // required so it takes that slot, categoryId/searchQuery (both
-    // optional) are applied client-side below.
+    // .stream() supports only one server-side filter. It goes to store_id,
+    // not is_active: a filtered stream never delivers the change that
+    // takes a row out of the filter, so a product switched off would stay
+    // on screen. is_active, categoryId and searchQuery are applied below.
     return resilientRows(
       'products.$storeId',
-      () => _client.from('products').stream(primaryKey: ['id']).eq('is_active', true).order('name'),
+      () => _client.from('products').stream(primaryKey: ['id']).eq('store_id', storeId).order('name'),
       table: 'products',
       where: (r) => r['is_active'] != false && r['store_id'] == storeId,
     ).map((rows) {
-      var filtered = rows;
+      var filtered = rows.where((r) => r['is_active'] != false).toList();
       if (categoryId != null) {
         filtered = filtered.where((r) => r['category_id'] == categoryId).toList();
       }
@@ -495,10 +496,11 @@ class SupabaseInventoryRepository implements InventoryRepository {
   Stream<List<DiscountRecord>> watchDiscounts(String storeId) {
     return resilientRows(
       'discounts.$storeId',
-      () => _client.from('discounts').stream(primaryKey: ['id']).eq('is_active', true),
+      // Filtered here, not on the server: see watchProducts.
+      () => _client.from('discounts').stream(primaryKey: ['id']).eq('store_id', storeId),
       table: 'discounts',
       where: (r) => r['is_active'] != false,
-    ).map((rows) => rows.map(_mapDiscount).toList());
+    ).map((rows) => rows.where((r) => r['is_active'] != false).map(_mapDiscount).toList());
   }
 
   @override
