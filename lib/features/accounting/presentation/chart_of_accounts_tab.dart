@@ -39,6 +39,7 @@ class ChartOfAccountsTab extends ConsumerWidget {
           grouped.putIfAbsent(a.type, () => []).add(a);
         }
         return ListView(
+          padding: const EdgeInsets.only(bottom: 88),
           children: grouped.entries.map((group) {
             return ExpansionTile(
               title: Text(accountTypeLabel(context.l10n, group.key), style: Theme.of(context).textTheme.titleSmall),

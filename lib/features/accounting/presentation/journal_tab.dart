@@ -30,12 +30,14 @@ class JournalTab extends ConsumerWidget {
       data: (entries) {
         if (entries.isEmpty) return Center(child: Text(l10n.accountingJournal));
         return ListView.builder(
+          padding: const EdgeInsets.only(bottom: 88),
           itemCount: entries.length,
           itemBuilder: (context, index) {
             final entry = entries[index];
             final total = entry.lines.fold<int>(0, (s, l) => s + l.debitMinorUnits);
             return ExpansionTile(
-              title: Text('${journalReferenceLabel(context.l10n, entry.referenceType)} · ${journalMemoLabel(context.l10n, entry.memo)}'),
+              title: Text(
+                  '${journalReferenceLabel(context.l10n, entry.referenceType)} · ${journalMemoLabel(context.l10n, entry.memo)}'),
               subtitle: Text(AppDateFormat.dateTime(entry.entryDate)),
               trailing: Text(Money.format(total)),
               children: entry.lines

@@ -873,5 +873,13 @@
   "navMore": "زیاتر",
   "posCartSummary": "{count} کاڵا · {total}",
   "posMoreActions": "زیاتر",
-  "posScanCamera": "بە کامێرا بخوێنەوە"
+  "posScanCamera": "بە کامێرا بخوێنەوە",
+
+  "shiftCashDebtPayments": "پارەدانەوەی قەرز بە کاش",
+  "shiftCashRefunds": "گەڕاندنەوەی پارە بە کاش",
+  "shiftCashForeign": "هەروەها لە قاسەدا: {amount}",
+  "shiftCashOfflineNote": "بێ هێڵ: تەنها لە زانیاریی ئەم ئامێرە ژمێردراوە، سێرڤەر کاتێک داخستنی شەفتەکەی پێدەگات دووبارە دەیژمێرێتەوە.",
+  "shiftDifference": "جیاوازی: {amount}",
+
+  "debtsPayMoreThanOwed": "بڕەکە زیاترە لە قەرزی ماوە ({amount})"
 }

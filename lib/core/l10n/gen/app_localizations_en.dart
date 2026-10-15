@@ -2699,4 +2699,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posScanCamera => 'Scan with the camera';
+
+  @override
+  String get shiftCashDebtPayments => 'Debt payments in cash';
+
+  @override
+  String get shiftCashRefunds => 'Cash refunds';
+
+  @override
+  String shiftCashForeign(String amount) {
+    return 'Also in the drawer: $amount';
+  }
+
+  @override
+  String get shiftCashOfflineNote =>
+      'No connection: worked out from what this device knows. The server works it out again when the shift\'s close reaches it.';
+
+  @override
+  String shiftDifference(String amount) {
+    return 'Difference: $amount';
+  }
+
+  @override
+  String debtsPayMoreThanOwed(String amount) {
+    return 'That\'s more than what is owed ($amount)';
+  }
 }

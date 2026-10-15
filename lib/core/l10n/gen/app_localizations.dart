@@ -4983,6 +4983,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan with the camera'**
   String get posScanCamera;
+
+  /// No description provided for @shiftCashDebtPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt payments in cash'**
+  String get shiftCashDebtPayments;
+
+  /// No description provided for @shiftCashRefunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash refunds'**
+  String get shiftCashRefunds;
+
+  /// No description provided for @shiftCashForeign.
+  ///
+  /// In en, this message translates to:
+  /// **'Also in the drawer: {amount}'**
+  String shiftCashForeign(String amount);
+
+  /// No description provided for @shiftCashOfflineNote.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection: worked out from what this device knows. The server works it out again when the shift\'s close reaches it.'**
+  String get shiftCashOfflineNote;
+
+  /// No description provided for @shiftDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference: {amount}'**
+  String shiftDifference(String amount);
+
+  /// No description provided for @debtsPayMoreThanOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s more than what is owed ({amount})'**
+  String debtsPayMoreThanOwed(String amount);
 }
 
 class _AppLocalizationsDelegate

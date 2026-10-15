@@ -11,16 +11,10 @@ import '../../accounting/domain/expense_categories.dart';
 import '../../accounting/presentation/add_expense_dialog.dart';
 import '../../accounting/presentation/expense_labels.dart';
 import '../../auth/domain/session_controller.dart';
-import '../../pos/domain/pos_models.dart';
 import '../domain/shifts_models.dart';
 import 'close_shift_dialog.dart';
 import 'open_shift_dialog.dart';
 import 'shift_providers.dart';
-
-final _shiftSalesProvider =
-    StreamProvider.autoDispose.family<List<SaleRecord>, ({String storeId, DateTime from})>((ref, key) {
-  return ref.watch(posRepositoryProvider).watchCompletedSales(key.storeId, from: key.from);
-});
 
 final _shiftExpenseDetailsProvider =
     StreamProvider.autoDispose.family<List<ExpenseDetailRecord>, ({String storeId, DateTime from})>((ref, key) {
@@ -121,7 +115,7 @@ class _ShiftDetail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final salesAsync = ref.watch(_shiftSalesProvider((storeId: storeId, from: shift.openedAt)));
+    final summary = ref.watch(shiftCashSummaryProvider(shift)).value;
     final entriesAsync = ref.watch(_shiftJournalEntriesProvider(storeId));
     final detailsById = {
       for (final d in ref.watch(_shiftExpenseDetailsProvider((storeId: storeId, from: shift.openedAt))).value ??
@@ -129,24 +123,20 @@ class _ShiftDetail extends ConsumerWidget {
         d.journalEntryId: d,
     };
 
-    final cashSalesTotal = (salesAsync.value ?? const <SaleRecord>[])
-        .where((s) => s.shiftId == shift.id && s.paymentMethod == SalePaymentMethod.cash)
-        .fold<int>(0, (sum, s) => sum + s.netTotalMinorUnits);
-
-    // A cash expense is a journal entry that credited the Cash account —
-    // postExpense() (see add_expense_dialog.dart) always shapes it this
-    // way, so this is a reliable filter without needing a dedicated column.
+    // This shift's cash expenses: entries by its cashier, at its branch,
+    // that took money from the Cash account (postExpense() always shapes
+    // a cash expense this way).
     final shiftExpenseEntries = (entriesAsync.value ?? const <JournalEntryRecord>[])
         .where((e) =>
             e.referenceType == JournalReferenceType.expense &&
+            e.createdByUserId == shift.cashierId &&
+            e.branchId == shift.branchId &&
             !e.entryDate.isBefore(shift.openedAt) &&
             e.lines.any((l) => l.accountCode == SystemAccountCodes.cash && l.creditMinorUnits > 0))
         .toList()
       ..sort((a, b) => b.entryDate.compareTo(a.entryDate));
 
     int entryAmount(JournalEntryRecord e) => e.lines.fold<int>(0, (s, l) => s + l.debitMinorUnits);
-    final cashExpensesTotal = shiftExpenseEntries.fold<int>(0, (sum, e) => sum + entryAmount(e));
-    final expected = shift.openingCashFloatMinorUnits + cashSalesTotal - cashExpensesTotal;
 
     return ListView(
       children: [
@@ -155,9 +145,19 @@ class _ShiftDetail extends ConsumerWidget {
             final isWide = constraints.maxWidth > 720;
             final cards = [
               _StatTile(label: l10n.expensesCashOpeningCash, value: shift.openingCashFloatMinorUnits),
-              _StatTile(label: l10n.expensesCashSalesTotal, value: cashSalesTotal, accent: BrandColors.silver),
-              _StatTile(label: l10n.expensesCashTotalExpenses, value: -cashExpensesTotal, accent: BrandColors.red),
-              _StatTile(label: l10n.expensesCashExpected, value: expected, accent: BrandColors.blue, emphasize: true),
+              _StatTile(
+                  label: l10n.expensesCashSalesTotal,
+                  value: (summary?.cashSalesMinorUnits ?? 0) + (summary?.debtPaymentsMinorUnits ?? 0),
+                  accent: BrandColors.silver),
+              _StatTile(
+                  label: l10n.expensesCashTotalExpenses,
+                  value: -((summary?.expensesMinorUnits ?? 0) + (summary?.refundsMinorUnits ?? 0)),
+                  accent: BrandColors.red),
+              _StatTile(
+                  label: l10n.expensesCashExpected,
+                  value: summary?.expectedMinorUnits ?? shift.openingCashFloatMinorUnits,
+                  accent: BrandColors.blue,
+                  emphasize: true),
             ];
             if (isWide) {
               return IntrinsicHeight(
@@ -179,6 +179,15 @@ class _ShiftDetail extends ConsumerWidget {
             );
           },
         ),
+        if (summary != null) ...[
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ShiftCashBreakdown(summary: summary),
+            ),
+          ),
+        ],
         const SizedBox(height: 24),
         Text(l10n.expensesCashLog, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),

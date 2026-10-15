@@ -873,5 +873,13 @@
   "navMore": "المزيد",
   "posCartSummary": "{count} مادة · {total}",
   "posMoreActions": "المزيد",
-  "posScanCamera": "امسح بالكاميرا"
+  "posScanCamera": "امسح بالكاميرا",
+
+  "shiftCashDebtPayments": "تسديدات ديون نقداً",
+  "shiftCashRefunds": "مرتجعات نقدية",
+  "shiftCashForeign": "وموجود بالقاصة أيضاً: {amount}",
+  "shiftCashOfflineNote": "بدون اتصال: محسوب من بيانات هذا الجهاز فقط، ويُعاد حسابه على الخادم عند وصول إغلاق الشفت.",
+  "shiftDifference": "الفرق: {amount}",
+
+  "debtsPayMoreThanOwed": "المبلغ أكثر من الدين المتبقي ({amount})"
 }

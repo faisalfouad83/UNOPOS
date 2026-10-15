@@ -105,7 +105,8 @@ class DebtsScreen extends ConsumerWidget {
 
           final groups = <String, _CustomerDebts>{};
           for (final entry in debts) {
-            groups.putIfAbsent(entry.customerId, () => _CustomerDebts(entry.customerId, customersById[entry.customerId]))
+            groups
+                .putIfAbsent(entry.customerId, () => _CustomerDebts(entry.customerId, customersById[entry.customerId]))
                 .entries
                 .add(entry);
           }
@@ -122,7 +123,7 @@ class DebtsScreen extends ConsumerWidget {
               for (final group in sorted)
                 ExpansionTile(
                   leading: CircleAvatar(
-                    child: Text((group.customer?.name ?? '?').isNotEmpty ? group.customer!.name[0].toUpperCase() : '?'),
+                    child: Text(_initial(group.customer?.name)),
                   ),
                   title: Text(group.customer?.name ?? group.customerId),
                   subtitle: Text([
@@ -170,4 +171,10 @@ class DebtsScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// The first letter of [name], for an avatar ('?' when there is none).
+String _initial(String? name) {
+  final n = name?.trim() ?? '';
+  return n.isEmpty ? '?' : n.characters.first.toUpperCase();
 }

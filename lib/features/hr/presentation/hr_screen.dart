@@ -39,6 +39,7 @@ class HrScreen extends ConsumerWidget {
         error: (e, st) => Center(child: Text(l10n.errorGeneric)),
         data: (employees) {
           return ListView.builder(
+            padding: const EdgeInsets.only(bottom: 88),
             itemCount: employees.length,
             itemBuilder: (context, index) {
               final employee = employees[index];

@@ -2682,4 +2682,29 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get posScanCamera => 'بە کامێرا بخوێنەوە';
+
+  @override
+  String get shiftCashDebtPayments => 'پارەدانەوەی قەرز بە کاش';
+
+  @override
+  String get shiftCashRefunds => 'گەڕاندنەوەی پارە بە کاش';
+
+  @override
+  String shiftCashForeign(String amount) {
+    return 'هەروەها لە قاسەدا: $amount';
+  }
+
+  @override
+  String get shiftCashOfflineNote =>
+      'بێ هێڵ: تەنها لە زانیاریی ئەم ئامێرە ژمێردراوە، سێرڤەر کاتێک داخستنی شەفتەکەی پێدەگات دووبارە دەیژمێرێتەوە.';
+
+  @override
+  String shiftDifference(String amount) {
+    return 'جیاوازی: $amount';
+  }
+
+  @override
+  String debtsPayMoreThanOwed(String amount) {
+    return 'بڕەکە زیاترە لە قەرزی ماوە ($amount)';
+  }
 }

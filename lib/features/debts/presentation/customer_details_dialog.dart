@@ -92,7 +92,9 @@ class _CustomerDetailsDialog extends ConsumerWidget {
           children: [
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(24, 12, 12, 0),
-              leading: CircleAvatar(child: Text(customer.name.isEmpty ? '?' : customer.name[0].toUpperCase())),
+              leading: CircleAvatar(
+                  child:
+                      Text(customer.name.trim().isEmpty ? '?' : customer.name.trim().characters.first.toUpperCase())),
               title: Text(customer.name, style: theme.textTheme.titleLarge),
               subtitle: Text(
                 [
@@ -107,8 +109,11 @@ class _CustomerDetailsDialog extends ConsumerWidget {
                     tooltip: l10n.actionEdit,
                     icon: const Icon(Icons.edit_outlined),
                     onPressed: () async {
-                      Navigator.of(context).pop();
+                      // Opened over this one (which stays open until the
+                      // edit is saved), so the edit form's context and ref
+                      // are still alive while it saves.
                       await showCustomerEditDialog(context, ref, storeId, existing: customer);
+                      if (context.mounted) Navigator.of(context).pop();
                     },
                   ),
                   IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),

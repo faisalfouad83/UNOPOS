@@ -85,6 +85,8 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
                   ..sort((a, b) => (totals[b.id] ?? 0).compareTo(totals[a.id] ?? 0));
                 if (list.isEmpty) return Center(child: Text(l10n.customersNone));
                 return ListView.separated(
+                  // Room under the last row for the add button.
+                  padding: const EdgeInsets.only(bottom: 88),
                   itemCount: list.length,
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, i) {

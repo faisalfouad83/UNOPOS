@@ -150,7 +150,8 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
                     'description': l.description,
                   })
               .toList(),
-          'p_entry_date': entryDate?.toUtc().toIso8601String(),
+          // Dated when it was made, even if it reaches the server later.
+          'p_entry_date': at.toUtc().toIso8601String(),
         });
     return _mapEntryJson((json as Map).cast<String, dynamic>());
   }

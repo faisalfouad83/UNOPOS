@@ -25,6 +25,8 @@ Future<void> showAddExpenseDialog(BuildContext context, WidgetRef ref) async {
   final memoController = TextEditingController();
   var isCash = true;
   String? error;
+  // Set before the first await, so a second tap can't record it twice.
+  var saving = false;
 
   await showDialog<void>(
     context: context,
@@ -72,33 +74,52 @@ Future<void> showAddExpenseDialog(BuildContext context, WidgetRef ref) async {
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
           FilledButton(
-            onPressed: () async {
-              final amount = Money.toMinorUnits(double.tryParse(amountController.text) ?? 0);
-              final categoryKey = group == ExpenseGroup.custom ? customController.text.trim() : category?.key;
-              if (amount <= 0 || categoryKey == null || categoryKey.isEmpty) {
-                setState(() => error = l10n.errorRequired);
-                return;
-              }
-              final typeLabel = expenseCategoryLabel(l10n, group, categoryKey);
-              final entry = await ref.read(accountingPostingServiceProvider).postExpense(
-                    storeId: session.store!.id,
-                    branchId: session.currentBranchId!,
-                    expenseAccountCode: category?.accountCode ?? SystemAccountCodes.miscExpense,
-                    createdByUserId: session.employee!.id,
-                    amountMinorUnits: amount,
-                    isCash: isCash,
-                    memo: memoController.text.trim().isEmpty ? typeLabel : '$typeLabel — ${memoController.text.trim()}',
-                  );
-              await ref.read(expenseDetailsRepositoryProvider).save(ExpenseDetailRecord(
-                    journalEntryId: entry.id,
-                    storeId: session.store!.id,
-                    group: group,
-                    category: categoryKey,
-                    amountMinorUnits: amount,
-                    entryDate: entry.entryDate,
-                  ));
-              if (context.mounted) Navigator.of(context).pop();
-            },
+            onPressed: saving
+                ? null
+                : () async {
+                    final amount = Money.toMinorUnits(double.tryParse(amountController.text) ?? 0);
+                    final categoryKey = group == ExpenseGroup.custom ? customController.text.trim() : category?.key;
+                    if (amount <= 0 || categoryKey == null || categoryKey.isEmpty) {
+                      setState(() => error = l10n.errorRequired);
+                      return;
+                    }
+                    final posting = ref.read(accountingPostingServiceProvider);
+                    final details = ref.read(expenseDetailsRepositoryProvider);
+                    setState(() {
+                      saving = true;
+                      error = null;
+                    });
+                    final typeLabel = expenseCategoryLabel(l10n, group, categoryKey);
+                    try {
+                      final entry = await posting.postExpense(
+                        storeId: session.store!.id,
+                        branchId: session.currentBranchId!,
+                        expenseAccountCode: category?.accountCode ?? SystemAccountCodes.miscExpense,
+                        createdByUserId: session.employee!.id,
+                        amountMinorUnits: amount,
+                        isCash: isCash,
+                        memo: memoController.text.trim().isEmpty
+                            ? typeLabel
+                            : '$typeLabel — ${memoController.text.trim()}',
+                      );
+                      await details.save(ExpenseDetailRecord(
+                        journalEntryId: entry.id,
+                        storeId: session.store!.id,
+                        group: group,
+                        category: categoryKey,
+                        amountMinorUnits: amount,
+                        entryDate: entry.entryDate,
+                      ));
+                      if (context.mounted) Navigator.of(context).pop();
+                    } catch (_) {
+                      if (context.mounted) {
+                        setState(() {
+                          saving = false;
+                          error = l10n.errorGeneric;
+                        });
+                      }
+                    }
+                  },
             child: Text(l10n.actionSave),
           ),
         ],
@@ -113,6 +134,7 @@ Future<void> showEditExpenseTypeDialog(BuildContext context, WidgetRef ref, Expe
   var group = detail.group;
   ExpenseCategory? category = detail.builtIn;
   final customController = TextEditingController(text: detail.group == ExpenseGroup.custom ? detail.category : '');
+  var saving = false;
   await showDialog<void>(
     context: context,
     builder: (context) => StatefulBuilder(
@@ -135,9 +157,32 @@ Future<void> showEditExpenseTypeDialog(BuildContext context, WidgetRef ref, Expe
           FilledButton(
             onPressed: () async {
               final key = group == ExpenseGroup.custom ? customController.text.trim() : category?.key;
-              if (key == null || key.isEmpty) return;
-              await ref.read(expenseDetailsRepositoryProvider).updateType(detail.journalEntryId, group, key);
-              if (context.mounted) Navigator.of(context).pop();
+              if (key == null || key.isEmpty || saving) return;
+              final session = ref.read(sessionControllerProvider);
+              final details = ref.read(expenseDetailsRepositoryProvider);
+              final posting = ref.read(accountingPostingServiceProvider);
+              setState(() => saving = true);
+              try {
+                // A type booked to another expense account moves the amount
+                // there too, so the accounts agree with the expense list.
+                final from = detail.builtIn?.accountCode ?? SystemAccountCodes.miscExpense;
+                final to = category?.accountCode ?? SystemAccountCodes.miscExpense;
+                if (from != to && session.employee != null && session.currentBranchId != null) {
+                  await posting.postExpenseReclassification(
+                    storeId: detail.storeId,
+                    branchId: session.currentBranchId!,
+                    expenseJournalEntryId: detail.journalEntryId,
+                    fromAccountCode: from,
+                    toAccountCode: to,
+                    createdByUserId: session.employee!.id,
+                    amountMinorUnits: detail.amountMinorUnits,
+                  );
+                }
+                await details.updateType(detail.journalEntryId, group, key);
+                if (context.mounted) Navigator.of(context).pop();
+              } catch (_) {
+                if (context.mounted) setState(() => saving = false);
+              }
             },
             child: Text(l10n.actionSave),
           ),

@@ -958,5 +958,16 @@
   "posCartSummary": "{count} items · {total}",
   "@posCartSummary": {"placeholders": {"count": {"type": "int"}, "total": {"type": "String"}}},
   "posMoreActions": "More",
-  "posScanCamera": "Scan with the camera"
+  "posScanCamera": "Scan with the camera",
+
+  "shiftCashDebtPayments": "Debt payments in cash",
+  "shiftCashRefunds": "Cash refunds",
+  "shiftCashForeign": "Also in the drawer: {amount}",
+  "@shiftCashForeign": {"placeholders": {"amount": {"type": "String"}}},
+  "shiftCashOfflineNote": "No connection: worked out from what this device knows. The server works it out again when the shift's close reaches it.",
+  "shiftDifference": "Difference: {amount}",
+  "@shiftDifference": {"placeholders": {"amount": {"type": "String"}}},
+
+  "debtsPayMoreThanOwed": "That's more than what is owed ({amount})",
+  "@debtsPayMoreThanOwed": {"placeholders": {"amount": {"type": "String"}}}
 }

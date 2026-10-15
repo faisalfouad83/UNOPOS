@@ -2694,4 +2694,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get posScanCamera => 'امسح بالكاميرا';
+
+  @override
+  String get shiftCashDebtPayments => 'تسديدات ديون نقداً';
+
+  @override
+  String get shiftCashRefunds => 'مرتجعات نقدية';
+
+  @override
+  String shiftCashForeign(String amount) {
+    return 'وموجود بالقاصة أيضاً: $amount';
+  }
+
+  @override
+  String get shiftCashOfflineNote =>
+      'بدون اتصال: محسوب من بيانات هذا الجهاز فقط، ويُعاد حسابه على الخادم عند وصول إغلاق الشفت.';
+
+  @override
+  String shiftDifference(String amount) {
+    return 'الفرق: $amount';
+  }
+
+  @override
+  String debtsPayMoreThanOwed(String amount) {
+    return 'المبلغ أكثر من الدين المتبقي ($amount)';
+  }
 }

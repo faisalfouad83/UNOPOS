@@ -95,12 +95,18 @@ class AccountingPostingService {
     final totalSettlement = revenueMinorUnits + taxMinorUnits;
     return [
       JournalLineInput(accountCode: settlementAccount, debitMinorUnits: totalSettlement, description: 'Settlement'),
-      JournalLineInput(accountCode: SystemAccountCodes.salesRevenue, creditMinorUnits: revenueMinorUnits, description: 'Revenue'),
+      JournalLineInput(
+          accountCode: SystemAccountCodes.salesRevenue, creditMinorUnits: revenueMinorUnits, description: 'Revenue'),
       if (taxMinorUnits > 0)
-        JournalLineInput(accountCode: SystemAccountCodes.vatPayable, creditMinorUnits: taxMinorUnits, description: 'Tax collected'),
+        JournalLineInput(
+            accountCode: SystemAccountCodes.vatPayable, creditMinorUnits: taxMinorUnits, description: 'Tax collected'),
       if (cogsMinorUnits > 0) ...[
-        JournalLineInput(accountCode: SystemAccountCodes.costOfGoodsSold, debitMinorUnits: cogsMinorUnits, description: 'COGS'),
-        JournalLineInput(accountCode: SystemAccountCodes.inventory, creditMinorUnits: cogsMinorUnits, description: 'Inventory reduction'),
+        JournalLineInput(
+            accountCode: SystemAccountCodes.costOfGoodsSold, debitMinorUnits: cogsMinorUnits, description: 'COGS'),
+        JournalLineInput(
+            accountCode: SystemAccountCodes.inventory,
+            creditMinorUnits: cogsMinorUnits,
+            description: 'Inventory reduction'),
       ],
     ];
   }
@@ -201,6 +207,33 @@ class AccountingPostingService {
           accountCode: isCash ? SystemAccountCodes.cash : SystemAccountCodes.bank,
           creditMinorUnits: amountMinorUnits,
         ),
+      ],
+    );
+  }
+
+  /// Moves an expense already recorded from [fromAccountCode] to
+  /// [toAccountCode] (its type was changed), leaving the money side as it
+  /// was.
+  Future<JournalEntryRecord> postExpenseReclassification({
+    required String storeId,
+    required String branchId,
+    required String expenseJournalEntryId,
+    required String fromAccountCode,
+    required String toAccountCode,
+    required String createdByUserId,
+    required int amountMinorUnits,
+    String memo = 'Expense type changed',
+  }) {
+    return _repo.postJournalEntry(
+      storeId: storeId,
+      branchId: branchId,
+      referenceType: JournalReferenceType.adjustment,
+      referenceId: expenseJournalEntryId,
+      memo: memo,
+      createdByUserId: createdByUserId,
+      lines: [
+        JournalLineInput(accountCode: toAccountCode, debitMinorUnits: amountMinorUnits),
+        JournalLineInput(accountCode: fromAccountCode, creditMinorUnits: amountMinorUnits),
       ],
     );
   }

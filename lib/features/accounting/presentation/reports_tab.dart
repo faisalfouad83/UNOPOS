@@ -8,6 +8,7 @@ import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../domain/accounting_models.dart';
+import 'account_labels.dart';
 
 final _accountsProvider2 = FutureProvider.autoDispose.family<List<ChartOfAccountEntry>, String>((ref, storeId) {
   return ref.watch(accountingRepositoryProvider).listAccounts(storeId);
@@ -29,6 +30,25 @@ class ReportsTab extends ConsumerWidget {
     final accountsAsync = ref.watch(_accountsProvider2(storeId));
     final balancesAsync = ref.watch(_trialBalanceProvider2(storeId));
 
+    if (accountsAsync.hasError || balancesAsync.hasError) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l10n.errorGeneric),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () {
+                ref.invalidate(_accountsProvider2(storeId));
+                ref.invalidate(_trialBalanceProvider2(storeId));
+              },
+              icon: const Icon(Icons.refresh),
+              label: Text(l10n.actionRetry),
+            ),
+          ],
+        ),
+      );
+    }
     if (!accountsAsync.hasValue || !balancesAsync.hasValue) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -40,8 +60,7 @@ class ReportsTab extends ConsumerWidget {
       byType.putIfAbsent(a.type, () => []).add(a);
     }
 
-    int sumType(String type) =>
-        (byType[type] ?? const []).fold<int>(0, (s, a) => s + (balances[a.code] ?? 0));
+    int sumType(String type) => (byType[type] ?? const []).fold<int>(0, (s, a) => s + (balances[a.code] ?? 0));
 
     final revenue = sumType(AccountType.revenue.name);
     final cogs = sumType(AccountType.cogs.name);
@@ -52,11 +71,13 @@ class ReportsTab extends ConsumerWidget {
     final liabilities = sumType(AccountType.liability.name);
     final equity = sumType(AccountType.equity.name);
 
-    final totalDebitNormal = sumType(AccountType.asset.name) + sumType(AccountType.expense.name) + sumType(AccountType.cogs.name);
-    final totalCreditNormal = sumType(AccountType.liability.name) + sumType(AccountType.equity.name) + sumType(AccountType.revenue.name);
+    final totalDebitNormal =
+        sumType(AccountType.asset.name) + sumType(AccountType.expense.name) + sumType(AccountType.cogs.name);
+    final totalCreditNormal =
+        sumType(AccountType.liability.name) + sumType(AccountType.equity.name) + sumType(AccountType.revenue.name);
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
       children: [
         Text(l10n.accountingProfitLoss, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
@@ -70,7 +91,7 @@ class ReportsTab extends ConsumerWidget {
         const SizedBox(height: 8),
         _row(context, context.l10n.acctAssets, assets),
         _row(context, context.l10n.acctLiabilities, liabilities),
-        _row(context, "Equity (posted)", equity),
+        _row(context, context.l10n.acctEquity, equity),
         const SizedBox(height: 4),
         Text(
           context.l10n.acctNetIncomeNote,
@@ -79,7 +100,7 @@ class ReportsTab extends ConsumerWidget {
         const SizedBox(height: 24),
         Text(l10n.accountingTrialBalance, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
-        ...accounts.map((a) => _row(context, '${a.code} ${a.name}', balances[a.code] ?? 0)),
+        ...accounts.map((a) => _row(context, '${a.code} ${accountLabel(l10n, a.code, a.name)}', balances[a.code] ?? 0)),
         const Divider(),
         _row(context, context.l10n.acctDebitTotal, totalDebitNormal),
         _row(context, context.l10n.acctCreditTotal, totalCreditNormal),
@@ -99,9 +120,11 @@ class ReportsTab extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: style),
+          // Long account names wrap instead of pushing the amount off a phone.
+          Expanded(child: Text(label, style: style)),
+          const SizedBox(width: 12),
           Text(Money.format(minorUnits), style: style),
         ],
       ),

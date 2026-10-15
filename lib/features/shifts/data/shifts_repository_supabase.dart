@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
+import '../../../core/offline/outbox.dart';
 import '../../../core/offline/sync_service.dart';
 
+import '../domain/shift_cash_summary.dart';
 import '../domain/shifts_models.dart';
 import '../domain/shifts_repository.dart';
 
@@ -74,12 +78,43 @@ class SupabaseShiftsRepository implements ShiftsRepository {
         'shifts',
         {
           'status': 'closed',
-          'closed_at': DateTime.now().toIso8601String(),
+          'closed_at': DateTime.now().toUtc().toIso8601String(),
           'expected_cash_at_close_minor_units': expectedCashAtCloseMinorUnits,
           'counted_cash_at_close_minor_units': countedCashAtCloseMinorUnits,
           'discrepancy_minor_units': countedCashAtCloseMinorUnits - expectedCashAtCloseMinorUnits,
         },
         value: shiftId);
+  }
+
+  @override
+  Future<ShiftCashSummary> cashSummary(ShiftRecord shift) async {
+    final key = 'shift_cash.${shift.id}';
+    ShiftCashSummary? summary;
+    var complete = true;
+    if (!OfflineCache.knownOffline) {
+      try {
+        final json = await _client
+            .rpc('shift_cash_summary', params: {'p_shift_id': shift.id}).timeout(const Duration(seconds: 8));
+        summary = ShiftCashSummary.fromJson((json as Map).cast<String, dynamic>());
+        await OfflineCache.write(key, summary.toJson());
+      } on PostgrestException catch (e) {
+        // Opened on this device and not sent yet: everything about it is
+        // still here.
+        if (!e.message.contains('shift not found')) rethrow;
+        summary = ShiftCashSummary(openingMinorUnits: shift.openingCashFloatMinorUnits);
+      } catch (e) {
+        if (!isNetworkError(e) && e is! TimeoutException) rethrow;
+      }
+    }
+    if (summary == null) {
+      final cached = await OfflineCache.read(key);
+      summary = cached is Map
+          ? ShiftCashSummary.fromJson(cached.cast<String, dynamic>())
+          : ShiftCashSummary(openingMinorUnits: shift.openingCashFloatMinorUnits);
+      complete = false;
+    }
+    // What this device hasn't sent yet isn't on the server: added on top.
+    return summary.withQueued(Outbox.shared.pending, shift).copyWith(complete: complete);
   }
 
   @override
