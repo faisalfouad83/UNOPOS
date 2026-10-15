@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/permissions.dart';
 import '../../../core/offline/offline_cache.dart';
 import '../../../core/offline/offline_pins.dart';
+import '../../../core/offline/sync_service.dart';
 import '../../../core/constants/roles.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../domain/account_rules.dart';
@@ -104,8 +105,14 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<bool> verifyStorePassword(String storeLoginId, String password) async {
     try {
       await _client.auth.signInWithPassword(email: SupabaseConfig.syntheticEmailFor(storeLoginId), password: password);
+    } on AuthRetryableFetchException {
+      // No connection: not a wrong password.
+      throw const NeedsConnectionException();
     } on AuthException {
       return false;
+    } catch (e) {
+      if (isNetworkError(e) || e is TimeoutException) throw const NeedsConnectionException();
+      rethrow;
     }
 
     // Supabase Auth itself has no concept of a developer-disabled store —

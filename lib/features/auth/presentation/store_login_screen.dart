@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/offline/sync_service.dart';
+
 import '../../../core/window/full_screen_button.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/offline/offline_warmup.dart';
@@ -68,6 +70,10 @@ class _StoreLoginScreenState extends ConsumerState<StoreLoginScreen> {
         // feedback at all.
         setState(() => _error = l10n.errorGeneric);
       }
+    } on NeedsConnectionException {
+      if (mounted) setState(() => _error = l10n.needsConnection);
+    } catch (_) {
+      if (mounted) setState(() => _error = l10n.errorGeneric);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

@@ -123,7 +123,13 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
                       ? context.l10n.printerAddressNetwork
                       : context.l10n.printerAddressGeneric,
                 ),
-                onSubmitted: (v) => _save(config.copyWith(connectionAddress: v)),
+                onSubmitted: (v) => _save(config.copyWith(connectionAddress: v.trim())),
+                // Saved when leaving the field too, not only on Enter.
+                onTapOutside: (_) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  final v = _addressController.text.trim();
+                  if (v != (config.connectionAddress ?? '')) _save(config.copyWith(connectionAddress: v));
+                },
               ),
             ],
             const SizedBox(height: 12),
