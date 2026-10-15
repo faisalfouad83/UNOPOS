@@ -8,6 +8,7 @@ import 'package:unopos/features/inventory/data/inventory_repository_drift.dart';
 import 'package:unopos/features/inventory/domain/inventory_models.dart';
 import 'package:unopos/features/pos/data/pos_repository_drift.dart';
 import 'package:unopos/features/pos/domain/complete_sale_use_case.dart';
+import 'package:unopos/features/pos/domain/invoice_query.dart';
 import 'package:unopos/features/pos/domain/pos_models.dart';
 import 'package:unopos/features/pos/domain/pos_repository.dart';
 import 'package:unopos/features/pos/domain/process_sale_return_use_case.dart';
@@ -18,6 +19,18 @@ void main() {
     expect(normalizeSaleNumber('125'), 'S-000125');
     expect(normalizeSaleNumber(' s-000125 '), 'S-000125');
     expect(normalizeSaleNumber('S-7'), 'S-000007');
+    expect(normalizeSaleNumber('#42'), 'S-000042');
+  });
+
+  test('a receipt number printed offline is looked up as it is', () {
+    expect(normalizeSaleNumber('OFFLINE-3F2A1B'), 'OFFLINE-3F2A1B');
+    expect(normalizeSaleNumber(' offline-3f2a1b '), 'OFFLINE-3F2A1B');
+    expect(normalizeSaleNumber('H-AB12CD'), 'H-AB12CD');
+    expect(const InvoiceQuery(storeId: 's', number: 'offline-3f2a1b').exactNumber, 'OFFLINE-3F2A1B');
+    // Letters only after the prefix: still a number, not a customer's name.
+    expect(looksLikeSaleNumber('OFFLINE-ABCDEF'), isTrue);
+    expect(looksLikeSaleNumber('Ali'), isFalse);
+    expect(const InvoiceQuery(storeId: 's', number: '12').exactNumber, 'S-000012');
   });
 
   test('returning an invoice restocks, nets it out of sales and profit, and stops double returns', () async {
@@ -43,17 +56,25 @@ void main() {
     );
 
     await inventory.createProduct(const ProductRecord(
-      id: 'tea', storeId: 's', sku: 'tea', name: 'Tea', sellPriceMinorUnits: 100000, costPriceMinorUnits: 60000));
+        id: 'tea', storeId: 's', sku: 'tea', name: 'Tea', sellPriceMinorUnits: 100000, costPriceMinorUnits: 60000));
     await inventory.recordStockMovement(
-      storeId: 's', productId: 'tea', branchId: 'b', type: StockMovementType.purchaseIn, quantity: 10,
-      referenceType: 'TEST', referenceId: 't', createdByUserId: 'c');
+        storeId: 's',
+        productId: 'tea',
+        branchId: 'b',
+        type: StockMovementType.purchaseIn,
+        quantity: 10,
+        referenceType: 'TEST',
+        referenceId: 't',
+        createdByUserId: 'c');
 
     final result = await sell.checkout(
       storeId: 's',
       branchId: 'b',
       cashierId: 'c',
       paymentMethod: SalePaymentMethod.cash,
-      lines: const [SaleLineInput(productId: 'tea', quantity: 3, unitPriceMinorUnits: 100000, costPriceSnapshotMinorUnits: 60000)],
+      lines: const [
+        SaleLineInput(productId: 'tea', quantity: 3, unitPriceMinorUnits: 100000, costPriceSnapshotMinorUnits: 60000)
+      ],
       amountTenderedMinorUnits: 300000,
       changeGivenMinorUnits: 0,
     );

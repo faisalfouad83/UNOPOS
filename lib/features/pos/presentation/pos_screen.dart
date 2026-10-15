@@ -19,6 +19,7 @@ import '../../shifts/presentation/open_shift_dialog.dart';
 import '../../shifts/presentation/shift_providers.dart';
 import '../domain/barcode_scan.dart';
 import '../domain/pos_models.dart';
+import '../domain/pos_repository.dart';
 import 'cart_controller.dart';
 import 'checkout_sheet.dart';
 import 'loyalty_customer_picker.dart';
@@ -39,6 +40,10 @@ final _posProductsProvider = StreamProvider.autoDispose.family<List<ProductRecor
 final _heldSalesProvider = StreamProvider.autoDispose.family<List<SaleRecord>, _BranchKey>((ref, key) {
   return ref.watch(posRepositoryProvider).watchHeldSales(key.storeId, key.branchId);
 });
+
+/// True while the cart is being held or a held sale resumed: the buttons
+/// wait, so a double tap can't hold the same cart twice.
+final cartBusyProvider = StateProvider<bool>((ref) => false);
 
 class PosScreen extends ConsumerWidget {
   const PosScreen({super.key});
@@ -149,6 +154,7 @@ class _HeldSalesButton extends ConsumerWidget {
               // Live list: a sale resumed or sold on another till drops out.
               final live = ref.watch(_heldSalesProvider((storeId: storeId, branchId: branchId))).value ?? heldSales;
               final inCart = ref.watch(cartControllerProvider.select((c) => c.resumingHeldSale?.id));
+              final busy = ref.watch(cartBusyProvider);
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -173,11 +179,13 @@ class _HeldSalesButton extends ConsumerWidget {
                             trailing: sale.id == inCart
                                 ? Chip(label: Text(l10n.posHeldInCart))
                                 : FilledButton.tonal(
+                                    onPressed: busy
+                                        ? null
+                                        : () async {
+                                            final ok = await resumeHeldSale(context, ref, sale);
+                                            if (ok && sheetContext.mounted) Navigator.of(sheetContext).pop();
+                                          },
                                     child: Text(l10n.posResumeSale),
-                                    onPressed: () async {
-                                      final ok = await resumeHeldSale(context, ref, sale);
-                                      if (ok && sheetContext.mounted) Navigator.of(sheetContext).pop();
-                                    },
                                   ),
                           ),
                       ],
@@ -197,40 +205,105 @@ class _HeldSalesButton extends ConsumerWidget {
 /// back into that same held sale (same number, same place in the list), so
 /// suspending again never makes a copy. Returns false if it failed.
 Future<bool> holdCurrentCart(BuildContext context, WidgetRef ref) async {
+  final busy = ref.read(cartBusyProvider.notifier);
+  if (busy.state) return false;
+  busy.state = true;
+  try {
+    return await _holdCurrentCart(context, ref);
+  } finally {
+    busy.state = false;
+  }
+}
+
+Future<bool> _holdCurrentCart(BuildContext context, WidgetRef ref) async {
   final l10n = AppLocalizations.of(context);
   final messenger = ScaffoldMessenger.of(context);
   final session = ref.read(sessionControllerProvider);
   final cart = ref.read(cartControllerProvider);
+  // Read before waiting: the sheet this was started from may be closed by
+  // the time the sale is held, and the cart must still be emptied then.
+  final cartController = ref.read(cartControllerProvider.notifier);
+  final owner = cartController.owner;
+  final useCase = ref.read(completeSaleUseCaseProvider);
   if (cart.isEmpty || session.store == null || session.currentBranchId == null || session.employee == null) {
     return true;
   }
+  final replacing = cart.resumingHeldSale;
   try {
-    await ref.read(completeSaleUseCaseProvider).holdSale(
-          storeId: session.store!.id,
-          branchId: session.currentBranchId!,
-          cashierId: session.employee!.id,
-          customerId: cart.customer?.id,
-          lines: cart.pricedLines.map((l) => l.toSaleLineInput()).toList(),
-          replacing: cart.resumingHeldSale,
-        );
-    ref.read(cartControllerProvider.notifier).clear();
+    await useCase.holdSale(
+      storeId: session.store!.id,
+      branchId: session.currentBranchId!,
+      cashierId: session.employee!.id,
+      customerId: cart.customer?.id,
+      lines: cart.pricedLines.map((l) => l.toSaleLineInput()).toList(),
+      replacing: replacing,
+    );
+    if (cartController.owner == owner) cartController.clear();
     messenger.showSnackBar(SnackBar(content: Text(l10n.posSaleHeld)));
     return true;
+  } on HeldSaleClosedException {
+    // Sold or removed elsewhere: the cart stays, as a sale of its own.
+    if (replacing != null) cartController.detachHeldSale(replacing.id);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.posHeldSaleDetached), duration: const Duration(seconds: 8)));
+    return false;
   } catch (e) {
     messenger.showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
     return false;
   }
 }
 
+/// A held sale is saved as its header and then each line; another till may
+/// see it in between. It is complete once its lines add up to its total.
+bool heldSaleIsComplete(SaleRecord sale) =>
+    sale.lines.isNotEmpty && sale.lines.fold(0, (s, l) => s + l.lineTotalMinorUnits) == sale.grandTotalMinorUnits;
+
 /// Puts a held sale back in the cart exactly as it was suspended. Whatever
 /// is in the cart first is suspended itself, so nothing is lost.
 Future<bool> resumeHeldSale(BuildContext context, WidgetRef ref, SaleRecord sale) async {
+  final busy = ref.read(cartBusyProvider.notifier);
+  if (busy.state) return false;
+  busy.state = true;
+  try {
+    return await _resumeHeldSale(context, ref, sale);
+  } finally {
+    busy.state = false;
+  }
+}
+
+Future<bool> _resumeHeldSale(BuildContext context, WidgetRef ref, SaleRecord listed) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  // Read before waiting (see holdCurrentCart).
   final cartController = ref.read(cartControllerProvider.notifier);
   final owner = cartController.owner;
-  if (!ref.read(cartControllerProvider).isEmpty) {
-    if (!await holdCurrentCart(context, ref)) return false;
-  }
+  final pos = ref.read(posRepositoryProvider);
   final inventory = ref.read(inventoryRepositoryProvider);
+  final debts = ref.read(debtsRepositoryProvider);
+
+  // The sale as it is now, with all its lines: the list may be a moment
+  // behind (sold on another till, or still being saved).
+  SaleRecord? sale;
+  for (var attempt = 0;; attempt++) {
+    try {
+      sale = await pos.getSale(listed.id);
+    } catch (_) {
+      sale = null;
+    }
+    if (sale == null || sale.status != SaleStatus.held || heldSaleIsComplete(sale) || attempt >= 3) break;
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+  }
+  if (sale == null || sale.status != SaleStatus.held) {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.posHeldSaleClosed)));
+    return false;
+  }
+  if (!heldSaleIsComplete(sale)) {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.posHeldSaleIncomplete)));
+    return false;
+  }
+
+  if (!cartController.isEmpty) {
+    if (!context.mounted || !await _holdCurrentCart(context, ref)) return false;
+  }
   final products = [...await inventory.watchProducts(sale.storeId).first];
   // Products since taken off the catalog are still part of the held sale.
   for (final id in sale.lines.map((l) => l.productId).toSet()) {
@@ -238,14 +311,13 @@ Future<bool> resumeHeldSale(BuildContext context, WidgetRef ref, SaleRecord sale
     final product = await inventory.getProduct(id);
     if (product != null) products.add(product);
   }
-  final taxRates = await ref.read(inventoryRepositoryProvider).watchTaxRates(sale.storeId).first;
-  final customer = sale.customerId == null
+  final taxRates = await inventory.watchTaxRates(sale.storeId).first;
+  final customerId = sale.customerId;
+  final customer = customerId == null
       ? null
-      : (await ref.read(debtsRepositoryProvider).watchCustomers(sale.storeId).first)
-          .where((c) => c.id == sale.customerId)
-          .firstOrNull;
+      : (await debts.watchCustomers(sale.storeId).first).where((c) => c.id == customerId).firstOrNull;
   // Signed out or switched store/branch while loading: leave the new cart alone.
-  if (cartController.owner != owner || !ref.read(cartControllerProvider).isEmpty) return false;
+  if (cartController.owner != owner || !cartController.isEmpty) return false;
   cartController.loadHeldSale(
     sale,
     products,
@@ -374,13 +446,18 @@ class _PosBodyState extends ConsumerState<_PosBody> {
 }
 
 /// Takes payment for the cart (after checking the stock once more —
-/// another till may have sold some meanwhile).
-Future<void> _startCheckout(BuildContext context, WidgetRef ref) async {
+/// another till may have sold some meanwhile). Returns whether the cart
+/// was sold (it is empty afterwards).
+Future<bool> _startCheckout(BuildContext context, WidgetRef ref) async {
   final storeId = ref.read(sessionControllerProvider).store?.id;
-  if (storeId == null || ref.read(cartControllerProvider).isEmpty) return;
-  if (!fitCartToStock(context, ref)) return;
-  final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
-  if (context.mounted) await showCheckoutSheet(context, ref, settings: settings);
+  final cartController = ref.read(cartControllerProvider.notifier);
+  final settingsRepository = ref.read(settingsRepositoryProvider);
+  if (storeId == null || cartController.isEmpty) return false;
+  if (!fitCartToStock(context, ref)) return false;
+  final settings = await settingsRepository.ensureSettings(storeId);
+  if (!context.mounted) return false;
+  await showCheckoutSheet(context, ref, settings: settings);
+  return cartController.isEmpty;
 }
 
 /// The cart on a phone or a tablet held upright: what is in it and the
@@ -587,6 +664,7 @@ class _CartPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final cart = ref.watch(cartControllerProvider);
+    final busy = ref.watch(cartBusyProvider);
     final stock = ref.watch(posStockProvider);
     final session = ref.watch(sessionControllerProvider);
     final storeSettings = ref.watch(currentStoreSettingsProvider).valueOrNull;
@@ -639,60 +717,20 @@ class _CartPanel extends ConsumerWidget {
         Expanded(
           child: cart.isEmpty
               ? Center(child: Text(l10n.posEmptyCart))
-              : ListView.builder(
-                  itemCount: cart.lines.length,
-                  itemBuilder: (context, index) {
-                    final line = cart.lines[index];
-                    final onHand = stock == null ? null : (stock[line.product.id] ?? 0);
-                    return ListTile(
-                      onTap: canDiscount ? () => _showLineDiscountDialog(context, ref, line, keepMargin) : null,
-                      leading: IconButton(
-                        icon: const Icon(Icons.remove_circle_outline),
-                        onPressed: () => setCartQuantityWithinStock(context, ref, line, line.quantity - 1),
-                      ),
-                      title: Row(
-                        children: [
-                          Expanded(child: Text(line.product.name, overflow: TextOverflow.ellipsis)),
-                          InkWell(
-                            onTap: () => _showQuantityDialog(context, ref, line),
-                            borderRadius: BorderRadius.circular(8),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              child: Text('${line.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ],
-                      ),
-                      subtitle: Text(
-                        [
-                          Money.format(line.unitPriceMinorUnits),
-                          if (line.discountAmountMinorUnits > 0) '-${Money.format(line.discountAmountMinorUnits)}',
-                          if (onHand != null) l10n.posStockBadge(onHand),
-                        ].join(' · '),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.add_circle_outline),
-                            onPressed: onHand != null && line.quantity >= onHand
-                                ? null
-                                : () => setCartQuantityWithinStock(context, ref, line, line.quantity + 1),
-                          ),
-                          if (canDiscount)
-                            IconButton(
-                              icon: Icon(
-                                Icons.local_offer_outlined,
-                                color: line.discountAmountMinorUnits > 0 ? Theme.of(context).colorScheme.primary : null,
-                              ),
-                              tooltip: l10n.posLineDiscount,
-                              onPressed: () => _showLineDiscountDialog(context, ref, line, keepMargin),
-                            ),
-                          Text(Money.format(line.lineTotalMinorUnits)),
-                        ],
-                      ),
-                    );
-                  },
+              : LayoutBuilder(
+                  builder: (context, constraints) => ListView.builder(
+                    itemCount: cart.lines.length,
+                    itemBuilder: (context, index) {
+                      final line = cart.lines[index];
+                      return _CartLineTile(
+                        line: line,
+                        onHand: stock == null ? null : (stock[line.product.id] ?? 0),
+                        canDiscount: canDiscount,
+                        keepMargin: keepMargin,
+                        narrow: constraints.maxWidth < 400,
+                      );
+                    },
+                  ),
                 ),
         ),
         const Divider(height: 1),
@@ -737,21 +775,23 @@ class _CartPanel extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: cart.isEmpty || session.store == null || session.currentBranchId == null
+                      onPressed: cart.isEmpty || busy || session.store == null || session.currentBranchId == null
                           ? null
                           : () => holdCurrentCart(context, ref),
-                      child: Text(l10n.posHoldSale),
+                      child: busy
+                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                          : Text(l10n.posHoldSale),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
                     child: FilledButton(
-                      onPressed: cart.isEmpty
+                      onPressed: cart.isEmpty || busy
                           ? null
                           : () async {
-                              await _startCheckout(context, ref);
-                              if (onCheckedOut != null && ref.read(cartControllerProvider).isEmpty) onCheckedOut!();
+                              final sold = await _startCheckout(context, ref);
+                              if (sold && onCheckedOut != null) onCheckedOut!();
                             },
                       child: Text(l10n.posCheckout),
                     ),
@@ -762,6 +802,118 @@ class _CartPanel extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// One line of the cart: quantity steppers, price and discount, line total.
+/// On a narrow screen (a phone) the name gets its own row and the controls
+/// go underneath, instead of squeezing the name into what is left.
+class _CartLineTile extends ConsumerWidget {
+  const _CartLineTile({
+    required this.line,
+    required this.onHand,
+    required this.canDiscount,
+    required this.keepMargin,
+    required this.narrow,
+  });
+
+  final CartLine line;
+  final int? onHand;
+  final bool canDiscount;
+  final bool keepMargin;
+  final bool narrow;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final atStock = onHand != null && line.quantity >= onHand!;
+    final details = [
+      Money.format(line.unitPriceMinorUnits),
+      if (line.discountAmountMinorUnits > 0) '-${Money.format(line.discountAmountMinorUnits)}',
+      if (onHand != null) l10n.posStockBadge(onHand!),
+    ].join(' · ');
+
+    final minus = IconButton(
+      icon: const Icon(Icons.remove_circle_outline),
+      visualDensity: narrow ? VisualDensity.compact : null,
+      onPressed: () => setCartQuantityWithinStock(context, ref, line, line.quantity - 1),
+    );
+    final plus = IconButton(
+      icon: const Icon(Icons.add_circle_outline),
+      visualDensity: narrow ? VisualDensity.compact : null,
+      onPressed: atStock ? null : () => setCartQuantityWithinStock(context, ref, line, line.quantity + 1),
+    );
+    final quantity = InkWell(
+      onTap: () => _showQuantityDialog(context, ref, line),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Text('${line.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
+      ),
+    );
+    final discount = canDiscount
+        ? IconButton(
+            icon: Icon(
+              Icons.local_offer_outlined,
+              color: line.discountAmountMinorUnits > 0 ? theme.colorScheme.primary : null,
+            ),
+            visualDensity: narrow ? VisualDensity.compact : null,
+            tooltip: l10n.posLineDiscount,
+            onPressed: () => _showLineDiscountDialog(context, ref, line, keepMargin),
+          )
+        : null;
+    final onTap = canDiscount ? () => _showLineDiscountDialog(context, ref, line, keepMargin) : null;
+
+    if (!narrow) {
+      return ListTile(
+        onTap: onTap,
+        leading: minus,
+        title: Row(
+          children: [
+            Expanded(child: Text(line.product.name, overflow: TextOverflow.ellipsis)),
+            quantity,
+          ],
+        ),
+        subtitle: Text(details),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [plus, if (discount != null) discount, Text(Money.format(line.lineTotalMinorUnits))],
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 8, 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(line.product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.titleSmall),
+            Text(details, style: theme.textTheme.bodySmall, maxLines: 2, overflow: TextOverflow.ellipsis),
+            Row(
+              children: [
+                minus,
+                quantity,
+                plus,
+                if (discount != null) discount,
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    Money.format(line.lineTotalMinorUnits),
+                    textAlign: TextAlign.end,
+                    style: theme.textTheme.titleSmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -815,13 +967,12 @@ Future<void> _showLineDiscountDialog(BuildContext context, WidgetRef ref, CartLi
       baseMinorUnits: line.grossMinorUnits,
       presets: discounts,
       hasDiscount: line.discountAmountMinorUnits > 0,
-      onApply: (isPercent, value) => cart.setLineDiscount(
+      // A percent is kept as one, so it follows the quantity afterwards.
+      onApply: (isPercent, value) => cart.applyLineDiscount(
         line.product.id,
-        line.discountFor(
-          isPercent: isPercent,
-          value: isPercent ? value : Money.toMinorUnits(value.toDouble()),
-          keepMargin: keepMargin,
-        ),
+        isPercent: isPercent,
+        value: isPercent ? value : Money.toMinorUnits(value.toDouble()),
+        keepMargin: keepMargin,
       ),
       onRemove: () => cart.setLineDiscount(line.product.id, 0),
     ),
@@ -896,6 +1047,7 @@ class _DiscountDialogState extends State<_DiscountDialog> {
         ? (widget.baseMinorUnits * typed.clamp(0, 100) / 100).round()
         : Money.toMinorUnits(typed).clamp(0, widget.baseMinorUnits);
     return AlertDialog(
+      scrollable: true,
       title: Text('${l10n.commonDiscount}: ${widget.title}'),
       content: SizedBox(
         width: 380,

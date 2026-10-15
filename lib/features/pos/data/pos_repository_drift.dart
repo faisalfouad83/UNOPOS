@@ -192,7 +192,7 @@ class DriftPosRepository implements PosRepository {
     final taxTotal = lines.fold<int>(0, (s, l) => s + l.taxAmountMinorUnits);
     await _db.transaction(() async {
       final sale = await (_db.select(_db.sales)..where((t) => t.id.equals(saleId))).getSingleOrNull();
-      if (sale == null || sale.status != SaleStatus.held.name) throw StateError('held sale not found');
+      if (sale == null || sale.status != SaleStatus.held.name) throw const HeldSaleClosedException();
       await (_db.delete(_db.saleLines)..where((t) => t.saleId.equals(saleId))).go();
       for (final line in lines) {
         await _db.into(_db.saleLines).insert(

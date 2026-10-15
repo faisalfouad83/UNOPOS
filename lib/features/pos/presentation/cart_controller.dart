@@ -24,12 +24,23 @@ class CartLine {
     this.taxRatePercent = 0,
     this.wholesale = false,
     this.heldUnitPriceMinorUnits,
+    this.discountPercent,
+    this.discountKeepsMargin = false,
   });
 
   final ProductRecord product;
   final int quantity;
   final int discountAmountMinorUnits;
   final double taxRatePercent;
+
+  /// The percent the cashier gave the line discount as (null when it was a
+  /// fixed amount), so the discount follows the quantity: 10% of three is
+  /// still 10% when it becomes two.
+  final num? discountPercent;
+
+  /// The discount was entered with the store's "a full discount still
+  /// charges cost + 5%" setting on.
+  final bool discountKeepsMargin;
 
   /// Priced at the product's wholesale price (when it has one).
   final bool wholesale;
@@ -71,7 +82,42 @@ class CartLine {
         taxRatePercent: taxRatePercent,
         wholesale: wholesale ?? this.wholesale,
         heldUnitPriceMinorUnits: wholesale == null ? heldUnitPriceMinorUnits : null,
+        discountPercent: discountPercent,
+        discountKeepsMargin: discountKeepsMargin,
       );
+
+  /// This line with a discount given as a percent or an amount (see
+  /// [discountFor]); a percent is remembered so it follows the quantity.
+  CartLine withDiscount({required bool isPercent, required num value, bool keepMargin = false}) => CartLine(
+        product: product,
+        quantity: quantity,
+        discountAmountMinorUnits: discountFor(isPercent: isPercent, value: value, keepMargin: keepMargin),
+        taxRatePercent: taxRatePercent,
+        wholesale: wholesale,
+        heldUnitPriceMinorUnits: heldUnitPriceMinorUnits,
+        discountPercent: isPercent && value > 0 ? value : null,
+        discountKeepsMargin: keepMargin,
+      );
+
+  /// This line at another [quantity] or price ([wholesale]), with its
+  /// discount refitted: a percent is worked out again on the new value, an
+  /// amount is kept but never more than the line is worth (cost + 5% stays
+  /// when the store keeps a margin), so a line never goes below zero.
+  CartLine resized({int? quantity, bool? wholesale}) {
+    final next = copyWith(quantity: quantity, wholesale: wholesale);
+    final percent = discountPercent;
+    final int discount;
+    if (percent != null) {
+      discount = next.discountFor(isPercent: true, value: percent, keepMargin: discountKeepsMargin);
+    } else if (discountAmountMinorUnits >= next.grossMinorUnits) {
+      discount = discountAmountMinorUnits <= 0
+          ? 0
+          : (discountKeepsMargin ? next.grossMinorUnits - next.marginFloorMinorUnits : next.grossMinorUnits);
+    } else {
+      discount = discountAmountMinorUnits < 0 ? 0 : discountAmountMinorUnits;
+    }
+    return next.copyWith(discountAmountMinorUnits: discount);
+  }
 
   SaleLineInput toSaleLineInput() => SaleLineInput(
         productId: product.id,
@@ -191,6 +237,10 @@ class CartController extends Notifier<CartState> {
   /// (e.g. loading a held sale) checks it is still the same before writing.
   CartOwner get owner => _owner;
 
+  /// Whether the cart is empty right now (readable after the screen that
+  /// asked has gone).
+  bool get isEmpty => state.isEmpty;
+
   /// Adds one more of [product]. [available] is how many the branch has on
   /// hand (null = not known yet): an item that ran out is not added, and
   /// the cart never holds more of it than there is.
@@ -202,7 +252,7 @@ class CartController extends Notifier<CartState> {
     }
     if (index >= 0) {
       final updated = [...state.lines];
-      updated[index] = updated[index].copyWith(quantity: inCart + 1);
+      updated[index] = updated[index].resized(quantity: inCart + 1);
       state = state.copyWith(lines: updated);
     } else {
       state = state.copyWith(
@@ -221,16 +271,9 @@ class CartController extends Notifier<CartState> {
     state = state.copyWith(
       wholesale: wholesale,
       lines: [
-        for (final l in state.lines)
-          // A line discount was set against the old price; keep it within
-          // the new line total.
-          l.copyWith(
-            wholesale: wholesale,
-            discountAmountMinorUnits: l.discountAmountMinorUnits.clamp(
-              0,
-              CartLine.unitPriceFor(l.product, wholesale: wholesale) * l.quantity,
-            ),
-          ),
+        // A line discount was set against the old price; refit it to the
+        // new one.
+        for (final l in state.lines) l.resized(wholesale: wholesale),
       ],
     );
   }
@@ -247,7 +290,7 @@ class CartController extends Notifier<CartState> {
       removeProduct(productId);
       return result == StockCheck.ok ? result : StockCheck.outOfStock;
     }
-    final updated = state.lines.map((l) => l.product.id == productId ? l.copyWith(quantity: quantity) : l).toList();
+    final updated = state.lines.map((l) => l.product.id == productId ? l.resized(quantity: quantity) : l).toList();
     state = state.copyWith(lines: updated);
     return result;
   }
@@ -266,30 +309,45 @@ class CartController extends Notifier<CartState> {
         continue;
       }
       changed.add(l);
-      if (available > 0) {
-        fitted.add(
-          l.copyWith(
-            quantity: available,
-            discountAmountMinorUnits: l.discountAmountMinorUnits.clamp(0, l.unitPriceMinorUnits * available),
-          ),
-        );
-      }
+      if (available > 0) fitted.add(l.resized(quantity: available));
     }
-    if (changed.isNotEmpty) state = state.copyWith(lines: fitted);
+    if (changed.isNotEmpty) _setLines(fitted);
     return changed;
   }
 
   void removeProduct(String productId) {
-    state = state.copyWith(lines: state.lines.where((l) => l.product.id != productId).toList());
+    _setLines(state.lines.where((l) => l.product.id != productId).toList());
   }
 
+  /// A cart emptied line by line is a new sale: it no longer belongs to the
+  /// held sale it was resumed from (selling it must not close that one).
+  void _setLines(List<CartLine> lines) {
+    state = state.copyWith(lines: lines, clearHeld: lines.isEmpty);
+  }
+
+  /// Sets a line's discount to a fixed amount (never more than the line).
   void setLineDiscount(String productId, int discountAmountMinorUnits) {
     final updated = state.lines.map((l) {
       if (l.product.id != productId) return l;
-      final clamped = discountAmountMinorUnits.clamp(0, l.grossMinorUnits);
-      return l.copyWith(discountAmountMinorUnits: clamped);
+      return l.withDiscount(isPercent: false, value: discountAmountMinorUnits);
     }).toList();
     state = state.copyWith(lines: updated);
+  }
+
+  /// Gives a line a discount the way the cashier entered it: a percent
+  /// (kept, so it follows the quantity) or an amount in minor units.
+  void applyLineDiscount(String productId, {required bool isPercent, required num value, bool keepMargin = false}) {
+    final updated = state.lines.map((l) {
+      if (l.product.id != productId) return l;
+      return l.withDiscount(isPercent: isPercent, value: value, keepMargin: keepMargin);
+    }).toList();
+    state = state.copyWith(lines: updated);
+  }
+
+  /// Unlinks the cart from the held sale [saleId] (it was sold or removed
+  /// elsewhere): what is in the cart stays, as a sale of its own.
+  void detachHeldSale(String saleId) {
+    if (state.resumingHeldSale?.id == saleId) state = state.copyWith(clearHeld: true);
   }
 
   /// Loads a held sale back into the cart exactly as it was held: same

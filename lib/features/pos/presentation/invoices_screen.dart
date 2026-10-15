@@ -14,6 +14,7 @@ import '../../auth/presentation/tile_picker_screen.dart';
 import '../../debts/domain/debts_models.dart';
 import '../domain/invoice_query.dart';
 import '../domain/pos_models.dart';
+import '../domain/pos_repository.dart';
 import 'invoice_details_dialog.dart';
 
 final _customersProvider = StreamProvider.autoDispose.family<List<CustomerRecord>, String>((ref, storeId) {
@@ -108,7 +109,7 @@ class _InvoicesScreenState extends ConsumerState<InvoicesScreen> {
     final storeId = session.store?.id;
     if (storeId == null) return null;
     final text = _search.text.trim();
-    final isNumber = text.isNotEmpty && RegExp(r'\d').hasMatch(text);
+    final isNumber = text.isNotEmpty && looksLikeSaleNumber(text);
     Set<String>? customerIds;
     if (text.isNotEmpty && !isNumber) {
       final customers = ref.read(_customersProvider(storeId)).valueOrNull ?? const <CustomerRecord>[];
@@ -364,7 +365,8 @@ class _InvoicesScreenState extends ConsumerState<InvoicesScreen> {
             invoice: row,
             names: names,
             onTap: () async {
-              await showInvoiceDetails(context, ref, row, names);
+              // This screen's context: it stays while the details are open.
+              await showInvoiceDetails(this.context, ref, row, names);
               // A return or payment may have changed it.
               if (mounted) _reload();
             },

@@ -969,5 +969,13 @@
   "@shiftDifference": {"placeholders": {"amount": {"type": "String"}}},
 
   "debtsPayMoreThanOwed": "That's more than what is owed ({amount})",
-  "@debtsPayMoreThanOwed": {"placeholders": {"amount": {"type": "String"}}}
+  "@debtsPayMoreThanOwed": {"placeholders": {"amount": {"type": "String"}}},
+
+  "posHeldSaleDetached": "This suspended sale was already completed or removed (maybe on another till). Nothing was charged. The cart is now a sale of its own — check it, then charge or suspend it again.",
+  "posHeldSaleIncomplete": "This suspended sale is still being saved. Try again in a moment.",
+  "posReturnDoneBalance": "Return completed — {amount} taken off the customer's balance",
+  "@posReturnDoneBalance": {"placeholders": {"amount": {"type": "String"}}},
+  "posReturnDoneSplit": "Return completed — {balance} taken off the customer's balance, give back {cash}",
+  "@posReturnDoneSplit": {"placeholders": {"balance": {"type": "String"}, "cash": {"type": "String"}}},
+  "posReturnMoreThanLeft": "Some of these items were already returned (maybe by a return still waiting to be sent). Check the quantities and try again."
 }

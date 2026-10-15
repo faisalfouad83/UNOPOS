@@ -62,10 +62,11 @@ class InvoiceQuery {
         limit: limit,
       );
 
-  /// The sale number to look up exactly, when [number] has digits.
+  /// The sale number to look up exactly, when [number] is one (see
+  /// [looksLikeSaleNumber]).
   String? get exactNumber {
     final n = number?.trim() ?? '';
-    if (n.isEmpty || !RegExp(r'\d').hasMatch(n)) return null;
+    if (n.isEmpty || !looksLikeSaleNumber(n)) return null;
     return normalizeSaleNumber(n);
   }
 }
@@ -73,20 +74,25 @@ class InvoiceQuery {
 /// An invoice with what was paid on it. Cash and card invoices are paid in
 /// full at the till; a pay-later invoice is paid through its debt entry.
 class InvoiceRecord {
-  const InvoiceRecord({required this.sale, this.debt});
+  const InvoiceRecord({required this.sale, this.debt, this.debtSettled = false});
 
   final SaleRecord sale;
   final DebtLedgerEntryRecord? debt;
+
+  /// A pay-later invoice whose debt is known to be paid off although its
+  /// record isn't at hand (offline: it is no longer among the open debts).
+  final bool debtSettled;
 
   bool get isPayLater => sale.paymentMethod == SalePaymentMethod.payLater;
 
   int get totalMinorUnits => sale.netTotalMinorUnits;
 
   int get remainingMinorUnits {
-    if (!isPayLater) return 0;
+    if (!isPayLater || debtSettled) return 0;
     final d = debt;
-    if (d == null) return 0;
-    final left = d.balanceRemainingMinorUnits;
+    // Its debt isn't known here (a sale made offline and not sent yet, or
+    // no copy on this device): what wasn't paid up front is still owed.
+    final left = d == null ? totalMinorUnits - (sale.amountTenderedMinorUnits ?? 0) : d.balanceRemainingMinorUnits;
     return left < 0 ? 0 : left;
   }
 
@@ -95,13 +101,19 @@ class InvoiceRecord {
   InvoiceStatus get status {
     if (sale.status == SaleStatus.voided) return InvoiceStatus.cancelled;
     if (sale.status == SaleStatus.refunded) return InvoiceStatus.refunded;
-    if (isPayLater && debt != null) {
-      return switch (debt!.status) {
-        DebtStatus.open => InvoiceStatus.unpaid,
-        DebtStatus.partiallyPaid => InvoiceStatus.partiallyPaid,
-        DebtStatus.paid =>
-          sale.status == SaleStatus.partiallyRefunded ? InvoiceStatus.partiallyRefunded : InvoiceStatus.paid,
+    if (isPayLater) {
+      final d = debt;
+      final paidUp = switch (d?.status) {
+        DebtStatus.open => false,
+        DebtStatus.partiallyPaid => false,
+        DebtStatus.paid => true,
+        null => debtSettled || remainingMinorUnits == 0,
       };
+      if (paidUp) {
+        return sale.status == SaleStatus.partiallyRefunded ? InvoiceStatus.partiallyRefunded : InvoiceStatus.paid;
+      }
+      final somePaid = d == null ? (sale.amountTenderedMinorUnits ?? 0) > 0 : d.status == DebtStatus.partiallyPaid;
+      return somePaid ? InvoiceStatus.partiallyPaid : InvoiceStatus.unpaid;
     }
     if (sale.status == SaleStatus.partiallyRefunded) return InvoiceStatus.partiallyRefunded;
     return InvoiceStatus.completed;

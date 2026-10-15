@@ -5019,6 +5019,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That\'s more than what is owed ({amount})'**
   String debtsPayMoreThanOwed(String amount);
+
+  /// No description provided for @posHeldSaleDetached.
+  ///
+  /// In en, this message translates to:
+  /// **'This suspended sale was already completed or removed (maybe on another till). Nothing was charged. The cart is now a sale of its own — check it, then charge or suspend it again.'**
+  String get posHeldSaleDetached;
+
+  /// No description provided for @posHeldSaleIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'This suspended sale is still being saved. Try again in a moment.'**
+  String get posHeldSaleIncomplete;
+
+  /// No description provided for @posReturnDoneBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Return completed — {amount} taken off the customer\'s balance'**
+  String posReturnDoneBalance(String amount);
+
+  /// No description provided for @posReturnDoneSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Return completed — {balance} taken off the customer\'s balance, give back {cash}'**
+  String posReturnDoneSplit(String balance, String cash);
+
+  /// No description provided for @posReturnMoreThanLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Some of these items were already returned (maybe by a return still waiting to be sent). Check the quantities and try again.'**
+  String get posReturnMoreThanLeft;
 }
 
 class _AppLocalizationsDelegate

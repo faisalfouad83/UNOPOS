@@ -57,13 +57,21 @@ Future<ReceiptDocument> invoiceReceipt(
   );
 }
 
+/// What the details dialog closed with.
+enum _InvoiceAction { processReturn }
+
+/// The invoice's details. A return is started from here once the details
+/// have closed, from [context] (the screen behind, which stays open).
 Future<void> showInvoiceDetails(BuildContext context, WidgetRef ref, InvoiceRecord invoice, InvoiceNames names) async {
   final productNames = await _productNames(ref, invoice.sale);
   if (!context.mounted) return;
-  await showDialog<void>(
+  final action = await showDialog<_InvoiceAction>(
     context: context,
     builder: (_) => _InvoiceDetailsDialog(invoice: invoice, names: names, productNames: productNames),
   );
+  if (action == _InvoiceAction.processReturn && context.mounted) {
+    await showProcessReturnDialog(context, ref, invoice.sale);
+  }
 }
 
 class _InvoiceDetailsDialog extends ConsumerWidget {
@@ -97,8 +105,7 @@ class _InvoiceDetailsDialog extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 2),
           child: Row(
             children: [
-              Text(label, style: bold ? theme.textTheme.titleMedium : theme.textTheme.bodyMedium),
-              const Spacer(),
+              Expanded(child: Text(label, style: bold ? theme.textTheme.titleMedium : theme.textTheme.bodyMedium)),
               Text(
                 Money.format(amount),
                 style: (bold ? theme.textTheme.titleMedium : theme.textTheme.bodyMedium)?.copyWith(color: color),
@@ -209,10 +216,7 @@ class _InvoiceDetailsDialog extends ConsumerWidget {
                     OutlinedButton.icon(
                       icon: const Icon(Icons.assignment_return_outlined),
                       label: Text(l10n.posProcessReturn),
-                      onPressed: () async {
-                        Navigator.of(context).pop();
-                        await showProcessReturnDialog(context, ref, sale);
-                      },
+                      onPressed: () => Navigator.of(context).pop(_InvoiceAction.processReturn),
                     ),
                   OutlinedButton.icon(
                     icon: const Icon(Icons.chat_outlined),
