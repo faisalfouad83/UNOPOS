@@ -60,14 +60,38 @@ class BackupSettingsSection extends ConsumerWidget {
             ? AppLocalizations.of(context).backupRestoreWarningCloud
             : AppLocalizations.of(context).backupRestoreWarningLocal),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(AppLocalizations.of(context).actionCancel)),
-          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(AppLocalizations.of(context).actionConfirm)),
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(AppLocalizations.of(context).actionCancel)),
+          FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(AppLocalizations.of(context).actionConfirm)),
         ],
       ),
     );
     if (confirmed != true) return;
 
-    await ref.read(backupServiceProvider).restoreFromBackup(path);
+    try {
+      await ref.read(backupServiceProvider).restoreFromBackup(path);
+    } catch (e) {
+      // Partly restored, or not at all: say so rather than "done".
+      if (context.mounted) {
+        await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(AppLocalizations.of(context).errorGeneric),
+            content: Text('$e'),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(AppLocalizations.of(context).actionClose),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
     if (context.mounted) {
       await showDialog<void>(
         context: context,
@@ -116,15 +140,19 @@ class BackupSettingsSection extends ConsumerWidget {
               title: Text(l10n.settingsAutoBackup),
               subtitle: Text(l10n.backupAutoHelp(settings.autoBackupTimeOfDay, AutoBackupChecker.keepAutomaticBackups)),
               value: settings.autoBackupEnabled,
-              onChanged: (v) => ref.read(settingsRepositoryProvider).updateSettings(settings.copyWith(autoBackupEnabled: v)),
+              onChanged: (v) =>
+                  ref.read(settingsRepositoryProvider).updateSettings(settings.copyWith(autoBackupEnabled: v)),
             ),
             if (settings.autoBackupEnabled)
               TextButton(
                 onPressed: () async {
                   final picked = await showTimePicker(context: context, initialTime: TimeOfDay.now());
                   if (picked == null) return;
-                  final formatted = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
-                  await ref.read(settingsRepositoryProvider).updateSettings(settings.copyWith(autoBackupTimeOfDay: formatted));
+                  final formatted =
+                      '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                  await ref
+                      .read(settingsRepositoryProvider)
+                      .updateSettings(settings.copyWith(autoBackupTimeOfDay: formatted));
                 },
                 child: Text(l10n.backupTime(settings.autoBackupTimeOfDay)),
               ),

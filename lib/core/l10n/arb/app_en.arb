@@ -360,7 +360,7 @@
   "backupTypeAutomatic": "Automatic",
   "backupTypeManual": "Manual",
   "backupRestoreWarningLocal": "This replaces all current data on this device with the backup. Continue?",
-  "backupRestoreWarningCloud": "Records in the backup are written back to the store's cloud data, overwriting their current versions. Anything added since the backup is kept. Continue?",
+  "backupRestoreWarningCloud": "Records in the backup that the store no longer has are added back. Records that still exist (and everything added since) stay as they are now. Continue?",
   "backupRestoreDone": "Restore complete",
   "backupRestoreReopen": "Close and reopen UNOPOS to load the restored data.",
 

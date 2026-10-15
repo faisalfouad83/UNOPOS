@@ -983,7 +983,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get backupRestoreWarningCloud =>
-      'ستُعاد السجلات الموجودة في النسخة إلى بيانات المتجر السحابية وتستبدل نسخها الحالية. ما أُضيف بعد النسخة يبقى كما هو. هل تريد المتابعة؟';
+      'ستُعاد السجلات الموجودة في النسخة والمحذوفة من المتجر. السجلات الموجودة حالياً (وكل ما أُضيف بعد النسخة) تبقى كما هي. هل تريد المتابعة؟';
 
   @override
   String get backupRestoreDone => 'تمت الاستعادة';

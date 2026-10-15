@@ -985,7 +985,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupRestoreWarningCloud =>
-      'Records in the backup are written back to the store\'s cloud data, overwriting their current versions. Anything added since the backup is kept. Continue?';
+      'Records in the backup that the store no longer has are added back. Records that still exist (and everything added since) stay as they are now. Continue?';
 
   @override
   String get backupRestoreDone => 'Restore complete';

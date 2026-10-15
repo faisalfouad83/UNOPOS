@@ -120,31 +120,44 @@ class SupabaseBackupService implements BackupExportService {
     const pageSize = 1000;
     final rows = <Map<String, dynamic>>[];
     for (var from = 0;; from += pageSize) {
-      final page = await _client.from(table).select().eq('store_id', storeId).order('id').range(from, from + pageSize - 1);
+      final page =
+          await _client.from(table).select().eq('store_id', storeId).order('id').range(from, from + pageSize - 1);
       rows.addAll(List<Map<String, dynamic>>.from(page as List));
       if ((page as List).length < pageSize) break;
     }
     return rows;
   }
 
-  /// Upserts every row back into its table, in the same dependency-safe
-  /// order used for export. This restores/overwrites matching rows (by id)
-  /// but does not delete rows created since the backup was taken — a full
-  /// wipe-and-replace would risk destroying newer data on a partial failure
-  /// partway through, which is worse than leaving a few extra rows behind.
+  /// Brings back what the backup has and the store no longer does: rows
+  /// missing now are added again, in the export's order (each table after
+  /// the ones it refers to). Rows that still exist are left as they are —
+  /// overwriting them would undo everything since the backup (stock counts
+  /// above all). Sent in batches; a table the server refuses (e.g. over the
+  /// plan's limits) doesn't stop the rest, and the refused tables are
+  /// reported at the end ([BackupRestoreIncomplete]).
   @override
   Future<void> restoreFromBackup(String backupJsonPath) async {
     final content = await File(backupJsonPath).readAsString();
     final payload = jsonDecode(content) as Map<String, dynamic>;
     final tables = payload['tables'] as Map<String, dynamic>;
+    final failed = <String>[];
 
     for (final table in _backupTables) {
       final rows = tables[table];
       if (rows == null) continue;
       final rowList = List<Map<String, dynamic>>.from(rows as List);
       if (rowList.isEmpty) continue;
-      await _client.from(table).upsert(rowList);
+      const batch = 500;
+      try {
+        for (var i = 0; i < rowList.length; i += batch) {
+          final part = rowList.sublist(i, i + batch > rowList.length ? rowList.length : i + batch);
+          await _client.from(table).upsert(part, ignoreDuplicates: true);
+        }
+      } catch (_) {
+        failed.add(table);
+      }
     }
+    if (failed.isNotEmpty) throw BackupRestoreIncomplete(failed);
   }
 
   @override
@@ -152,4 +165,13 @@ class SupabaseBackupService implements BackupExportService {
     final recent = await _repository.mostRecentSuccessfulBackup(storeId, onlyToday: true);
     return recent != null;
   }
+}
+
+/// Some tables couldn't be restored (the rest were).
+class BackupRestoreIncomplete implements Exception {
+  const BackupRestoreIncomplete(this.tables);
+  final List<String> tables;
+
+  @override
+  String toString() => 'Not restored: ${tables.join(', ')}';
 }
