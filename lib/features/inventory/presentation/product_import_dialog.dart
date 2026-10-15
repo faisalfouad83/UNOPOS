@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -55,14 +54,14 @@ class _ProductImportDialogState extends ConsumerState<_ProductImportDialog> {
     final file = picked?.files.single;
     if (file == null) return;
     final bytes = file.bytes ?? (file.path != null ? await File(file.path!).readAsBytes() : null);
-    if (bytes == null) return;
+    if (bytes == null || !mounted) return;
     setState(() {
       _fileName = file.name;
       _summary = null;
       _readFailed = false;
       try {
         _parsed = file.name.toLowerCase().endsWith('.csv')
-            ? ProductImportParser.parseCsv(utf8.decode(bytes, allowMalformed: true))
+            ? ProductImportParser.parseCsvBytes(bytes)
             : ProductImportParser.parseXlsx(bytes);
       } catch (_) {
         _parsed = null;
@@ -76,15 +75,21 @@ class _ProductImportDialogState extends ConsumerState<_ProductImportDialog> {
     final session = ref.read(sessionControllerProvider);
     if (parsed == null || session.store == null) return;
     setState(() => _progress = (0, parsed.rows.length));
-    final summary = await ProductImporter(ref.read(inventoryRepositoryProvider)).run(
-      storeId: session.store!.id,
-      rows: parsed.rows,
-      branchId: session.currentBranchId,
-      userId: session.employee?.id,
-      onProgress: (done, total) {
-        if (mounted) setState(() => _progress = (done, total));
-      },
-    );
+    ProductImportSummary summary;
+    try {
+      summary = await ProductImporter(ref.read(inventoryRepositoryProvider)).run(
+        storeId: session.store!.id,
+        rows: parsed.rows,
+        branchId: session.currentBranchId,
+        userId: session.employee?.id,
+        onProgress: (done, total) {
+          if (mounted) setState(() => _progress = (done, total));
+        },
+      );
+    } catch (_) {
+      // Nothing could be started (e.g. the product list couldn't be read).
+      summary = ProductImportSummary(failedRows: [for (final r in parsed.rows) r.rowNumber]);
+    }
     if (mounted) {
       setState(() {
         _progress = null;
@@ -96,7 +101,14 @@ class _ProductImportDialogState extends ConsumerState<_ProductImportDialog> {
   String _columnName(AppLocalizations l10n, ProductImportColumn c) => switch (c) {
         ProductImportColumn.name => l10n.commonName,
         ProductImportColumn.sellPrice => l10n.commonPrice,
-        _ => c.name,
+        ProductImportColumn.costPrice => l10n.inventoryCostPrice,
+        ProductImportColumn.wholesalePrice => l10n.inventoryWholesalePrice,
+        ProductImportColumn.barcode => l10n.inventoryBarcode,
+        ProductImportColumn.sku => l10n.inventorySku,
+        ProductImportColumn.category => l10n.inventoryCategories,
+        ProductImportColumn.unit => l10n.inventoryUnit,
+        ProductImportColumn.quantity => l10n.commonQuantity,
+        ProductImportColumn.expiryDate => l10n.inventoryExpiryDate,
       };
 
   @override
@@ -117,6 +129,8 @@ class _ProductImportDialogState extends ConsumerState<_ProductImportDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l10n.importProductsHelp),
+              const SizedBox(height: 8),
+              Text(l10n.invImportMatchHelp, style: theme.textTheme.bodySmall),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,

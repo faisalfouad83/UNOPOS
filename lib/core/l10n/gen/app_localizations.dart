@@ -5121,6 +5121,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Some of these items were already returned (maybe by a return still waiting to be sent). Check the quantities and try again.'**
   String get posReturnMoreThanLeft;
+
+  /// No description provided for @invPoAlreadyReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'This purchase order was already received (maybe on another device). Its stock wasn\'t added again.'**
+  String get invPoAlreadyReceived;
+
+  /// No description provided for @invPoCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This purchase order was cancelled, so it can\'t be received.'**
+  String get invPoCancelled;
+
+  /// No description provided for @invTransferAlreadyReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'This transfer was already received (maybe on another device). Its stock wasn\'t moved again.'**
+  String get invTransferAlreadyReceived;
+
+  /// No description provided for @invTransferCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This transfer was cancelled, so it can\'t be received.'**
+  String get invTransferCancelled;
+
+  /// No description provided for @invPoReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order received — stock added'**
+  String get invPoReceived;
+
+  /// No description provided for @invPhotoNotSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Product saved without the new photo — no internet connection. Add the photo again when you\'re back online.'**
+  String get invPhotoNotSaved;
+
+  /// No description provided for @invDiscountPercentInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole percentage from 1 to 100'**
+  String get invDiscountPercentInvalid;
+
+  /// No description provided for @invAmountInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount more than zero'**
+  String get invAmountInvalid;
+
+  /// No description provided for @invTaxRateInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a rate from 0 to 100'**
+  String get invTaxRateInvalid;
+
+  /// No description provided for @invImportMatchHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Products already in the list are found by barcode, then by code, or by their exact name when a row has neither, and updated; empty cells keep what the product has. The quantity sets this branch\'s stock to that number, so importing the same file again doesn\'t add stock twice.'**
+  String get invImportMatchHelp;
+
+  /// No description provided for @invPaymentNotPosted.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.'**
+  String get invPaymentNotPosted;
 }
 
 class _AppLocalizationsDelegate

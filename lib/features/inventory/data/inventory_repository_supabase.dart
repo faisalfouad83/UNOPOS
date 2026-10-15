@@ -110,6 +110,9 @@ class SupabaseInventoryRepository implements InventoryRepository {
 
   @override
   Future<TaxRateRecord> createTaxRate(String storeId, String name, double ratePercent, {bool isDefault = false}) async {
+    if (isDefault) {
+      await _writer.update('tax_rates', {'is_default': false}, column: 'store_id', value: storeId);
+    }
     final row = await _writer.insert('tax_rates', {
       'store_id': storeId,
       'name': name,
@@ -362,12 +365,17 @@ class SupabaseInventoryRepository implements InventoryRepository {
     required String requestedByUserId,
     required List<MapEntry<String, int>> productQuantities,
   }) async {
+    // The header and its lines are separate rows. The header is written as
+    // not receivable ('cancelled', which the server refuses to receive),
+    // then the lines, then it is opened ('pending') — all through the same
+    // writer, so in this order even when kept to send later. A transfer cut
+    // off half-way is never received with lines missing.
     final header = await _writer.insert('stock_transfers', {
       'store_id': storeId,
       'from_branch_id': fromBranchId,
       'to_branch_id': toBranchId,
       'requested_by_user_id': requestedByUserId,
-      'status': 'pending',
+      'status': 'cancelled',
       'created_at': _now(),
     });
     final transferId = header['id'] as String;
@@ -379,6 +387,7 @@ class SupabaseInventoryRepository implements InventoryRepository {
         'quantity': e.value,
       });
     }
+    await _writer.update('stock_transfers', {'status': 'pending'}, value: transferId);
     return transferId;
   }
 
@@ -399,19 +408,25 @@ class SupabaseInventoryRepository implements InventoryRepository {
         }
       }
     }
-    await _writer.rpc(
-      'receive_stock_transfer',
-      {'p_transfer_id': transferId, 'p_received_by_user_id': receivedByUserId},
-      offline: () => null,
-      increments: [
-        {
-          'table': 'stock_transfers',
-          'id': transferId,
-          'set': {'status': 'received', 'received_by_user_id': receivedByUserId, 'received_at': _now()},
-        },
-        ...stock,
-      ],
-    );
+    try {
+      await _writer.rpc(
+        'receive_stock_transfer',
+        {'p_transfer_id': transferId, 'p_received_by_user_id': receivedByUserId},
+        offline: () => null,
+        increments: [
+          {
+            'table': 'stock_transfers',
+            'id': transferId,
+            'set': {'status': 'received', 'received_by_user_id': receivedByUserId, 'received_at': _now()},
+          },
+          ...stock,
+        ],
+      );
+    } catch (e) {
+      final refusal = ReceiptRefusedException.from(e);
+      if (refusal != null) throw refusal;
+      rethrow;
+    }
   }
 
   @override
@@ -537,19 +552,26 @@ class SupabaseInventoryRepository implements InventoryRepository {
         }
       }
     }
-    final result = await _writer.rpc(
-      'receive_purchase_order',
-      {'p_purchase_order_id': purchaseOrderId, 'p_received_by_user_id': receivedByUserId},
-      offline: () => 0,
-      increments: [
-        {
-          'table': 'purchase_orders',
-          'id': purchaseOrderId,
-          'set': {'status': 'received'},
-        },
-        ...stock,
-      ],
-    );
+    final Object? result;
+    try {
+      result = await _writer.rpc(
+        'receive_purchase_order',
+        {'p_purchase_order_id': purchaseOrderId, 'p_received_by_user_id': receivedByUserId},
+        offline: () => 0,
+        increments: [
+          {
+            'table': 'purchase_orders',
+            'id': purchaseOrderId,
+            'set': {'status': 'received'},
+          },
+          ...stock,
+        ],
+      );
+    } catch (e) {
+      final refusal = ReceiptRefusedException.from(e);
+      if (refusal != null) throw refusal;
+      rethrow;
+    }
     return (result as num?)?.toInt() ?? 0;
   }
 

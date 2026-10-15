@@ -997,5 +997,17 @@
   "@posReturnDoneBalance": {"placeholders": {"amount": {"type": "String"}}},
   "posReturnDoneSplit": "Return completed — {balance} taken off the customer's balance, give back {cash}",
   "@posReturnDoneSplit": {"placeholders": {"balance": {"type": "String"}, "cash": {"type": "String"}}},
-  "posReturnMoreThanLeft": "Some of these items were already returned (maybe by a return still waiting to be sent). Check the quantities and try again."
+  "posReturnMoreThanLeft": "Some of these items were already returned (maybe by a return still waiting to be sent). Check the quantities and try again.",
+
+  "invPoAlreadyReceived": "This purchase order was already received (maybe on another device). Its stock wasn't added again.",
+  "invPoCancelled": "This purchase order was cancelled, so it can't be received.",
+  "invTransferAlreadyReceived": "This transfer was already received (maybe on another device). Its stock wasn't moved again.",
+  "invTransferCancelled": "This transfer was cancelled, so it can't be received.",
+  "invPoReceived": "Purchase order received — stock added",
+  "invPhotoNotSaved": "Product saved without the new photo — no internet connection. Add the photo again when you're back online.",
+  "invDiscountPercentInvalid": "Enter a whole percentage from 1 to 100",
+  "invAmountInvalid": "Enter an amount more than zero",
+  "invTaxRateInvalid": "Enter a rate from 0 to 100",
+  "invImportMatchHelp": "Products already in the list are found by barcode, then by code, or by their exact name when a row has neither, and updated; empty cells keep what the product has. The quantity sets this branch's stock to that number, so importing the same file again doesn't add stock twice.",
+  "invPaymentNotPosted": "Payment recorded, but its accounting entry couldn't be saved. Check the journal."
 }

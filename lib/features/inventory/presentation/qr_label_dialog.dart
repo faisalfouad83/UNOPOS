@@ -65,7 +65,11 @@ Future<void> showQrLabelDialog(BuildContext context, WidgetRef ref, ProductRecor
                           setState(() => generating = true);
                           try {
                             final updated = await assignGeneratedBarcode(ref, current);
-                            setState(() => current = updated);
+                            if (context.mounted) setState(() => current = updated);
+                          } catch (_) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
+                            }
                           } finally {
                             if (context.mounted) setState(() => generating = false);
                           }

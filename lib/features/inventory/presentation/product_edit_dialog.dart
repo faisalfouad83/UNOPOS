@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/offline/connectivity.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/id_generator.dart';
@@ -39,6 +40,10 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
     builder: (_) => _ProductEditDialog(existing: existing, categories: categories, taxRates: taxRates),
   );
 
+  if (saved != null && saved.photoSkipped && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.invPhotoNotSaved)));
+  }
+
   // Offer the label straight away so a freshly generated code can be
   // printed and stuck on the product.
   if (saved != null && saved.generatedBarcode && context.mounted) {
@@ -47,9 +52,13 @@ Future<void> showProductEditDialog(BuildContext context, WidgetRef ref, {Product
 }
 
 class _Saved {
-  const _Saved(this.product, {required this.generatedBarcode});
+  const _Saved(this.product, {required this.generatedBarcode, this.photoSkipped = false});
   final ProductRecord product;
   final bool generatedBarcode;
+
+  /// The new photo couldn't be uploaded (no connection), so the product
+  /// was saved with its old photo.
+  final bool photoSkipped;
 }
 
 class _ProductEditDialog extends ConsumerStatefulWidget {
@@ -123,8 +132,16 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
       };
 
   Future<void> _generate() async {
+    final l10n = AppLocalizations.of(context);
     final storeId = ref.read(sessionControllerProvider).store!.id;
-    final code = await BarcodeGenerator.newUniqueBarcode(ref.read(inventoryRepositoryProvider), storeId);
+    final String code;
+    try {
+      code = await BarcodeGenerator.newUniqueBarcode(ref.read(inventoryRepositoryProvider), storeId);
+    } catch (_) {
+      if (mounted) setState(() => _error = l10n.errorGeneric);
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       _barcode.text = code;
       _generated = true;
@@ -138,11 +155,13 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
       final bytes = await pickImageFile();
       if (bytes == null) return;
       final png = await resizeImageToPng(bytes, maxSide: 512);
+      if (!mounted) return;
       setState(() {
         _newImage = png;
         _imageRemoved = false;
       });
     } on FormatException catch (e) {
+      if (!mounted) return;
       setState(() => _error = e.message == 'size' ? l10n.imageTooLarge : l10n.imageWrongType);
     }
   }
@@ -197,8 +216,22 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
       }
 
       var imagePath = _imageRemoved ? null : existing?.imagePath;
+      var photoSkipped = false;
       if (_newImage != null) {
-        imagePath = await images.save(storeId: storeId, productId: id, png: _newImage!);
+        // A photo is uploaded straight away; without a connection the
+        // product is still saved (with its old photo) and the user told.
+        if (!ref.read(connectivityProvider)) {
+          photoSkipped = true;
+        } else {
+          try {
+            imagePath = await images
+                .save(storeId: storeId, productId: id, png: _newImage!)
+                .timeout(const Duration(seconds: 30));
+          } catch (_) {
+            photoSkipped = true;
+          }
+        }
+        if (photoSkipped) imagePath = existing?.imagePath;
       }
 
       final record = ProductRecord(
@@ -244,7 +277,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
       final oldPath = existing?.imagePath;
       if (oldPath != null && oldPath != imagePath) await images.remove(oldPath);
 
-      if (mounted) Navigator.of(context).pop(_Saved(record, generatedBarcode: generated));
+      if (mounted) Navigator.of(context).pop(_Saved(record, generatedBarcode: generated, photoSkipped: photoSkipped));
     } catch (_) {
       if (mounted) setState(() => _error = l10n.errorGeneric);
     } finally {

@@ -89,13 +89,30 @@ final _cases = <_Case>[
   _Case('/inventory', 'product-new', (t) => _tap(t, find.byType(FloatingActionButton))),
   _Case('/inventory', 'stock-receive', (t) async {
     await _tap(t, find.byIcon(Icons.add_box_outlined));
-    await t.enterText(find.byType(TextField).first, 'بسكويت');
-    await _tap(t, find.text('بسكويت').last);
+    // Three products (Enter in the search box, as a scanner does), more
+    // than fit on a phone without scrolling.
+    for (final name in ['بسكويت', 'شاي محمود', 'سكر أبيض']) {
+      await t.enterText(find.descendant(of: find.byType(AlertDialog), matching: find.byType(TextField)).first, name);
+      await t.testTextInput.receiveAction(TextInputAction.done);
+      for (var i = 0; i < 4; i++) {
+        await t.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 30)));
+        await t.pump(const Duration(milliseconds: 100));
+      }
+    }
+  }),
+  _Case('/inventory', 'stock-transfer', (t) async {
+    await _tap(t, find.widgetWithText(Tab, 'مستوى المخزون'));
+    await _tap(t, find.byIcon(Icons.swap_horiz));
+  }),
+  _Case('/inventory', 'po-new', (t) async {
+    await _tap(t, find.widgetWithText(Tab, 'أوامر الشراء'));
+    await _tap(t, find.byType(FloatingActionButton).last);
   }),
   const _Case('/debts'),
   const _Case('/customers'),
   _Case('/customers', 'customer-details', (t) => _tap(t, find.text('أبو أحمد'))),
   const _Case('/suppliers'),
+  _Case('/suppliers', 'supplier-new', (t) => _tap(t, find.byType(FloatingActionButton))),
   const _Case('/accounting'),
   const _Case('/expenses-cash'),
   _Case('/expenses-cash', 'expense-new', (t) => _tap(t, find.byIcon(Icons.add))),

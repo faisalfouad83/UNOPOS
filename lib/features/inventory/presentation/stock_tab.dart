@@ -7,6 +7,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../auth/domain/session_controller.dart';
 import '../domain/inventory_models.dart';
+import 'purchase_orders_tab.dart';
 import 'stock_transfer_dialog.dart';
 
 typedef _StoreBranch = ({String storeId, String branchId});
@@ -23,11 +24,34 @@ final _stockTransfersProvider = StreamProvider.autoDispose.family<List<StockTran
   return ref.watch(inventoryRepositoryProvider).watchStockTransfers(storeId);
 });
 
-class StockTab extends ConsumerWidget {
+class StockTab extends ConsumerStatefulWidget {
   const StockTab({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StockTab> createState() => _StockTabState();
+}
+
+class _StockTabState extends ConsumerState<StockTab> {
+  /// Transfers being received right now (a second tap does nothing).
+  final _receiving = <String>{};
+
+  Future<void> _receive(StockTransferRecord transfer, String userId) async {
+    if (!_receiving.add(transfer.id)) return;
+    setState(() {});
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(inventoryRepositoryProvider).receiveStockTransfer(transfer.id, userId);
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(receiptErrorText(l10n, e, transfer: true))));
+    } finally {
+      _receiving.remove(transfer.id);
+      if (mounted) setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final session = ref.watch(sessionControllerProvider);
     final storeId = session.store?.id;
@@ -48,9 +72,13 @@ class StockTab extends ConsumerWidget {
             error: (e, st) => Center(child: Text(l10n.errorGeneric)),
             data: (stockItems) {
               final byProductId = {for (final s in stockItems) s.productId: s};
-              final pendingTransfers = transfersAsync.value?.where((t) => t.status == 'pending').toList() ?? const [];
+              // A transfer whose lines haven't all arrived yet isn't shown.
+              final pendingTransfers =
+                  transfersAsync.value?.where((t) => t.status == 'pending' && t.lines.isNotEmpty).toList() ?? const [];
 
               return ListView(
+                // Room for the transfer button over the last row.
+                padding: const EdgeInsets.only(bottom: 88),
                 children: [
                   if (pendingTransfers.isNotEmpty) ...[
                     Padding(
@@ -63,14 +91,15 @@ class StockTab extends ConsumerWidget {
                           subtitle: Text(transfer.toBranchId == branchId
                               ? context.l10n.transferIncoming
                               : context.l10n.transferOutgoing),
-                          trailing: transfer.toBranchId == branchId
-                              ? TextButton(
-                                  child: Text(context.l10n.actionReceive),
-                                  onPressed: () => ref
-                                      .read(inventoryRepositoryProvider)
-                                      .receiveStockTransfer(transfer.id, session.employee?.id ?? ''),
-                                )
-                              : null,
+                          trailing: transfer.toBranchId != branchId
+                              ? null
+                              : _receiving.contains(transfer.id)
+                                  ? const SizedBox(
+                                      width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : TextButton(
+                                      child: Text(context.l10n.actionReceive),
+                                      onPressed: () => _receive(transfer, session.employee?.id ?? ''),
+                                    ),
                         )),
                     const Divider(),
                   ],
@@ -205,6 +234,7 @@ Future<void> showStockAdjustDialog(
                           );
                       if (context.mounted) Navigator.of(context).pop();
                     } catch (_) {
+                      if (!context.mounted) return;
                       setState(() {
                         saving = false;
                         error = l10n.errorGeneric;

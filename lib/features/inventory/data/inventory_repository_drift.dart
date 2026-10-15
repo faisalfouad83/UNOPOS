@@ -79,9 +79,16 @@ class DriftInventoryRepository implements InventoryRepository {
   @override
   Future<TaxRateRecord> createTaxRate(String storeId, String name, double ratePercent, {bool isDefault = false}) async {
     final id = IdGenerator.newId();
-    await _db.into(_db.taxRates).insert(
-          TaxRatesCompanion.insert(id: id, storeId: storeId, name: name, ratePercent: ratePercent, isDefault: Value(isDefault)),
-        );
+    await _db.transaction(() async {
+      if (isDefault) {
+        await (_db.update(_db.taxRates)..where((t) => t.storeId.equals(storeId)))
+            .write(const TaxRatesCompanion(isDefault: Value(false)));
+      }
+      await _db.into(_db.taxRates).insert(
+            TaxRatesCompanion.insert(
+                id: id, storeId: storeId, name: name, ratePercent: ratePercent, isDefault: Value(isDefault)),
+          );
+    });
     return TaxRateRecord(id: id, storeId: storeId, name: name, ratePercent: ratePercent, isDefault: isDefault);
   }
 
@@ -189,8 +196,7 @@ class DriftInventoryRepository implements InventoryRepository {
 
   @override
   Stream<List<StockItemRecord>> watchStock(String storeId, String branchId) {
-    return (_db.select(_db.stockItems)
-          ..where((t) => t.storeId.equals(storeId) & t.branchId.equals(branchId)))
+    return (_db.select(_db.stockItems)..where((t) => t.storeId.equals(storeId) & t.branchId.equals(branchId)))
         .watch()
         .map((rows) => rows.map(_mapStockItem).toList());
   }
@@ -323,10 +329,23 @@ class DriftInventoryRepository implements InventoryRepository {
   }
 
   @override
-  Future<void> receiveStockTransfer(String transferId, String receivedByUserId) async {
-    final transfer = await (_db.select(_db.stockTransfers)..where((t) => t.id.equals(transferId))).getSingle();
-    final lines = await (_db.select(_db.stockTransferLines)..where((t) => t.stockTransferId.equals(transferId))).get();
+  Future<void> receiveStockTransfer(String transferId, String receivedByUserId) => _db.transaction(() async {
+        final transfer = await (_db.select(_db.stockTransfers)..where((t) => t.id.equals(transferId))).getSingle();
+        _refuseReceived(transfer.status);
+        final lines =
+            await (_db.select(_db.stockTransferLines)..where((t) => t.stockTransferId.equals(transferId))).get();
+        await _receiveTransferLines(transfer, lines, receivedByUserId);
+      });
 
+  /// Like the server: what was received (or cancelled) isn't received again.
+  static void _refuseReceived(String status) {
+    if (status == 'received') throw const ReceiptRefusedException(ReceiptRefusal.alreadyReceived);
+    if (status == 'cancelled') throw const ReceiptRefusedException(ReceiptRefusal.cancelled);
+  }
+
+  Future<void> _receiveTransferLines(
+      StockTransfer transfer, List<StockTransferLine> lines, String receivedByUserId) async {
+    final transferId = transfer.id;
     for (final line in lines) {
       await recordStockMovement(
         storeId: transfer.storeId,
@@ -419,13 +438,19 @@ class DriftInventoryRepository implements InventoryRepository {
             scopeTargetId: Value(scopeTargetId),
           ),
         );
-    return DiscountRecord(id: id, storeId: storeId, name: name, type: type, value: value, appliedScope: appliedScope, scopeTargetId: scopeTargetId);
+    return DiscountRecord(
+        id: id,
+        storeId: storeId,
+        name: name,
+        type: type,
+        value: value,
+        appliedScope: appliedScope,
+        scopeTargetId: scopeTargetId);
   }
 
   @override
   Stream<List<DiscountRecord>> watchDiscounts(String storeId) {
-    return (_db.select(_db.discounts)
-          ..where((t) => t.storeId.equals(storeId) & t.isActive.equals(true)))
+    return (_db.select(_db.discounts)..where((t) => t.storeId.equals(storeId) & t.isActive.equals(true)))
         .watch()
         .map((rows) => rows.map(_mapDiscount).toList());
   }
@@ -488,9 +513,16 @@ class DriftInventoryRepository implements InventoryRepository {
   }
 
   @override
-  Future<int> receivePurchaseOrder(String purchaseOrderId, String receivedByUserId) async {
-    final po = await (_db.select(_db.purchaseOrders)..where((t) => t.id.equals(purchaseOrderId))).getSingle();
-    final lines = await (_db.select(_db.purchaseOrderLines)..where((t) => t.purchaseOrderId.equals(purchaseOrderId))).get();
+  Future<int> receivePurchaseOrder(String purchaseOrderId, String receivedByUserId) => _db.transaction(() async {
+        final po = await (_db.select(_db.purchaseOrders)..where((t) => t.id.equals(purchaseOrderId))).getSingle();
+        _refuseReceived(po.status);
+        return _receivePurchaseOrderLines(po, receivedByUserId);
+      });
+
+  Future<int> _receivePurchaseOrderLines(PurchaseOrder po, String receivedByUserId) async {
+    final purchaseOrderId = po.id;
+    final lines =
+        await (_db.select(_db.purchaseOrderLines)..where((t) => t.purchaseOrderId.equals(purchaseOrderId))).get();
 
     for (final line in lines) {
       await recordStockMovement(

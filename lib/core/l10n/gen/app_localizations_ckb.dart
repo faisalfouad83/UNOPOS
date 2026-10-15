@@ -2790,4 +2790,44 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get posReturnMoreThanLeft =>
       'هەندێک لەم کاڵایانە پێشتر گەڕێنراونەتەوە (لەوانەیە بە گەڕاندنەوەیەک کە هێشتا چاوەڕێی ناردنە). بڕەکان بپشکنە و دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String get invPoAlreadyReceived =>
+      'ئەم داواکاری کڕینە پێشتر وەرگیراوە (لەوانەیە لە ئامێرێکی تر). کۆگاکەی دووبارە زیاد نەکرا.';
+
+  @override
+  String get invPoCancelled =>
+      'ئەم داواکاری کڕینە هەڵوەشێنراوەتەوە، بۆیە ناتوانرێت وەربگیرێت.';
+
+  @override
+  String get invTransferAlreadyReceived =>
+      'ئەم گواستنەوەیە پێشتر وەرگیراوە (لەوانەیە لە ئامێرێکی تر). کۆگاکەی دووبارە نەگوازرایەوە.';
+
+  @override
+  String get invTransferCancelled =>
+      'ئەم گواستنەوەیە هەڵوەشێنراوەتەوە، بۆیە ناتوانرێت وەربگیرێت.';
+
+  @override
+  String get invPoReceived => 'داواکاری کڕین وەرگیرا — کۆگا زیاد کرا';
+
+  @override
+  String get invPhotoNotSaved =>
+      'کاڵاکە بەبێ وێنە نوێیەکە پاشەکەوت کرا — ئینتەرنێت نییە. کاتێک پەیوەندی گەڕایەوە وێنەکە دووبارە زیاد بکە.';
+
+  @override
+  String get invDiscountPercentInvalid => 'ڕێژەیەکی تەواو لە 1 بۆ 100 بنووسە';
+
+  @override
+  String get invAmountInvalid => 'بڕە پارەیەک لە سفر زیاتر بنووسە';
+
+  @override
+  String get invTaxRateInvalid => 'ڕێژەیەک لە 0 بۆ 100 بنووسە';
+
+  @override
+  String get invImportMatchHelp =>
+      'ئەو کاڵایانەی لە لیستەکەدا هەن بە بارکۆد، پاشان بە کۆد، یان بە هەمان ناو کاتێک ڕیزەکە هیچیانی تێدا نییە، دەدۆزرێنەوە و نوێ دەکرێنەوە؛ خانە بەتاڵەکان ئەوەی کاڵاکە هەیەتی دەهێڵنەوە. بڕەکە کۆگای ئەم لقە دەکاتە هەمان ژمارە، بۆیە هاوردەکردنی هەمان فایل دووبارە کۆگا دوو جار زیاد ناکات.';
+
+  @override
+  String get invPaymentNotPosted =>
+      'پارەدانەکە تۆمار کرا، بەڵام تۆماری ژمێریاریەکەی پاشەکەوت نەکرا. ڕۆژنامەکە بپشکنە.';
 }

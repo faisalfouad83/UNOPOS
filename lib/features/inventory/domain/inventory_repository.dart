@@ -4,6 +4,8 @@ abstract class InventoryRepository {
   Future<CategoryRecord> createCategory(String storeId, String name, {String? parentCategoryId});
   Stream<List<CategoryRecord>> watchCategories(String storeId);
 
+  /// Adds a tax rate. A new default takes over from the store's previous
+  /// default, so there is only ever one.
   Future<TaxRateRecord> createTaxRate(String storeId, String name, double ratePercent, {bool isDefault = false});
   Stream<List<TaxRateRecord>> watchTaxRates(String storeId);
 
@@ -42,6 +44,9 @@ abstract class InventoryRepository {
     required List<MapEntry<String, int>> productQuantities,
   });
 
+  /// Moves a transfer's stock out of its branch and into the other one.
+  /// Throws [ReceiptRefusedException] when it was already received or was
+  /// cancelled.
   Future<void> receiveStockTransfer(String transferId, String receivedByUserId);
 
   Stream<List<StockTransferRecord>> watchStockTransfers(String storeId);
@@ -70,7 +75,9 @@ abstract class InventoryRepository {
 
   /// Marks a purchase order fully received: posts StockMovements for every
   /// line and returns the order's total cost (used by the caller to post
-  /// the corresponding accounting + supplier-balance entries).
+  /// the corresponding accounting + supplier-balance entries; 0 when it was
+  /// kept to send later). Throws [ReceiptRefusedException] when it was
+  /// already received or was cancelled.
   Future<int> receivePurchaseOrder(String purchaseOrderId, String receivedByUserId);
 
   Stream<List<PurchaseOrderRecord>> watchPurchaseOrders(String storeId);
