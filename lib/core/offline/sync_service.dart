@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../features/auth/domain/session_controller.dart';
 import '../supabase/supabase_client_provider.dart';
 import '../supabase/supabase_config.dart';
 import '../utils/id_generator.dart';
@@ -11,25 +12,42 @@ import 'offline_cache.dart';
 import 'outbox.dart';
 
 class SyncState {
-  const SyncState({this.pending = 0, this.failed = 0, this.syncing = false});
+  const SyncState({this.pending = 0, this.failed = 0, this.held = 0, this.otherStores = 0, this.syncing = false});
 
   /// Changes waiting to be sent.
   final int pending;
 
-  /// Changes the server refused (kept; can be retried).
+  /// Changes the server refused (kept; can be retried or discarded).
   final int failed;
+
+  /// Changes held back because they build on a refused one.
+  final int held;
+
+  /// Changes made under another store, sent when it signs in again.
+  final int otherStores;
   final bool syncing;
 }
 
+const _transientCodes = {
+  // PostgREST can't reach the database right now.
+  'PGRST000', 'PGRST001', 'PGRST002', 'PGRST003',
+  // HTTP: busy, gateway and proxy errors, time-outs.
+  '408', '429', '500', '502', '503', '504', '520', '521', '522', '523', '524',
+  // Postgres: retry the transaction (conflict, deadlock), too many
+  // connections, the server restarting, the connection lost.
+  '40001', '40P01', '53300', '57P01', '57P02', '57P03', '08000', '08003', '08006',
+};
+
 /// True when [error] means "try again later" rather than "the server said
-/// no": no connection, a timeout, the server being unavailable, or the
-/// sign-in token needing a refresh after a long time offline.
+/// no": no connection, a timeout, the server being busy or unavailable, a
+/// transaction to retry, or the sign-in token needing a refresh after a
+/// long time offline.
 bool isTransientError(Object error) {
   if (isNetworkError(error)) return true;
   if (error is PostgrestException) {
     final code = error.code ?? '';
     if (code.startsWith('PGRST3')) return true; // JWT expired / invalid
-    if (code == '503' || code == '502' || code == '504' || code == '500') return true;
+    if (_transientCodes.contains(code)) return true;
     final msg = error.message.toLowerCase();
     if (msg.contains('jwt') || msg.contains('timeout') || msg.contains('fetch')) return true;
   }
@@ -37,12 +55,41 @@ bool isTransientError(Object error) {
   return false;
 }
 
+/// For a [isTransientError] failure: whether the request may still have
+/// reached the server and run (no reply in time, the connection dropped
+/// mid-way, a gateway giving up on it), as opposed to never getting there
+/// or being turned away before it ran.
+bool mayHaveRun(Object error) {
+  if (error is TimeoutException) return true;
+  if (error is PostgrestException) return const {'502', '504', '520', '522', '524'}.contains(error.code);
+  if (error is AuthException) return false;
+  final text = error.toString();
+  if (text.contains('Failed host lookup') ||
+      text.contains('Connection refused') ||
+      text.contains('Network is unreachable')) {
+    return false;
+  }
+  return isNetworkError(error);
+}
+
+/// The server had no row to change (e.g. the change that adds it was
+/// refused, or it was deleted on another device).
+class NothingToUpdateException implements Exception {
+  const NothingToUpdateException(this.table);
+  final String table;
+  @override
+  String toString() => 'Nothing to change: the row is not in $table on the server.';
+}
+
 /// Sends the [Outbox] to the server, in order, whenever there is a
 /// connection: straight after a change is queued, as soon as the
-/// connection comes back, and every [interval] as a safety net.
+/// connection comes back, and every [interval] as a safety net. Only the
+/// changes of the store signed in are sent, and only while the session is
+/// the one that store signed in with.
 class SyncService extends StateNotifier<SyncState> {
   SyncService(this._outbox, this._client, this._connectivity, {Duration interval = const Duration(seconds: 20)})
-      : super(const SyncState()) {
+      : _authUser = _client?.auth.currentUser?.id,
+        super(const SyncState()) {
     _sub = _outbox.changes.listen((_) {
       _publish();
       if (_outbox.hasPending) _kick();
@@ -64,14 +111,31 @@ class SyncService extends StateNotifier<SyncState> {
   Timer? _debounce;
   bool _running = false;
 
+  /// The account signed in when the store was set: changes are sent only
+  /// with that session.
+  String? _authUser;
+
   void _publish() {
     if (!mounted) return;
-    state = SyncState(pending: _outbox.pending.length, failed: _outbox.failed.length, syncing: _running);
+    state = SyncState(
+      pending: _outbox.pending.length,
+      failed: _outbox.failed.length,
+      held: _outbox.held.length,
+      otherStores: _outbox.otherStores.length,
+      syncing: _running,
+    );
   }
 
   void _kick() {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), syncNow);
+  }
+
+  /// The store signed in on this device has changed (null: signed out).
+  Future<void> setStore(String? storeId) async {
+    _authUser = _client?.auth.currentUser?.id;
+    await _outbox.setStore(storeId);
+    if (storeId != null) _kick();
   }
 
   /// Back online: send everything now.
@@ -82,13 +146,24 @@ class SyncService extends StateNotifier<SyncState> {
     await syncNow();
   }
 
+  /// Drops refused change [id] and the changes that build on it.
+  Future<void> discard(String id) => _outbox.discard(id);
+
   Future<void> syncNow() async {
     final client = _client;
-    if (client == null || _running || !_outbox.hasPending) return;
+    if (client == null || _running || _outbox.store == null || !_outbox.hasPending) return;
+    if (client.auth.currentUser?.id != _authUser) return;
     _running = true;
     _publish();
     try {
-      for (final op in _outbox.pending) {
+      // Oldest first, including changes made while this runs; each at most
+      // once per run, so a change that keeps coming back can't spin.
+      final tried = <String>{};
+      while (true) {
+        if (client.auth.currentUser?.id != _authUser) break;
+        final op = _outbox.pending.where((o) => !tried.contains(o.id)).firstOrNull;
+        if (op == null) break;
+        tried.add(op.id);
         try {
           final result = await execute(client, op, _outbox);
           _outbox.recordResult(op.id, result);
@@ -97,6 +172,7 @@ class SyncService extends StateNotifier<SyncState> {
         } catch (e) {
           if (isTransientError(e)) {
             if (isNetworkError(e)) _connectivity?.markOffline();
+            if (mayHaveRun(e)) await _outbox.replace(op.copyWith(attemptedAt: op.attemptedAt ?? DateTime.now()));
             break; // keep the order: try again later from here
           }
           await _outbox.replace(op.copyWith(failed: true, lastError: _describe(e)));
@@ -134,11 +210,14 @@ Future<Object?> execute(SupabaseClient client, OutboxOp op, Outbox outbox) async
           .timeout(timeout);
       return rows.isEmpty ? null : rows.first;
     case OutboxKind.update:
-      await client
+      // Changing nothing is a refusal: the row isn't there to change.
+      final rows = await client
           .from(op.table!)
           .update(resolved(op.row)!)
           .eq(op.matchColumn!, outbox.resolve(op.matchValue)!)
+          .select(op.matchColumn!)
           .timeout(timeout);
+      if (rows.isEmpty) throw NothingToUpdateException(op.table!);
       return null;
     case OutboxKind.rpc:
       final json = await client.rpc(
@@ -179,6 +258,13 @@ class OfflineWriter {
   final ConnectivityMonitor _connectivity;
 
   bool get _mustQueue => !_connectivity.isOnline || _outbox.hasPending;
+
+  /// The store signed in (the one changes are made for), when known.
+  String? get storeId => _outbox.store;
+
+  /// [value] with references to queued changes' server results ([Outbox.ref])
+  /// filled in where the server has answered.
+  Object? resolve(Object? value) => _outbox.resolve(value);
 
   /// Adds [row] to [table]. The row gets an id here when it has none, so it
   /// can be shown and referred to before the server has it (columns the
@@ -288,7 +374,9 @@ class OfflineWriter {
 
   Future<Object?> _send(OutboxOp op) async {
     await _outbox.load();
-    if (_mustQueue) {
+    // A change building on one the server refused waits with it (sent if
+    // that is retried, dropped if it is discarded).
+    if (_mustQueue || _outbox.buildsOnRefused(op)) {
       await _outbox.add(op);
       return _queued;
     }
@@ -299,7 +387,7 @@ class OfflineWriter {
     } catch (e) {
       if (!isTransientError(e)) rethrow;
       if (isNetworkError(e)) _connectivity.markOffline();
-      await _outbox.add(op);
+      await _outbox.add(mayHaveRun(e) ? op.copyWith(attemptedAt: DateTime.now()) : op);
       return _queued;
     }
   }
@@ -318,6 +406,13 @@ final syncServiceProvider = StateNotifierProvider<SyncService, SyncState>((ref) 
   ref.listen<bool>(connectivityProvider, (was, now) {
     if (now && was == false) sync.onBackOnline();
   });
+  // Changes are sent for the store signed in (a developer's session is no
+  // store's).
+  ref.listen<String?>(
+    sessionControllerProvider.select((s) => s.developerMode ? null : s.store?.id),
+    (_, storeId) => sync.setStore(storeId),
+    fireImmediately: true,
+  );
   return sync;
 });
 

@@ -5019,6 +5019,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That\'s more than what is owed ({amount})'**
   String debtsPayMoreThanOwed(String amount);
+
+  /// No description provided for @syncDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get syncDiscard;
+
+  /// No description provided for @syncDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this change?'**
+  String get syncDiscardTitle;
+
+  /// No description provided for @syncDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It won\'t be sent to the server and is removed from this device{count, plural, =0{.} =1{, with 1 later change that depends on it.} other{, with {count} later changes that depend on it.}} This can\'t be undone.'**
+  String syncDiscardBody(int count);
+
+  /// No description provided for @syncHeldBehind.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 later change waits for this one} other{{count} later changes wait for this one}}'**
+  String syncHeldBehind(int count);
+
+  /// No description provided for @syncOtherStores.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} waiting for another store'**
+  String syncOtherStores(int count);
+
+  /// No description provided for @syncOtherStoresHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes made on this device while another store was signed in. They are sent when that store signs in here again.'**
+  String get syncOtherStoresHelp;
 }
 
 class _AppLocalizationsDelegate

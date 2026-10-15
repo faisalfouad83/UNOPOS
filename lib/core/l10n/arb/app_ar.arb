@@ -881,5 +881,12 @@
   "shiftCashOfflineNote": "بدون اتصال: محسوب من بيانات هذا الجهاز فقط، ويُعاد حسابه على الخادم عند وصول إغلاق الشفت.",
   "shiftDifference": "الفرق: {amount}",
 
-  "debtsPayMoreThanOwed": "المبلغ أكثر من الدين المتبقي ({amount})"
+  "debtsPayMoreThanOwed": "المبلغ أكثر من الدين المتبقي ({amount})",
+
+  "syncDiscard": "تجاهل",
+  "syncDiscardTitle": "تتجاهل هذا التغيير؟",
+  "syncDiscardBody": "ما راح ينرسل للسيرفر وينشال من هذا الجهاز{count, plural, =0{.} =1{، ويا تغيير واحد بعده يعتمد عليه.} other{، ويا {count} تغييرات بعده تعتمد عليه.}} ما تكدر ترجعه.",
+  "syncHeldBehind": "{count, plural, =1{تغيير واحد بعده ينتظر هذا} other{{count} تغييرات بعده تنتظر هذا}}",
+  "syncOtherStores": "{count} تنتظر متجر ثاني",
+  "syncOtherStoresHelp": "تغييرات انعملت على هذا الجهاز لمن كان متجر ثاني مسجل دخول. تنرسل لمن يسجل ذاك المتجر دخول هنا مرة ثانية."
 }

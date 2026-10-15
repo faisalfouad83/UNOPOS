@@ -2724,4 +2724,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String debtsPayMoreThanOwed(String amount) {
     return 'That\'s more than what is owed ($amount)';
   }
+
+  @override
+  String get syncDiscard => 'Discard';
+
+  @override
+  String get syncDiscardTitle => 'Discard this change?';
+
+  @override
+  String syncDiscardBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: ', with $count later changes that depend on it.',
+      one: ', with 1 later change that depends on it.',
+      zero: '.',
+    );
+    return 'It won\'t be sent to the server and is removed from this device$_temp0 This can\'t be undone.';
+  }
+
+  @override
+  String syncHeldBehind(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count later changes wait for this one',
+      one: '1 later change waits for this one',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncOtherStores(int count) {
+    return '$count waiting for another store';
+  }
+
+  @override
+  String get syncOtherStoresHelp =>
+      'Changes made on this device while another store was signed in. They are sent when that store signs in here again.';
 }

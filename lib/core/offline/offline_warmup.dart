@@ -4,14 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers.dart';
 import '../supabase/supabase_config.dart';
+import 'offline_cache.dart';
 
 /// Takes a copy of what the till needs to keep working without internet,
 /// every time a store is opened: products, categories, tax rates,
 /// discounts, settings, customers and debts, accounts, branches with their
-/// stock and held sales, recent invoices, expenses, the books, shifts and
-/// suppliers. Each is kept on the device by its own
-/// repository and refreshed live while online. Best effort and in the
-/// background — it never holds the app up.
+/// stock and held sales, recent invoices, expenses, the books, shifts,
+/// suppliers, purchase orders and stock transfers (with their lines, so
+/// receiving one offline shows on the stock). Each is kept on the device
+/// by its own repository and refreshed live while online. Copies not used
+/// for a long time are dropped afterwards ([OfflineCache.prune]). Best
+/// effort and in the background — it never holds the app up.
 typedef ProviderReader = T Function<T>(ProviderListenable<T> provider);
 
 Future<void> warmOfflineCopy(ProviderReader read, String storeId) async {
@@ -43,6 +46,8 @@ Future<void> warmOfflineCopy(ProviderReader read, String storeId) async {
     take(() => liveValue(read(accountingRepositoryProvider).watchJournalEntries(storeId))),
     take(() => liveValue(read(shiftsRepositoryProvider).watchShiftHistory(storeId))),
     take(() => liveValue(read(suppliersRepositoryProvider).watchSuppliers(storeId))),
+    take(() => liveValue(inventory.watchPurchaseOrders(storeId))),
+    take(() => liveValue(inventory.watchStockTransfers(storeId))),
     take(() async {
       // Each branch's stock and held sales, so the till knows what is left
       // and can resume a held sale while offline.
@@ -56,6 +61,7 @@ Future<void> warmOfflineCopy(ProviderReader read, String storeId) async {
       return null;
     }),
   ]);
+  await OfflineCache.prune();
 }
 
 /// Waits for a fresh value from the server: a cached stream first replays

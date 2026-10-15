@@ -2719,4 +2719,42 @@ class AppLocalizationsAr extends AppLocalizations {
   String debtsPayMoreThanOwed(String amount) {
     return 'المبلغ أكثر من الدين المتبقي ($amount)';
   }
+
+  @override
+  String get syncDiscard => 'تجاهل';
+
+  @override
+  String get syncDiscardTitle => 'تتجاهل هذا التغيير؟';
+
+  @override
+  String syncDiscardBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '، ويا $count تغييرات بعده تعتمد عليه.',
+      one: '، ويا تغيير واحد بعده يعتمد عليه.',
+      zero: '.',
+    );
+    return 'ما راح ينرسل للسيرفر وينشال من هذا الجهاز$_temp0 ما تكدر ترجعه.';
+  }
+
+  @override
+  String syncHeldBehind(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تغييرات بعده تنتظر هذا',
+      one: 'تغيير واحد بعده ينتظر هذا',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncOtherStores(int count) {
+    return '$count تنتظر متجر ثاني';
+  }
+
+  @override
+  String get syncOtherStoresHelp =>
+      'تغييرات انعملت على هذا الجهاز لمن كان متجر ثاني مسجل دخول. تنرسل لمن يسجل ذاك المتجر دخول هنا مرة ثانية.';
 }
