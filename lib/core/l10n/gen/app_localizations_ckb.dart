@@ -2768,4 +2768,26 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get syncOtherStoresHelp =>
       'گۆڕانکاری کە لەم ئامێرە کران کاتێک فرۆشگایەکی تر چووبووە ژوورەوە. کاتێک ئەو فرۆشگایە دووبارە لێرە بچێتە ژوورەوە دەنێردرێن.';
+
+  @override
+  String get posHeldSaleDetached =>
+      'ئەم فرۆشتنە هەڵپەسێردراوە پێشتر تەواوکراوە یان لابراوە (لەوانەیە لە ئامێرێکی تر). هیچ پارەیەک تۆمار نەکرا. سەبەتەکە ئێستا فرۆشتنێکی سەربەخۆیە — بیپشکنە، پاشان بیفرۆشە یان دیسان هەڵیبپەسێرە.';
+
+  @override
+  String get posHeldSaleIncomplete =>
+      'ئەم فرۆشتنە هەڵپەسێردراوە هێشتا پاشەکەوت دەکرێت. دوای کەمێک دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String posReturnDoneBalance(String amount) {
+    return 'گەڕاندنەوە تەواو بوو — $amount لە قەرزی کڕیار کەم کرایەوە';
+  }
+
+  @override
+  String posReturnDoneSplit(String balance, String cash) {
+    return 'گەڕاندنەوە تەواو بوو — $balance لە قەرزی کڕیار کەم کرایەوە، $cash بدەرەوە پێی';
+  }
+
+  @override
+  String get posReturnMoreThanLeft =>
+      'هەندێک لەم کاڵایانە پێشتر گەڕێنراونەتەوە (لەوانەیە بە گەڕاندنەوەیەک کە هێشتا چاوەڕێی ناردنە). بڕەکان بپشکنە و دووبارە هەوڵ بدەرەوە.';
 }

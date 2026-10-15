@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/outbox.dart';
 import '../../../core/offline/sync_service.dart';
 import '../../../core/utils/id_generator.dart';
 import '../../accounting/domain/accounting_posting_service.dart';
@@ -10,11 +11,7 @@ import 'loyalty.dart';
 import 'pos_models.dart';
 import 'pos_repository.dart';
 
-/// The held sale a cart was resumed from was already sold or discarded
-/// (e.g. on another till) — nothing was charged.
-class HeldSaleClosedException implements Exception {
-  const HeldSaleClosedException();
-}
+export 'pos_repository.dart' show HeldSaleClosedException;
 
 class CheckoutResult {
   const CheckoutResult({
@@ -375,6 +372,7 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       'p_extras': {...extras, if (resumingHeldSale != null) 'release_held_sale_id': resumingHeldSale.id},
     };
 
+    final paidNow = (extras['paid_now_minor_units'] as int?) ?? 0;
     final provisional = _provisionalSale(
       clientSaleId: clientSaleId,
       storeId: storeId,
@@ -383,7 +381,10 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       shiftId: shiftId,
       paymentMethod: paymentMethod,
       lines: lines,
-      amountTenderedMinorUnits: amountTenderedMinorUnits,
+      // Money taken up front on a pay-later sale is kept here, as the
+      // server does, so the invoice shows what is still owed.
+      amountTenderedMinorUnits:
+          paymentMethod == SalePaymentMethod.payLater && paidNow > 0 ? paidNow : amountTenderedMinorUnits,
       changeGivenMinorUnits: changeGivenMinorUnits,
       soldAt: soldAt,
     );
@@ -491,7 +492,7 @@ class SupabaseAtomicCompleteSaleUseCase implements CompleteSaleUseCase {
       storeId: storeId,
       branchId: branchId,
       // A real number is assigned when the sale reaches the server.
-      saleNumber: 'OFFLINE-${clientSaleId.substring(0, 6).toUpperCase()}',
+      saleNumber: '$offlineSaleNumberPrefix${clientSaleId.substring(0, 6).toUpperCase()}',
       status: SaleStatus.completed,
       subtotalMinorUnits: subtotal,
       discountTotalMinorUnits: discount,
@@ -561,3 +562,34 @@ Map<String, dynamic> saleRow(SaleRecord sale, {String? customerId, String? relea
           },
       ],
     };
+
+/// A sale kept on this device that closes a held sale is refused by the
+/// server when that held sale was closed meanwhile (sold on another till
+/// while this one was offline). The money was still taken here, so such a
+/// sale is sent again as a sale of its own instead of staying refused and
+/// out of sight. Returns how many were sent again.
+Future<int> resendRefusedHeldSaleCheckouts(Outbox outbox) async {
+  var resent = 0;
+  for (final op in outbox.failed) {
+    if (op.kind != OutboxKind.checkout || !(op.lastError ?? '').contains('held sale already closed')) continue;
+    final params = op.params;
+    final extras = params?['p_extras'];
+    if (params == null || extras is! Map || !extras.containsKey('release_held_sale_id')) continue;
+    await outbox.replace(
+      OutboxOp(
+        id: op.id,
+        kind: op.kind,
+        createdAt: op.createdAt,
+        table: op.table,
+        row: op.row == null ? null : (Map<String, dynamic>.of(op.row!)..remove('_releases')),
+        params: {
+          ...params,
+          'p_extras': Map<String, dynamic>.from(extras)..remove('release_held_sale_id'),
+        },
+        increments: op.increments,
+      ),
+    );
+    resent++;
+  }
+  return resent;
+}

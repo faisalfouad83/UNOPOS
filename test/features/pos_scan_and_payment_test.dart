@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:unopos/core/utils/formatters.dart';
 import 'package:unopos/features/inventory/domain/inventory_models.dart';
 import 'package:unopos/features/pos/domain/barcode_scan.dart';
 import 'package:unopos/features/pos/domain/payment_math.dart';
@@ -63,6 +64,50 @@ void main() {
       expect(under.changeMinorUnits, 0);
       expect(under.remainingMinorUnits, 275000);
       expect(under.isPaidInFull, isFalse);
+    });
+    test('a total with a fraction of a dinar is asked for, and paid, as shown', () {
+      const iqd = ExchangeRate(storeCurrency: CurrencyInfo.iqd, iqdPerUsd: 1310);
+      // 1,234.49 IQD after a percent discount: shown, and due, as 1,234.
+      expect(roundToCash(123449, CurrencyInfo.iqd), 123400);
+      expect(roundToCash(123450, CurrencyInfo.iqd), 123500);
+      expect(CurrencyInfo.iqd.format(roundToCash(123449, CurrencyInfo.iqd)), CurrencyInfo.iqd.format(123449));
+      expect(roundToCash(1234, CurrencyInfo.usd), 1234);
+
+      // The "exact" amount, typed as shown, is enough — rounding down too.
+      final due = const CashPayment(payableMinorUnits: 123449, rate: iqd).dueMinorUnits;
+      expect(paymentSuggestions(due, currencyCode: 'IQD').first, 123400);
+      final exact = CashPayment(payableMinorUnits: 123449, rate: iqd, enteredMinorUnits: due);
+      expect(exact.isPaidInFull, isTrue);
+      expect(exact.changeMinorUnits, 0);
+      expect(exact.remainingMinorUnits, 0);
+      expect(amountInputText(due, CurrencyInfo.iqd), '1234');
+
+      // Rounded up: paying 1,235 for 1,234.50 gives no change of half a dinar.
+      final up = CashPayment(payableMinorUnits: 123450, rate: iqd, enteredMinorUnits: 123500);
+      expect(up.isPaidInFull, isTrue);
+      expect(up.changeMinorUnits, 0);
+      expect(const CashPayment(payableMinorUnits: 123450, rate: iqd, enteredMinorUnits: 123400).isPaidInFull, isFalse);
+    });
+
+    test('paying the dollar amount shown is enough, and change is whole dinars', () {
+      const iqd = ExchangeRate(storeCurrency: CurrencyInfo.iqd, iqdPerUsd: 1310);
+      const sale = CashPayment(payableMinorUnits: 123449, rate: iqd, inForeign: true);
+      // 1,234.49 IQD is $0.94 (rounded to the cent).
+      expect(sale.foreignDueMinorUnits, 94);
+      expect(amountInputText(94, CurrencyInfo.usd), '0.94');
+      final exact = CashPayment(payableMinorUnits: 123449, rate: iqd, inForeign: true, enteredMinorUnits: 94);
+      expect(exact.isPaidInFull, isTrue);
+      expect(exact.receivedMinorUnits, exact.dueMinorUnits);
+      expect(exact.changeMinorUnits, 0);
+
+      // $5 for it: change in whole dinars.
+      final five = CashPayment(payableMinorUnits: 123449, rate: iqd, inForeign: true, enteredMinorUnits: 500);
+      expect(five.receivedMinorUnits, 655000);
+      expect(five.changeMinorUnits, 655000 - 123400);
+      expect(five.changeMinorUnits % 100, 0);
+      expect(
+          const CashPayment(payableMinorUnits: 123449, rate: iqd, inForeign: true, enteredMinorUnits: 93).isPaidInFull,
+          isFalse);
     });
   });
 }

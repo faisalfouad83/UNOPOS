@@ -35,25 +35,32 @@ class _PaidSale {
 /// confirm. Only once the sale is saved does the receipt print (or the
 /// cashier get asked), per Settings › Printer.
 Future<void> showCheckoutSheet(BuildContext context, WidgetRef ref, {required AppSettingsRecord settings}) async {
+  // The app's own navigator outlives the screen that opened the payment (a
+  // cart sheet on a phone may be gone by the time the sale is saved): the
+  // snackbar's WhatsApp action and the print question open from it.
+  final navigatorContext = Navigator.of(context, rootNavigator: true).context;
   final paid = await showDialog<_PaidSale>(
     context: context,
     barrierDismissible: false,
     builder: (context) => _CheckoutDialog(settings: settings),
   );
-  if (paid == null || !context.mounted) return;
-  final l10n = AppLocalizations.of(context);
-  final messenger = ScaffoldMessenger.of(context);
+  if (paid == null || !navigatorContext.mounted) return;
+  final l10n = AppLocalizations.of(navigatorContext);
+  final messenger = ScaffoldMessenger.of(navigatorContext);
   messenger.showSnackBar(
     SnackBar(
       content: Text(paid.queuedOffline ? l10n.offlineSaleSaved : l10n.posSaleCompleted),
       duration: const Duration(seconds: 6),
       action: SnackBarAction(
         label: 'WhatsApp',
-        onPressed: () => showWhatsAppReceiptDialog(messenger.context, paid.receipt, initialPhone: paid.whatsAppPhone),
+        onPressed: () {
+          if (!navigatorContext.mounted) return;
+          showWhatsAppReceiptDialog(navigatorContext, paid.receipt, initialPhone: paid.whatsAppPhone);
+        },
       ),
     ),
   );
-  await printAfterSale(context, paid.receipt, settings);
+  await printAfterSale(navigatorContext, paid.receipt, settings);
 }
 
 class _CheckoutDialog extends ConsumerStatefulWidget {
@@ -83,17 +90,25 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
   /// currency it was entered in.
   int get _enteredMinor => Money.toMinorUnits(double.tryParse(_amountController.text) ?? 0);
 
-  /// The amount received in the store's currency.
-  int get _receivedInStoreCurrency => _payInForeign ? _rate.toStore(_enteredMinor) : _enteredMinor;
+  /// The cash payment as typed so far, against the sale's [payable].
+  CashPayment _cash(int payable) => CashPayment(
+        payableMinorUnits: payable,
+        rate: _rate,
+        enteredMinorUnits: _enteredMinor,
+        inForeign: _payInForeign && _rate.isSet,
+      );
 
   bool _canRedeem(CartState cart) =>
       cart.customer != null && widget.settings.loyaltyEnabled && widget.settings.loyaltyPointValueMinor > 0;
 
+  /// Points only take the price off (before tax): the tax shrinks with it,
+  /// so a sale paid fully in points comes to nothing and no point is spent
+  /// on the tax.
   int _maxRedeemable(CartState cart) => _canRedeem(cart)
       ? Loyalty.maxRedeemable(
           balance: cart.customer!.loyaltyPoints,
           pointValueMinor: widget.settings.loyaltyPointValueMinor,
-          payableMinorUnits: cart.grandTotalMinorUnits,
+          payableMinorUnits: cart.pricedLines.fold(0, (s, l) => s + l.grossMinorUnits - l.discountAmountMinorUnits),
         )
       : 0;
 
@@ -107,7 +122,12 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
   List<CartLine> _saleLines(CartState cart) =>
       Loyalty.applyDiscount(cart.pricedLines, _pointsToRedeem(cart) * widget.settings.loyaltyPointValueMinor);
 
+  /// The sale total, exactly.
   int _payable(CartState cart) => _saleLines(cart).fold(0, (s, l) => s + l.lineTotalMinorUnits);
+
+  /// What the customer is asked for: the total rounded to what can be paid
+  /// (no fractions of a dinar), as shown at the top.
+  int _due(CartState cart) => roundToCash(_payable(cart), Money.currency);
 
   @override
   void initState() {
@@ -137,8 +157,9 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
     });
   }
 
+  /// Fills in [minorUnits] of the currency being paid in.
   void _setAmount(int minorUnits) {
-    _amountController.text = Money.inputText(minorUnits);
+    _amountController.text = amountInputText(minorUnits, _payInForeign && _rate.isSet ? _rate.foreign : Money.currency);
     _amountController.selection = TextSelection.collapsed(offset: _amountController.text.length);
     setState(() => _error = null);
     _amountFocus.requestFocus();
@@ -163,7 +184,7 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
   /// Cash received is short: keep what was paid and put the rest on the
   /// customer's account.
   void _restOnAccount() {
-    final received = _receivedInStoreCurrency;
+    final received = _cash(_payable(ref.read(cartControllerProvider))).receivedMinorUnits;
     setState(() {
       _method = _PayMethod.payLater;
       _payInForeign = false;
@@ -177,12 +198,12 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
     final payable = _payable(cart);
     switch (_method) {
       case _PayMethod.cash:
-        if (_receivedInStoreCurrency < payable) return l10n.payInsufficient;
+        if (!_cash(payable).isPaidInFull) return l10n.payInsufficient;
       case _PayMethod.card:
         break;
       case _PayMethod.payLater:
         if (cart.customer == null && _customerNameController.text.trim().isEmpty) return l10n.payCustomerNeeded;
-        if (_enteredMinor >= payable && payable > 0) return l10n.payPaidNowTooMuch;
+        if (_enteredMinor >= _due(cart) && payable > 0) return l10n.payPaidNowTooMuch;
     }
     return null;
   }
@@ -204,41 +225,57 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
       _error = null;
     });
 
-    // Read before the dialog closes — the receipt is built afterwards.
+    // Everything this needs is read now, before the first wait: the sale
+    // and the cart must be finished even if this dialog is gone by then.
+    final cartController = ref.read(cartControllerProvider.notifier);
+    final owner = cartController.owner;
+    final checkout = ref.read(completeSaleUseCaseProvider);
     final inventory = ref.read(inventoryRepositoryProvider);
+    final shiftFuture = ref.read(
+      openShiftProvider((storeId: session.store!.id, cashierId: session.employee!.id)).future,
+    );
+    final branch = ref
+        .read(storeBranchesProvider(session.store!.id))
+        .valueOrNull
+        ?.where((b) => b.id == session.currentBranchId)
+        .firstOrNull;
+    final navigator = Navigator.of(context);
     final customer = cart.customer;
+    final heldSale = cart.resumingHeldSale;
     final pointsRedeemed = _pointsToRedeem(cart);
     final saleLines = _saleLines(cart);
     final payable = _payable(cart);
+    final cash = _cash(payable);
+    final method = _method;
+    final entered = _enteredMinor;
+    final rate = _rate;
+    final foreignPayment = method == _PayMethod.cash && cash.inForeign;
+    final typedName = _customerNameController.text.trim();
+    final typedPhone = _customerPhoneController.text.trim();
 
     try {
       int? tendered;
       int? change;
       var paidNow = 0;
-      switch (_method) {
+      switch (method) {
         case _PayMethod.cash:
-          tendered = _receivedInStoreCurrency;
-          change = tendered - payable;
+          tendered = cash.receivedMinorUnits;
+          change = cash.changeMinorUnits;
         case _PayMethod.card:
           break;
         case _PayMethod.payLater:
-          paidNow = _enteredMinor;
+          paidNow = entered;
       }
 
-      final foreignPayment = _method == _PayMethod.cash && _payInForeign && _rate.isSet;
-      final typedName = _customerNameController.text.trim();
-      final typedPhone = _customerPhoneController.text.trim();
       // The sale counts towards the cashier's open shift (cash count at close).
-      final shift = await ref.read(
-        openShiftProvider((storeId: session.store!.id, cashierId: session.employee!.id)).future,
-      );
+      final shift = await shiftFuture;
 
-      final result = await ref.read(completeSaleUseCaseProvider).checkout(
+      final result = await checkout.checkout(
         storeId: session.store!.id,
         branchId: session.currentBranchId!,
         cashierId: session.employee!.id,
         shiftId: shift?.id,
-        paymentMethod: switch (_method) {
+        paymentMethod: switch (method) {
           _PayMethod.cash => SalePaymentMethod.cash,
           _PayMethod.card => SalePaymentMethod.card,
           _PayMethod.payLater => SalePaymentMethod.payLater,
@@ -246,15 +283,15 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
         lines: saleLines.map((l) => l.toSaleLineInput()).toList(),
         amountTenderedMinorUnits: tendered,
         changeGivenMinorUnits: change,
-        customerNameForPayLater: _method == _PayMethod.payLater ? (customer?.name ?? typedName) : null,
-        resumingHeldSale: cart.resumingHeldSale,
+        customerNameForPayLater: method == _PayMethod.payLater ? (customer?.name ?? typedName) : null,
+        resumingHeldSale: heldSale,
         extras: {
           if (foreignPayment) ...{
-            'paid_currency': _rate.foreign.code,
-            'exchange_rate': _rate.iqdPerUsd,
-            'foreign_tendered_minor_units': _enteredMinor,
+            'paid_currency': rate.foreign.code,
+            'exchange_rate': rate.iqdPerUsd,
+            'foreign_tendered_minor_units': entered,
           },
-          if (_method == _PayMethod.payLater && typedPhone.isNotEmpty) 'customer_phone': typedPhone,
+          if (method == _PayMethod.payLater && typedPhone.isNotEmpty) 'customer_phone': typedPhone,
           if (paidNow > 0) 'paid_now_minor_units': paidNow,
           if (customer != null) 'customer_id': customer.id,
           if (customer != null && widget.settings.loyaltyEnabled) ...{
@@ -267,10 +304,13 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
         },
       );
 
+      // Sold: the till starts the next sale (unless the session changed
+      // meanwhile and the cart was already emptied with it).
+      if (cartController.owner == owner) cartController.clear();
+
       final extraRows = <(String, String)>[
-        if (foreignPayment)
-          (l10n.posPaidIn(_rate.foreign.code), '${_rate.foreign.format(_enteredMinor)} · ${_rate.label}'),
-        if (_method == _PayMethod.payLater) (l10n.payRemaining, Money.format(payable - paidNow)),
+        if (foreignPayment) (l10n.posPaidIn(rate.foreign.code), '${rate.foreign.format(entered)} · ${rate.label}'),
+        if (method == _PayMethod.payLater) (l10n.payRemaining, Money.format(payable - paidNow)),
         if (pointsRedeemed > 0)
           (
             l10n.loyaltyPointsRedeemed,
@@ -280,8 +320,6 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
         if (result.loyaltyBalance != null) (l10n.loyaltyBalance, '${result.loyaltyBalance}'),
       ];
 
-      ref.read(cartControllerProvider.notifier).clear();
-
       final receipt = await buildSaleReceipt(
         inventory: inventory,
         session: session,
@@ -289,15 +327,11 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
         settings: widget.settings,
         l10n: l10n,
         customerName: customer?.name ?? (typedName.isEmpty ? null : typedName),
-        branch: ref
-            .read(storeBranchesProvider(session.store!.id))
-            .valueOrNull
-            ?.where((b) => b.id == session.currentBranchId)
-            .firstOrNull,
+        branch: branch,
         extraRows: extraRows,
       );
       if (!mounted) return;
-      Navigator.of(context).pop(
+      navigator.pop(
         _PaidSale(
           receipt: receipt,
           queuedOffline: result.queuedOffline,
@@ -305,7 +339,10 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
         ),
       );
     } on HeldSaleClosedException {
-      if (mounted) setState(() => _error = l10n.posHeldSaleClosed);
+      // Sold or removed elsewhere: this cart is a sale of its own now, so
+      // confirming again charges it without touching that held sale.
+      if (heldSale != null) cartController.detachHeldSale(heldSale.id);
+      if (mounted) setState(() => _error = l10n.posHeldSaleDetached);
     } catch (_) {
       if (mounted) setState(() => _error = l10n.errorGeneric);
     } finally {
@@ -321,258 +358,266 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
     final customer = cart.customer;
     final rate = _rate;
     final payable = _payable(cart);
+    final due = _due(cart);
+    final cash = _cash(payable);
     final blocker = _blocker(l10n, cart);
     final symbol = widget.settings.currencySymbol;
 
     final paid = switch (_method) {
-      _PayMethod.cash => _receivedInStoreCurrency,
-      _PayMethod.card => payable,
+      _PayMethod.cash => cash.receivedMinorUnits,
+      _PayMethod.card => due,
       _PayMethod.payLater => _enteredMinor,
     };
-    final breakdown = PaymentBreakdown(dueMinorUnits: payable, paidMinorUnits: paid);
+    final breakdown = PaymentBreakdown(dueMinorUnits: due, paidMinorUnits: paid);
+    final changeDue = _method == _PayMethod.cash ? cash.changeMinorUnits : 0;
+    final remaining = _method == _PayMethod.cash ? cash.remainingMinorUnits : breakdown.remainingMinorUnits;
     final suggestions = paymentSuggestions(
-      _payInForeign ? rate.toForeign(payable) : payable,
-      currencyCode: _payInForeign ? rate.foreign.code : Money.currency.code,
+      cash.dueInPaidCurrency,
+      currencyCode: cash.inForeign ? rate.foreign.code : Money.currency.code,
     );
 
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.enter, control: true): _confirm,
-        const SingleActivator(LogicalKeyboardKey.f1): () => _selectMethod(_PayMethod.cash),
-        const SingleActivator(LogicalKeyboardKey.f2): () => _selectMethod(_PayMethod.card),
-        const SingleActivator(LogicalKeyboardKey.f3): () => _selectMethod(_PayMethod.payLater),
-      },
-      child: Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Total: always visible, never scrolls away.
-              Container(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.55),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                ),
-                child: Column(
-                  children: [
-                    Text(l10n.payAmountDue, style: theme.textTheme.titleSmall),
-                    const SizedBox(height: 4),
-                    FittedBox(
-                      child: Text(
-                        Money.format(payable, currencySymbol: symbol),
-                        style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    if (payable != cart.grandTotalMinorUnits)
-                      Text(
-                        Money.format(cart.grandTotalMinorUnits, currencySymbol: symbol),
-                        style: theme.textTheme.bodyMedium?.copyWith(decoration: TextDecoration.lineThrough),
-                      ),
-                    if (rate.isSet)
-                      Text(
-                        '≈ ${rate.foreign.format(rate.toForeign(payable))}  ·  ${rate.label}',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                  ],
-                ),
-              ),
-              Flexible(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+    return PopScope(
+      // Back button, Esc: not while the sale is being saved (the cart must
+      // be emptied by this dialog once it is).
+      canPop: !_submitting,
+      child: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.enter, control: true): _confirm,
+          const SingleActivator(LogicalKeyboardKey.f1): () => _selectMethod(_PayMethod.cash),
+          const SingleActivator(LogicalKeyboardKey.f2): () => _selectMethod(_PayMethod.card),
+          const SingleActivator(LogicalKeyboardKey.f3): () => _selectMethod(_PayMethod.payLater),
+        },
+        child: Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Total: always visible, never scrolls away.
+                Container(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.55),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                  ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SegmentedButton<_PayMethod>(
-                        segments: [
-                          ButtonSegment(
-                            value: _PayMethod.cash,
-                            label: Text(l10n.posPayCash),
-                            icon: const Icon(Icons.payments_outlined),
-                          ),
-                          ButtonSegment(
-                            value: _PayMethod.card,
-                            label: Text(l10n.posPayCard),
-                            icon: const Icon(Icons.credit_card),
-                          ),
-                          ButtonSegment(
-                            value: _PayMethod.payLater,
-                            label: Text(l10n.posPayLater),
-                            icon: const Icon(Icons.schedule),
-                          ),
-                        ],
-                        selected: {_method},
-                        onSelectionChanged: (s) => _selectMethod(s.first),
+                      Text(l10n.payAmountDue, style: theme.textTheme.titleSmall),
+                      const SizedBox(height: 4),
+                      FittedBox(
+                        child: Text(
+                          Money.format(due, currencySymbol: symbol),
+                          style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      // One customer for the whole sale: loyalty points and a
-                      // pay-later debt both go to this customer.
-                      _CustomerRow(
-                        customer: customer,
-                        showPoints: widget.settings.loyaltyEnabled,
-                        onChoose: _chooseCustomer,
-                        onClear: () {
-                          ref.read(cartControllerProvider.notifier).setCustomer(null);
-                          setState(() => _pointsController.clear());
-                        },
-                      ),
-                      if (_maxRedeemable(cart) > 0) ...[
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _pointsController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          decoration: InputDecoration(
-                            labelText: l10n.loyaltyUsePoints(_maxRedeemable(cart)),
-                            helperText: _pointsToRedeem(cart) > 0
-                                ? '-${Money.format(_pointsToRedeem(cart) * widget.settings.loyaltyPointValueMinor)}'
-                                : l10n.loyaltyPointWorth(Money.format(widget.settings.loyaltyPointValueMinor)),
-                          ),
-                          onChanged: (_) => setState(() {}),
+                      if (due != roundToCash(cart.grandTotalMinorUnits, Money.currency))
+                        Text(
+                          Money.format(cart.grandTotalMinorUnits, currencySymbol: symbol),
+                          style: theme.textTheme.bodyMedium?.copyWith(decoration: TextDecoration.lineThrough),
                         ),
-                      ],
-                      if (_method == _PayMethod.payLater && customer == null) ...[
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _customerNameController,
-                          decoration: InputDecoration(labelText: l10n.posCustomerName),
-                          onChanged: (_) => setState(() => _error = null),
+                      if (rate.isSet)
+                        Text(
+                          '≈ ${rate.foreign.format(cash.foreignDueMinorUnits)}  ·  ${rate.label}',
+                          style: theme.textTheme.bodySmall,
                         ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _customerPhoneController,
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            labelText: l10n.posCustomerPhone,
-                            helperText: l10n.posCustomerPhoneHint,
-                            prefixIcon: const Icon(Icons.phone),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      if (_method == _PayMethod.card)
-                        _SummaryRow(
-                          label: l10n.payReceived,
-                          value: Money.format(payable, currencySymbol: symbol),
-                        )
-                      else ...[
-                        if (_method == _PayMethod.cash && rate.isSet) ...[
-                          SegmentedButton<bool>(
-                            segments: [
-                              ButtonSegment(value: false, label: Text(Money.currency.code)),
-                              ButtonSegment(value: true, label: Text(rate.foreign.code)),
-                            ],
-                            selected: {_payInForeign},
-                            onSelectionChanged: (s) => setState(() {
-                              _payInForeign = s.first;
-                              _amountController.clear();
-                            }),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-                        TextField(
-                          controller: _amountController,
-                          focusNode: _amountFocus,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                          style: theme.textTheme.headlineSmall,
-                          decoration: InputDecoration(
-                            labelText: _method == _PayMethod.cash ? l10n.payReceived : l10n.payPaidNow,
-                            suffixText: _payInForeign ? rate.foreign.code : Money.currency.code,
-                            helperText: _payInForeign && _enteredMinor > 0
-                                ? '= ${Money.format(_receivedInStoreCurrency)}'
-                                : null,
-                            suffixIcon: IconButton(
-                              tooltip: l10n.payClear,
-                              icon: const Icon(Icons.backspace_outlined),
-                              onPressed: _clearAmount,
-                            ),
-                          ),
-                          onChanged: (_) => setState(() => _error = null),
-                          onSubmitted: (_) => _confirm(),
-                        ),
-                        if (_method == _PayMethod.cash) ...[
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              for (final (i, amount) in suggestions.indexed)
-                                ActionChip(
-                                  avatar: i == 0 ? const Icon(Icons.check_circle_outline, size: 18) : null,
-                                  label: Text(
-                                    i == 0
-                                        ? '${l10n.payExact}: ${_payInForeign ? rate.foreign.format(amount) : Money.format(amount)}'
-                                        : (_payInForeign ? rate.foreign.format(amount) : Money.format(amount)),
-                                  ),
-                                  onPressed: () => _setAmount(amount),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ],
-                      const SizedBox(height: 16),
-                      if (_method == _PayMethod.cash && breakdown.changeMinorUnits > 0)
-                        _SummaryRow(
-                          label: l10n.posChangeDue,
-                          value: Money.format(breakdown.changeMinorUnits, currencySymbol: symbol),
-                          color: Colors.green.shade700,
-                          large: true,
-                        ),
-                      if (_method == _PayMethod.payLater ||
-                          (_method == _PayMethod.cash && paid > 0 && breakdown.remainingMinorUnits > 0))
-                        _SummaryRow(
-                          label: _method == _PayMethod.payLater ? l10n.payOnAccount : l10n.payRemaining,
-                          value: Money.format(breakdown.remainingMinorUnits, currencySymbol: symbol),
-                          color: theme.colorScheme.error,
-                          large: true,
-                        ),
-                      if (_method == _PayMethod.cash && paid > 0 && breakdown.remainingMinorUnits > 0)
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: TextButton.icon(
-                            icon: const Icon(Icons.schedule),
-                            label: Text(l10n.payRestOnAccount),
-                            onPressed: _restOnAccount,
-                          ),
-                        ),
-                      if (_error != null) ...[
-                        const SizedBox(height: 8),
-                        Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
-                      ],
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _submitting ? null : () => Navigator.of(context).pop(),
-                        child: Text(l10n.actionCancel),
-                      ),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SegmentedButton<_PayMethod>(
+                          segments: [
+                            ButtonSegment(
+                              value: _PayMethod.cash,
+                              label: Text(l10n.posPayCash),
+                              icon: const Icon(Icons.payments_outlined),
+                            ),
+                            ButtonSegment(
+                              value: _PayMethod.card,
+                              label: Text(l10n.posPayCard),
+                              icon: const Icon(Icons.credit_card),
+                            ),
+                            ButtonSegment(
+                              value: _PayMethod.payLater,
+                              label: Text(l10n.posPayLater),
+                              icon: const Icon(Icons.schedule),
+                            ),
+                          ],
+                          selected: {_method},
+                          onSelectionChanged: (s) => _selectMethod(s.first),
+                        ),
+                        const SizedBox(height: 12),
+                        // One customer for the whole sale: loyalty points and a
+                        // pay-later debt both go to this customer.
+                        _CustomerRow(
+                          customer: customer,
+                          showPoints: widget.settings.loyaltyEnabled,
+                          onChoose: _chooseCustomer,
+                          onClear: () {
+                            ref.read(cartControllerProvider.notifier).setCustomer(null);
+                            setState(() => _pointsController.clear());
+                          },
+                        ),
+                        if (_maxRedeemable(cart) > 0) ...[
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _pointsController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: InputDecoration(
+                              labelText: l10n.loyaltyUsePoints(_maxRedeemable(cart)),
+                              helperText: _pointsToRedeem(cart) > 0
+                                  ? '-${Money.format(_pointsToRedeem(cart) * widget.settings.loyaltyPointValueMinor)}'
+                                  : l10n.loyaltyPointWorth(Money.format(widget.settings.loyaltyPointValueMinor)),
+                            ),
+                            onChanged: (_) => setState(() {}),
+                          ),
+                        ],
+                        if (_method == _PayMethod.payLater && customer == null) ...[
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _customerNameController,
+                            decoration: InputDecoration(labelText: l10n.posCustomerName),
+                            onChanged: (_) => setState(() => _error = null),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _customerPhoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                              labelText: l10n.posCustomerPhone,
+                              helperText: l10n.posCustomerPhoneHint,
+                              prefixIcon: const Icon(Icons.phone),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 16),
+                        if (_method == _PayMethod.card)
+                          _SummaryRow(
+                            label: l10n.payReceived,
+                            value: Money.format(due, currencySymbol: symbol),
+                          )
+                        else ...[
+                          if (_method == _PayMethod.cash && rate.isSet) ...[
+                            SegmentedButton<bool>(
+                              segments: [
+                                ButtonSegment(value: false, label: Text(Money.currency.code)),
+                                ButtonSegment(value: true, label: Text(rate.foreign.code)),
+                              ],
+                              selected: {_payInForeign},
+                              onSelectionChanged: (s) => setState(() {
+                                _payInForeign = s.first;
+                                _amountController.clear();
+                              }),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                          TextField(
+                            controller: _amountController,
+                            focusNode: _amountFocus,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+                            style: theme.textTheme.headlineSmall,
+                            decoration: InputDecoration(
+                              labelText: _method == _PayMethod.cash ? l10n.payReceived : l10n.payPaidNow,
+                              suffixText: _payInForeign ? rate.foreign.code : Money.currency.code,
+                              helperText: _payInForeign && _enteredMinor > 0
+                                  ? '= ${Money.format(cash.receivedMinorUnits)}'
+                                  : null,
+                              suffixIcon: IconButton(
+                                tooltip: l10n.payClear,
+                                icon: const Icon(Icons.backspace_outlined),
+                                onPressed: _clearAmount,
+                              ),
+                            ),
+                            onChanged: (_) => setState(() => _error = null),
+                            onSubmitted: (_) => _confirm(),
+                          ),
+                          if (_method == _PayMethod.cash) ...[
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                for (final (i, amount) in suggestions.indexed)
+                                  ActionChip(
+                                    avatar: i == 0 ? const Icon(Icons.check_circle_outline, size: 18) : null,
+                                    label: Text(
+                                      i == 0
+                                          ? '${l10n.payExact}: ${_payInForeign ? rate.foreign.format(amount) : Money.format(amount)}'
+                                          : (_payInForeign ? rate.foreign.format(amount) : Money.format(amount)),
+                                    ),
+                                    onPressed: () => _setAmount(amount),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ],
+                        const SizedBox(height: 16),
+                        if (changeDue > 0)
+                          _SummaryRow(
+                            label: l10n.posChangeDue,
+                            value: Money.format(changeDue, currencySymbol: symbol),
+                            color: Colors.green.shade700,
+                            large: true,
+                          ),
+                        if (_method == _PayMethod.payLater || (_method == _PayMethod.cash && paid > 0 && remaining > 0))
+                          _SummaryRow(
+                            label: _method == _PayMethod.payLater ? l10n.payOnAccount : l10n.payRemaining,
+                            value: Money.format(remaining, currencySymbol: symbol),
+                            color: theme.colorScheme.error,
+                            large: true,
+                          ),
+                        if (_method == _PayMethod.cash && paid > 0 && remaining > 0)
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: TextButton.icon(
+                              icon: const Icon(Icons.schedule),
+                              label: Text(l10n.payRestOnAccount),
+                              onPressed: _restOnAccount,
+                            ),
+                          ),
+                        if (_error != null) ...[
+                          const SizedBox(height: 8),
+                          Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
+                        ],
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 2,
-                      child: FilledButton.icon(
-                        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-                        onPressed: _submitting || blocker != null ? null : _confirm,
-                        icon: _submitting
-                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Icon(Icons.check),
-                        label: Text(l10n.posCompleteSale),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: _submitting ? null : () => Navigator.of(context).pop(),
+                          child: Text(l10n.actionCancel),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: FilledButton.icon(
+                          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+                          onPressed: _submitting || blocker != null ? null : _confirm,
+                          icon: _submitting
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                              : const Icon(Icons.check),
+                          label: Text(l10n.posCompleteSale),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -621,8 +666,8 @@ class _SummaryRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text(label, style: theme.textTheme.titleMedium),
-          const Spacer(),
+          Expanded(child: Text(label, style: theme.textTheme.titleMedium)),
+          const SizedBox(width: 8),
           Text(value, style: style),
         ],
       ),

@@ -100,36 +100,71 @@ class _FindInvoiceDialogState extends ConsumerState<_FindInvoiceDialog> {
 /// (see ProcessSaleReturnUseCase / the process_sale_return RPC).
 Future<void> showProcessReturnDialog(BuildContext context, WidgetRef ref, SaleRecord sale) async {
   final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
   final session = ref.read(sessionControllerProvider);
   if (session.employee == null || session.store == null) return;
+  final pos = ref.read(posRepositoryProvider);
+  final inventory = ref.read(inventoryRepositoryProvider);
+  final debts = ref.read(debtsRepositoryProvider);
 
+  // The invoice as it is now: a list can be a moment behind, and returns
+  // made on this device and not sent yet count too.
+  try {
+    sale = await pos.getSale(sale.id) ?? sale;
+  } catch (_) {}
   if (!sale.canReturn) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(sale.hasReturns ? l10n.returnNothingLeft : l10n.returnNotReturnable)));
+    messenger
+        .showSnackBar(SnackBar(content: Text(sale.hasReturns ? l10n.returnNothingLeft : l10n.returnNotReturnable)));
     return;
   }
 
-  final products = await ref.read(inventoryRepositoryProvider).watchProducts(session.store!.id).first;
+  final products = await inventory.watchProducts(session.store!.id).first;
   final namesById = {for (final p in products) p.id: p.name};
+  // Paid later: what is still owed decides how much of a refund is money
+  // handed back.
+  int? owed;
+  if (sale.paymentMethod == SalePaymentMethod.payLater) {
+    try {
+      owed = (await debts.findBySaleId(sale.id))?.balanceRemainingMinorUnits;
+    } catch (_) {}
+  }
   if (!context.mounted) return;
 
-  final messenger = ScaffoldMessenger.of(context);
-  final refunded = await showDialog<int>(
+  final result = await showDialog<SaleReturnResult>(
     context: context,
-    builder: (_) => _ReturnDialog(sale: sale, namesById: namesById, processedByUserId: session.employee!.id),
+    builder: (_) => _ReturnDialog(
+      sale: sale,
+      namesById: namesById,
+      processedByUserId: session.employee!.id,
+      owedMinorUnits: owed,
+    ),
   );
-  if (refunded != null) {
-    messenger.showSnackBar(SnackBar(content: Text(l10n.returnDone(Money.format(refunded)))));
-  }
+  if (result != null) messenger.showSnackBar(SnackBar(content: Text(returnDoneMessage(l10n, result))));
+}
+
+/// What the cashier is told once a return is made: the refund, and for a
+/// sale paid later how much of it came off the balance and how much to
+/// hand back.
+String returnDoneMessage(AppLocalizations l10n, SaleReturnResult result) {
+  final refund = result.refundMinorUnits;
+  final handedBack = result.handedBackMinorUnits;
+  if (handedBack == null || handedBack >= refund) return l10n.returnDone(Money.format(refund));
+  if (handedBack <= 0) return l10n.posReturnDoneBalance(Money.format(refund));
+  return l10n.posReturnDoneSplit(Money.format(refund - handedBack), Money.format(handedBack));
 }
 
 class _ReturnDialog extends ConsumerStatefulWidget {
-  const _ReturnDialog({required this.sale, required this.namesById, required this.processedByUserId});
+  const _ReturnDialog({
+    required this.sale,
+    required this.namesById,
+    required this.processedByUserId,
+    this.owedMinorUnits,
+  });
 
   final SaleRecord sale;
   final Map<String, String> namesById;
   final String processedByUserId;
+  final int? owedMinorUnits;
 
   @override
   ConsumerState<_ReturnDialog> createState() => _ReturnDialogState();
@@ -137,30 +172,41 @@ class _ReturnDialog extends ConsumerStatefulWidget {
 
 class _ReturnDialogState extends ConsumerState<_ReturnDialog> {
   late final Map<String, int> _quantities = {for (final line in widget.sale.lines) line.id: 0};
-  late bool _refundToCash = widget.sale.paymentMethod == SalePaymentMethod.cash || widget.sale.paymentMethod == null;
+  // Paid later: what was paid up front (in cash) is what may go back.
+  late bool _refundToCash = widget.sale.paymentMethod != SalePaymentMethod.card;
   bool _saving = false;
   String? _error;
 
   int get _refund => widget.sale.lines.fold(0, (s, l) => s + l.unitRefundMinorUnits * (_quantities[l.id] ?? 0));
 
   Future<void> _confirm() async {
+    if (_saving) return;
     final l10n = AppLocalizations.of(context);
+    final returns = ref.read(processSaleReturnUseCaseProvider);
+    final pos = ref.read(posRepositoryProvider);
+    final navigator = Navigator.of(context);
     setState(() {
       _saving = true;
       _error = null;
     });
     try {
-      await ref.read(processSaleReturnUseCaseProvider).processReturn(
-            originalSale: widget.sale,
-            processedByUserId: widget.processedByUserId,
-            refundToCash: _refundToCash,
-            returnLines: widget.sale.lines
-                .map((line) => ReturnLineInput(saleLine: line, quantityReturned: _quantities[line.id] ?? 0))
-                .toList(),
-          );
-      if (mounted) Navigator.of(context).pop(_refund);
+      // Checked against the invoice as it is now (another return may have
+      // been made meanwhile, here or on another till).
+      final sale = await pos.getSale(widget.sale.id) ?? widget.sale;
+      final result = await returns.processReturn(
+        originalSale: sale,
+        processedByUserId: widget.processedByUserId,
+        refundToCash: _refundToCash,
+        owedMinorUnits: widget.owedMinorUnits,
+        returnLines: sale.lines
+            .map((line) => ReturnLineInput(saleLine: line, quantityReturned: _quantities[line.id] ?? 0))
+            .toList(),
+      );
+      if (mounted) navigator.pop(result);
     } on SaleNotSyncedException {
       if (mounted) setState(() => _error = l10n.returnWaitSync);
+    } on ReturnExceedsRemainingException {
+      if (mounted) setState(() => _error = l10n.posReturnMoreThanLeft);
     } catch (_) {
       if (mounted) setState(() => _error = l10n.returnFailed);
     } finally {
@@ -175,113 +221,118 @@ class _ReturnDialogState extends ConsumerState<_ReturnDialog> {
     final sale = widget.sale;
     final nothingChosen = _quantities.values.every((q) => q == 0);
 
-    return AlertDialog(
-      title: Text('${l10n.posProcessReturn}: ${sale.saleNumber}'),
-      content: SizedBox(
-        width: 520,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                [
-                  AppDateFormat.dateTime(sale.completedAt ?? sale.createdAt),
-                  paymentMethodLabel(l10n, sale.paymentMethod),
-                  '${l10n.commonTotal}: ${Money.format(sale.grandTotalMinorUnits)}',
-                ].where((s) => s.isNotEmpty).join(' · '),
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 4),
-              Text(l10n.returnWhatHappens, style: theme.textTheme.bodySmall),
-              const Divider(height: 24),
-              ...sale.lines.map((line) {
-                final selected = _quantities[line.id] ?? 0;
-                final left = line.remainingQuantity;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(widget.namesById[line.productId] ?? line.productId, style: theme.textTheme.titleSmall),
-                            Text(
-                              '${Money.format(line.unitRefundMinorUnits)} · '
-                              '${l10n.returnSoldReturned(line.quantity, line.quantityReturned)}',
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ],
+    return PopScope(
+      // Not while the return is being saved: the money must match it.
+      canPop: !_saving,
+      child: AlertDialog(
+        title: Text('${l10n.posProcessReturn}: ${sale.saleNumber}'),
+        content: SizedBox(
+          width: 520,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  [
+                    AppDateFormat.dateTime(sale.completedAt ?? sale.createdAt),
+                    paymentMethodLabel(l10n, sale.paymentMethod),
+                    '${l10n.commonTotal}: ${Money.format(sale.grandTotalMinorUnits)}',
+                  ].where((s) => s.isNotEmpty).join(' · '),
+                  style: theme.textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(l10n.returnWhatHappens, style: theme.textTheme.bodySmall),
+                const Divider(height: 24),
+                ...sale.lines.map((line) {
+                  final selected = _quantities[line.id] ?? 0;
+                  final left = line.remainingQuantity;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(widget.namesById[line.productId] ?? line.productId,
+                                  style: theme.textTheme.titleSmall),
+                              Text(
+                                '${Money.format(line.unitRefundMinorUnits)} · '
+                                '${l10n.returnSoldReturned(line.quantity, line.quantityReturned)}',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.remove_circle_outline),
-                        onPressed: selected > 0 ? () => setState(() => _quantities[line.id] = selected - 1) : null,
-                      ),
-                      SizedBox(width: 56, child: Text('$selected / $left', textAlign: TextAlign.center)),
-                      IconButton(
-                        icon: const Icon(Icons.add_circle_outline),
-                        onPressed: selected < left ? () => setState(() => _quantities[line.id] = selected + 1) : null,
-                      ),
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle_outline),
+                          onPressed: selected > 0 ? () => setState(() => _quantities[line.id] = selected - 1) : null,
+                        ),
+                        SizedBox(width: 56, child: Text('$selected / $left', textAlign: TextAlign.center)),
+                        IconButton(
+                          icon: const Icon(Icons.add_circle_outline),
+                          onPressed: selected < left ? () => setState(() => _quantities[line.id] = selected + 1) : null,
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.select_all),
+                    label: Text(l10n.returnAll),
+                    onPressed: () => setState(() {
+                      for (final line in sale.lines) {
+                        _quantities[line.id] = line.remainingQuantity;
+                      }
+                    }),
+                  ),
+                ),
+                const Divider(height: 24),
+                if (sale.paymentMethod != SalePaymentMethod.payLater) ...[
+                  Text(l10n.returnRefundTo, style: theme.textTheme.labelLarge),
+                  const SizedBox(height: 8),
+                  SegmentedButton<bool>(
+                    segments: [
+                      ButtonSegment(
+                          value: true, label: Text(l10n.posPayCash), icon: const Icon(Icons.payments_outlined)),
+                      ButtonSegment(value: false, label: Text(l10n.posPayCard), icon: const Icon(Icons.credit_card)),
                     ],
+                    selected: {_refundToCash},
+                    onSelectionChanged: (s) => setState(() => _refundToCash = s.first),
                   ),
-                );
-              }),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: TextButton.icon(
-                  icon: const Icon(Icons.select_all),
-                  label: Text(l10n.returnAll),
-                  onPressed: () => setState(() {
-                    for (final line in sale.lines) {
-                      _quantities[line.id] = line.remainingQuantity;
-                    }
-                  }),
-                ),
-              ),
-              const Divider(height: 24),
-              if (sale.paymentMethod != SalePaymentMethod.payLater) ...[
-                Text(l10n.returnRefundTo, style: theme.textTheme.labelLarge),
-                const SizedBox(height: 8),
-                SegmentedButton<bool>(
-                  segments: [
-                    ButtonSegment(value: true, label: Text(l10n.posPayCash), icon: const Icon(Icons.payments_outlined)),
-                    ButtonSegment(value: false, label: Text(l10n.posPayCard), icon: const Icon(Icons.credit_card)),
+                ] else
+                  Text(l10n.posReturnReducesBalance),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: Text(l10n.returnRefund, style: theme.textTheme.titleMedium)),
+                    Text(
+                      Money.format(_refund),
+                      style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.error),
+                    ),
                   ],
-                  selected: {_refundToCash},
-                  onSelectionChanged: (s) => setState(() => _refundToCash = s.first),
                 ),
-              ] else
-                Text(l10n.posReturnReducesBalance),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Text(l10n.returnRefund, style: theme.textTheme.titleMedium),
-                  const Spacer(),
-                  Text(
-                    Money.format(_refund),
-                    style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.error),
-                  ),
+                if (_error != null) ...[
+                  const SizedBox(height: 8),
+                  Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
                 ],
-              ),
-              if (_error != null) ...[
-                const SizedBox(height: 8),
-                Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
               ],
-            ],
+            ),
           ),
         ),
+        actions: [
+          TextButton(onPressed: _saving ? null : () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
+          FilledButton(
+            onPressed: nothingChosen || _saving ? null : _confirm,
+            child: _saving
+                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                : Text(l10n.actionConfirm),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.actionCancel)),
-        FilledButton(
-          onPressed: nothingChosen || _saving ? null : _confirm,
-          child: _saving
-              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(l10n.actionConfirm),
-        ),
-      ],
     );
   }
 }

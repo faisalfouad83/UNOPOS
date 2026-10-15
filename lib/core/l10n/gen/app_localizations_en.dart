@@ -2785,4 +2785,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get syncOtherStoresHelp =>
       'Changes made on this device while another store was signed in. They are sent when that store signs in here again.';
+
+  @override
+  String get posHeldSaleDetached =>
+      'This suspended sale was already completed or removed (maybe on another till). Nothing was charged. The cart is now a sale of its own — check it, then charge or suspend it again.';
+
+  @override
+  String get posHeldSaleIncomplete =>
+      'This suspended sale is still being saved. Try again in a moment.';
+
+  @override
+  String posReturnDoneBalance(String amount) {
+    return 'Return completed — $amount taken off the customer\'s balance';
+  }
+
+  @override
+  String posReturnDoneSplit(String balance, String cash) {
+    return 'Return completed — $balance taken off the customer\'s balance, give back $cash';
+  }
+
+  @override
+  String get posReturnMoreThanLeft =>
+      'Some of these items were already returned (maybe by a return still waiting to be sent). Check the quantities and try again.';
 }

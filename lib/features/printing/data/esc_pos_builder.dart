@@ -69,9 +69,10 @@ class EscPosBuilder {
   static String twoColumn(String left, String right, int width) {
     final space = width - left.length - right.length;
     if (space <= 0) {
-      final truncated = left.length > width - right.length - 1
-          ? '${left.substring(0, (width - right.length - 1).clamp(0, left.length))}…'
-          : left;
+      // Plain dots: raw ESC/POS text goes through a single-byte code page,
+      // where '…' would print as garbage.
+      final keep = (width - right.length - 4).clamp(0, left.length);
+      final truncated = left.length > width - right.length - 1 ? '${left.substring(0, keep)}...' : left;
       final pad = (width - truncated.length - right.length).clamp(1, width);
       return '$truncated${' ' * pad}$right';
     }
@@ -115,7 +116,8 @@ class EscPosBuilder {
 
     b.text(twoColumn(doc.labels.subtotal, _money(doc.subtotalMinorUnits, doc.currencySymbol), paperWidthChars));
     if (doc.discountTotalMinorUnits > 0) {
-      b.text(twoColumn(doc.labels.discount, '-${_money(doc.discountTotalMinorUnits, doc.currencySymbol)}', paperWidthChars));
+      b.text(twoColumn(
+          doc.labels.discount, '-${_money(doc.discountTotalMinorUnits, doc.currencySymbol)}', paperWidthChars));
     }
     if (doc.taxTotalMinorUnits > 0) {
       b.text(twoColumn(doc.labels.tax, _money(doc.taxTotalMinorUnits, doc.currencySymbol), paperWidthChars));
@@ -127,7 +129,8 @@ class EscPosBuilder {
 
     b.text(twoColumn(doc.labels.payment, doc.paymentMethodLabel, paperWidthChars));
     if (doc.amountTenderedMinorUnits != null) {
-      b.text(twoColumn(doc.labels.tendered, _money(doc.amountTenderedMinorUnits!, doc.currencySymbol), paperWidthChars));
+      b.text(
+          twoColumn(doc.labels.tendered, _money(doc.amountTenderedMinorUnits!, doc.currencySymbol), paperWidthChars));
     }
     if (doc.changeGivenMinorUnits != null && doc.changeGivenMinorUnits! > 0) {
       b.text(twoColumn(doc.labels.change, _money(doc.changeGivenMinorUnits!, doc.currencySymbol), paperWidthChars));

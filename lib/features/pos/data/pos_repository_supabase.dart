@@ -145,14 +145,35 @@ class SupabasePosRepository implements PosRepository {
 
   @override
   Future<SaleRecord?> getSale(String saleId) async {
-    final rows = await fetchRowsOrCached(
+    var rows = await fetchRowsOrCached(
       'sale.$saleId',
       () async => (await _client.from('sales').select().eq('id', saleId)).cast<Map<String, dynamic>>(),
       table: 'sales',
       where: (r) => r['id'] == saleId,
     );
-    if (rows == null || rows.isEmpty) return null;
+    if (rows == null || rows.isEmpty) {
+      // Never opened on its own while online (a held sale being resumed
+      // offline, say): the copies of the held and sold lists on this device.
+      final cached = await _cachedSaleRow(saleId);
+      if (cached == null) return null;
+      rows = Outbox.shared.applyTo('sales', [cached], where: (r) => r['id'] == saleId);
+      if (rows.isEmpty) return null;
+    }
     return (await _withLines(rows)).first;
+  }
+
+  /// Stores whose held and sold lists this device keeps a copy of.
+  static final _knownStores = <String>{};
+
+  Future<Map<String, dynamic>?> _cachedSaleRow(String saleId) async {
+    for (final storeId in _knownStores) {
+      for (final key in [_heldKey(storeId), _completedKey(storeId)]) {
+        final rows = await OfflineCache.readRows(key) ?? const [];
+        final row = rows.where((r) => r['id'] == saleId).firstOrNull;
+        if (row != null) return row;
+      }
+    }
+    return null;
   }
 
   @override
@@ -164,24 +185,27 @@ class SupabasePosRepository implements PosRepository {
   }) async {
     if (_writer.sendsNow) {
       try {
-        final result = await _client.rpc(
-          'rehold_sale',
-          params: {
-            'p_sale_id': saleId,
-            'p_lines': lines.map(saleLineJson).toList(),
-            'p_customer_id': customerId,
-            'p_hold_label': holdLabel,
-          },
-        ).timeout(const Duration(seconds: 15)) as Map<String, dynamic>;
-        return (await getSale(result['sale_id'] as String))!;
-      } catch (e) {
+        // Runs exactly once on the server (keyed by its operation id).
+        final result = await _writer.rpc('rehold_sale', {
+          'p_sale_id': saleId,
+          'p_lines': lines.map(saleLineJson).toList(),
+          'p_customer_id': customerId,
+          'p_hold_label': holdLabel,
+        });
+        final newId = (result as Map?)?['sale_id'] as String?;
+        final sale = newId == null ? null : await getSale(newId);
+        if (sale != null) return sale;
+      } on NeedsConnectionException {
+        // Lost the connection: done on this device below.
+      } on PostgrestException catch (e) {
+        if (e.message.contains('held sale not found')) throw const HeldSaleClosedException();
         if (!isTransientError(e)) rethrow;
       }
     }
     // Offline: the same steps as the server's, made on this device — the
     // old held sale is closed and a new one holds the cart.
     final old = await getSale(saleId);
-    if (old == null || old.status != SaleStatus.held) throw Exception('held sale not found');
+    if (old == null || old.status != SaleStatus.held) throw const HeldSaleClosedException();
     final suffix = IdGenerator.newId().substring(0, 4);
     await _writer.update('sales', {'status': 'voided', 'sale_number': '${old.saleNumber}-R$suffix'}, value: saleId);
     final created = await createSaleWithNumber(
@@ -240,26 +264,52 @@ class SupabasePosRepository implements PosRepository {
 
   @override
   Future<SaleRecord?> findSaleByNumber(String storeId, String number) async {
+    _knownStores.add(storeId);
     final wanted = normalizeSaleNumber(number);
+    final idPrefix = _offlineIdPrefix(wanted);
+    await Outbox.shared.load();
     try {
-      final row = await _client
-          .from('sales')
-          .select()
-          .eq('store_id', storeId)
-          .eq('sale_number', wanted)
-          .neq('status', 'voided')
-          .limit(1)
-          .maybeSingle()
-          .timeout(const Duration(seconds: 10));
-      if (row == null) return null;
-      return (await _withLines([row])).first;
+      var q = _client.from('sales').select().eq('store_id', storeId).neq('status', 'voided');
+      // A receipt printed offline: the sale has a server number once it
+      // has synced, and is found by the id it was made with.
+      q = idPrefix == null
+          ? q.eq('sale_number', wanted)
+          : q.or('sale_number.eq.$wanted,client_sale_id.ilike.$idPrefix*');
+      final row = await q.limit(1).maybeSingle().timeout(const Duration(seconds: 10));
+      final shown = Outbox.shared.applyTo(
+        'sales',
+        [if (row != null) row],
+        where: (r) => r['store_id'] == storeId && r['status'] != 'voided' && _matchesNumber(r, wanted),
+      );
+      return shown.isEmpty ? null : (await _withLines([shown.first])).first;
     } catch (e) {
       if (!isNetworkError(e)) rethrow;
-      // Offline: the sales this device has a copy of.
-      final cached = await OfflineCache.readRows(_completedKey(storeId)) ?? const [];
-      final row = cached.where((r) => r['sale_number'] == wanted && r['status'] != 'voided').firstOrNull;
+      // Offline: the sales this device has a copy of, and the ones made here.
+      final cached = Outbox.shared.applyTo(
+        'sales',
+        await OfflineCache.readRows(_completedKey(storeId)) ?? const [],
+        where: (r) => r['store_id'] == storeId && r['status'] != 'voided',
+      );
+      final row = cached.where((r) => _matchesNumber(r, wanted)).firstOrNull;
       return row == null ? null : (await _withLines([row])).first;
     }
+  }
+
+  /// For a receipt number printed offline ("OFFLINE-3F2A1B"), the start of
+  /// the sale's own id it was made from; null for any other number.
+  static String? _offlineIdPrefix(String wanted) {
+    if (!wanted.startsWith(offlineSaleNumberPrefix)) return null;
+    final rest = wanted.substring(offlineSaleNumberPrefix.length).toLowerCase();
+    return RegExp(r'^[0-9a-f]{4,}$').hasMatch(rest) ? rest : null;
+  }
+
+  /// Whether sales row [r] is the invoice numbered [wanted] (normalised).
+  static bool _matchesNumber(Map<String, dynamic> r, String wanted) {
+    if (r['sale_number'] == wanted) return true;
+    final prefix = _offlineIdPrefix(wanted);
+    if (prefix == null) return false;
+    final id = (r['client_sale_id'] ?? r['id']) as String?;
+    return id != null && id.toLowerCase().startsWith(prefix);
   }
 
   @override
@@ -267,8 +317,9 @@ class SupabasePosRepository implements PosRepository {
     // .stream() allows one server-side filter; status='held' cuts the
     // payload the most (held sales are always a small fraction of all
     // sales), branch_id is applied client-side below.
+    _knownStores.add(storeId);
     return resilientRows(
-      'sales.held.$storeId',
+      _heldKey(storeId),
       () => _client.from('sales').stream(primaryKey: ['id']).eq('status', 'held').order('created_at', ascending: false),
       table: 'sales',
       where: (r) => r['status'] == 'held',
@@ -281,6 +332,8 @@ class SupabasePosRepository implements PosRepository {
   @override
   Future<List<InvoiceRecord>> listInvoices(InvoiceQuery query) async {
     if (query.customerIds != null && query.customerIds!.isEmpty) return const [];
+    _knownStores.add(query.storeId);
+    await Outbox.shared.load();
     final status = query.status;
     final debtStatus = switch (status) {
       InvoiceStatus.unpaid => 'open',
@@ -316,7 +369,10 @@ class SupabasePosRepository implements PosRepository {
     if (query.from != null) q = q.gte('completed_at', query.from!.toUtc().toIso8601String());
     if (query.to != null) q = q.lte('completed_at', query.to!.toUtc().toIso8601String());
     final exact = query.exactNumber;
-    if (exact != null) {
+    final idPrefix = exact == null ? null : _offlineIdPrefix(exact);
+    if (idPrefix != null) {
+      q = q.or('sale_number.eq.$exact,client_sale_id.ilike.$idPrefix*');
+    } else if (exact != null) {
       q = q.eq('sale_number', exact);
     } else if ((query.number?.trim() ?? '').isNotEmpty) {
       q = q.ilike('sale_number', '%${query.number!.trim()}%');
@@ -343,9 +399,23 @@ class SupabasePosRepository implements PosRepository {
       return _offlineInvoices(query);
     }
 
-    return rows.cast<Map<String, dynamic>>().map((row) {
-      final lines = ((row['sale_lines'] as List?) ?? const []).cast<Map<String, dynamic>>().map(_mapLine).toList();
-      final debts = ((row['debt_ledger_entries'] as List?) ?? const []).cast<Map<String, dynamic>>();
+    return rows.cast<Map<String, dynamic>>().map((serverRow) {
+      final id = serverRow['id'];
+      // Changes made on this device and not sent yet (a return, say).
+      final row = Outbox.shared.applyTo('sales', [serverRow], where: (r) => r['id'] == id).firstOrNull ?? serverRow;
+      final lines = Outbox.shared
+          .applyTo(
+            'sale_lines',
+            ((serverRow['sale_lines'] as List?) ?? const []).cast<Map<String, dynamic>>(),
+            where: (l) => l['sale_id'] == id,
+          )
+          .map(_mapLine)
+          .toList();
+      final debts = Outbox.shared.applyTo(
+        'debt_ledger_entries',
+        ((serverRow['debt_ledger_entries'] as List?) ?? const []).cast<Map<String, dynamic>>(),
+        where: (d) => d['sale_id'] == id,
+      );
       return InvoiceRecord(sale: _mapSale(row, lines), debt: debts.isEmpty ? null : _mapDebt(debts.first));
     }).toList();
   }
@@ -421,6 +491,7 @@ class SupabasePosRepository implements PosRepository {
       where: (r) => soldStatuses.contains(r['status']),
       cacheTake: 2000,
     ).asyncMap((rows) async {
+      _knownStores.add(storeId);
       var filtered = rows;
       if (from != null) {
         filtered = filtered
@@ -438,7 +509,8 @@ class SupabasePosRepository implements PosRepository {
     });
   }
 
-  String _completedKey(String storeId) => 'sales.completed.$storeId';
+  static String _completedKey(String storeId) => 'sales.completed.$storeId';
+  static String _heldKey(String storeId) => 'sales.held.$storeId';
 
   /// Lines of the sales already seen, by sale id, kept for offline use.
   static Map<String, List<Map<String, dynamic>>>? _linesIndex;
@@ -526,7 +598,7 @@ class SupabasePosRepository implements PosRepository {
       if (query.to != null && (when == null || when.isAfter(query.to!))) return false;
       if (number != null && number.isNotEmpty) {
         final n = r['sale_number'] as String? ?? '';
-        if (query.exactNumber != null ? n != number : !n.contains(number)) return false;
+        if (query.exactNumber != null ? !_matchesNumber(r, number) : !n.contains(number)) return false;
       }
       if (query.customerIds != null && !query.customerIds!.contains(r['customer_id'])) return false;
       return true;
@@ -542,7 +614,28 @@ class SupabasePosRepository implements PosRepository {
         });
     final page = rows.skip(query.offset).take(query.limit).toList();
     final sales = await _withLines(page);
-    return [for (final sale in sales) InvoiceRecord(sale: sale)];
+
+    // What pay-later invoices still owe, from the copy of the open debts: a
+    // debt no longer among them was paid off (unless its sale hasn't even
+    // reached the server yet).
+    final openRows = await OfflineCache.readRows('debts.open.${query.storeId}');
+    final openBySale = {
+      for (final d in Outbox.shared.applyTo('debt_ledger_entries', openRows ?? const []))
+        if (d['sale_id'] != null && d['status'] != 'paid') d['sale_id'] as String: d,
+    };
+    final unsent = {
+      for (final o in Outbox.shared.pending)
+        if (o.kind == OutboxKind.checkout) o.id,
+    };
+    return [
+      for (final sale in sales)
+        if (sale.paymentMethod != SalePaymentMethod.payLater)
+          InvoiceRecord(sale: sale)
+        else if (openBySale[sale.id] case final debt?)
+          InvoiceRecord(sale: sale, debt: _mapDebt(debt))
+        else
+          InvoiceRecord(sale: sale, debtSettled: openRows != null && !unsent.contains(sale.id)),
+    ];
   }
 
   @override

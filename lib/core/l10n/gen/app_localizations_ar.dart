@@ -2780,4 +2780,26 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get syncOtherStoresHelp =>
       'تغييرات انعملت على هذا الجهاز لمن كان متجر ثاني مسجل دخول. تنرسل لمن يسجل ذاك المتجر دخول هنا مرة ثانية.';
+
+  @override
+  String get posHeldSaleDetached =>
+      'هذه الفاتورة المعلّقة أُكملت أو أُلغيت مسبقاً (ربما على جهاز آخر). لم يُسجَّل أي مبلغ. السلة الآن فاتورة مستقلة — راجعها ثم أكمل البيع أو علّقها من جديد.';
+
+  @override
+  String get posHeldSaleIncomplete =>
+      'هذه الفاتورة المعلّقة ما زالت قيد الحفظ. حاول مرة أخرى بعد لحظات.';
+
+  @override
+  String posReturnDoneBalance(String amount) {
+    return 'تم الاسترجاع — خُصم $amount من رصيد الزبون';
+  }
+
+  @override
+  String posReturnDoneSplit(String balance, String cash) {
+    return 'تم الاسترجاع — خُصم $balance من رصيد الزبون، أعِد له $cash';
+  }
+
+  @override
+  String get posReturnMoreThanLeft =>
+      'بعض هذه المواد استُرجعت مسبقاً (ربما بإرجاع ما زال بانتظار الإرسال). راجع الكميات وحاول مرة أخرى.';
 }

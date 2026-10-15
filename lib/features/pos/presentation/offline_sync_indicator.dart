@@ -7,6 +7,7 @@ import '../../../core/offline/outbox.dart';
 import '../../../core/offline/sync_service.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../../../core/utils/formatters.dart';
+import '../domain/complete_sale_use_case.dart';
 
 /// Top-bar status: online or offline, and whether changes made on this
 /// device are being sent (syncing), still waiting (also for another store
@@ -25,6 +26,12 @@ class OfflineSyncIndicator extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final online = ref.watch(connectivityProvider);
     final sync = ref.watch(syncServiceProvider);
+    if (sync.failed > 0) {
+      // A sale made offline that closed a held sale sold elsewhere
+      // meanwhile: it is sent again on its own rather than left refused.
+      final outbox = ref.read(outboxProvider);
+      Future.microtask(() => resendRefusedHeldSaleCheckouts(outbox));
+    }
 
     final (icon, color, text) = sync.syncing
         ? (Icons.sync, scheme.primary, l10n.syncInProgress(sync.pending))

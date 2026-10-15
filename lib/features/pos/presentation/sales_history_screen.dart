@@ -7,9 +7,15 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
-import '../../printing/presentation/sale_receipt.dart';
+import '../../auth/domain/auth_models.dart';
+import '../../debts/domain/debts_models.dart';
+import '../../printing/domain/receipt_models.dart';
+import '../../printing/presentation/print_after_sale.dart';
 import '../../printing/presentation/whatsapp_receipt_dialog.dart';
+import '../domain/invoice_query.dart';
 import '../domain/pos_models.dart';
+import 'invoice_details_dialog.dart';
+import 'invoices_screen.dart';
 import 'process_return_dialog.dart';
 
 final _todaysSalesProvider = StreamProvider.autoDispose.family<List<SaleRecord>, String>((ref, storeId) {
@@ -24,40 +30,53 @@ class SalesHistoryScreen extends ConsumerWidget {
   const SalesHistoryScreen({super.key, required this.storeId});
   final String storeId;
 
+  /// The receipt for [sale] as it was sold: its own cashier, branch and
+  /// customer, and for a sale paid later what is still owed — the same as
+  /// a reprint from the invoices screen. Also gives the customer's phone.
+  Future<(ReceiptDocument, String?)> _receipt(BuildContext context, WidgetRef ref, SaleRecord sale) async {
+    final debts = ref.read(debtsRepositoryProvider);
+    final auth = ref.read(authRepositoryProvider);
+    DebtLedgerEntryRecord? debt;
+    if (sale.paymentMethod == SalePaymentMethod.payLater) {
+      try {
+        debt = await debts.findBySaleId(sale.id);
+      } catch (_) {}
+    }
+    var customers = const <CustomerRecord>[];
+    var employees = const <EmployeeRecord>[];
+    try {
+      customers = await debts.watchCustomers(storeId).first;
+    } catch (_) {}
+    try {
+      employees = await auth.watchEmployees(storeId).first;
+    } catch (_) {}
+    if (!context.mounted) throw StateError('closed');
+    final names = InvoiceNames(
+      cashiers: {for (final e in employees) e.id: e.name},
+      customers: {for (final c in customers) c.id: c},
+    );
+    final doc = await invoiceReceipt(context, ref, InvoiceRecord(sale: sale, debt: debt), names);
+    return (doc, sale.customerId == null ? null : names.customers[sale.customerId]?.phone);
+  }
+
   Future<void> _reprint(BuildContext context, WidgetRef ref, SaleRecord sale) async {
     final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final settingsRepository = ref.read(settingsRepositoryProvider);
     try {
-      final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
-      final doc = await buildSaleReceipt(
-        inventory: ref.read(inventoryRepositoryProvider),
-        session: ref.read(sessionControllerProvider),
-        sale: sale,
-        settings: settings,
-        l10n: l10n,
-      );
-      await printReceiptDocument(doc, settings);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.posPrintReceipt)));
-      }
+      final (doc, _) = await _receipt(context, ref, sale);
+      final settings = await settingsRepository.ensureSettings(storeId);
+      await printWithFeedback(messenger, l10n, doc, settings);
     } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
-      }
+      messenger.showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
     }
   }
 
   Future<void> _sendWhatsApp(BuildContext context, WidgetRef ref, SaleRecord sale) async {
     final l10n = AppLocalizations.of(context);
     try {
-      final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
-      final doc = await buildSaleReceipt(
-        inventory: ref.read(inventoryRepositoryProvider),
-        session: ref.read(sessionControllerProvider),
-        sale: sale,
-        settings: settings,
-        l10n: l10n,
-      );
-      if (context.mounted) await showWhatsAppReceiptDialog(context, doc);
+      final (doc, phone) = await _receipt(context, ref, sale);
+      if (context.mounted) await showWhatsAppReceiptDialog(context, doc, initialPhone: phone);
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorGeneric)));
