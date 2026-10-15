@@ -2723,4 +2723,11 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get storeSignOutPendingWarning =>
       'هەندێک گۆڕانکاری لەم ئامێرەدا هێشتا نەگەیشتوونەتە سێرڤەر. پارێزراو دەمێننەوە و کاتێک ئەم فرۆشگایە دووبارە لێرە دەچێتە ژوورەوە دەنێردرێن. هەر دەرچوون؟';
+
+  @override
+  String get breakManagerUnlock => 'کردنەوە لەلایەن بەڕێوەبەر';
+
+  @override
+  String get breakManagerUnlockHelp =>
+      'خاوەن یان بەڕێوەبەر ژمارەی نهێنی خۆی دەنووسێت بۆ کردنەوەی کاشێر. پشووەکە کۆتایی دێت کاتێک کارمەندەکە دووبارە دەچێتە ژوورەوە.';
 }

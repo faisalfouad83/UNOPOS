@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/widgets/numeric_pin_pad.dart';
+import '../../../core/constants/roles.dart';
 import '../../auth/domain/session_controller.dart';
+import '../../auth/presentation/confirm_with_pin.dart';
 import '../domain/break_models.dart';
 import 'break_providers.dart';
 
@@ -77,6 +79,34 @@ class _BreakLockScreenState extends ConsumerState<BreakLockScreen> {
     }
   }
 
+  /// The owner or a manager unlocks the till when the break can't be ended
+  /// here (e.g. the employee left). The break itself stays open until that
+  /// employee next signs in, which ends it; meanwhile the till goes back
+  /// to the account picker.
+  Future<void> _managerUnlock() async {
+    final l10n = AppLocalizations.of(context);
+    final session = ref.read(sessionControllerProvider);
+    final store = session.store;
+    if (store == null) return;
+    final auth = ref.read(authRepositoryProvider);
+    final sessionNotifier = ref.read(sessionControllerProvider.notifier);
+    final activeBreak = ref.read(activeBreakProvider.notifier);
+    final pin = await confirmWithPin(context, title: l10n.breakManagerUnlock, message: l10n.breakManagerUnlockHelp);
+    if (pin == null || !mounted) return;
+    try {
+      final manager = await auth.findEmployeeByPin(store.id, pin);
+      if (manager == null || (manager.role != StoreRole.owner && manager.role != StoreRole.manager)) {
+        if (mounted) setState(() => _error = l10n.breakWrongPin);
+        return;
+      }
+    } catch (_) {
+      if (mounted) setState(() => _error = l10n.errorGeneric);
+      return;
+    }
+    activeBreak.state = null;
+    sessionNotifier.signOutToTilePicker();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -143,6 +173,12 @@ class _BreakLockScreenState extends ConsumerState<BreakLockScreen> {
                         }),
                         onSubmit: _endBreak,
                       ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: _busy ? null : _managerUnlock,
+                      icon: const Icon(Icons.admin_panel_settings_outlined),
+                      label: Text(l10n.breakManagerUnlock),
                     ),
                   ],
                 ),

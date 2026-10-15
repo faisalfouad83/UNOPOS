@@ -121,9 +121,13 @@ class SupabaseLicensingRepository implements LicensingRepository {
   /// no end date — e.g. stores created before trials were introduced).
   @override
   Future<({bool licensed, DateTime? expiresAt})> licenseFor(String storeId) async {
-    final row = await _client.from('stores').select('expires_at').eq('id', storeId).maybeSingle();
+    final row =
+        await _client.from('stores').select('expires_at, is_disabled, is_suspended').eq('id', storeId).maybeSingle();
     if (row == null) return (licensed: false, expiresAt: null);
     final expiresAt = row['expires_at'] == null ? null : DateTime.parse(row['expires_at'] as String).toLocal();
+    // A store the developer disabled or suspended stops working on every
+    // device within a minute, not only at its next sign-in.
+    if (row['is_disabled'] == true || row['is_suspended'] == true) return (licensed: false, expiresAt: expiresAt);
     return (licensed: expiresAt == null || DateTime.now().isBefore(expiresAt), expiresAt: expiresAt);
   }
 

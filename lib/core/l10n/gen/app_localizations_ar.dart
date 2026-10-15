@@ -2735,4 +2735,11 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get storeSignOutPendingWarning =>
       'توجد تغييرات على هذا الجهاز لم تصل للخادم بعد. ستبقى محفوظة وتُرسل عند تسجيل دخول هذا المتجر هنا مرة أخرى. تسجيل الخروج على أي حال؟';
+
+  @override
+  String get breakManagerUnlock => 'فتح القفل من المدير';
+
+  @override
+  String get breakManagerUnlockHelp =>
+      'يُدخل المالك أو المدير رمزه لفتح الكاشير. تنتهي الاستراحة عند دخول الموظف مرة أخرى.';
 }

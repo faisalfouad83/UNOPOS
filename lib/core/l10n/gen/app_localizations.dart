@@ -5043,6 +5043,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Some changes made on this device haven\'t reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?'**
   String get storeSignOutPendingWarning;
+
+  /// No description provided for @breakManagerUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock by a manager'**
+  String get breakManagerUnlock;
+
+  /// No description provided for @breakManagerUnlockHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The owner or a manager enters their PIN to unlock the till. The break ends when the employee next signs in.'**
+  String get breakManagerUnlockHelp;
 }
 
 class _AppLocalizationsDelegate

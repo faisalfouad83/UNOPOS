@@ -976,5 +976,8 @@
   "@hrPinChangeConfirm": {"placeholders": {"name": {"type": "String"}}},
 
   "storeSignOutConfirm": "Sign this device out of the store? You will need the store's login to come back.",
-  "storeSignOutPendingWarning": "Some changes made on this device haven't reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?"
+  "storeSignOutPendingWarning": "Some changes made on this device haven't reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?",
+
+  "breakManagerUnlock": "Unlock by a manager",
+  "breakManagerUnlockHelp": "The owner or a manager enters their PIN to unlock the till. The break ends when the employee next signs in."
 }

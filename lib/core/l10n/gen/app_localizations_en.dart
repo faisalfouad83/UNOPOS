@@ -2740,4 +2740,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get storeSignOutPendingWarning =>
       'Some changes made on this device haven\'t reached the server yet. They are kept and sent when this store signs in here again. Sign out anyway?';
+
+  @override
+  String get breakManagerUnlock => 'Unlock by a manager';
+
+  @override
+  String get breakManagerUnlockHelp =>
+      'The owner or a manager enters their PIN to unlock the till. The break ends when the employee next signs in.';
 }
