@@ -1,8 +1,13 @@
 import 'dart:async';
 
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/widgets/barcode_input_field.dart';
 import '../domain/barcode_scan.dart';
 
 /// The till's search box, built for barcode scanners that type like a
@@ -25,6 +30,7 @@ class ScanSearchField extends StatefulWidget {
     required this.onScan,
     required this.onChanged,
     this.hintText,
+    this.onCameraScan,
   });
 
   final TextEditingController controller;
@@ -32,6 +38,14 @@ class ScanSearchField extends StatefulWidget {
   final Future<void> Function(String code) onScan;
   final ValueChanged<String> onChanged;
   final String? hintText;
+
+  /// Opens the camera to read barcodes (phones and tablets).
+  final VoidCallback? onCameraScan;
+
+  /// A desktop till types into the box straight away; on a touch screen the
+  /// on-screen keyboard would cover half the products, so it waits for a tap
+  /// (a scanner's keys still find their way in, see above).
+  static bool get _desktop => !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
 
   @override
   State<ScanSearchField> createState() => _ScanSearchFieldState();
@@ -57,7 +71,7 @@ class _ScanSearchFieldState extends State<ScanSearchField> {
     // Clear first: the scanner may already be typing the next code.
     widget.controller.clear();
     widget.onChanged('');
-    widget.focusNode.requestFocus();
+    if (ScanSearchField._desktop || widget.focusNode.hasFocus) widget.focusNode.requestFocus();
     for (final code in codes) {
       _queue = _queue.then((_) => widget.onScan(code)).catchError((Object _) {});
     }
@@ -113,10 +127,16 @@ class _ScanSearchFieldState extends State<ScanSearchField> {
       child: TextField(
         controller: widget.controller,
         focusNode: widget.focusNode,
-        autofocus: true,
+        autofocus: ScanSearchField._desktop,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.qr_code_scanner),
+          prefixIcon: widget.onCameraScan != null && cameraScanAvailable
+              ? IconButton(
+                  icon: const Icon(Icons.photo_camera_outlined),
+                  tooltip: AppLocalizations.of(context).posScanCamera,
+                  onPressed: widget.onCameraScan,
+                )
+              : const Icon(Icons.qr_code_scanner),
           hintText: widget.hintText,
           suffixIcon: ValueListenableBuilder<TextEditingValue>(
             valueListenable: widget.controller,

@@ -8,6 +8,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../domain/settings_models.dart';
+import '../../../core/widgets/adaptive_row.dart';
 
 class GeneralSettingsSection extends ConsumerWidget {
   const GeneralSettingsSection({super.key, required this.storeId, required this.settings});
@@ -30,10 +31,11 @@ class GeneralSettingsSection extends ConsumerWidget {
           children: [
             Text(l10n.settingsGeneral, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            Row(
+            AdaptiveRow(
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: settings.defaultLanguage,
                     decoration: InputDecoration(labelText: l10n.settingsLanguage),
                     items: const [
@@ -51,6 +53,7 @@ class GeneralSettingsSection extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<AppThemeMode>(
+                    isExpanded: true,
                     initialValue: settings.themeMode,
                     decoration: InputDecoration(labelText: l10n.settingsTheme),
                     items: [
@@ -72,10 +75,11 @@ class GeneralSettingsSection extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
+            AdaptiveRow(
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue:
                         settings.currencyCode == CurrencyInfo.usd.code ? CurrencyInfo.usd.code : CurrencyInfo.iqd.code,
                     decoration: InputDecoration(labelText: l10n.settingsCurrency),
@@ -133,7 +137,7 @@ class GeneralSettingsSection extends ConsumerWidget {
               onChanged: (v) => _update(ref, settings.copyWith(loyaltyEnabledFlag: v)),
             ),
             if (settings.loyaltyEnabledFlag)
-              Row(
+              AdaptiveRow(
                 children: [
                   Expanded(
                     child: TextFormField(

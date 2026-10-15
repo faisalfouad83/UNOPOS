@@ -131,11 +131,15 @@ class DashboardScreen extends ConsumerWidget {
                 ];
 
                 if (isWide) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final c in cards) ...[Expanded(child: c), const SizedBox(width: 16)],
-                    ]..removeLast(),
+                  // Same height for every card (IntrinsicHeight: a stretched
+                  // Row inside a scroll view has no height to stretch to).
+                  return IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final c in cards) ...[Expanded(child: c), const SizedBox(width: 16)],
+                      ]..removeLast(),
+                    ),
                   );
                 }
                 return Column(

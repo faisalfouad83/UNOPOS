@@ -7,8 +7,10 @@ import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/security/activation_code_codec.dart';
 import '../../../core/utils/formatters.dart';
 import '../../licensing/domain/license_watch.dart';
+import '../../../core/widgets/adaptive_row.dart';
 
-final _licenseProvider = FutureProvider.autoDispose.family<({bool licensed, DateTime? expiresAt}), String>((ref, storeId) {
+final _licenseProvider =
+    FutureProvider.autoDispose.family<({bool licensed, DateTime? expiresAt}), String>((ref, storeId) {
   return ref.watch(licensingRepositoryProvider).licenseFor(storeId);
 });
 
@@ -83,7 +85,7 @@ class _ActivationSettingsSectionState extends ConsumerState<ActivationSettingsSe
               },
             ),
             const SizedBox(height: 12),
-            Row(
+            AdaptiveRow(
               children: [
                 Expanded(
                   child: TextField(

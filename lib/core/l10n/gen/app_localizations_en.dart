@@ -2685,4 +2685,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get returnWaitSync =>
       'This sale was made offline and hasn\'t reached the server yet. Return it once it has synced.';
+
+  @override
+  String get navMore => 'More';
+
+  @override
+  String posCartSummary(int count, String total) {
+    return '$count items · $total';
+  }
+
+  @override
+  String get posMoreActions => 'More';
+
+  @override
+  String get posScanCamera => 'Scan with the camera';
 }

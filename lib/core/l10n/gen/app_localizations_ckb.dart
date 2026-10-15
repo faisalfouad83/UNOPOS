@@ -2668,4 +2668,18 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get returnWaitSync =>
       'ئەم فرۆشتنە بێ ئینتەرنێت کراوە و هێشتا نەگەیشتووەتە سێرڤەر. دوای هاوکاتکردن بیگەڕێنەرەوە.';
+
+  @override
+  String get navMore => 'زیاتر';
+
+  @override
+  String posCartSummary(int count, String total) {
+    return '$count کاڵا · $total';
+  }
+
+  @override
+  String get posMoreActions => 'زیاتر';
+
+  @override
+  String get posScanCamera => 'بە کامێرا بخوێنەوە';
 }

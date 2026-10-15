@@ -2680,4 +2680,18 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get returnWaitSync =>
       'هاي الفاتورة انعملت بدون إنترنت وبعدها ما وصلت للسيرفر. سوّي الإرجاع بعد ما تتزامن.';
+
+  @override
+  String get navMore => 'المزيد';
+
+  @override
+  String posCartSummary(int count, String total) {
+    return '$count مادة · $total';
+  }
+
+  @override
+  String get posMoreActions => 'المزيد';
+
+  @override
+  String get posScanCamera => 'امسح بالكاميرا';
 }

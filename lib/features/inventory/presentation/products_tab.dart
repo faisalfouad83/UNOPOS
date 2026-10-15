@@ -50,40 +50,47 @@ class ProductsTab extends ConsumerWidget {
         ? const <String, int>{}
         : ref.watch(_branchStockProvider((storeId: storeId, branchId: branchId))).valueOrNull ?? const <String, int>{};
 
+    final compact = MediaQuery.sizeOf(context).width < 600;
+    final search = TextField(
+      decoration: InputDecoration(prefixIcon: const Icon(Icons.search), hintText: l10n.actionSearch),
+      onChanged: (v) => ref.read(_productsSearchProvider.notifier).state = v,
+    );
+    final actions = <Widget>[
+      if (canEdit) ...[
+        FilledButton.tonalIcon(
+          icon: const Icon(Icons.add_box_outlined),
+          label: Text(l10n.stockReceiveTitle),
+          onPressed: () => showStockReceiveDialog(context, ref),
+        ),
+        const SizedBox(width: 4),
+        IconButton(
+          icon: const Icon(Icons.auto_awesome),
+          tooltip: l10n.inventoryGenerateMissingBarcodes,
+          onPressed: () => _generateMissingBarcodes(context, ref, storeId),
+        ),
+        IconButton(
+          icon: const Icon(Icons.upload_file),
+          tooltip: l10n.importProductsTitle,
+          onPressed: () => showProductImportDialog(context, ref),
+        ),
+      ],
+    ];
+
     return Scaffold(
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(prefixIcon: const Icon(Icons.search), hintText: l10n.actionSearch),
-                    onChanged: (v) => ref.read(_productsSearchProvider.notifier).state = v,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                if (canEdit) ...[
-                  FilledButton.tonalIcon(
-                    icon: const Icon(Icons.add_box_outlined),
-                    label: Text(l10n.stockReceiveTitle),
-                    onPressed: () => showStockReceiveDialog(context, ref),
-                  ),
-                  const SizedBox(width: 4),
-                  IconButton(
-                    icon: const Icon(Icons.auto_awesome),
-                    tooltip: l10n.inventoryGenerateMissingBarcodes,
-                    onPressed: () => _generateMissingBarcodes(context, ref, storeId),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.upload_file),
-                    tooltip: l10n.importProductsTitle,
-                    onPressed: () => showProductImportDialog(context, ref),
-                  ),
-                ],
-              ],
-            ),
+            // On a phone the search gets its own line, the actions below it.
+            child: compact
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      search,
+                      if (actions.isNotEmpty) ...[const SizedBox(height: 8), Row(children: actions)],
+                    ],
+                  )
+                : Row(children: [Expanded(child: search), const SizedBox(width: 8), ...actions]),
           ),
           Expanded(
             child: productsAsync.when(
@@ -123,6 +130,7 @@ class ProductsTab extends ConsumerWidget {
                       subtitle: Text(
                         '${product.barcode ?? product.sku} · ${Money.format(product.sellPriceMinorUnits)} · ${productUnitLabel(context, product.unit)}',
                       ),
+                      onTap: compact && canEdit ? () => showProductEditDialog(context, ref, existing: product) : null,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -137,22 +145,39 @@ class ProductsTab extends ConsumerWidget {
                               labelStyle: low ? TextStyle(color: Theme.of(context).colorScheme.onErrorContainer) : null,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.qr_code_2),
-                            tooltip: l10n.inventoryGenerateQr,
-                            onPressed: () => showQrLabelDialog(context, ref, product),
-                          ),
-                          if (canEdit)
+                          // A phone has room for the stock and one menu; the
+                          // row itself opens the product.
+                          if (compact)
+                            PopupMenuButton<String>(
+                              onSelected: (action) => switch (action) {
+                                'label' => showQrLabelDialog(context, ref, product),
+                                'edit' => showProductEditDialog(context, ref, existing: product),
+                                _ => _deleteProduct(context, ref, product),
+                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(value: 'label', child: Text(l10n.inventoryGenerateQr)),
+                                if (canEdit) PopupMenuItem(value: 'edit', child: Text(l10n.actionEdit)),
+                                if (canEdit) PopupMenuItem(value: 'delete', child: Text(l10n.productDelete)),
+                              ],
+                            )
+                          else ...[
                             IconButton(
-                              icon: const Icon(Icons.edit_outlined),
-                              onPressed: () => showProductEditDialog(context, ref, existing: product),
+                              icon: const Icon(Icons.qr_code_2),
+                              tooltip: l10n.inventoryGenerateQr,
+                              onPressed: () => showQrLabelDialog(context, ref, product),
                             ),
-                          if (canEdit)
-                            IconButton(
-                              icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-                              tooltip: l10n.productDelete,
-                              onPressed: () => _deleteProduct(context, ref, product),
-                            ),
+                            if (canEdit)
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                onPressed: () => showProductEditDialog(context, ref, existing: product),
+                              ),
+                            if (canEdit)
+                              IconButton(
+                                icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                                tooltip: l10n.productDelete,
+                                onPressed: () => _deleteProduct(context, ref, product),
+                              ),
+                          ],
                         ],
                       ),
                     );

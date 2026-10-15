@@ -18,6 +18,7 @@ import '../domain/product_units.dart';
 import 'product_thumb.dart';
 import 'qr_label_dialog.dart';
 import 'stock_tab.dart';
+import '../../../core/widgets/adaptive_row.dart';
 
 /// Add or edit a product: photo, name, its barcode (scanned, typed or
 /// generated — one code field; the internal SKU is optional and defaults to
@@ -316,7 +317,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
                 decoration: InputDecoration(labelText: l10n.commonName, errorText: _nameError),
               ),
               const SizedBox(height: 12),
-              Row(
+              AdaptiveRow(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
@@ -367,7 +368,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
                   const SizedBox(height: 8),
                 ],
               ),
-              Row(
+              AdaptiveRow(
                 children: [
                   Expanded(
                     child: TextField(
@@ -428,7 +429,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
                   ),
                 ),
               const SizedBox(height: 12),
-              Row(
+              AdaptiveRow(
                 children: [
                   Expanded(
                     child: TextField(
@@ -471,6 +472,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String?>(
+                isExpanded: true,
                 initialValue: _categoryId,
                 decoration: InputDecoration(labelText: l10n.inventoryCategories),
                 items: [
@@ -481,6 +483,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String?>(
+                isExpanded: true,
                 initialValue: _taxRateId,
                 decoration: InputDecoration(labelText: context.l10n.taxRate),
                 items: [
@@ -491,7 +494,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
                 onChanged: (v) => setState(() => _taxRateId = v),
               ),
               const SizedBox(height: 12),
-              Row(
+              AdaptiveRow(
                 children: [
                   Expanded(
                     child: TextField(
@@ -504,6 +507,7 @@ class _ProductEditDialogState extends ConsumerState<_ProductEditDialog> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: DropdownButtonFormField<String>(
+                      isExpanded: true,
                       initialValue: _unit,
                       decoration: InputDecoration(labelText: l10n.inventoryUnit),
                       items: productUnitOptions

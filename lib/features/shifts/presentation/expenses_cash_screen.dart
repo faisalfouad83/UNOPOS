@@ -17,7 +17,8 @@ import 'close_shift_dialog.dart';
 import 'open_shift_dialog.dart';
 import 'shift_providers.dart';
 
-final _shiftSalesProvider = StreamProvider.autoDispose.family<List<SaleRecord>, ({String storeId, DateTime from})>((ref, key) {
+final _shiftSalesProvider =
+    StreamProvider.autoDispose.family<List<SaleRecord>, ({String storeId, DateTime from})>((ref, key) {
   return ref.watch(posRepositoryProvider).watchCompletedSales(key.storeId, from: key.from);
 });
 
@@ -52,46 +53,33 @@ class ExpensesCashScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.expensesCashTitle)),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.expensesCashTitle, style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.expensesCashSubtitle,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
+            // The title is in the bar above; here what the screen is for and
+            // its actions, wrapping onto a second line on a phone.
+            Text(l10n.expensesCashSubtitle, style: Theme.of(context).textTheme.bodyMedium),
+            const SizedBox(height: 12),
+            shiftAsync.maybeWhen(
+              data: (shift) => Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FilledButton.icon(
+                    onPressed: () => showAddExpenseDialog(context, ref),
+                    icon: const Icon(Icons.add),
+                    label: Text(l10n.accountingAddExpense),
                   ),
-                ),
-                shiftAsync.maybeWhen(
-                  data: (shift) => Wrap(
-                    spacing: 8,
-                    children: [
-                      FilledButton.icon(
-                        onPressed: () => showAddExpenseDialog(context, ref),
-                        icon: const Icon(Icons.add),
-                        label: Text(l10n.accountingAddExpense),
-                      ),
-                      if (shift != null)
-                        OutlinedButton.icon(
-                          onPressed: () => showCloseShiftDialog(context, ref, shift),
-                          icon: const Icon(Icons.lock_outline),
-                          label: Text(l10n.posShiftClose),
-                        ),
-                    ],
-                  ),
-                  orElse: () => const SizedBox.shrink(),
-                ),
-              ],
+                  if (shift != null)
+                    OutlinedButton.icon(
+                      onPressed: () => showCloseShiftDialog(context, ref, shift),
+                      icon: const Icon(Icons.lock_outline),
+                      label: Text(l10n.posShiftClose),
+                    ),
+                ],
+              ),
+              orElse: () => const SizedBox.shrink(),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -171,12 +159,24 @@ class _ShiftDetail extends ConsumerWidget {
               _StatTile(label: l10n.expensesCashTotalExpenses, value: -cashExpensesTotal, accent: BrandColors.red),
               _StatTile(label: l10n.expensesCashExpected, value: expected, accent: BrandColors.blue, emphasize: true),
             ];
-            return isWide
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [for (final c in cards) ...[Expanded(child: c), const SizedBox(width: 12)]]..removeLast(),
-                  )
-                : Column(children: [for (final c in cards) ...[c, const SizedBox(height: 12)]]..removeLast());
+            if (isWide) {
+              return IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final c in cards) ...[Expanded(child: c), const SizedBox(width: 12)]
+                  ]..removeLast(),
+                ),
+              );
+            }
+            // Two by two on a phone or a tablet held upright.
+            return Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                for (final c in cards) SizedBox(width: (constraints.maxWidth - 12) / 2, child: c),
+              ],
+            );
           },
         ),
         const SizedBox(height: 24),
@@ -200,7 +200,9 @@ class _ShiftDetail extends ConsumerWidget {
                         '${expenseCategoryLabel(l10n, detailsById[e.id]!.group, detailsById[e.id]!.category)}',
                   AppDateFormat.dateTime(e.entryDate),
                 ].join('\n')),
-                onTap: detailsById[e.id] == null ? null : () => showEditExpenseTypeDialog(context, ref, detailsById[e.id]!),
+                onTap: detailsById[e.id] == null
+                    ? null
+                    : () => showEditExpenseTypeDialog(context, ref, detailsById[e.id]!),
                 trailing: Text(
                   Money.format(entryAmount(e)),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.error),
@@ -229,7 +231,9 @@ class _StatTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurface.withValues(alpha: 0.65))),
+            Text(label,
+                style:
+                    Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurface.withValues(alpha: 0.65))),
             const SizedBox(height: 8),
             Text(
               Money.format(value),

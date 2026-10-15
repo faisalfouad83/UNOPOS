@@ -4959,6 +4959,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This sale was made offline and hasn\'t reached the server yet. Return it once it has synced.'**
   String get returnWaitSync;
+
+  /// No description provided for @navMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get navMore;
+
+  /// No description provided for @posCartSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items · {total}'**
+  String posCartSummary(int count, String total);
+
+  /// No description provided for @posMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get posMoreActions;
+
+  /// No description provided for @posScanCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with the camera'**
+  String get posScanCamera;
 }
 
 class _AppLocalizationsDelegate

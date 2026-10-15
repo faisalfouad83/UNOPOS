@@ -13,7 +13,10 @@ import '../../../core/utils/formatters.dart';
 /// server. Tap to check the connection and send now (and to see refused
 /// changes, with a retry).
 class OfflineSyncIndicator extends ConsumerWidget {
-  const OfflineSyncIndicator({super.key});
+  const OfflineSyncIndicator({super.key, this.compact = false});
+
+  /// Icon only (with the count waiting), for a phone's top bar.
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,20 +40,35 @@ class OfflineSyncIndicator extends ConsumerWidget {
                     ? (Icons.cloud_upload_outlined, Colors.orange.shade800, l10n.offlinePendingSales(sync.pending))
                     : (Icons.cloud_done_outlined, Colors.green.shade700, l10n.statusOnline);
 
+    Future<void> onTap() async {
+      if (sync.failed > 0) {
+        await _showFailed(context, ref);
+        return;
+      }
+      await ref.read(connectivityProvider.notifier).check();
+      await ref.read(syncServiceProvider.notifier).syncNow();
+    }
+
+    if (compact) {
+      final count = sync.failed > 0 ? sync.failed : sync.pending;
+      return IconButton(
+        tooltip: text,
+        onPressed: sync.syncing ? null : onTap,
+        icon: sync.syncing
+            ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: color))
+            : Badge(
+                isLabelVisible: count > 0,
+                label: Text('$count'),
+                child: Icon(icon, color: color),
+              ),
+      );
+    }
+
     return Tooltip(
       message: online ? l10n.statusOnlineHelp : l10n.statusOfflineHelp,
       child: TextButton.icon(
         style: TextButton.styleFrom(foregroundColor: color, visualDensity: VisualDensity.compact),
-        onPressed: sync.syncing
-            ? null
-            : () async {
-                if (sync.failed > 0) {
-                  await _showFailed(context, ref);
-                  return;
-                }
-                await ref.read(connectivityProvider.notifier).check();
-                await ref.read(syncServiceProvider.notifier).syncNow();
-              },
+        onPressed: sync.syncing ? null : onTap,
         icon: sync.syncing
             ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: color))
             : Icon(icon, size: 18, color: color),

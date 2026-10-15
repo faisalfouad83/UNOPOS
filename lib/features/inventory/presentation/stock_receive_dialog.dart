@@ -9,6 +9,7 @@ import '../../auth/domain/session_controller.dart';
 import '../../pos/domain/barcode_scan.dart';
 import '../domain/inventory_models.dart';
 import 'product_thumb.dart';
+import '../../../core/widgets/adaptive_row.dart';
 
 /// One product being received.
 class _Line {
@@ -262,7 +263,7 @@ class _StockReceiveDialogState extends ConsumerState<_StockReceiveDialog> {
                                 ),
                               ],
                             ),
-                            Row(
+                            AdaptiveRow(
                               children: [
                                 Expanded(
                                   child: TextField(

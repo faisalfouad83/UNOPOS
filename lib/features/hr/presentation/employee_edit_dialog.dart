@@ -12,6 +12,7 @@ import '../../auth/domain/auth_models.dart';
 import '../../auth/domain/account_rules.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../auth/presentation/confirm_with_pin.dart';
+import '../../../core/widgets/adaptive_row.dart';
 
 Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {EmployeeRecord? existing}) async {
   final l10n = AppLocalizations.of(context);
@@ -66,6 +67,7 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                 TextField(controller: addressController, decoration: InputDecoration(labelText: l10n.commonAddress)),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<StoreRole>(
+                  isExpanded: true,
                   initialValue: role,
                   decoration: InputDecoration(labelText: l10n.hrRole),
                   items: [
@@ -88,7 +90,7 @@ Future<void> showEmployeeEditDialog(BuildContext context, WidgetRef ref, {Employ
                           }),
                 ),
                 const SizedBox(height: 12),
-                Row(
+                AdaptiveRow(
                   children: [
                     Expanded(
                       child: TextField(

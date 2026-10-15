@@ -7,6 +7,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../home/presentation/home_shell.dart';
 import '../../settings/domain/settings_models.dart';
+import '../../../core/widgets/adaptive_row.dart';
 
 /// Settings › Breaks (owner/manager): on/off, minutes per break, breaks per
 /// employee per day, and which roles may take them.
@@ -67,7 +68,7 @@ class _BreakSettingsSectionState extends ConsumerState<BreakSettingsSection> {
             ),
             if (s.breakEnabled) ...[
               const SizedBox(height: 8),
-              Row(
+              AdaptiveRow(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(

@@ -8,6 +8,7 @@ import '../../../core/providers.dart';
 import '../../../core/store_settings_provider.dart';
 import '../../../core/theming/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/barcode_input_field.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_models.dart';
 import '../../inventory/presentation/discounts_section.dart';
@@ -74,11 +75,17 @@ class PosScreen extends ConsumerWidget {
             orElse: () => const SizedBox.shrink(),
           ),
           if (session.employee!.can(AppPermission.processReturns))
-            TextButton.icon(
-              icon: const Icon(Icons.assignment_return_outlined),
-              label: Text(l10n.returnInvoice),
-              onPressed: () => showReturnInvoiceDialog(context, ref),
-            ),
+            AppBreakpoints.isCompact(MediaQuery.sizeOf(context).width)
+                ? IconButton(
+                    icon: const Icon(Icons.assignment_return_outlined),
+                    tooltip: l10n.returnInvoice,
+                    onPressed: () => showReturnInvoiceDialog(context, ref),
+                  )
+                : TextButton.icon(
+                    icon: const Icon(Icons.assignment_return_outlined),
+                    label: Text(l10n.returnInvoice),
+                    onPressed: () => showReturnInvoiceDialog(context, ref),
+                  ),
           IconButton(
             icon: const Icon(Icons.receipt_long_outlined),
             tooltip: l10n.posSalesHistory,
@@ -273,6 +280,23 @@ class _PosBodyState extends ConsumerState<_PosBody> {
   /// A scanned code, or text typed + Enter: add the matching product to the
   /// cart. Unknown codes leave the cart untouched and just say so.
   Future<void> _onScan(String code) async {
+    await _addByCode(code);
+  }
+
+  /// Rings up products with the phone's camera, one after another.
+  Future<void> _scanWithCamera() async {
+    final l10n = AppLocalizations.of(context);
+    await scanBarcodesContinuously(
+      context,
+      onCode: (code) async {
+        final product = await _addByCode(code);
+        return product == null ? l10n.posBarcodeNotFound(code) : '✓ ${product.name}';
+      },
+    );
+  }
+
+  /// See [_onScan]; returns the product found (null when none).
+  Future<ProductRecord?> _addByCode(String code) async {
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final storeId = widget.storeId;
@@ -287,27 +311,29 @@ class _PosBodyState extends ConsumerState<_PosBody> {
       } catch (_) {}
     }
     product ??= singleSearchMatch(products, code);
-    if (!mounted || ref.read(cartControllerProvider.notifier).owner != owner) return;
+    if (!mounted || ref.read(cartControllerProvider.notifier).owner != owner) return null;
     if (product == null) {
       messenger.hideCurrentSnackBar();
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.posBarcodeNotFound(code)), duration: const Duration(seconds: 3)),
       );
-      return;
+      return null;
     }
     final taxRates = ref.read(taxRatesProvider(storeId)).valueOrNull ??
         await ref.read(inventoryRepositoryProvider).watchTaxRates(storeId).first;
     final rate = taxRates.where((t) => t.id == product!.taxRateId).firstOrNull?.ratePercent ?? 0;
-    if (!mounted || ref.read(cartControllerProvider.notifier).owner != owner) return;
+    if (!mounted || ref.read(cartControllerProvider.notifier).owner != owner) return null;
     addToCartWithinStock(context, ref, product, taxRatePercent: rate);
+    return product;
   }
 
   @override
   Widget build(BuildContext context) {
     // Keeps the branch's stock loaded (and current) while the till is open.
-    ref.watch(posStockProvider);
-    final width = MediaQuery.sizeOf(context).width;
-    final isCompact = AppBreakpoints.isCompact(width);
+    // Listened to, not watched: this screen itself doesn't show stock, and a
+    // rebuild of it while a product tile is reading the stock would be a
+    // rebuild in the middle of building.
+    ref.listen(posStockProvider, (_, __) {});
 
     final productGrid = _ProductGrid(
       storeId: widget.storeId,
@@ -318,26 +344,123 @@ class _PosBodyState extends ConsumerState<_PosBody> {
         hintText: AppLocalizations.of(context).posScanHint,
         onChanged: (v) => setState(() => _query = v),
         onScan: _onScan,
+        onCameraScan: _scanWithCamera,
       ),
     );
-    const cartPanel = _CartPanel();
 
-    if (isCompact) {
-      return Column(
-        children: [
-          Expanded(flex: 3, child: productGrid),
-          const Divider(height: 1),
-          Expanded(flex: 2, child: cartPanel),
-        ],
-      );
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Room for products and the cart side by side (a desktop window or
+        // a tablet held sideways); otherwise the products take the screen
+        // and the cart is a bar at the bottom that opens over them.
+        if (constraints.maxWidth >= 900) {
+          return Row(
+            children: [
+              Expanded(child: productGrid),
+              const VerticalDivider(width: 1),
+              const SizedBox(width: 370, child: _CartPanel()),
+            ],
+          );
+        }
+        return Column(
+          children: [
+            Expanded(child: productGrid),
+            const _CartBar(),
+          ],
+        );
+      },
+    );
+  }
+}
 
-    return Row(
-      children: [
-        Expanded(flex: 2, child: productGrid),
-        const VerticalDivider(width: 1),
-        const SizedBox(width: 380, child: cartPanel),
-      ],
+/// Takes payment for the cart (after checking the stock once more —
+/// another till may have sold some meanwhile).
+Future<void> _startCheckout(BuildContext context, WidgetRef ref) async {
+  final storeId = ref.read(sessionControllerProvider).store?.id;
+  if (storeId == null || ref.read(cartControllerProvider).isEmpty) return;
+  if (!fitCartToStock(context, ref)) return;
+  final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
+  if (context.mounted) await showCheckoutSheet(context, ref, settings: settings);
+}
+
+/// The cart on a phone or a tablet held upright: what is in it and the
+/// total, a button that opens it in full, and payment.
+class _CartBar extends ConsumerWidget {
+  const _CartBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final cart = ref.watch(cartControllerProvider);
+    final theme = Theme.of(context);
+    final items = cart.lines.fold<int>(0, (s, l) => s + l.quantity);
+    return Material(
+      elevation: 6,
+      color: theme.colorScheme.surfaceContainer,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => _openCart(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                    child: Row(
+                      children: [
+                        Badge(
+                          isLabelVisible: items > 0,
+                          label: Text('$items'),
+                          child: const Icon(Icons.shopping_cart_outlined),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(l10n.posCart, style: theme.textTheme.labelMedium),
+                              Text(
+                                Money.format(cart.grandTotalMinorUnits),
+                                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.keyboard_arrow_up),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton.icon(
+                onPressed: cart.isEmpty ? null : () => _startCheckout(context, ref),
+                icon: const Icon(Icons.payments_outlined),
+                label: Text(l10n.posCheckout),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openCart(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) => SizedBox(
+        height: MediaQuery.sizeOf(sheetContext).height * 0.85,
+        child: _CartPanel(onCheckedOut: () => Navigator.of(sheetContext).maybePop()),
+      ),
     );
   }
 }
@@ -364,11 +487,12 @@ class _ProductGrid extends ConsumerWidget {
               if (products.isEmpty) return Center(child: Text(l10n.posNoProductsFound));
               return GridView.builder(
                 padding: const EdgeInsets.all(12),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1.1,
+                // As many columns as fit: two on a phone, more on a tablet.
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 180,
+                  mainAxisExtent: 172,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
                 ),
                 itemCount: products.length,
                 itemBuilder: (context, index) {
@@ -393,6 +517,9 @@ class _ProductTile extends ConsumerWidget {
     final taxRates = ref.watch(taxRatesProvider(product.storeId)).value ?? const [];
     final wholesale = ref.watch(cartControllerProvider.select((c) => c.wholesale));
     final stock = ref.watch(posStockProvider.select((s) => s == null ? null : (s[product.id] ?? 0)));
+    final inCart = ref.watch(
+      cartControllerProvider.select((c) => c.lines.where((l) => l.product.id == product.id).firstOrNull?.quantity ?? 0),
+    );
     final out = stock != null && stock <= 0;
     final theme = Theme.of(context);
     final taxRatePercent = product.taxRateId == null
@@ -412,7 +539,15 @@ class _ProductTile extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ProductThumb(imagePath: product.imagePath, size: 48, radius: 10),
+              // How many are already in the cart (the cart may be out of
+              // sight on a phone).
+              Badge(
+                isLabelVisible: inCart > 0,
+                label: Text('$inCart'),
+                backgroundColor: theme.colorScheme.primary,
+                textColor: theme.colorScheme.onPrimary,
+                child: ProductThumb(imagePath: product.imagePath, size: 48, radius: 10),
+              ),
               const SizedBox(height: 8),
               Text(product.name, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
@@ -443,7 +578,10 @@ class _ProductTile extends ConsumerWidget {
 }
 
 class _CartPanel extends ConsumerWidget {
-  const _CartPanel();
+  const _CartPanel({this.onCheckedOut});
+
+  /// Called once a sale is paid (the cart shown in a sheet closes then).
+  final VoidCallback? onCheckedOut;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -612,13 +750,8 @@ class _CartPanel extends ConsumerWidget {
                       onPressed: cart.isEmpty
                           ? null
                           : () async {
-                              // Another till may have sold some meanwhile.
-                              if (!fitCartToStock(context, ref)) return;
-                              final settings =
-                                  await ref.read(settingsRepositoryProvider).ensureSettings(session.store!.id);
-                              if (context.mounted) {
-                                await showCheckoutSheet(context, ref, settings: settings);
-                              }
+                              await _startCheckout(context, ref);
+                              if (onCheckedOut != null && ref.read(cartControllerProvider).isEmpty) onCheckedOut!();
                             },
                       child: Text(l10n.posCheckout),
                     ),
