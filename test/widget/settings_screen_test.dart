@@ -41,6 +41,9 @@ void main() {
         backupServiceProvider.overrideWithValue(BackupService(backups)),
       ]);
       container.read(sessionControllerProvider.notifier).setStore(store);
+      // The reset section is the owner's only.
+      final owner = await auth.createEmployee(storeId: store.id, name: 'Owner', role: 'owner', pin: '4821');
+      await container.read(sessionControllerProvider.notifier).signInEmployeeDirectly(owner);
     });
     addTearDown(() => container.dispose());
 

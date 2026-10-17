@@ -485,6 +485,37 @@ class Outbox {
     _changes.add(null);
   }
 
+  /// Drops the waiting changes of store [storeId] (the store signed in when
+  /// null) that [test] picks — sent or not, refused or held — together with
+  /// the later changes that build on them ([dependentsOf]): they could never
+  /// be applied without them. Used when the store's data is reset, so old
+  /// queued work can't bring erased records back. Returns what was dropped,
+  /// oldest first.
+  Future<List<OutboxOp>> purge(bool Function(OutboxOp op) test, {String? storeId}) async {
+    await load();
+    bool mine(OutboxOp o) => storeId == null ? _isCurrent(o) : (o.storeId ?? _store) == storeId;
+    final gone = <String>{};
+    final stuck = <String>{};
+    for (final o in _ops) {
+      if (!mine(o)) continue;
+      if (test(o) || (stuck.isNotEmpty && _refersTo(o, stuck))) {
+        gone.add(o.id);
+        stuck.addAll(_idsOf(o));
+      }
+    }
+    if (gone.isEmpty) return const [];
+    final dropped = _ops.where((o) => gone.contains(o.id)).toList();
+    _ops.removeWhere((o) => gone.contains(o.id));
+    _settling.removeWhere((s) => gone.contains(s.$1.id) || (mine(s.$1) && test(s.$1)));
+    for (final g in gone) {
+      _results.remove(g);
+      _resultTimes.remove(g);
+    }
+    await _save();
+    _changes.add(null);
+    return dropped;
+  }
+
   /// Whether an earlier send of [o] may already have run on the server and
   /// data fetched at [asOf] (null: unknown, e.g. a copy kept on the device)
   /// would then already include it.

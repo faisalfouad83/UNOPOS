@@ -27,12 +27,7 @@ class MagicPasscodes {
   /// checker; typed again on the price checker's exit pad to leave it.
   static const String priceChecker = '1515';
 
-  /// Confirmation code required inside Settings to perform a full factory
-  /// reset (wipes the local database and all preferences).
-  static const String factoryReset = '9090';
-
-  /// Employees may not choose any magic sequence as their personal PIN,
-  /// to avoid any ambiguity with these flows.
-  static bool isReserved(String pin) =>
-      pin == developerGate || pin == factoryReset || pin == supportGate || pin == priceChecker;
+  /// Employees may not choose a magic sequence as their personal PIN, to
+  /// avoid any ambiguity with these flows.
+  static bool isReserved(String pin) => pin == developerGate || pin == supportGate || pin == priceChecker;
 }

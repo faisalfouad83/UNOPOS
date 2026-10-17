@@ -188,6 +188,47 @@ class OfflineCache {
     return value.cast<Map<String, dynamic>>();
   }
 
+  /// Drops every copy whose key starts with one of [prefixes] — in memory,
+  /// on disk and in preferences (e.g. after the store's data was reset, so
+  /// no screen shows erased records from an old copy). Returns how many
+  /// copies were dropped.
+  static Future<int> removeByPrefixes(Iterable<String> prefixes) async {
+    final wanted = prefixes.toList();
+    if (wanted.isEmpty) return 0;
+    bool matches(String key) => wanted.any(key.startsWith);
+    final names = {for (final p in wanted) _fileName(p).replaceAll(RegExp(r'\.json$'), '')};
+    bool fileMatches(String name) => names.any(name.startsWith);
+    final dropped = <String>{};
+    for (final key in _memory.keys.where(matches).toList()) {
+      _memory.remove(key);
+      _timers.remove(key)?.cancel();
+      dropped.add(_fileName(key));
+    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      for (final k in prefs.getKeys().where((k) => k.startsWith(_prefix)).toList()) {
+        final key = k.substring(_prefix.length);
+        if (!matches(key)) continue;
+        await prefs.remove(k);
+        dropped.add(_fileName(key));
+      }
+      final dir = await _folder();
+      if (dir != null) {
+        await for (final entry in dir.list()) {
+          if (entry is! File || !entry.path.endsWith('.json')) continue;
+          final name = p.basename(entry.path);
+          if (!fileMatches(name)) continue;
+          await entry.delete();
+          dropped.add(name);
+        }
+      }
+      final index = await _loadIndex();
+      index.removeWhere((name, _) => dropped.contains(name));
+      _saveIndex();
+    } catch (_) {}
+    return dropped.length;
+  }
+
   /// Forgets what is held in memory (tests).
   static void resetMemory() {
     _memory.clear();

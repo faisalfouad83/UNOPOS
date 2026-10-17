@@ -1,102 +1,51 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/l10n/l10n_ext.dart';
-import '../../../core/constants/magic_passcodes.dart';
-import '../../../core/database/connection.dart';
+import '../../../core/constants/roles.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
-import '../../../core/providers.dart';
-import '../../../core/widgets/numeric_pin_pad.dart';
+import '../../auth/domain/session_controller.dart';
+import 'store_reset_dialog.dart';
 
+/// Settings → Factory Reset: resets the store's data, all of it or one part
+/// (see [StoreResetDialog]). Shown to the store owner only: the server
+/// accepts a reset from the owner alone.
 class FactoryResetSection extends ConsumerWidget {
   const FactoryResetSection({super.key});
 
-  Future<void> _showResetFlow(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.settingsFactoryReset),
-        content: Text(l10n.settingsFactoryResetWarning),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.actionCancel)),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.actionContinue),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !context.mounted) return;
-
-    var pin = '';
-    final passcodeOk = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setState) => AlertDialog(
-          title: Text(l10n.pinPadTitle),
-          content: SizedBox(
-            width: 320,
-            child: NumericPinPad(
-              value: pin,
-              onChanged: (v) => setState(() => pin = v),
-              onSubmit: () => Navigator.of(dialogContext).pop(pin == MagicPasscodes.factoryReset),
-            ),
-          ),
-        ),
-      ),
-    );
-    if (passcodeOk != true || !context.mounted) return;
-
-    await ref.read(databaseProvider).close();
-    final dbPath = await resolveDatabaseFilePath();
-    final dbFile = File(dbPath);
-    if (await dbFile.exists()) {
-      await dbFile.delete();
-    }
-    final prefs = await SharedPreferences.getInstance();
-    // Changes made on this device and not yet sent to the server are kept:
-    // they belong to the store's records, not to this device's setup.
-    final unsent = {
-      for (final key in prefs.getKeys())
-        if (key.startsWith('outbox.')) key: prefs.getString(key),
-    };
-    await prefs.clear();
-    for (final e in unsent.entries) {
-      if (e.value != null) await prefs.setString(e.key, e.value!);
-    }
-
-    if (context.mounted) {
-      await showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: Text(context.l10n.factoryResetDone),
-          content: Text(context.l10n.factoryResetDoneHelp),
-          actions: [FilledButton(onPressed: () => Navigator.of(context).pop(), child: Text(context.l10n.actionClose))],
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final session = ref.watch(sessionControllerProvider);
+    final store = session.store;
+    final employee = session.employee;
+    if (store == null || employee == null || employee.role != StoreRole.owner) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
     return Card(
-      color: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.3),
+      color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Wrap(
+          spacing: 16,
+          runSpacing: 12,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.spaceBetween,
           children: [
-            Expanded(child: Text(l10n.settingsFactoryReset, style: Theme.of(context).textTheme.titleMedium)),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n.settingsFactoryReset, style: theme.textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(l10n.storeResetSubtitle, style: theme.textTheme.bodySmall),
+                ],
+              ),
+            ),
             OutlinedButton(
-              style: OutlinedButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-              onPressed: () => _showResetFlow(context, ref),
-              child: Text(l10n.settingsFactoryReset),
+              style: OutlinedButton.styleFrom(foregroundColor: theme.colorScheme.error),
+              onPressed: () => StoreResetDialog.show(context, storeId: store.id, actorId: employee.id),
+              child: Text(l10n.storeResetButton),
             ),
           ],
         ),
