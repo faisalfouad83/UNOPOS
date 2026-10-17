@@ -16,6 +16,11 @@ String themeName(AppLocalizations l10n, StoreThemeKey key) => switch (key) {
       StoreThemeKey.autumn => l10n.themeNameAutumn,
       StoreThemeKey.spring => l10n.themeNameSpring,
       StoreThemeKey.winter => l10n.themeNameWinter,
+      StoreThemeKey.muharram => l10n.themeNameMuharram,
+      StoreThemeKey.iraqiArmyDay => l10n.themeNameIraqiArmyDay,
+      StoreThemeKey.iraqiPoliceDay => l10n.themeNameIraqiPoliceDay,
+      StoreThemeKey.iraqiSovereigntyDay => l10n.themeNameIraqiSovereigntyDay,
+      StoreThemeKey.mawlid => l10n.themeNameMawlid,
     };
 
 /// The name of a store's theme choice: a theme, "follow the device", or

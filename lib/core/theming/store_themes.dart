@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// The twelve looks a store can wear. [dbKey] is the value the server keeps
+/// The looks a store can wear. [dbKey] is the value the server keeps
 /// (`theme_assignments.theme_key`, `app_settings.theme_key`); the list must
 /// stay in step with the check constraints in
-/// `supabase/migrations/0030_store_themes.sql`.
+/// `supabase/migrations/0030_store_themes.sql` and
+/// `supabase/migrations/0033_occasion_themes.sql`.
 enum StoreThemeKey {
   light('light'),
   dark('dark'),
@@ -16,7 +17,12 @@ enum StoreThemeKey {
   summer('summer'),
   autumn('autumn'),
   spring('spring'),
-  winter('winter');
+  winter('winter'),
+  muharram('muharram'),
+  iraqiArmyDay('iraqi_army_day'),
+  iraqiPoliceDay('iraqi_police_day'),
+  iraqiSovereigntyDay('iraqi_sovereignty_day'),
+  mawlid('mawlid');
 
   const StoreThemeKey(this.dbKey);
 
@@ -213,7 +219,7 @@ class ThemeDecor extends ThemeExtension<ThemeDecor> {
   ThemeDecor lerp(ThemeExtension<ThemeDecor>? other, double t) => t < 0.5 || other is! ThemeDecor ? this : other;
 }
 
-/// The colour sheets of the twelve themes. Light and Dark are the original
+/// The colour sheets of the themes. Light and Dark are the original
 /// UNOPOS look (navy/blue/silver), with the primary and error tones
 /// deepened just enough to reach AA contrast for button labels and text.
 class ThemePalettes {
@@ -232,6 +238,11 @@ class ThemePalettes {
         StoreThemeKey.autumn => autumn,
         StoreThemeKey.spring => spring,
         StoreThemeKey.winter => winter,
+        StoreThemeKey.muharram => muharram,
+        StoreThemeKey.iraqiArmyDay => iraqiArmyDay,
+        StoreThemeKey.iraqiPoliceDay => iraqiPoliceDay,
+        StoreThemeKey.iraqiSovereigntyDay => iraqiSovereigntyDay,
+        StoreThemeKey.mawlid => mawlid,
       };
 
   static const light = ThemePalette(
@@ -628,5 +639,178 @@ class ThemePalettes {
     gradient: [Color(0xFFE6EEF8), Color(0xFFF7FAFD), Color(0xFFE9F1F7)],
     glows: [Color(0xFF90CAF9), Color(0xFFB0BEC5), Color(0xFF80DEEA)],
     motif: ThemeMotif.snowflake,
+  );
+
+  /// Muharram: quiet near-black with deep green, no bright accents.
+  static const muharram = ThemePalette(
+    brightness: Brightness.dark,
+    surface: Color(0xFF080B0A),
+    onSurface: Color(0xFFECEFEC),
+    onSurfaceVariant: Color(0xFFB3BDB7),
+    primary: Color(0xFF66C995),
+    onPrimary: Color(0xFF00210F),
+    primaryContainer: Color(0xFF14452C),
+    onPrimaryContainer: Color(0xFFC9F0D8),
+    secondary: Color(0xFFB8BEC4),
+    onSecondary: Color(0xFF101418),
+    secondaryContainer: Color(0xFF33393F),
+    onSecondaryContainer: Color(0xFFDDE2E7),
+    tertiary: Color(0xFFD9B36A),
+    onTertiary: Color(0xFF2A1D00),
+    error: Color(0xFFFF6B6B),
+    onError: Color(0xFF3B0A0A),
+    errorContainer: Color(0xFF6B1A1A),
+    onErrorContainer: Color(0xFFFFDAD6),
+    success: Color(0xFF7BE0A4),
+    onSuccess: Color(0xFF00391F),
+    successContainer: Color(0xFF0F4D30),
+    onSuccessContainer: Color(0xFFCFF7E2),
+    warning: Color(0xFFFFB86B),
+    onWarning: Color(0xFF3A1F00),
+    popup: Color(0xFF111714),
+    glass: Color(0xFF18211C),
+    glassAlpha: 0.58,
+    gradient: [Color(0xFF060908), Color(0xFF0C1410), Color(0xFF070A09)],
+    glows: [Color(0xFF1F6B45), Color(0xFF2E3B35), Color(0xFF8C7A4A)],
+    motif: ThemeMotif.geometric,
+  );
+
+  /// Iraqi Army Day (6 January): olive and khaki with the flag's red and
+  /// green as accents.
+  static const iraqiArmyDay = ThemePalette(
+    brightness: Brightness.light,
+    surface: Color(0xFFF7F6EF),
+    onSurface: Color(0xFF1A1C14),
+    onSurfaceVariant: Color(0xFF4E5340),
+    primary: Color(0xFF4B5B22),
+    onPrimary: Color(0xFFFFFFFF),
+    primaryContainer: Color(0xFFDDE5BE),
+    onPrimaryContainer: Color(0xFF262F0A),
+    secondary: Color(0xFFA8231C),
+    onSecondary: Color(0xFFFFFFFF),
+    secondaryContainer: Color(0xFFF9DAD6),
+    onSecondaryContainer: Color(0xFF5C1210),
+    tertiary: Color(0xFF00703C),
+    onTertiary: Color(0xFFFFFFFF),
+    error: Color(0xFFC62828),
+    onError: Color(0xFFFFFFFF),
+    errorContainer: Color(0xFFFFDAD6),
+    onErrorContainer: Color(0xFF5F1412),
+    success: Color(0xFF1E6E2E),
+    onSuccess: Color(0xFFFFFFFF),
+    successContainer: Color(0xFFD7EFD9),
+    onSuccessContainer: Color(0xFF12401A),
+    warning: Color(0xFF9A4A00),
+    onWarning: Color(0xFFFFFFFF),
+    popup: Color(0xFFFCFBF6),
+    glass: Color(0xFFFFFFFF),
+    glassAlpha: 0.64,
+    gradient: [Color(0xFFEEEDDC), Color(0xFFF8F7EE), Color(0xFFE6E9D6)],
+    glows: [Color(0xFF6B7F2E), Color(0xFFCE1126), Color(0xFF007A3D)],
+    motif: ThemeMotif.star,
+  );
+
+  /// Iraqi Police Day (9 January): deep navy with silver and a gold badge
+  /// accent.
+  static const iraqiPoliceDay = ThemePalette(
+    brightness: Brightness.dark,
+    surface: Color(0xFF060B18),
+    onSurface: Color(0xFFEEF2F8),
+    onSurfaceVariant: Color(0xFFAFBCD3),
+    primary: Color(0xFF7DB0FF),
+    onPrimary: Color(0xFF001A40),
+    primaryContainer: Color(0xFF0F3570),
+    onPrimaryContainer: Color(0xFFD6E4FF),
+    secondary: Color(0xFFC0C8D4),
+    onSecondary: Color(0xFF0F1622),
+    secondaryContainer: Color(0xFF34404F),
+    onSecondaryContainer: Color(0xFFDCE3EC),
+    tertiary: Color(0xFFFFD166),
+    onTertiary: Color(0xFF2E2000),
+    error: Color(0xFFFF6B6B),
+    onError: Color(0xFF3B0A0A),
+    errorContainer: Color(0xFF6B1A1A),
+    onErrorContainer: Color(0xFFFFDAD6),
+    success: Color(0xFF5EE09A),
+    onSuccess: Color(0xFF00391F),
+    successContainer: Color(0xFF0F4D30),
+    onSuccessContainer: Color(0xFFCFF7E2),
+    warning: Color(0xFFFFB86B),
+    onWarning: Color(0xFF3A1F00),
+    popup: Color(0xFF0E1A33),
+    glass: Color(0xFF142447),
+    glassAlpha: 0.58,
+    gradient: [Color(0xFF071026), Color(0xFF0C1A3A), Color(0xFF060D20)],
+    glows: [Color(0xFF2F6BFF), Color(0xFF00A3FF), Color(0xFFC0C8D4)],
+    motif: ThemeMotif.star,
+  );
+
+  /// Iraqi Sovereignty Day (30 June): the flag's green, red and black on
+  /// white. Buttons are green so red stays for warnings and errors.
+  static const iraqiSovereigntyDay = ThemePalette(
+    brightness: Brightness.light,
+    surface: Color(0xFFFAF9F7),
+    onSurface: Color(0xFF141414),
+    onSurfaceVariant: Color(0xFF4A4A4A),
+    primary: Color(0xFF00703C),
+    onPrimary: Color(0xFFFFFFFF),
+    primaryContainer: Color(0xFFCDEEDB),
+    onPrimaryContainer: Color(0xFF00391D),
+    secondary: Color(0xFFB0101F),
+    onSecondary: Color(0xFFFFFFFF),
+    secondaryContainer: Color(0xFFFAD9DB),
+    onSecondaryContainer: Color(0xFF5E0710),
+    tertiary: Color(0xFF262626),
+    onTertiary: Color(0xFFFFFFFF),
+    error: Color(0xFFC62828),
+    onError: Color(0xFFFFFFFF),
+    errorContainer: Color(0xFFFFDAD6),
+    onErrorContainer: Color(0xFF5F1412),
+    success: Color(0xFF1E6E2E),
+    onSuccess: Color(0xFFFFFFFF),
+    successContainer: Color(0xFFD7EFD9),
+    onSuccessContainer: Color(0xFF12401A),
+    warning: Color(0xFF9A4A00),
+    onWarning: Color(0xFFFFFFFF),
+    popup: Color(0xFFFFFFFF),
+    glass: Color(0xFFFFFFFF),
+    glassAlpha: 0.66,
+    gradient: [Color(0xFFFCEEEE), Color(0xFFFBFBFA), Color(0xFFEAF4EE)],
+    glows: [Color(0xFFCE1126), Color(0xFF007A3D), Color(0xFF1A1A1A)],
+    motif: ThemeMotif.star,
+  );
+
+  /// Mawlid al-Nabi: green and gold on a light ground.
+  static const mawlid = ThemePalette(
+    brightness: Brightness.light,
+    surface: Color(0xFFF5FAF6),
+    onSurface: Color(0xFF0F1D16),
+    onSurfaceVariant: Color(0xFF3F574A),
+    primary: Color(0xFF0B6B3A),
+    onPrimary: Color(0xFFFFFFFF),
+    primaryContainer: Color(0xFFC4EBD3),
+    onPrimaryContainer: Color(0xFF00381B),
+    secondary: Color(0xFF7A5C00),
+    onSecondary: Color(0xFFFFFFFF),
+    secondaryContainer: Color(0xFFF5E6B8),
+    onSecondaryContainer: Color(0xFF3D2E00),
+    tertiary: Color(0xFF1F5F7A),
+    onTertiary: Color(0xFFFFFFFF),
+    error: Color(0xFFC62828),
+    onError: Color(0xFFFFFFFF),
+    errorContainer: Color(0xFFFFDAD6),
+    onErrorContainer: Color(0xFF5F1412),
+    success: Color(0xFF1E6E2E),
+    onSuccess: Color(0xFFFFFFFF),
+    successContainer: Color(0xFFD7EFD9),
+    onSuccessContainer: Color(0xFF12401A),
+    warning: Color(0xFF9A4A00),
+    onWarning: Color(0xFFFFFFFF),
+    popup: Color(0xFFFBFEFC),
+    glass: Color(0xFFFFFFFF),
+    glassAlpha: 0.64,
+    gradient: [Color(0xFFE8F5EC), Color(0xFFF8FCF9), Color(0xFFF6F0DC)],
+    glows: [Color(0xFF0B8A4A), Color(0xFFD4AF37), Color(0xFF7FD8A8)],
+    motif: ThemeMotif.crescent,
   );
 }

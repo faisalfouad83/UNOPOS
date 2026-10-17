@@ -325,7 +325,7 @@ class _AssignThemeDialogState extends State<_AssignThemeDialog> {
                           children: [
                             ThemeSwatch(palette: key.palette, width: 98, height: 62),
                             const SizedBox(height: 2),
-                            Text(themeName(l10n, key), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            Text(themeName(l10n, key), maxLines: 2, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),

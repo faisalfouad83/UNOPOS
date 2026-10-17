@@ -7,7 +7,6 @@ import '../../../core/constants/roles.dart';
 import '../../../core/providers.dart';
 import '../../../core/supabase/supabase_client_provider.dart';
 import '../../../core/supabase/supabase_config.dart';
-import '../../price_checker/application/price_checker_mode.dart';
 import '../../support/domain/support_models.dart';
 import '../data/device_lock.dart';
 import 'auth_models.dart';
@@ -68,10 +67,6 @@ enum PinResult {
   /// Right PIN, but this cashier account is open on another device
   /// ([SessionController.blockedByDevice]).
   deviceInUse,
-
-  /// The price-checker code: this device is now a dedicated price checker
-  /// for the signed-in store (no employee is signed in).
-  priceChecker,
 }
 
 class SessionController extends Notifier<SessionState> {
@@ -129,17 +124,6 @@ class SessionController extends Notifier<SessionState> {
       }
       state = state.copyWith(developerMode: true);
       return PinResult.developerGate;
-    }
-
-    // The price-checker code works from any account tile once a store is
-    // signed in. It signs nobody in; the router then locks the device on
-    // the price checker until the same code is entered again there.
-    if (pin == MagicPasscodes.priceChecker) {
-      final store = state.store;
-      if (store == null || selectedEmployee == null) return PinResult.incorrect;
-      ref.read(selectedEmployeeForPinProvider.notifier).state = null;
-      await ref.read(priceCheckerModeProvider.notifier).enter(store.id);
-      return PinResult.priceChecker;
     }
 
     if (selectedEmployee != null) {

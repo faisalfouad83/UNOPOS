@@ -3953,4 +3953,30 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get devPlanDevicesInvalid =>
       'ژمارەیەکی تەواو کە لانیکەم 1 بێت بنووسە، یان بەتاڵی بهێڵەوە.';
+
+  @override
+  String get priceCheckerOpenPrompt => 'کۆدەکە بنووسە بۆ کردنەوەی پشکنەری نرخ';
+
+  @override
+  String get priceCheckerOpenFailed =>
+      'نەتوانرا پشکنەری نرخ بکرێتەوە. دووبارە هەوڵ بدەوە.';
+
+  @override
+  String get priceCheckerExitFailed =>
+      'نەتوانرا لە پشکنەری نرخ دەربچیت. دووبارە هەوڵ بدەوە.';
+
+  @override
+  String get themeNameMuharram => 'موحەڕەم';
+
+  @override
+  String get themeNameIraqiArmyDay => 'ڕۆژی سوپای عێراق';
+
+  @override
+  String get themeNameIraqiPoliceDay => 'ڕۆژی پۆلیسی عێراق';
+
+  @override
+  String get themeNameIraqiSovereigntyDay => 'ڕۆژی سەروەری عێراق';
+
+  @override
+  String get themeNameMawlid => 'مەولودی پێغەمبەر';
 }

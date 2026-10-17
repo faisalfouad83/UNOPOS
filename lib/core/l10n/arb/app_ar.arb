@@ -1242,5 +1242,15 @@
   "devPlanFeaturesSummary": "{on} من {all} أقسام · أجهزة الكاشير: {devices}",
   "devPlanMaxDevices": "أجهزة كاشير مسجلة الدخول في الوقت نفسه",
   "devPlanMaxDevicesHelp": "اتركه فارغًا لعدم التحديد.",
-  "devPlanDevicesInvalid": "أدخل عددًا صحيحًا لا يقل عن 1 أو اتركه فارغًا."
+  "devPlanDevicesInvalid": "أدخل عددًا صحيحًا لا يقل عن 1 أو اتركه فارغًا.",
+
+  "priceCheckerOpenPrompt": "أدخل الرمز لفتح قارئ الأسعار",
+  "priceCheckerOpenFailed": "تعذّر فتح قارئ الأسعار. حاول مرة أخرى.",
+  "priceCheckerExitFailed": "تعذّر الخروج من قارئ الأسعار. حاول مرة أخرى.",
+
+  "themeNameMuharram": "محرّم",
+  "themeNameIraqiArmyDay": "عيد الجيش العراقي",
+  "themeNameIraqiPoliceDay": "عيد الشرطة العراقية",
+  "themeNameIraqiSovereigntyDay": "يوم السيادة العراقية",
+  "themeNameMawlid": "المولد النبوي الشريف"
 }

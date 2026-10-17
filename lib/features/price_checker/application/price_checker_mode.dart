@@ -9,9 +9,8 @@ import '../../../core/constants/magic_passcodes.dart';
 /// Saved on the device so that a restart reopens the price checker, not
 /// the till. It only applies while that same store is signed in: another
 /// store signing in on this device works normally (and never sees the
-/// first store's snapshot). Turned on with the price-checker code on the
-/// account PIN pad ([SessionController.submitPin]) and off only by
-/// entering the same code again ([tryExit]).
+/// first store's snapshot). Turned on from the price checker icon on the account picker, with its
+/// code, and off only by entering the same code again.
 class PriceCheckerModeController extends Notifier<String?> {
   static const String prefsKey = 'price_checker.mode_store';
 
@@ -37,14 +36,24 @@ class PriceCheckerModeController extends Notifier<String?> {
     } catch (_) {}
   }
 
-  /// Leaves the mode when [code] is the price-checker code; false (and the
-  /// mode stays on) otherwise.
-  Future<bool> tryExit(String code) async {
-    if (code != MagicPasscodes.priceChecker) return false;
+  /// Whether [code] is the price-checker code (nothing changes).
+  bool isCode(String code) => code == MagicPasscodes.priceChecker;
+
+  /// Leaves the mode. Callers check the code first ([isCode]) and close any
+  /// dialog of theirs before calling this: leaving moves the app off the
+  /// price checker straight away.
+  Future<void> exit() async {
     state = null;
     try {
       await (await SharedPreferences.getInstance()).remove(prefsKey);
     } catch (_) {}
+  }
+
+  /// Leaves the mode when [code] is the price-checker code; false (and the
+  /// mode stays on) otherwise.
+  Future<bool> tryExit(String code) async {
+    if (!isCode(code)) return false;
+    await exit();
     return true;
   }
 }

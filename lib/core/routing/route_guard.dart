@@ -85,8 +85,8 @@ class RouteGuard {
       return session.isAuthenticated ? RoutePaths.home : RoutePaths.tilePicker;
     }
 
-    // A dedicated price checker (turned on with its code on the account PIN
-    // pad, for the store signed in) shows nothing else until the same code
+    // A dedicated price checker (turned on with its code from the account
+    // picker's price checker tile, for the store signed in) shows nothing else until the same code
     // is entered again on it. Only an expired license or a signed-out store
     // take precedence; without the mode the screen is not reachable.
     if (priceCheckerMode && hasStoreOnDisk) {

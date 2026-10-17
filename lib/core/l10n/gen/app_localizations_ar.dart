@@ -3958,4 +3958,29 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get devPlanDevicesInvalid =>
       'أدخل عددًا صحيحًا لا يقل عن 1 أو اتركه فارغًا.';
+
+  @override
+  String get priceCheckerOpenPrompt => 'أدخل الرمز لفتح قارئ الأسعار';
+
+  @override
+  String get priceCheckerOpenFailed => 'تعذّر فتح قارئ الأسعار. حاول مرة أخرى.';
+
+  @override
+  String get priceCheckerExitFailed =>
+      'تعذّر الخروج من قارئ الأسعار. حاول مرة أخرى.';
+
+  @override
+  String get themeNameMuharram => 'محرّم';
+
+  @override
+  String get themeNameIraqiArmyDay => 'عيد الجيش العراقي';
+
+  @override
+  String get themeNameIraqiPoliceDay => 'عيد الشرطة العراقية';
+
+  @override
+  String get themeNameIraqiSovereigntyDay => 'يوم السيادة العراقية';
+
+  @override
+  String get themeNameMawlid => 'المولد النبوي الشريف';
 }

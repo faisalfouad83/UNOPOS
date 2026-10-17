@@ -279,17 +279,18 @@ void main() {
       expect(MagicPasscodes.isReserved('1515'), isTrue);
     });
 
-    test('entering 1515 on the PIN pad turns the mode on; only 1515 turns it off', () async {
+    test('1515 is not a PIN: the mode is opened from its own tile; only 1515 turns it off', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
       final session = container.read(sessionControllerProvider.notifier);
 
-      // No store signed in: not accepted.
-      expect(await session.submitPin('1515', selectedEmployee: _owner), PinResult.incorrect);
-
       session.setStore(_store('store-a'));
-      expect(await session.submitPin('1515', selectedEmployee: _owner), PinResult.priceChecker);
       final mode = container.read(priceCheckerModeProvider.notifier);
+      expect(mode.isOnFor('store-a'), isFalse);
+      expect(mode.isCode('1515'), isTrue);
+      expect(mode.isCode('1313'), isFalse);
+
+      await mode.enter('store-a');
       expect(mode.isOnFor('store-a'), isTrue);
       expect(container.read(sessionControllerProvider).employee, isNull);
       expect((await SharedPreferences.getInstance()).getString(PriceCheckerModeController.prefsKey), 'store-a');

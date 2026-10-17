@@ -10,6 +10,8 @@ import '../../../core/constants/roles.dart';
 import '../../home/presentation/home_shell.dart';
 import '../domain/auth_models.dart';
 import '../domain/session_controller.dart';
+import '../../price_checker/application/price_checker_mode.dart';
+import '../../price_checker/presentation/price_checker_exit_dialog.dart';
 
 class TilePickerScreen extends ConsumerWidget {
   const TilePickerScreen({super.key});
@@ -115,8 +117,13 @@ class TilePickerScreen extends ConsumerWidget {
                         crossAxisSpacing: phone ? 12 : 20,
                         childAspectRatio: 0.9,
                       ),
-                      itemCount: employees.length,
+                      // The accounts, then the price checker (opened with its
+                      // own code, without signing anyone in).
+                      itemCount: employees.length + 1,
                       itemBuilder: (context, index) {
+                        if (index == employees.length) {
+                          return _PriceCheckerTile(onTap: () => _openPriceChecker(context, ref));
+                        }
                         final employee = employees[index];
                         return _EmployeeTile(
                           employee: employee,
@@ -185,6 +192,66 @@ class _BranchPicker extends StatelessWidget {
 final storeEmployeesProvider = StreamProvider.autoDispose.family<List<EmployeeRecord>, String>((ref, storeId) {
   return ref.watch(authRepositoryProvider).watchEmployees(storeId);
 });
+
+/// Asks for the price checker's code; once it is right (and the dialog
+/// has closed) turns this device into the store's price checker.
+Future<void> _openPriceChecker(BuildContext context, WidgetRef ref) async {
+  final storeId = ref.read(sessionControllerProvider).store?.id;
+  if (storeId == null) return;
+  final ok = await showPriceCheckerCodeDialog(context);
+  if (!ok || !context.mounted) return;
+  ref.read(selectedEmployeeForPinProvider.notifier).state = null;
+  try {
+    await ref.read(priceCheckerModeProvider.notifier).enter(storeId);
+    if (context.mounted) context.go(RoutePaths.priceChecker);
+  } catch (_) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.maybeOf(context)
+        ?.showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).priceCheckerOpenFailed)));
+  }
+}
+
+/// The account picker's price checker tile, styled like the account tiles.
+class _PriceCheckerTile extends StatelessWidget {
+  const _PriceCheckerTile({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    return Material(
+      key: const ValueKey('price-checker-tile'),
+      color: scheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 36,
+                backgroundColor: scheme.primaryContainer,
+                child: Icon(Icons.price_check, size: 36, color: scheme.onPrimaryContainer),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.priceCheckerTitle,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _EmployeeTile extends StatelessWidget {
   const _EmployeeTile({required this.employee, required this.onTap});

@@ -7113,6 +7113,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a whole number of at least 1, or leave it empty.'**
   String get devPlanDevicesInvalid;
+
+  /// No description provided for @priceCheckerOpenPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code to open the price checker'**
+  String get priceCheckerOpenPrompt;
+
+  /// No description provided for @priceCheckerOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the price checker. Try again.'**
+  String get priceCheckerOpenFailed;
+
+  /// No description provided for @priceCheckerExitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t leave the price checker. Try again.'**
+  String get priceCheckerExitFailed;
+
+  /// No description provided for @themeNameMuharram.
+  ///
+  /// In en, this message translates to:
+  /// **'Muharram'**
+  String get themeNameMuharram;
+
+  /// No description provided for @themeNameIraqiArmyDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Iraqi Army Day'**
+  String get themeNameIraqiArmyDay;
+
+  /// No description provided for @themeNameIraqiPoliceDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Iraqi Police Day'**
+  String get themeNameIraqiPoliceDay;
+
+  /// No description provided for @themeNameIraqiSovereigntyDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Iraqi Sovereignty Day'**
+  String get themeNameIraqiSovereigntyDay;
+
+  /// No description provided for @themeNameMawlid.
+  ///
+  /// In en, this message translates to:
+  /// **'Mawlid al-Nabi'**
+  String get themeNameMawlid;
 }
 
 class _AppLocalizationsDelegate

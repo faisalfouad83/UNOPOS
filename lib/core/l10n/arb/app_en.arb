@@ -1381,5 +1381,15 @@
   "@devPlanFeaturesSummary": {"placeholders": {"on": {"type": "int"}, "all": {"type": "int"}, "devices": {"type": "String"}}},
   "devPlanMaxDevices": "Tills with a cashier signed in at once",
   "devPlanMaxDevicesHelp": "Leave empty for no limit.",
-  "devPlanDevicesInvalid": "Enter a whole number of at least 1, or leave it empty."
+  "devPlanDevicesInvalid": "Enter a whole number of at least 1, or leave it empty.",
+
+  "priceCheckerOpenPrompt": "Enter the code to open the price checker",
+  "priceCheckerOpenFailed": "Couldn't open the price checker. Try again.",
+  "priceCheckerExitFailed": "Couldn't leave the price checker. Try again.",
+
+  "themeNameMuharram": "Muharram",
+  "themeNameIraqiArmyDay": "Iraqi Army Day",
+  "themeNameIraqiPoliceDay": "Iraqi Police Day",
+  "themeNameIraqiSovereigntyDay": "Iraqi Sovereignty Day",
+  "themeNameMawlid": "Mawlid al-Nabi"
 }

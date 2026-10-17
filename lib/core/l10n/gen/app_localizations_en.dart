@@ -3972,4 +3972,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get devPlanDevicesInvalid =>
       'Enter a whole number of at least 1, or leave it empty.';
+
+  @override
+  String get priceCheckerOpenPrompt =>
+      'Enter the code to open the price checker';
+
+  @override
+  String get priceCheckerOpenFailed =>
+      'Couldn\'t open the price checker. Try again.';
+
+  @override
+  String get priceCheckerExitFailed =>
+      'Couldn\'t leave the price checker. Try again.';
+
+  @override
+  String get themeNameMuharram => 'Muharram';
+
+  @override
+  String get themeNameIraqiArmyDay => 'Iraqi Army Day';
+
+  @override
+  String get themeNameIraqiPoliceDay => 'Iraqi Police Day';
+
+  @override
+  String get themeNameIraqiSovereigntyDay => 'Iraqi Sovereignty Day';
+
+  @override
+  String get themeNameMawlid => 'Mawlid al-Nabi';
 }

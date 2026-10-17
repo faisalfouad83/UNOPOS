@@ -3,8 +3,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/routing/route_paths.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/barcode_input_field.dart';
 import '../../../core/widgets/unopos_logo.dart';
@@ -12,6 +14,8 @@ import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/product_units.dart';
 import '../../pos/presentation/scan_search_field.dart';
 import '../application/price_checker_controller.dart';
+import '../application/price_checker_mode.dart';
+import '../application/price_checker_timing.dart';
 import '../domain/price_snapshot.dart';
 import 'price_checker_exit_dialog.dart';
 
@@ -41,9 +45,6 @@ class PriceCheckerView extends ConsumerStatefulWidget {
 
   final String storeId;
   final String storeName;
-
-  /// A shown result clears itself after this long without any activity.
-  static const Duration idleTimeout = Duration(seconds: 30);
 
   @override
   ConsumerState<PriceCheckerView> createState() => _PriceCheckerViewState();
@@ -76,13 +77,22 @@ class _PriceCheckerViewState extends ConsumerState<PriceCheckerView> {
     super.dispose();
   }
 
+  /// Starts (again) the time a result stays on screen: a found price for
+  /// [PriceCheckerTiming.resultDisplay], a list to choose from for
+  /// [PriceCheckerTiming.choicesDisplay]. Then the result is cleared (only
+  /// what is shown: the saved products are untouched) and the box is ready
+  /// for the next scan. Something being typed is never wiped: the clearing
+  /// waits until the typing turns into a result.
   void _touch() {
     _idle?.cancel();
-    if (_result == null && _search.text.isEmpty) return;
-    _idle = Timer(PriceCheckerView.idleTimeout, () {
-      if (!mounted) return;
-      _search.clear();
+    final result = _result;
+    if (result == null) return;
+    final wait = result is PriceChoices ? PriceCheckerTiming.choicesDisplay : PriceCheckerTiming.resultDisplay;
+    _idle = Timer(wait, () {
+      if (!mounted || _result != result) return;
+      if (_search.text.trim().isNotEmpty) return; // someone is typing
       setState(() => _result = null);
+      _focus.requestFocus();
     });
   }
 
@@ -96,10 +106,18 @@ class _PriceCheckerViewState extends ConsumerState<PriceCheckerView> {
   }
 
   void _onChanged(String text) {
+    // Typing replaces whatever was shown; the clock starts once there is
+    // a result for it.
+    _idle?.cancel();
     final index = _index;
     setState(() {
-      if (text.trim().length < 2 || index == null) {
+      final query = text.trim();
+      if (query.isEmpty) {
         if (_result is PriceChoices && !(_result as PriceChoices).exact) _result = null;
+      } else if (query.length < 2 || index == null) {
+        // A new search has started: the last product must not pass for
+        // its result.
+        _result = null;
       } else {
         final matches = index.search(text);
         _result = matches.isEmpty ? PriceNotFound(text.trim()) : PriceChoices(matches);
@@ -112,6 +130,26 @@ class _PriceCheckerViewState extends ConsumerState<PriceCheckerView> {
     _search.clear();
     setState(() => _result = PriceFound(product));
     _touch();
+  }
+
+  /// Leaves the price checker once its code is entered: the code dialog
+  /// closes first, then the mode is turned off and the account picker
+  /// shown (the router would move there too).
+  Future<void> _exit() async {
+    final ok = await showPriceCheckerCodeDialog(context, leaving: true);
+    if (!ok || !mounted) return;
+    _idle?.cancel();
+    // The dialog is closed by now, so the router can swap the page safely
+    // (leaving while it was still open popped the new page: a white screen).
+    final router = GoRouter.maybeOf(context);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final failed = AppLocalizations.of(context).priceCheckerExitFailed;
+    try {
+      await ref.read(priceCheckerModeProvider.notifier).exit();
+      router?.go(RoutePaths.tilePicker);
+    } catch (_) {
+      messenger?.showSnackBar(SnackBar(content: Text(failed)));
+    }
   }
 
   Future<void> _scanWithCamera() async {
@@ -146,7 +184,7 @@ class _PriceCheckerViewState extends ConsumerState<PriceCheckerView> {
                   now: now,
                   compact: phone,
                   onSync: state.syncing ? null : controller.sync,
-                  onExit: () => showPriceCheckerExitDialog(context),
+                  onExit: _exit,
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(16, phone ? 8 : 16, 16, 8),
@@ -160,6 +198,9 @@ class _PriceCheckerViewState extends ConsumerState<PriceCheckerView> {
                         onChanged: _onChanged,
                         hintText: l10n.priceCheckerSearchHint,
                         onCameraScan: cameraScanAvailable ? _scanWithCamera : null,
+                        // Ready at once, on every device: a scanner's code or
+                        // typing goes straight into the box.
+                        alwaysFocused: true,
                       ),
                     ),
                   ),

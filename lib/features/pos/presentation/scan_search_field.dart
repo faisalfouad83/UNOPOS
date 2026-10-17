@@ -31,6 +31,7 @@ class ScanSearchField extends StatefulWidget {
     required this.onChanged,
     this.hintText,
     this.onCameraScan,
+    this.alwaysFocused = false,
   });
 
   final TextEditingController controller;
@@ -41,6 +42,10 @@ class ScanSearchField extends StatefulWidget {
 
   /// Opens the camera to read barcodes (phones and tablets).
   final VoidCallback? onCameraScan;
+
+  /// Takes the keyboard as soon as it shows and after every scan, on touch
+  /// screens too (a dedicated scanning screen, like the price checker).
+  final bool alwaysFocused;
 
   /// A desktop till types into the box straight away; on a touch screen the
   /// on-screen keyboard would cover half the products, so it waits for a tap
@@ -71,7 +76,9 @@ class _ScanSearchFieldState extends State<ScanSearchField> {
     // Clear first: the scanner may already be typing the next code.
     widget.controller.clear();
     widget.onChanged('');
-    if (ScanSearchField._desktop || widget.focusNode.hasFocus) widget.focusNode.requestFocus();
+    if (ScanSearchField._desktop || widget.alwaysFocused || widget.focusNode.hasFocus) {
+      widget.focusNode.requestFocus();
+    }
     for (final code in codes) {
       _queue = _queue.then((_) => widget.onScan(code)).catchError((Object _) {});
     }
@@ -127,7 +134,7 @@ class _ScanSearchFieldState extends State<ScanSearchField> {
       child: TextField(
         controller: widget.controller,
         focusNode: widget.focusNode,
-        autofocus: ScanSearchField._desktop,
+        autofocus: ScanSearchField._desktop || widget.alwaysFocused,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           prefixIcon: widget.onCameraScan != null && cameraScanAvailable

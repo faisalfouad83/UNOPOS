@@ -102,6 +102,6 @@ void main() {
     for (final k in StoreThemeKey.values) {
       expect(StoreThemeKey.fromDb(k.dbKey), k);
     }
-    expect(StoreThemeKey.values, hasLength(12));
+    expect(StoreThemeKey.values, hasLength(17));
   });
 }

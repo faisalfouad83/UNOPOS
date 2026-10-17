@@ -1242,5 +1242,15 @@
   "devPlanFeaturesSummary": "{on} لە {all} بەش · ئامێرەکان: {devices}",
   "devPlanMaxDevices": "ئامێری کاشێری چوونەژوورەوە لە یەک کاتدا",
   "devPlanMaxDevicesHelp": "بەتاڵی بهێڵەوە بۆ بێسنوور.",
-  "devPlanDevicesInvalid": "ژمارەیەکی تەواو کە لانیکەم 1 بێت بنووسە، یان بەتاڵی بهێڵەوە."
+  "devPlanDevicesInvalid": "ژمارەیەکی تەواو کە لانیکەم 1 بێت بنووسە، یان بەتاڵی بهێڵەوە.",
+
+  "priceCheckerOpenPrompt": "کۆدەکە بنووسە بۆ کردنەوەی پشکنەری نرخ",
+  "priceCheckerOpenFailed": "نەتوانرا پشکنەری نرخ بکرێتەوە. دووبارە هەوڵ بدەوە.",
+  "priceCheckerExitFailed": "نەتوانرا لە پشکنەری نرخ دەربچیت. دووبارە هەوڵ بدەوە.",
+
+  "themeNameMuharram": "موحەڕەم",
+  "themeNameIraqiArmyDay": "ڕۆژی سوپای عێراق",
+  "themeNameIraqiPoliceDay": "ڕۆژی پۆلیسی عێراق",
+  "themeNameIraqiSovereigntyDay": "ڕۆژی سەروەری عێراق",
+  "themeNameMawlid": "مەولودی پێغەمبەر"
 }

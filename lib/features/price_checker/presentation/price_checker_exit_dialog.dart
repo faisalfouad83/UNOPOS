@@ -36,15 +36,19 @@ class _ExitThrottle {
   }
 }
 
-/// Asks for the price-checker code; true once it was right and the mode
-/// is off (the router then leaves the price checker by itself).
-Future<bool> showPriceCheckerExitDialog(BuildContext context) async {
-  final left = await showDialog<bool>(context: context, builder: (_) => const _ExitDialog());
-  return left == true;
+/// Asks for the price-checker code (to open the price checker, or with
+/// [leaving] to leave it); true once the right code was entered and the
+/// dialog has closed. It changes nothing itself: the caller turns the mode
+/// on or off afterwards, so the screen change never happens under an open
+/// dialog (that left an empty, white screen behind).
+Future<bool> showPriceCheckerCodeDialog(BuildContext context, {bool leaving = false}) async {
+  final ok = await showDialog<bool>(context: context, builder: (_) => _ExitDialog(leaving: leaving));
+  return ok == true;
 }
 
 class _ExitDialog extends ConsumerStatefulWidget {
-  const _ExitDialog();
+  const _ExitDialog({required this.leaving});
+  final bool leaving;
 
   @override
   ConsumerState<_ExitDialog> createState() => _ExitDialogState();
@@ -73,7 +77,7 @@ class _ExitDialogState extends ConsumerState<_ExitDialog> {
   Future<void> _submit() async {
     if (_checking || _ExitThrottle.secondsLeft > 0) return;
     _checking = true;
-    final ok = await ref.read(priceCheckerModeProvider.notifier).tryExit(_pin);
+    final ok = ref.read(priceCheckerModeProvider.notifier).isCode(_pin);
     _checking = false;
     if (!mounted) return;
     if (ok) {
@@ -94,7 +98,8 @@ class _ExitDialogState extends ConsumerState<_ExitDialog> {
     final scheme = Theme.of(context).colorScheme;
     final locked = _ExitThrottle.secondsLeft;
     return AlertDialog(
-      title: Text(l10n.priceCheckerExitPrompt, textAlign: TextAlign.center),
+      title:
+          Text(widget.leaving ? l10n.priceCheckerExitPrompt : l10n.priceCheckerOpenPrompt, textAlign: TextAlign.center),
       content: SingleChildScrollView(
         child: SizedBox(
           width: 320,
