@@ -42,13 +42,24 @@ class DeviceIdentity {
 class DeviceClaim {
   const DeviceClaim.ok()
       : allowed = true,
+        otherDevice = null,
+        planDeviceLimit = null;
+  const DeviceClaim.refused(this.otherDevice)
+      : allowed = false,
+        planDeviceLimit = null;
+
+  /// Refused because the store's plan allows no more tills at once.
+  const DeviceClaim.planLimit(int this.planDeviceLimit)
+      : allowed = false,
         otherDevice = null;
-  const DeviceClaim.refused(this.otherDevice) : allowed = false;
 
   final bool allowed;
 
   /// The device that already holds the account.
   final String? otherDevice;
+
+  /// Set when refused for the plan's device limit: that limit.
+  final int? planDeviceLimit;
 }
 
 /// A cashier account works on one device at a time (checked by the
@@ -72,6 +83,7 @@ class DeviceLock {
       ).timeout(const Duration(seconds: 8));
       final map = (result as Map).cast<String, dynamic>();
       if (map['ok'] == true) return const DeviceClaim.ok();
+      if (map['reason'] == 'plan_device_limit') return DeviceClaim.planLimit((map['limit'] as num?)?.toInt() ?? 0);
       return DeviceClaim.refused(map['device_name'] as String?);
     } catch (e) {
       if (isNetworkError(e)) return const DeviceClaim.ok();

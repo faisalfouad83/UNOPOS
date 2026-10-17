@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/offline/offline_cache.dart';
@@ -5,6 +7,7 @@ import '../../../core/offline/outbox.dart';
 import '../../../core/offline/sync_service.dart';
 import '../../../core/utils/id_generator.dart';
 
+import '../domain/account_totals.dart';
 import '../domain/accounting_models.dart';
 import '../domain/accounting_repository.dart' as domain;
 
@@ -46,7 +49,7 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
         isReversal: json['is_reversal'] as bool? ?? false,
         reversalOfEntryId: json['reversal_of_entry_id'] as String?,
         createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
-        lines: (json['lines'] as List).cast<Map<String, dynamic>>().map(_mapLineJson).toList(),
+        lines: [for (final l in json['lines'] as List) _mapLineJson((l as Map).cast<String, dynamic>())],
       );
 
   @override
@@ -282,6 +285,146 @@ class SupabaseAccountingRepository implements domain.AccountingRepository {
       balances[row['account_code'] as String] = (row['balance_minor_units'] as num).toInt();
     }
     return balances;
+  }
+
+  /// Entries made on this device and not yet sent (their previews), as of
+  /// server data fetched at [asOf].
+  Future<List<JournalEntryRecord>> _unsentEntries({DateTime? asOf}) async {
+    final box = Outbox.shared;
+    await box.load();
+    return [
+      for (final row in box.applyTo('journal_entries', const [], asOf: asOf))
+        if (row['lines'] is List) _mapEntryJson(row),
+    ];
+  }
+
+  Future<int> _unsentSales() async {
+    final box = Outbox.shared;
+    await box.load();
+    return box.pending.where((o) => o.kind == OutboxKind.checkout).length;
+  }
+
+  @override
+  Future<AccountTotals> accountTotals(String storeId, {DateTime? from, required DateTime to}) async {
+    final cacheKey = 'account_totals.$storeId';
+    // One copy per period (its start and the day it ends), so a period
+    // looked at before can be shown again offline.
+    final periodKey = '${from?.toUtc().toIso8601String()}|${DateTime(to.year, to.month, to.day).toIso8601String()}';
+    try {
+      if (OfflineCache.knownOffline) throw const SocketException('offline');
+      final started = DateTime.now();
+      final params = {'p_from': from?.toUtc().toIso8601String(), 'p_to': to.toUtc().toIso8601String()};
+      final accountRows = await _client.rpc('account_totals', params: params).timeout(const Duration(seconds: 20));
+      final movementRows =
+          await _client.rpc('account_movements_by_reference', params: params).timeout(const Duration(seconds: 20));
+      final totals = AccountTotals.fromServerRows(
+        from: from,
+        to: to,
+        accountRows: (accountRows as List).cast<Map<String, dynamic>>(),
+        movementRows: (movementRows as List).cast<Map<String, dynamic>>(),
+        fetchedAt: started,
+      );
+      final cached = await OfflineCache.read(cacheKey);
+      final copies = cached is Map ? Map<String, dynamic>.from(cached) : <String, dynamic>{};
+      copies[periodKey] = totals.toJson();
+      // Keep the 24 most recently fetched periods.
+      final keys = copies.keys.toList()
+        ..sort((a, b) => '${(copies[b] as Map)['fetched_at']}'.compareTo('${(copies[a] as Map)['fetched_at']}'));
+      for (final k in keys.skip(24)) {
+        copies.remove(k);
+      }
+      await OfflineCache.write(cacheKey, copies);
+      return totals.withEntries(await _unsentEntries(asOf: started)).copyWith(unsentSales: await _unsentSales());
+    } catch (e) {
+      if (!isNetworkError(e)) rethrow;
+      final unsent = await _unsentEntries();
+      final unsentSales = await _unsentSales();
+      final cached = await OfflineCache.read(cacheKey);
+      final copy = cached is Map ? cached[periodKey] : null;
+      if (copy is Map) {
+        // The server's figures from last time, plus what was made here since.
+        return AccountTotals.fromJson(copy.cast<String, dynamic>(), source: TotalsSource.offlineEstimate)
+            .withEntries(unsent)
+            .copyWith(unsentSales: unsentSales);
+      }
+      // Never fetched for this period: add up the journal kept on this
+      // device (it already includes entries not yet sent).
+      final chart = await listAccounts(storeId);
+      if (chart.isEmpty) rethrow;
+      final kept = await watchJournalEntries(storeId).first.timeout(const Duration(seconds: 5));
+      final keptIds = {for (final k in kept) k.id};
+      return AccountTotals.fromEntries(
+        chart: chart,
+        entries: kept,
+        from: from,
+        to: to,
+        source: TotalsSource.offlineEstimate,
+      ).copyWith(
+        unsentEntries: unsent.where((u) => keptIds.contains(u.id)).length,
+        unsentSales: unsentSales,
+      );
+    }
+  }
+
+  @override
+  Future<List<JournalEntryRecord>> journalEntriesBetween(
+    String storeId, {
+    required DateTime from,
+    required DateTime to,
+    int limit = 1000,
+  }) async {
+    bool inRange(Map<String, dynamic> r) {
+      final at = DateTime.tryParse('${r['entry_date']}')?.toLocal();
+      return at != null && !at.isBefore(from) && at.isBefore(to);
+    }
+
+    final key = 'journal_range.$storeId';
+    List<Map<String, dynamic>> rows;
+    DateTime? fetchedAt;
+    try {
+      if (OfflineCache.knownOffline) throw const SocketException('offline');
+      final started = DateTime.now();
+      rows = (await _client
+              .from('journal_entries')
+              .select('*, journal_lines(*, chart_of_accounts(code))')
+              .eq('store_id', storeId)
+              .gte('entry_date', from.toUtc().toIso8601String())
+              .lt('entry_date', to.toUtc().toIso8601String())
+              .order('entry_date', ascending: false)
+              .limit(limit)
+              .timeout(const Duration(seconds: 20)))
+          .cast<Map<String, dynamic>>();
+      fetchedAt = started;
+      await OfflineCache.write(key, rows);
+    } catch (e) {
+      if (!isNetworkError(e)) rethrow;
+      rows = (await OfflineCache.readRows(key) ?? const []).where(inRange).toList();
+      if (rows.isEmpty) {
+        // Nothing kept for this range: use the journal kept for the
+        // Expenses & cash screen instead (it includes unsent entries).
+        final kept = await watchJournalEntries(storeId).first.timeout(const Duration(seconds: 5));
+        return kept.where((k) => !k.entryDate.isBefore(from) && k.entryDate.isBefore(to)).take(limit).toList();
+      }
+    }
+    final box = Outbox.shared;
+    await box.load();
+    final all = box.applyTo('journal_entries', rows, where: inRange, asOf: fetchedAt);
+    final result = <JournalEntryRecord>[];
+    for (final r in all) {
+      if (r['lines'] is List) {
+        result.add(_mapEntryJson(r));
+        continue;
+      }
+      final lines = (r['journal_lines'] as List? ?? const []).cast<Map<String, dynamic>>();
+      result.add(_mapEntryJson({
+        ...r,
+        'lines': [
+          for (final l in lines) {...l, 'account_code': (l['chart_of_accounts'] as Map?)?['code'] ?? '?'},
+        ],
+      }));
+    }
+    result.sort((a, b) => b.entryDate.compareTo(a.entryDate));
+    return result;
   }
 
   static String _referenceTypeToDb(JournalReferenceType type) => switch (type) {

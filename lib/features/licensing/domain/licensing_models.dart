@@ -14,6 +14,7 @@ class ActivationCodeRecord {
     this.redeemedByStoreId,
     this.redeemedAt,
     this.redeemedByStoreName,
+    this.planId,
   });
 
   final String id;
@@ -29,6 +30,10 @@ class ActivationCodeRecord {
   /// Name of the store that activated it, when known.
   final String? redeemedByStoreName;
 
+  /// The plan the code switches the store to (null = the store keeps its
+  /// plan). Shared backend only.
+  final String? planId;
+
   bool get isActivated => redeemedByStoreId != null || redeemedAt != null;
 
   ActivationCodeRecord withStoreName(String? name) => ActivationCodeRecord(
@@ -42,6 +47,7 @@ class ActivationCodeRecord {
         redeemedByStoreId: redeemedByStoreId,
         redeemedAt: redeemedAt,
         redeemedByStoreName: name,
+        planId: planId,
       );
 
   int? daysRemaining([DateTime? now]) {

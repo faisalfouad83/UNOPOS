@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/security/activation_code_codec.dart';
 import '../../../core/utils/id_generator.dart';
+import '../domain/entitlement.dart';
 import '../domain/licensing_models.dart';
 import '../domain/licensing_repository.dart';
 
@@ -169,4 +170,8 @@ class DriftLicensingRepository implements LicensingRepository {
         .getSingleOrNull();
     return row == null ? null : _mapRow(row);
   }
+
+  /// The local build has no plans: every section is included.
+  @override
+  Future<Entitlement?> entitlementFor(String storeId) async => null;
 }

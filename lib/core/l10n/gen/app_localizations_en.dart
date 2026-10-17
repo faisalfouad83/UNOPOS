@@ -2848,4 +2848,587 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.';
+
+  @override
+  String get acxOverview => 'Overview';
+
+  @override
+  String get acxCashAndBank => 'Cash & bank';
+
+  @override
+  String get acxReceivables => 'Customers owe';
+
+  @override
+  String get acxPayables => 'We owe suppliers';
+
+  @override
+  String get acxCashFlow => 'Cash flow';
+
+  @override
+  String get acxAuditTrail => 'Audit trail';
+
+  @override
+  String get acxPeriodToday => 'Today';
+
+  @override
+  String get acxPeriodWeek => 'This week';
+
+  @override
+  String get acxPeriodMonth => 'This month';
+
+  @override
+  String get acxPeriodYear => 'This year';
+
+  @override
+  String get acxPeriodCustom => 'Choose dates';
+
+  @override
+  String get acxRefresh => 'Refresh';
+
+  @override
+  String acxOfflineEstimate(String time) {
+    return 'Offline estimate: no connection, so these figures were worked out on this device (server figures from $time plus what was entered here). They may be incomplete.';
+  }
+
+  @override
+  String acxUnsentEntriesIncluded(int count) {
+    return 'Includes $count entries made on this device that are not sent yet.';
+  }
+
+  @override
+  String acxUnsentSalesMissing(int count) {
+    return '$count sales made offline are not counted yet; they are added when they reach the server.';
+  }
+
+  @override
+  String get acxNetSales => 'Sales';
+
+  @override
+  String get acxNetSalesInfo =>
+      'What customers bought in this period, after returns and discounts, without sales tax. Sales on credit count when made, not when paid.';
+
+  @override
+  String acxNetSalesBreakdown(String gross, String returns, String discounts) {
+    return '$gross sold, $returns returned, $discounts discounts';
+  }
+
+  @override
+  String get acxGrossProfit => 'Gross profit';
+
+  @override
+  String get acxGrossProfitInfo =>
+      'Sales minus what the goods sold cost you to buy. It is what is left to pay running costs.';
+
+  @override
+  String acxMargin(int percent) {
+    return '$percent% of sales';
+  }
+
+  @override
+  String get acxNetProfit => 'Net profit';
+
+  @override
+  String get acxNetLoss => 'Net loss';
+
+  @override
+  String get acxNetProfitInfo =>
+      'Gross profit minus running costs (rent, salaries, bills…). This is what the shop really earned in the period. It is not the same as cash: credit sales and unpaid bills count too.';
+
+  @override
+  String get acxLoss => 'A loss in this period';
+
+  @override
+  String get acxCashOnHand => 'Cash on hand';
+
+  @override
+  String get acxCashOnHandInfo =>
+      'Money in the cash drawers and safe, according to the books (account 1000).';
+
+  @override
+  String get acxBank => 'Bank';
+
+  @override
+  String get acxBankInfo =>
+      'Money in the bank account, including card payments (account 1010).';
+
+  @override
+  String get acxProfitSummary => 'Profit in this period';
+
+  @override
+  String get acxProfitSummaryInfo =>
+      'From sales down to what the shop kept, step by step. The Profit & loss tab shows every expense.';
+
+  @override
+  String get acxCogs => 'Cost of goods sold';
+
+  @override
+  String get acxCogsInfo =>
+      'What the goods you sold cost you to buy (at their purchase price), not what you paid suppliers this period.';
+
+  @override
+  String get acxOperatingExpenses => 'Running costs';
+
+  @override
+  String get acxOperatingExpensesInfo =>
+      'Costs of running the shop: rent, salaries, electricity, supplies, card fees, damaged or lost stock and other expenses.';
+
+  @override
+  String get acxCashMovement => 'Cash drawer in this period';
+
+  @override
+  String get acxCashMovementInfo =>
+      'Money that came into and went out of cash on hand (account 1000) in the period, whatever the reason: sales, debt payments, expenses, refunds, supplier payments.';
+
+  @override
+  String get acxCashReceived => 'Cash received';
+
+  @override
+  String get acxCashPaidOut => 'Cash paid out';
+
+  @override
+  String get acxCashNet => 'Change in cash';
+
+  @override
+  String acxBalancesNow(String date) {
+    return 'Balances on $date';
+  }
+
+  @override
+  String get acxBalancesInfo =>
+      'What the store holds and what is owed either way, at the end of the period (or now).';
+
+  @override
+  String get acxReceivablesInfo =>
+      'Money customers still owe the store for sales on credit (account 1100). It goes down when they pay.';
+
+  @override
+  String get acxPayablesInfo =>
+      'Money the store still owes suppliers for goods received on credit (account 2000). It goes down when you pay them.';
+
+  @override
+  String get acxProfitLossInfo =>
+      'Profit and loss shows what the shop earned and spent in the period, and the profit left over. It counts sales and costs when they happen, not when cash moves.';
+
+  @override
+  String get acxGrossSales => 'Sales before returns and discounts';
+
+  @override
+  String get acxGrossSalesInfo =>
+      'Everything sold in the period at the selling price, without sales tax (account 4000).';
+
+  @override
+  String get acxReturns => 'Returns';
+
+  @override
+  String get acxReturnsInfo =>
+      'Money given back to customers for returned goods (account 4100).';
+
+  @override
+  String get acxDiscounts => 'Discounts';
+
+  @override
+  String get acxDiscountsInfo =>
+      'Discounts recorded separately from the selling price (account 4200).';
+
+  @override
+  String get acxOtherRevenue => 'Other income';
+
+  @override
+  String get acxNone => 'None';
+
+  @override
+  String get acxTotalExpenses => 'Total running costs';
+
+  @override
+  String get acxAssetsInfo =>
+      'Assets are what the store has: cash, bank, money customers owe, and stock at cost.';
+
+  @override
+  String get acxLiabilitiesInfo =>
+      'Liabilities are what the store owes others: suppliers, and sales tax collected but not yet paid.';
+
+  @override
+  String get acxEquityInfo =>
+      'Equity is what belongs to the owner: what was put into the business plus the profit it has made.';
+
+  @override
+  String get acxRevenueInfo =>
+      'Income from selling, less returns and discounts.';
+
+  @override
+  String get acxTotalAssets => 'Total assets';
+
+  @override
+  String get acxLiabilitiesAndEquity => 'Liabilities and owner\'s equity';
+
+  @override
+  String get acxLiabilitiesAndEquityInfo =>
+      'Who has a claim on the assets: others (liabilities) and the owner (equity, including profit not yet taken out).';
+
+  @override
+  String get acxTotalLiabilities => 'Total liabilities';
+
+  @override
+  String get acxEarlierProfit => 'Profit before this period';
+
+  @override
+  String get acxEarlierProfitInfo =>
+      'All profit made before the period began, not yet moved into equity by a closing entry.';
+
+  @override
+  String get acxPeriodProfit => 'Profit in this period';
+
+  @override
+  String get acxPeriodProfitInfo =>
+      'The net profit from the Profit & loss tab. It belongs to the owner, so it is counted on this side.';
+
+  @override
+  String get acxTotalEquity => 'Total owner\'s equity';
+
+  @override
+  String get acxTotalLiabilitiesAndEquity => 'Total liabilities and equity';
+
+  @override
+  String acxAsAt(String date) {
+    return 'As at $date';
+  }
+
+  @override
+  String get acxBalanced =>
+      'It balances: assets equal liabilities plus owner\'s equity.';
+
+  @override
+  String acxNotBalanced(String amount) {
+    return 'It does not balance: $amount difference. Check the journal for an entry that was edited outside the app.';
+  }
+
+  @override
+  String get acxBalanceRule =>
+      'Every entry adds the same to both sides, so the two totals always match.';
+
+  @override
+  String get acxCashFlowInfo =>
+      'Where cash and bank money came from and where it went in the period, grouped by reason. Unlike profit, this is only money that actually moved.';
+
+  @override
+  String get acxOpeningCash => 'Cash and bank at the start';
+
+  @override
+  String get acxOpeningCashInfo =>
+      'Cash on hand plus bank when the period began.';
+
+  @override
+  String get acxMoneyIn => 'Money in';
+
+  @override
+  String get acxMoneyOut => 'Money out';
+
+  @override
+  String get acxTotalIn => 'Total in';
+
+  @override
+  String get acxTotalOut => 'Total out';
+
+  @override
+  String get acxNetCashChange => 'Net change';
+
+  @override
+  String get acxClosingCash => 'Cash and bank at the end';
+
+  @override
+  String acxCashFlowMismatch(String amount) {
+    return 'The accounts show $amount; the difference is in entries not yet downloaded.';
+  }
+
+  @override
+  String get acxCashFlowTransfersNote =>
+      'Moving money between the cash drawer and the bank shows as both in and out; it does not change the total.';
+
+  @override
+  String get acxTrialBalanceInfo =>
+      'Every account\'s balance in a debit or credit column. If the two totals match, every entry was recorded in balance.';
+
+  @override
+  String get acxTotal => 'Total';
+
+  @override
+  String get acxOpeningBalance => 'Balance at the start';
+
+  @override
+  String get acxClosingBalance => 'Balance at the end';
+
+  @override
+  String get acxAddedOwed => 'Added (new amounts owed)';
+
+  @override
+  String get acxPaidOff => 'Paid off';
+
+  @override
+  String get acxMovements => 'Movements in this period';
+
+  @override
+  String get acxNoMovements => 'No movements in this period.';
+
+  @override
+  String acxShowingFirst(int count) {
+    return 'Showing the first $count. Choose a shorter period to see the rest.';
+  }
+
+  @override
+  String get acxOpenDebts => 'Open debts';
+
+  @override
+  String get acxOpenSuppliers => 'Open suppliers';
+
+  @override
+  String acxChangeInPeriod(String amount) {
+    return 'Changed by $amount in this period';
+  }
+
+  @override
+  String get acxFilterCause => 'Type';
+
+  @override
+  String get acxFilterAccount => 'Account';
+
+  @override
+  String get acxFilterSearch => 'Search';
+
+  @override
+  String get acxAll => 'All';
+
+  @override
+  String get acxNoEntries => 'No journal entries match in this period.';
+
+  @override
+  String get acxReversalEntry => 'Reversal';
+
+  @override
+  String get acxWasReversed => 'Reversed';
+
+  @override
+  String get acxNotSentYet => 'Not sent yet';
+
+  @override
+  String get acxReverseTitle => 'Reverse this entry?';
+
+  @override
+  String get acxReverseBody =>
+      'A new entry with the opposite amounts is added today, cancelling this one out. The original stays in the journal so the history is kept. Then record the correct entry if needed.';
+
+  @override
+  String get acxReverse => 'Reverse';
+
+  @override
+  String get acxReversed => 'Reversing entry added.';
+
+  @override
+  String get acxReversalOf => 'This entry cancels out an earlier one.';
+
+  @override
+  String get acxAccount => 'Account';
+
+  @override
+  String get acxSourceDocument => 'Where it came from';
+
+  @override
+  String get acxNoSourceDocument => 'Entered directly in the journal.';
+
+  @override
+  String get acxOpenSource => 'Open';
+
+  @override
+  String get acxCorrectionsNote =>
+      'Journal entries are never edited or deleted; mistakes are corrected with a reversing entry.';
+
+  @override
+  String acxSaleNotFound(String id) {
+    return 'Sale $id (details not available offline)';
+  }
+
+  @override
+  String acxSaleSummary(String number, String total, String method) {
+    return 'Invoice $number · $total · $method';
+  }
+
+  @override
+  String get acxAuditTrailInfo =>
+      'A record of sensitive actions in the store — who did what and when (price changes, refunds, voids, releasing devices…). It cannot be changed from the app.';
+
+  @override
+  String get acxNoAudit => 'Nothing recorded in this period.';
+
+  @override
+  String get acxBefore => 'Before';
+
+  @override
+  String get acxAfter => 'After';
+
+  @override
+  String get planNotInPlanTitle => 'Not in your plan';
+
+  @override
+  String planNotInPlanBody(String plan) {
+    return 'This section is not included in your $plan plan. Contact UNOPOS support to upgrade.';
+  }
+
+  @override
+  String get planBackHome => 'Back to home';
+
+  @override
+  String planCurrent(String plan) {
+    return 'Plan: $plan';
+  }
+
+  @override
+  String get planNoEndDate => 'No end date';
+
+  @override
+  String planEndsOn(String date) {
+    return 'Ends on $date';
+  }
+
+  @override
+  String get planUnlimited => 'unlimited';
+
+  @override
+  String planExcludedSections(String sections) {
+    return 'Not included: $sections';
+  }
+
+  @override
+  String planVerifiedAt(String time) {
+    return 'Checked with the server $time';
+  }
+
+  @override
+  String planVerifiedOffline(String time) {
+    return 'Offline: last checked with the server $time';
+  }
+
+  @override
+  String get planStatusActive => 'Active';
+
+  @override
+  String get planStatusTrial => 'Trial';
+
+  @override
+  String get planStatusExpired => 'Expired';
+
+  @override
+  String get planStatusSuspended => 'Suspended';
+
+  @override
+  String get planStatusDisabled => 'Disabled';
+
+  @override
+  String get planLimitEmployees => 'Employees';
+
+  @override
+  String get planLimitBranches => 'Branches';
+
+  @override
+  String get planLimitProducts => 'Products';
+
+  @override
+  String get planLimitDevices => 'Tills in use';
+
+  @override
+  String get planLimitDailySales => 'Sales today';
+
+  @override
+  String get planModulePos => 'Point of sale';
+
+  @override
+  String get planModuleInvoices => 'Invoices';
+
+  @override
+  String get planModuleInventory => 'Inventory';
+
+  @override
+  String get planModuleDebts => 'Debts';
+
+  @override
+  String get planModuleCustomers => 'Customers';
+
+  @override
+  String get planModuleSuppliers => 'Suppliers';
+
+  @override
+  String get planModuleAccounting => 'Accounting';
+
+  @override
+  String get planModuleExpenses => 'Expenses & cash';
+
+  @override
+  String get planModuleHr => 'Staff';
+
+  @override
+  String get planModuleReports => 'Reports';
+
+  @override
+  String planDeviceLimitReached(int count) {
+    return 'Your plan allows cashiers on $count tills at a time, and they are all in use. Sign a cashier out on another till, or ask UNOPOS to upgrade the plan.';
+  }
+
+  @override
+  String get devPlanCodesTab => 'Plan codes';
+
+  @override
+  String get devPlanIssueTitle => 'Issue a code with a plan';
+
+  @override
+  String get devPlanTargetStore => 'For store (optional)';
+
+  @override
+  String get devPlanTargetStoreHelp =>
+      'When set, only this store can use the code.';
+
+  @override
+  String get devPlanAnyStore => 'Any store';
+
+  @override
+  String get devPlanPlan => 'Plan';
+
+  @override
+  String get devPlanKeepPlan => 'Keep the store\'s current plan';
+
+  @override
+  String devPlanEndsOn(String date) {
+    return 'Ends on $date';
+  }
+
+  @override
+  String get devPlanEndsNever => 'No end date (lifetime)';
+
+  @override
+  String get devPlanEndsHelp =>
+      'The duration counts from today, when the code is issued.';
+
+  @override
+  String get devPlanIssueAndActivate => 'Issue and activate now';
+
+  @override
+  String get devPlanNameNeeded => 'Enter the store name or choose a store.';
+
+  @override
+  String get devPlanCopy => 'Copy';
+
+  @override
+  String get devPlanFeaturesTitle => 'What each plan includes';
+
+  @override
+  String devPlanFeaturesSummary(int on, int all, String devices) {
+    return '$on of $all sections · tills: $devices';
+  }
+
+  @override
+  String get devPlanMaxDevices => 'Tills with a cashier signed in at once';
+
+  @override
+  String get devPlanMaxDevicesHelp => 'Leave empty for no limit.';
+
+  @override
+  String get devPlanDevicesInvalid =>
+      'Enter a whole number of at least 1, or leave it empty.';
 }

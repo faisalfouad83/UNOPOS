@@ -7,6 +7,7 @@ import '../../../core/routing/app_bootstrap.dart';
 import '../../../core/security/activation_code_codec.dart';
 import '../../../core/utils/formatters.dart';
 import '../../licensing/domain/license_watch.dart';
+import '../../licensing/presentation/plan_summary.dart';
 import '../../../core/widgets/adaptive_row.dart';
 
 final _licenseProvider =
@@ -84,6 +85,8 @@ class _ActivationSettingsSectionState extends ConsumerState<ActivationSettingsSe
                 );
               },
             ),
+            const SizedBox(height: 8),
+            const PlanSummary(),
             const SizedBox(height: 12),
             AdaptiveRow(
               children: [
