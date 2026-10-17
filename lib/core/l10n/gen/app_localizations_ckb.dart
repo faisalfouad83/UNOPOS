@@ -2841,4 +2841,24 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get refreshDataDone => 'نوێکرایەوە';
+
+  @override
+  String get homeNewSale => 'فرۆشتنی نوێ';
+
+  @override
+  String get homeToday => 'ئەمڕۆ';
+
+  @override
+  String get homeTodaySales => 'فرۆشتنی ئەمڕۆ';
+
+  @override
+  String get homeShortcuts => 'چوون بۆ';
+
+  @override
+  String get homeOfflineWorking => 'بێ هێڵ — کارکردن بە زانیاریی ئەم ئامێرە';
+
+  @override
+  String homeShiftOpenSince(String time) {
+    return 'شەفت کراوەیە لە $timeـەوە';
+  }
 }

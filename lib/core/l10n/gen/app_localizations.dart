@@ -5205,6 +5205,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Updated'**
   String get refreshDataDone;
+
+  /// No description provided for @homeNewSale.
+  ///
+  /// In en, this message translates to:
+  /// **'New sale'**
+  String get homeNewSale;
+
+  /// No description provided for @homeToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get homeToday;
+
+  /// No description provided for @homeTodaySales.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s sales'**
+  String get homeTodaySales;
+
+  /// No description provided for @homeShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to'**
+  String get homeShortcuts;
+
+  /// No description provided for @homeOfflineWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline — working from this device\'s data'**
+  String get homeOfflineWorking;
+
+  /// No description provided for @homeShiftOpenSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift open since {time}'**
+  String homeShiftOpenSince(String time);
 }
 
 class _AppLocalizationsDelegate

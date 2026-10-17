@@ -2852,4 +2852,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get refreshDataDone => 'تم التحديث';
+
+  @override
+  String get homeNewSale => 'بيع جديد';
+
+  @override
+  String get homeToday => 'اليوم';
+
+  @override
+  String get homeTodaySales => 'مبيعات اليوم';
+
+  @override
+  String get homeShortcuts => 'انتقال سريع';
+
+  @override
+  String get homeOfflineWorking => 'بدون اتصال — العمل من بيانات هذا الجهاز';
+
+  @override
+  String homeShiftOpenSince(String time) {
+    return 'الشفت مفتوح منذ $time';
+  }
 }

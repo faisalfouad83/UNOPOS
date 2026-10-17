@@ -66,6 +66,12 @@ List<_Destination> _destinationsFor(SessionState session) {
   return _allDestinations.where((d) => RouteGuard.isAllowed(d.path, session)).toList();
 }
 
+/// The sections [session] may open besides the home screen, for its shortcuts.
+List<({String path, IconData icon, String Function(AppLocalizations) label})> homeSectionsFor(SessionState session) => [
+      for (final d in _destinationsFor(session))
+        if (d.path != RoutePaths.home) (path: d.path, icon: d.icon, label: d.labelBuilder),
+    ];
+
 /// Provides navigation chrome (rail/bottom bar) plus a thin persistent
 /// account strip. Deliberately NOT a Scaffold itself — each destination
 /// screen owns its own Scaffold/AppBar (so it can add screen-specific

@@ -919,5 +919,12 @@
 
   "refreshData": "تحديث",
   "refreshDataLast": "تحديث (آخر مرة: {time})",
-  "refreshDataDone": "تم التحديث"
+  "refreshDataDone": "تم التحديث",
+
+  "homeNewSale": "بيع جديد",
+  "homeToday": "اليوم",
+  "homeTodaySales": "مبيعات اليوم",
+  "homeShortcuts": "انتقال سريع",
+  "homeOfflineWorking": "بدون اتصال — العمل من بيانات هذا الجهاز",
+  "homeShiftOpenSince": "الشفت مفتوح منذ {time}"
 }

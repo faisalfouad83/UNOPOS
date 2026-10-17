@@ -919,5 +919,12 @@
 
   "refreshData": "نوێکردنەوە",
   "refreshDataLast": "نوێکردنەوە (دواجار: {time})",
-  "refreshDataDone": "نوێکرایەوە"
+  "refreshDataDone": "نوێکرایەوە",
+
+  "homeNewSale": "فرۆشتنی نوێ",
+  "homeToday": "ئەمڕۆ",
+  "homeTodaySales": "فرۆشتنی ئەمڕۆ",
+  "homeShortcuts": "چوون بۆ",
+  "homeOfflineWorking": "بێ هێڵ — کارکردن بە زانیاریی ئەم ئامێرە",
+  "homeShiftOpenSince": "شەفت کراوەیە لە {time}ـەوە"
 }

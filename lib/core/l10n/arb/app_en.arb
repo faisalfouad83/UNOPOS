@@ -1014,5 +1014,13 @@
   "refreshData": "Refresh",
   "refreshDataLast": "Refresh (last: {time})",
   "@refreshDataLast": {"placeholders": {"time": {"type": "String"}}},
-  "refreshDataDone": "Updated"
+  "refreshDataDone": "Updated",
+
+  "homeNewSale": "New sale",
+  "homeToday": "Today",
+  "homeTodaySales": "Today's sales",
+  "homeShortcuts": "Go to",
+  "homeOfflineWorking": "Offline — working from this device's data",
+  "homeShiftOpenSince": "Shift open since {time}",
+  "@homeShiftOpenSince": {"placeholders": {"time": {"type": "String"}}}
 }

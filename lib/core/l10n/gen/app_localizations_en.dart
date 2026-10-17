@@ -2859,4 +2859,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refreshDataDone => 'Updated';
+
+  @override
+  String get homeNewSale => 'New sale';
+
+  @override
+  String get homeToday => 'Today';
+
+  @override
+  String get homeTodaySales => 'Today\'s sales';
+
+  @override
+  String get homeShortcuts => 'Go to';
+
+  @override
+  String get homeOfflineWorking => 'Offline — working from this device\'s data';
+
+  @override
+  String homeShiftOpenSince(String time) {
+    return 'Shift open since $time';
+  }
 }
