@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/offline/data_refresh.dart';
 import '../../../core/offline/sync_service.dart';
 import '../../../core/providers.dart';
 import '../domain/shift_cash_summary.dart';
@@ -23,5 +24,6 @@ final shiftCashSummaryProvider = FutureProvider.autoDispose.family<ShiftCashSumm
     changes.cancel();
     timer.cancel();
   });
+  ref.watch(dataRefreshEpochProvider);
   return ref.watch(shiftsRepositoryProvider).cashSummary(shift);
 });

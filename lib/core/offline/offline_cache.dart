@@ -214,6 +214,13 @@ bool isNetworkError(Object error) {
       text.contains('AuthRetryableFetchException');
 }
 
+final _refreshRequests = StreamController<bool>.broadcast();
+
+/// Asks every live list on screen to show its data again: at once from what
+/// this device has (with its unsent changes laid over), and — when
+/// [fromServer] — by fetching it afresh from the server.
+void refreshAllData({bool fromServer = true}) => _refreshRequests.add(fromServer);
+
 /// Wraps a backend stream of rows so the till keeps working offline:
 /// the last cached copy is shown immediately, every live update refreshes
 /// the cache ([cacheRow] can drop fields that must not be kept on the
@@ -241,6 +248,7 @@ Stream<List<Map<String, dynamic>>> resilientRows(
   late StreamController<List<Map<String, dynamic>>> controller;
   StreamSubscription<List<Map<String, dynamic>>>? subscription;
   StreamSubscription<void>? local;
+  StreamSubscription<bool>? refresh;
   Timer? retry;
   var hasValue = false;
   var cancelled = false;
@@ -284,6 +292,16 @@ Stream<List<Map<String, dynamic>>> resilientRows(
           if (rows != null && !cancelled) emit(rows, lastAt);
         });
       }
+      refresh = _refreshRequests.stream.listen((fromServer) {
+        final rows = last;
+        if (cancelled) return;
+        if (rows != null) emit(rows, lastAt);
+        if (fromServer && !OfflineCache.knownOffline) {
+          retry?.cancel();
+          subscription?.cancel();
+          listen();
+        }
+      });
       final cached = cache ? await OfflineCache.readRows(cacheKey) : null;
       if (cached != null && !hasValue && !cancelled) {
         hasValue = true;
@@ -298,6 +316,7 @@ Stream<List<Map<String, dynamic>>> resilientRows(
     onCancel: () async {
       cancelled = true;
       retry?.cancel();
+      await refresh?.cancel();
       await local?.cancel();
       await subscription?.cancel();
     },

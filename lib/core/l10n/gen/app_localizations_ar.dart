@@ -2841,4 +2841,15 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'تم تسجيل الدفعة، لكن تعذّر حفظ قيدها المحاسبي. راجع دفتر اليومية.';
+
+  @override
+  String get refreshData => 'تحديث';
+
+  @override
+  String refreshDataLast(String time) {
+    return 'تحديث (آخر مرة: $time)';
+  }
+
+  @override
+  String get refreshDataDone => 'تم التحديث';
 }

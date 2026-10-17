@@ -426,6 +426,19 @@ class Outbox {
     _changes.add(null);
   }
 
+  /// [op] was sent straight to the server (it never waited here). It is
+  /// laid over what screens show for a few seconds, like a change sent
+  /// from the queue, so the screen shows it at once instead of when the
+  /// server's live update arrives.
+  void sentDirectly(OutboxOp op) {
+    if (op.kind == OutboxKind.rpc) return;
+    final now = DateTime.now();
+    _settling
+      ..removeWhere((s) => now.difference(s.$2) > _settle)
+      ..add((op, now));
+    _changes.add(null);
+  }
+
   /// The server has it.
   Future<void> done(String id) async {
     final i = _ops.indexWhere((o) => o.id == id);

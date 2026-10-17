@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/constants/default_chart_of_accounts.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
+import '../../../core/offline/data_refresh.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
@@ -15,6 +16,7 @@ final _accountsProvider2 = FutureProvider.autoDispose.family<List<ChartOfAccount
 });
 
 final _trialBalanceProvider2 = FutureProvider.autoDispose.family<Map<String, int>, String>((ref, storeId) {
+  ref.watch(dataRefreshEpochProvider);
   return ref.watch(accountingRepositoryProvider).trialBalance(storeId);
 });
 

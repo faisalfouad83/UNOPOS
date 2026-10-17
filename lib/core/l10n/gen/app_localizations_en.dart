@@ -2848,4 +2848,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.';
+
+  @override
+  String get refreshData => 'Refresh';
+
+  @override
+  String refreshDataLast(String time) {
+    return 'Refresh (last: $time)';
+  }
+
+  @override
+  String get refreshDataDone => 'Updated';
 }

@@ -116,6 +116,17 @@ void main() {
     expect(outbox.ops, isEmpty);
   });
 
+  test('a change sent straight away shows on screen at once, before the live update', () async {
+    final rows = [
+      {'id': 'p1', 'store_id': 's', 'name': 'Tea', 'is_active': true},
+      {'id': 'p2', 'store_id': 's', 'name': 'Rice', 'is_active': true},
+    ];
+    await writer.update('products', {'is_active': false}, value: 'p1');
+    expect(outbox.ops, isEmpty);
+    final shown = outbox.applyTo('products', rows, where: (r) => r['is_active'] != false);
+    expect(shown.map((r) => r['id']), ['p2']);
+  });
+
   test('a change made while older ones wait goes after them, not before', () async {
     connectivity.markOffline();
     await writer.insert('customers', {'store_id': 's', 'name': 'First'});

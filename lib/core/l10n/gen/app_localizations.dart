@@ -5187,6 +5187,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.'**
   String get invPaymentNotPosted;
+
+  /// No description provided for @refreshData.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refreshData;
+
+  /// No description provided for @refreshDataLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh (last: {time})'**
+  String refreshDataLast(String time);
+
+  /// No description provided for @refreshDataDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get refreshDataDone;
 }
 
 class _AppLocalizationsDelegate

@@ -2830,4 +2830,15 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'پارەدانەکە تۆمار کرا، بەڵام تۆماری ژمێریاریەکەی پاشەکەوت نەکرا. ڕۆژنامەکە بپشکنە.';
+
+  @override
+  String get refreshData => 'نوێکردنەوە';
+
+  @override
+  String refreshDataLast(String time) {
+    return 'نوێکردنەوە (دواجار: $time)';
+  }
+
+  @override
+  String get refreshDataDone => 'نوێکرایەوە';
 }

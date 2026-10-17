@@ -1009,5 +1009,10 @@
   "invAmountInvalid": "Enter an amount more than zero",
   "invTaxRateInvalid": "Enter a rate from 0 to 100",
   "invImportMatchHelp": "Products already in the list are found by barcode, then by code, or by their exact name when a row has neither, and updated; empty cells keep what the product has. The quantity sets this branch's stock to that number, so importing the same file again doesn't add stock twice.",
-  "invPaymentNotPosted": "Payment recorded, but its accounting entry couldn't be saved. Check the journal."
+  "invPaymentNotPosted": "Payment recorded, but its accounting entry couldn't be saved. Check the journal.",
+
+  "refreshData": "Refresh",
+  "refreshDataLast": "Refresh (last: {time})",
+  "@refreshDataLast": {"placeholders": {"time": {"type": "String"}}},
+  "refreshDataDone": "Updated"
 }

@@ -1,3 +1,4 @@
+import 'refresh_data_button.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -123,6 +124,7 @@ class HomeShell extends ConsumerWidget {
               const _BranchIndicator(),
               const SizedBox(width: 8),
               const OfflineSyncIndicator(),
+              const RefreshDataButton(),
               // A tablet in portrait has room for the time but not the date.
               _LiveClock(showDate: AppBreakpoints.isExpanded(width)),
               const SizedBox(width: 8),
@@ -266,6 +268,7 @@ class _CompactStrip extends ConsumerWidget {
                 ),
               ),
               const OfflineSyncIndicator(compact: true),
+              const RefreshDataButton(),
               const BreakButton(),
               const NotificationBell(),
               PopupMenuButton<String>(

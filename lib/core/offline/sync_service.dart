@@ -383,6 +383,7 @@ class OfflineWriter {
     try {
       final result = await execute(_client, op, _outbox);
       _connectivity.markOnline();
+      _outbox.sentDirectly(op);
       return result;
     } catch (e) {
       if (!isTransientError(e)) rethrow;
