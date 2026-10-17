@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'app_bootstrap.dart';
 import '../../features/breaks/presentation/break_lock_screen.dart';
 import '../../features/breaks/presentation/break_providers.dart';
+import '../../features/price_checker/application/price_checker_mode.dart';
+import '../../features/price_checker/presentation/price_checker_screen.dart';
 import '../../features/support/presentation/support_portal_screen.dart';
 import 'route_guard.dart';
 import 'route_paths.dart';
@@ -41,6 +43,7 @@ class _GoRouterRefreshNotifier extends ChangeNotifier {
     ref.listen(licenseExpiredProvider, (_, __) => notifyListeners());
     ref.listen(storeHasEmployeesProvider, (_, __) => notifyListeners());
     ref.listen(activeBreakProvider, (_, __) => notifyListeners());
+    ref.listen(priceCheckerModeProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -67,6 +70,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         session: session,
         licenseExpired: ref.read(licenseExpiredProvider),
         onBreak: ref.read(activeBreakProvider) != null,
+        priceCheckerMode: ref.read(priceCheckerModeProvider.notifier).isOnFor(session.store?.id),
       );
     },
     routes: [
@@ -93,6 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: RoutePaths.licenseExpired, builder: (context, state) => const LicenseExpiredScreen()),
       GoRoute(path: RoutePaths.breakLock, builder: (context, state) => const BreakLockScreen()),
       GoRoute(path: RoutePaths.support, builder: (context, state) => const SupportPortalScreen()),
+      GoRoute(path: RoutePaths.priceChecker, builder: (context, state) => const PriceCheckerScreen()),
       ShellRoute(
         builder: (context, state, child) => HomeShell(currentPath: state.matchedLocation, child: child),
         routes: [

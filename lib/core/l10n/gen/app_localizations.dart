@@ -5241,6 +5241,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shift open since {time}'**
   String homeShiftOpenSince(String time);
+
+  /// No description provided for @priceCheckerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Checker'**
+  String get priceCheckerTitle;
+
+  /// No description provided for @priceCheckerSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a barcode or search by name, barcode or SKU'**
+  String get priceCheckerSearchHint;
+
+  /// No description provided for @priceCheckerIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a product to see its price'**
+  String get priceCheckerIdle;
+
+  /// No description provided for @priceCheckerIdleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the barcode under the scanner, or type the product name.'**
+  String get priceCheckerIdleHint;
+
+  /// No description provided for @priceCheckerLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening saved product data…'**
+  String get priceCheckerLoading;
+
+  /// No description provided for @priceCheckerSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronizing store products…'**
+  String get priceCheckerSyncing;
+
+  /// No description provided for @priceCheckerSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Products synchronized successfully.'**
+  String get priceCheckerSynced;
+
+  /// No description provided for @priceCheckerOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline mode — using saved product data.'**
+  String get priceCheckerOffline;
+
+  /// No description provided for @priceCheckerSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronization failed — continuing with the previous snapshot.'**
+  String get priceCheckerSyncFailed;
+
+  /// No description provided for @priceCheckerSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Using saved product data — not refreshed yet.'**
+  String get priceCheckerSaved;
+
+  /// No description provided for @priceCheckerNeedsInitialSync.
+  ///
+  /// In en, this message translates to:
+  /// **'No product data on this device yet. Connect to the internet once so the store\'s products can be downloaded.'**
+  String get priceCheckerNeedsInitialSync;
+
+  /// No description provided for @priceCheckerFirstSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The store\'s products could not be downloaded yet. It will try again automatically.'**
+  String get priceCheckerFirstSyncFailed;
+
+  /// No description provided for @priceCheckerLastSnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Last snapshot: {date}'**
+  String priceCheckerLastSnapshot(String date);
+
+  /// No description provided for @priceCheckerLastSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Last successful sync: {date}'**
+  String priceCheckerLastSync(String date);
+
+  /// No description provided for @priceCheckerNeverSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Never synchronized'**
+  String get priceCheckerNeverSynced;
+
+  /// No description provided for @priceCheckerVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshot v{version} · {count} products'**
+  String priceCheckerVersion(int version, int count);
+
+  /// No description provided for @priceCheckerLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest data'**
+  String get priceCheckerLatest;
+
+  /// No description provided for @priceCheckerOlder.
+  ///
+  /// In en, this message translates to:
+  /// **'Older saved data'**
+  String get priceCheckerOlder;
+
+  /// No description provided for @priceCheckerOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get priceCheckerOnline;
+
+  /// No description provided for @priceCheckerOfflineShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get priceCheckerOfflineShort;
+
+  /// No description provided for @priceCheckerSyncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronize now'**
+  String get priceCheckerSyncNow;
+
+  /// No description provided for @priceCheckerNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No product found for “{query}”'**
+  String priceCheckerNotFound(String query);
+
+  /// No description provided for @priceCheckerChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Several products match — choose one'**
+  String get priceCheckerChoose;
+
+  /// No description provided for @priceCheckerDuplicateCode.
+  ///
+  /// In en, this message translates to:
+  /// **'This code belongs to several products — choose the right one'**
+  String get priceCheckerDuplicateCode;
+
+  /// No description provided for @priceCheckerPerUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'per {unit}'**
+  String priceCheckerPerUnit(String unit);
+
+  /// No description provided for @priceCheckerWholesale.
+  ///
+  /// In en, this message translates to:
+  /// **'Wholesale: {price}'**
+  String priceCheckerWholesale(String price);
+
+  /// No description provided for @priceCheckerBarcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get priceCheckerBarcode;
+
+  /// No description provided for @priceCheckerSku.
+  ///
+  /// In en, this message translates to:
+  /// **'SKU'**
+  String get priceCheckerSku;
+
+  /// No description provided for @priceCheckerExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit price checker'**
+  String get priceCheckerExit;
+
+  /// No description provided for @priceCheckerExitPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code to leave the price checker'**
+  String get priceCheckerExitPrompt;
+
+  /// No description provided for @priceCheckerExitWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong code. Try again.'**
+  String get priceCheckerExitWrong;
+
+  /// No description provided for @priceCheckerExitLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many wrong codes. Try again in {seconds} s.'**
+  String priceCheckerExitLocked(int seconds);
 }
 
 class _AppLocalizationsDelegate

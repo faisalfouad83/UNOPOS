@@ -44,6 +44,7 @@ class RouteGuard {
     required SessionState session,
     bool licenseExpired = false,
     bool onBreak = false,
+    bool priceCheckerMode = false,
   }) {
     final isOnboardingRoute = location == RoutePaths.activation ||
         location == RoutePaths.onboardingStore ||
@@ -81,6 +82,17 @@ class RouteGuard {
     }
     // Unlocked (a code was just entered): move on from the lock screen.
     if (location == RoutePaths.licenseExpired) {
+      return session.isAuthenticated ? RoutePaths.home : RoutePaths.tilePicker;
+    }
+
+    // A dedicated price checker (turned on with its code on the account PIN
+    // pad, for the store signed in) shows nothing else until the same code
+    // is entered again on it. Only an expired license or a signed-out store
+    // take precedence; without the mode the screen is not reachable.
+    if (priceCheckerMode && hasStoreOnDisk) {
+      return location == RoutePaths.priceChecker ? null : RoutePaths.priceChecker;
+    }
+    if (location == RoutePaths.priceChecker) {
       return session.isAuthenticated ? RoutePaths.home : RoutePaths.tilePicker;
     }
 

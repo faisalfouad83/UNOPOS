@@ -2861,4 +2861,123 @@ class AppLocalizationsCkb extends AppLocalizations {
   String homeShiftOpenSince(String time) {
     return 'شەفت کراوەیە لە $timeـەوە';
   }
+
+  @override
+  String get priceCheckerTitle => 'پشکنەری نرخ';
+
+  @override
+  String get priceCheckerSearchHint =>
+      'بارکۆد بخوێنەوە یان بە ناو، بارکۆد یان کۆد بگەڕێ';
+
+  @override
+  String get priceCheckerIdle => 'کاڵایەک بخوێنەوە بۆ بینینی نرخەکەی';
+
+  @override
+  String get priceCheckerIdleHint =>
+      'بارکۆدەکە بخە بەردەم سکانەرەکە، یان ناوی کاڵاکە بنووسە.';
+
+  @override
+  String get priceCheckerLoading => 'کردنەوەی زانیاریی پاشەکەوتکراوی کاڵاکان…';
+
+  @override
+  String get priceCheckerSyncing => 'هاوکاتکردنی کاڵاکانی فرۆشگا…';
+
+  @override
+  String get priceCheckerSynced => 'کاڵاکان بە سەرکەوتوویی هاوکات کران.';
+
+  @override
+  String get priceCheckerOffline =>
+      'دۆخی بێ ئینتەرنێت — زانیاریی پاشەکەوتکراوی کاڵاکان بەکاردێت.';
+
+  @override
+  String get priceCheckerSyncFailed =>
+      'هاوکاتکردن سەرکەوتوو نەبوو — بەردەوام دەبین بە وێنەگرتنی پێشوو.';
+
+  @override
+  String get priceCheckerSaved =>
+      'زانیاریی پاشەکەوتکراوی کاڵاکان بەکاردێت — هێشتا نوێ نەکراوەتەوە.';
+
+  @override
+  String get priceCheckerNeedsInitialSync =>
+      'هێشتا هیچ زانیارییەکی کاڵا لەم ئامێرەدا نییە. جارێک پەیوەست بە بە ئینتەرنێتەوە بۆ ئەوەی کاڵاکانی فرۆشگا دابەزێنرێن.';
+
+  @override
+  String get priceCheckerFirstSyncFailed =>
+      'هێشتا نەتوانرا کاڵاکانی فرۆشگا دابەزێنرێن. بە شێوەی خۆکار دووبارە هەوڵ دەدرێتەوە.';
+
+  @override
+  String priceCheckerLastSnapshot(String date) {
+    return 'دوایین وێنەگرتن: $date';
+  }
+
+  @override
+  String priceCheckerLastSync(String date) {
+    return 'دوایین هاوکاتکردنی سەرکەوتوو: $date';
+  }
+
+  @override
+  String get priceCheckerNeverSynced => 'هەرگیز هاوکات نەکراوە';
+
+  @override
+  String priceCheckerVersion(int version, int count) {
+    return 'وێنەگرتنی $version · $count کاڵا';
+  }
+
+  @override
+  String get priceCheckerLatest => 'نوێترین زانیاری';
+
+  @override
+  String get priceCheckerOlder => 'زانیاریی پاشەکەوتکراوی کۆنتر';
+
+  @override
+  String get priceCheckerOnline => 'پەیوەستە';
+
+  @override
+  String get priceCheckerOfflineShort => 'پەیوەست نییە';
+
+  @override
+  String get priceCheckerSyncNow => 'ئێستا هاوکات بکە';
+
+  @override
+  String priceCheckerNotFound(String query) {
+    return 'هیچ کاڵایەک نەدۆزرایەوە بۆ “$query”';
+  }
+
+  @override
+  String get priceCheckerChoose => 'چەند کاڵایەک دەگونجێن — یەکێک هەڵبژێرە';
+
+  @override
+  String get priceCheckerDuplicateCode =>
+      'ئەم کۆدە هی چەند کاڵایەکە — کاڵا دروستەکە هەڵبژێرە';
+
+  @override
+  String priceCheckerPerUnit(String unit) {
+    return 'بۆ هەر $unit';
+  }
+
+  @override
+  String priceCheckerWholesale(String price) {
+    return 'نرخی کۆ: $price';
+  }
+
+  @override
+  String get priceCheckerBarcode => 'بارکۆد';
+
+  @override
+  String get priceCheckerSku => 'کۆدی کاڵا';
+
+  @override
+  String get priceCheckerExit => 'دەرچوون لە پشکنەری نرخ';
+
+  @override
+  String get priceCheckerExitPrompt =>
+      'کۆدەکە بنووسە بۆ دەرچوون لە پشکنەری نرخ';
+
+  @override
+  String get priceCheckerExitWrong => 'کۆدی هەڵە. دووبارە هەوڵ بدەرەوە.';
+
+  @override
+  String priceCheckerExitLocked(int seconds) {
+    return 'کۆدی هەڵەی زۆر. دوای $seconds چرکە هەوڵ بدەرەوە.';
+  }
 }

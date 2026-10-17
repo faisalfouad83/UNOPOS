@@ -2872,4 +2872,122 @@ class AppLocalizationsAr extends AppLocalizations {
   String homeShiftOpenSince(String time) {
     return 'الشفت مفتوح منذ $time';
   }
+
+  @override
+  String get priceCheckerTitle => 'فاحص الأسعار';
+
+  @override
+  String get priceCheckerSearchHint =>
+      'امسح الباركود أو ابحث بالاسم أو الباركود أو الرمز';
+
+  @override
+  String get priceCheckerIdle => 'امسح المنتج لمعرفة سعره';
+
+  @override
+  String get priceCheckerIdleHint =>
+      'ضع الباركود أمام الماسح، أو اكتب اسم المنتج.';
+
+  @override
+  String get priceCheckerLoading => 'جارٍ فتح بيانات المنتجات المحفوظة…';
+
+  @override
+  String get priceCheckerSyncing => 'جارٍ مزامنة منتجات المتجر…';
+
+  @override
+  String get priceCheckerSynced => 'تمت مزامنة المنتجات بنجاح.';
+
+  @override
+  String get priceCheckerOffline =>
+      'وضع عدم الاتصال — يتم استخدام بيانات المنتجات المحفوظة.';
+
+  @override
+  String get priceCheckerSyncFailed =>
+      'فشلت المزامنة — يستمر العمل بالنسخة السابقة.';
+
+  @override
+  String get priceCheckerSaved =>
+      'يتم استخدام بيانات المنتجات المحفوظة — لم يتم تحديثها بعد.';
+
+  @override
+  String get priceCheckerNeedsInitialSync =>
+      'لا توجد بيانات منتجات على هذا الجهاز بعد. اتصل بالإنترنت مرة واحدة لتنزيل منتجات المتجر.';
+
+  @override
+  String get priceCheckerFirstSyncFailed =>
+      'تعذر تنزيل منتجات المتجر بعد. ستتم إعادة المحاولة تلقائيًا.';
+
+  @override
+  String priceCheckerLastSnapshot(String date) {
+    return 'آخر نسخة: $date';
+  }
+
+  @override
+  String priceCheckerLastSync(String date) {
+    return 'آخر مزامنة ناجحة: $date';
+  }
+
+  @override
+  String get priceCheckerNeverSynced => 'لم تتم المزامنة أبدًا';
+
+  @override
+  String priceCheckerVersion(int version, int count) {
+    return 'النسخة $version · $count منتج';
+  }
+
+  @override
+  String get priceCheckerLatest => 'أحدث البيانات';
+
+  @override
+  String get priceCheckerOlder => 'بيانات محفوظة أقدم';
+
+  @override
+  String get priceCheckerOnline => 'متصل';
+
+  @override
+  String get priceCheckerOfflineShort => 'غير متصل';
+
+  @override
+  String get priceCheckerSyncNow => 'زامن الآن';
+
+  @override
+  String priceCheckerNotFound(String query) {
+    return 'لم يتم العثور على منتج لـ “$query”';
+  }
+
+  @override
+  String get priceCheckerChoose => 'عدة منتجات مطابقة — اختر واحدًا';
+
+  @override
+  String get priceCheckerDuplicateCode =>
+      'هذا الرمز يخص عدة منتجات — اختر المنتج الصحيح';
+
+  @override
+  String priceCheckerPerUnit(String unit) {
+    return 'لكل $unit';
+  }
+
+  @override
+  String priceCheckerWholesale(String price) {
+    return 'سعر الجملة: $price';
+  }
+
+  @override
+  String get priceCheckerBarcode => 'الباركود';
+
+  @override
+  String get priceCheckerSku => 'رمز المنتج';
+
+  @override
+  String get priceCheckerExit => 'الخروج من فاحص الأسعار';
+
+  @override
+  String get priceCheckerExitPrompt => 'أدخل الرمز للخروج من فاحص الأسعار';
+
+  @override
+  String get priceCheckerExitWrong => 'رمز خاطئ. حاول مرة أخرى.';
+
+  @override
+  String priceCheckerExitLocked(int seconds) {
+    return 'رموز خاطئة كثيرة. حاول بعد $seconds ث.';
+  }
 }
