@@ -5187,6 +5187,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.'**
   String get invPaymentNotPosted;
+
+  /// No description provided for @themeNameLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeNameLight;
+
+  /// No description provided for @themeNameDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeNameDark;
+
+  /// No description provided for @themeNameChristmas.
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas'**
+  String get themeNameChristmas;
+
+  /// No description provided for @themeNameHalloween.
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween'**
+  String get themeNameHalloween;
+
+  /// No description provided for @themeNameEidAlFitr.
+  ///
+  /// In en, this message translates to:
+  /// **'Eid al-Fitr'**
+  String get themeNameEidAlFitr;
+
+  /// No description provided for @themeNameEidAlAdha.
+  ///
+  /// In en, this message translates to:
+  /// **'Eid al-Adha'**
+  String get themeNameEidAlAdha;
+
+  /// No description provided for @themeNameNowruz.
+  ///
+  /// In en, this message translates to:
+  /// **'Nowruz'**
+  String get themeNameNowruz;
+
+  /// No description provided for @themeNameRamadan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan'**
+  String get themeNameRamadan;
+
+  /// No description provided for @themeNameSummer.
+  ///
+  /// In en, this message translates to:
+  /// **'Summer'**
+  String get themeNameSummer;
+
+  /// No description provided for @themeNameAutumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Autumn'**
+  String get themeNameAutumn;
+
+  /// No description provided for @themeNameSpring.
+  ///
+  /// In en, this message translates to:
+  /// **'Spring'**
+  String get themeNameSpring;
+
+  /// No description provided for @themeNameWinter.
+  ///
+  /// In en, this message translates to:
+  /// **'Winter'**
+  String get themeNameWinter;
+
+  /// No description provided for @themeAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get themeAutomatic;
+
+  /// No description provided for @themeAutomaticHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses the theme set by UNOPOS support, otherwise Light.'**
+  String get themeAutomaticHelp;
+
+  /// No description provided for @themeFollowDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Light or Dark, like the device'**
+  String get themeFollowDevice;
+
+  /// No description provided for @themeLockedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'UNOPOS support set this store\'s theme. It can\'t be changed here.'**
+  String get themeLockedNote;
+
+  /// No description provided for @themeInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'In use: {name}'**
+  String themeInUse(String name);
+
+  /// No description provided for @themeYourChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'This store\'s choice: {name}'**
+  String themeYourChoice(String name);
+
+  /// No description provided for @themeDeveloperSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set by UNOPOS support: {name}'**
+  String themeDeveloperSet(String name);
+
+  /// No description provided for @themeDeveloperNone.
+  ///
+  /// In en, this message translates to:
+  /// **'UNOPOS support hasn\'t set a theme'**
+  String get themeDeveloperNone;
+
+  /// No description provided for @themeLastSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synced: {time}'**
+  String themeLastSynced(String time);
+
+  /// No description provided for @themeNeverSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced on this device yet'**
+  String get themeNeverSynced;
+
+  /// No description provided for @themeLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get themeLocked;
+
+  /// No description provided for @themeDevTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Themes'**
+  String get themeDevTab;
+
+  /// No description provided for @themeDevGlobal.
+  ///
+  /// In en, this message translates to:
+  /// **'All stores'**
+  String get themeDevGlobal;
+
+  /// No description provided for @themeDevGlobalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Used by every store that has no theme of its own from you.'**
+  String get themeDevGlobalHelp;
+
+  /// No description provided for @themeDevLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock (the store can\'t change it)'**
+  String get themeDevLock;
+
+  /// No description provided for @themeDevNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get themeDevNotSet;
+
+  /// No description provided for @themeDevRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get themeDevRemove;
+
+  /// No description provided for @themeDevAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'Set theme'**
+  String get themeDevAssign;
+
+  /// No description provided for @themeDevStoreChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Store\'s choice: {name}'**
+  String themeDevStoreChoice(String name);
+
+  /// No description provided for @themeDevShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing: {name}'**
+  String themeDevShowing(String name);
+
+  /// No description provided for @themeDevAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Your theme: {name}'**
+  String themeDevAssigned(String name);
+
+  /// No description provided for @themeDevSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search stores'**
+  String get themeDevSearch;
+
+  /// No description provided for @themeDevSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme saved'**
+  String get themeDevSaved;
 }
 
 class _AppLocalizationsDelegate

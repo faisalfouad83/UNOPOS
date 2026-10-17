@@ -14,7 +14,7 @@ import '../core/providers.dart';
 import '../core/routing/app_bootstrap.dart';
 import '../core/routing/app_router.dart';
 import '../core/store_settings_provider.dart';
-import '../core/theming/app_theme.dart';
+import '../core/theming/theme_controller.dart';
 import '../core/theming/glass_background.dart';
 import '../core/window/full_screen.dart';
 import '../core/utils/formatters.dart';
@@ -22,14 +22,11 @@ import '../core/widgets/unopos_logo.dart';
 import '../features/auth/domain/session_controller.dart';
 import '../features/backup/domain/auto_backup_checker.dart';
 import '../features/licensing/domain/license_watch.dart';
-import '../features/settings/domain/settings_models.dart';
 
 /// Language selection, independent of MaterialApp's own locale resolution —
 /// UNOPOS defaults to English until a store's Settings choose otherwise, and
 /// the switch is instant (no restart) since it's just a watched provider.
 final appLocaleProvider = StateProvider<Locale>((ref) => const Locale('en'));
-
-final appThemeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
 class UnoposApp extends ConsumerStatefulWidget {
   const UnoposApp({super.key});
@@ -73,11 +70,6 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
     final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
     if (!mounted) return;
     ref.read(appLocaleProvider.notifier).state = Locale(settings.defaultLanguage);
-    ref.read(appThemeModeProvider.notifier).state = switch (settings.themeMode) {
-      AppThemeMode.light => ThemeMode.light,
-      AppThemeMode.dark => ThemeMode.dark,
-      AppThemeMode.system => ThemeMode.system,
-    };
     await _runAutoBackupCheck();
   }
 
@@ -99,13 +91,16 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
   Widget build(BuildContext context) {
     final bootstrap = ref.watch(appBootstrapProvider);
     final locale = ref.watch(appLocaleProvider);
-    final themeMode = ref.watch(appThemeModeProvider);
+    // The store's theme (its own choice, the developer's assignment, ...;
+    // see theme_resolution.dart), applied the moment it changes.
+    final themeState = ref.watch(storeThemeControllerProvider);
 
     if (bootstrap.isLoading) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
+        theme: themeState.theme,
+        darkTheme: themeState.darkTheme,
+        themeMode: themeState.themeMode,
         builder: (context, child) => GlassBackground(child: child ?? const SizedBox.shrink()),
         home: const _SplashScreen(),
       );
@@ -117,9 +112,9 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
       final isRtl = locale.languageCode == 'ar' || locale.languageCode == 'ckb';
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
-        themeMode: themeMode,
+        theme: themeState.theme,
+        darkTheme: themeState.darkTheme,
+        themeMode: themeState.themeMode,
         locale: locale,
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
@@ -156,9 +151,9 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
       debugShowCheckedModeBanner: false,
       title: 'UNOPOS',
       scrollBehavior: const AppScrollBehavior(),
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: themeMode,
+      theme: themeState.theme,
+      darkTheme: themeState.darkTheme,
+      themeMode: themeState.themeMode,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

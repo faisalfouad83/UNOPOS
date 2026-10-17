@@ -19,6 +19,7 @@ import '../domain/payment_math.dart';
 import '../domain/pos_models.dart';
 import 'cart_controller.dart';
 import 'loyalty_customer_picker.dart';
+import '../../../core/theming/store_themes.dart';
 
 enum _PayMethod { cash, card, payLater }
 
@@ -564,7 +565,7 @@ class _CheckoutDialogState extends ConsumerState<_CheckoutDialog> {
                           _SummaryRow(
                             label: l10n.posChangeDue,
                             value: Money.format(changeDue, currencySymbol: symbol),
-                            color: Colors.green.shade700,
+                            color: StatusColors.of(context).success,
                             large: true,
                           ),
                         if (_method == _PayMethod.payLater || (_method == _PayMethod.cash && paid > 0 && remaining > 0))

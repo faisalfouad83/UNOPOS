@@ -6,6 +6,7 @@ import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../domain/settings_models.dart';
+import '../../../core/theming/store_themes.dart';
 
 class PrinterSettingsSection extends ConsumerStatefulWidget {
   const PrinterSettingsSection({super.key, required this.storeId, required this.settings});
@@ -157,7 +158,7 @@ class _PrinterSettingsSectionState extends ConsumerState<PrinterSettingsSection>
                   const SizedBox(width: 12),
                   Text(
                     _testResult!,
-                    style: TextStyle(color: _testResult == 'OK' ? Colors.green : Theme.of(context).colorScheme.error),
+                    style: TextStyle(color: _testResult == 'OK' ? StatusColors.of(context).success : Theme.of(context).colorScheme.error),
                   ),
                 ],
               ],

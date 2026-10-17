@@ -9,6 +9,7 @@ import '../../auth/domain/session_controller.dart';
 import '../domain/shift_cash_summary.dart';
 import '../domain/shifts_models.dart';
 import 'shift_providers.dart';
+import '../../../core/theming/store_themes.dart';
 
 /// Cash count at the end of a shift: what should be in the drawer
 /// ([ShiftCashSummary], worked out fresh), the cash counted, and the
@@ -140,10 +141,10 @@ class _CloseShiftDialogState extends ConsumerState<_CloseShiftDialog> {
             l10n.shiftDifference(Money.format(difference)),
             style: theme.textTheme.bodyMedium?.copyWith(
               color: difference == 0
-                  ? Colors.green.shade700
+                  ? StatusColors.of(context).success
                   : difference < 0
                       ? theme.colorScheme.error
-                      : Colors.orange.shade800,
+                      : StatusColors.of(context).warning,
             ),
           ),
         ],
@@ -222,11 +223,11 @@ class ShiftCashBreakdown extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.cloud_off, size: 16, color: Colors.orange.shade800),
+                Icon(Icons.cloud_off, size: 16, color: StatusColors.of(context).warning),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(l10n.shiftCashOfflineNote,
-                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.orange.shade800)),
+                      style: theme.textTheme.bodySmall?.copyWith(color: StatusColors.of(context).warning)),
                 ),
               ],
             ),

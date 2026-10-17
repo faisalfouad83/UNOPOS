@@ -9,6 +9,7 @@ import 'core/diagnostics/error_log.dart';
 import 'core/theming/app_theme.dart';
 import 'core/window/full_screen.dart';
 import 'core/theming/glass_background.dart';
+import 'core/theming/theme_controller.dart';
 import 'core/widgets/unopos_logo.dart';
 import 'core/supabase/supabase_client_provider.dart';
 import 'core/supabase/supabase_config.dart';
@@ -43,6 +44,8 @@ void main() async {
       );
 
   await AppFullScreen.init();
+  // The theme last in effect, so the app opens in it even offline.
+  await ThemeLocalStore.preload();
 
   // Something on screen straight away, instead of a blank window while the
   // cloud connection starts.

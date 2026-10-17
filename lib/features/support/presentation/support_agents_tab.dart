@@ -6,6 +6,7 @@ import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/formatters.dart';
 import '../domain/support_models.dart';
+import '../../../core/theming/store_themes.dart';
 
 String supportPresenceLabel(AppLocalizations l10n, SupportPresence p) => switch (p) {
       SupportPresence.online => l10n.supportPresenceOnline,
@@ -424,7 +425,7 @@ class _AgentDialogState extends ConsumerState<_AgentDialog> {
                             dense: true,
                             contentPadding: EdgeInsets.zero,
                             leading: Icon(r.isDeduction ? Icons.remove_circle_outline : Icons.add_circle_outline,
-                                color: r.isDeduction ? theme.colorScheme.error : Colors.green.shade700),
+                                color: r.isDeduction ? theme.colorScheme.error : StatusColors.of(context).success),
                             title:
                                 Text('${r.isDeduction ? '-' : '+'}${Money.format(r.amountMinorUnits)} · ${r.reason}'),
                             subtitle: Text(AppDateFormat.shortDate(r.effectiveDate)),

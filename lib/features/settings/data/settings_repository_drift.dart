@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
+import '../../../core/theming/store_themes.dart';
 import '../domain/settings_models.dart';
 import '../domain/settings_repository.dart';
 
@@ -11,10 +12,24 @@ class DriftSettingsRepository implements SettingsRepository {
 
   final AppDatabase _db;
 
+  /// The local database has no theme_key column (its schema stays as it
+  /// is), so its theme_mode column holds the store's theme choice: a theme
+  /// key, 'system' (follow the device — what older versions saved by
+  /// default, so they keep looking the same) or [_automatic].
+  static const _automatic = 'auto';
+
+  static String _themeColumn(AppSettingsRecord s) => s.themeKey ?? _automatic;
+
   AppSettingsRecord _mapRow(AppSettingsTableData row) => AppSettingsRecord(
         storeId: row.storeId,
         defaultLanguage: row.defaultLanguage,
-        themeMode: AppThemeMode.values.firstWhere((m) => m.name == row.themeMode, orElse: () => AppThemeMode.system),
+        themeMode: switch (row.themeMode) {
+          'light' => AppThemeMode.light,
+          'dark' => AppThemeMode.dark,
+          'system' || _automatic => AppThemeMode.system,
+          final key => StoreThemeKey.fromDb(key)?.palette.isDark == true ? AppThemeMode.dark : AppThemeMode.light,
+        },
+        themeKey: row.themeMode == _automatic ? null : row.themeMode,
         currencyCode: row.currencyCode,
         currencySymbol: row.currencySymbol,
         defaultVatRatePercent: row.defaultVatRatePercent,
@@ -63,7 +78,7 @@ class DriftSettingsRepository implements SettingsRepository {
     await (_db.update(_db.appSettingsTable)..where((t) => t.storeId.equals(settings.storeId))).write(
       AppSettingsTableCompanion(
         defaultLanguage: Value(settings.defaultLanguage),
-        themeMode: Value(settings.themeMode.name),
+        themeMode: Value(_themeColumn(settings)),
         currencyCode: Value(settings.currencyCode),
         currencySymbol: Value(settings.currencySymbol),
         defaultVatRatePercent: Value(settings.defaultVatRatePercent),

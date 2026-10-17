@@ -8,6 +8,7 @@ import '../../../core/offline/sync_service.dart';
 import '../../../core/supabase/supabase_config.dart';
 import '../../../core/utils/formatters.dart';
 import '../domain/complete_sale_use_case.dart';
+import '../../../core/theming/store_themes.dart';
 
 /// Top-bar status: online or offline, and whether changes made on this
 /// device are being sent (syncing), still waiting (also for another store
@@ -33,6 +34,7 @@ class OfflineSyncIndicator extends ConsumerWidget {
       Future.microtask(() => resendRefusedHeldSaleCheckouts(outbox));
     }
 
+    final status = StatusColors.of(context);
     final (icon, color, text) = sync.syncing
         ? (Icons.sync, scheme.primary, l10n.syncInProgress(sync.pending))
         : !online
@@ -44,10 +46,10 @@ class OfflineSyncIndicator extends ConsumerWidget {
             : sync.failed > 0
                 ? (Icons.sync_problem, scheme.error, l10n.syncFailedCount(sync.failed))
                 : sync.pending > 0
-                    ? (Icons.cloud_upload_outlined, Colors.orange.shade800, l10n.offlinePendingSales(sync.pending))
+                    ? (Icons.cloud_upload_outlined, status.warning, l10n.offlinePendingSales(sync.pending))
                     : sync.otherStores > 0
-                        ? (Icons.cloud_queue, Colors.orange.shade800, l10n.syncOtherStores(sync.otherStores))
-                        : (Icons.cloud_done_outlined, Colors.green.shade700, l10n.statusOnline);
+                        ? (Icons.cloud_queue, status.warning, l10n.syncOtherStores(sync.otherStores))
+                        : (Icons.cloud_done_outlined, status.success, l10n.statusOnline);
 
     Future<void> onTap() async {
       if (sync.failed > 0) {

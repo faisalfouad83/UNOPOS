@@ -17,6 +17,7 @@ import '../domain/invoice_query.dart';
 import '../domain/pos_models.dart';
 import 'invoices_screen.dart';
 import 'process_return_dialog.dart';
+import '../../../core/theming/store_themes.dart';
 
 /// Product names for [sale]'s lines (sale lines only carry product ids),
 /// including products since removed from the catalog.
@@ -129,7 +130,7 @@ class _InvoiceDetailsDialog extends ConsumerWidget {
                   Expanded(child: Text('${l10n.invoiceTitle} ${sale.saleNumber}', style: theme.textTheme.titleLarge)),
                   Chip(
                     label: Text(invoiceStatusLabel(l10n, status)),
-                    labelStyle: TextStyle(color: invoiceStatusColor(theme.colorScheme, status)),
+                    labelStyle: TextStyle(color: invoiceStatusColor(theme, status)),
                   ),
                   IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
                 ],
@@ -197,7 +198,7 @@ class _InvoiceDetailsDialog extends ConsumerWidget {
                       total(l10n.receiptTendered, sale.amountTenderedMinorUnits!),
                       if ((sale.changeGivenMinorUnits ?? 0) > 0) total(l10n.posChangeDue, sale.changeGivenMinorUnits!),
                     ],
-                    total(l10n.invoicePaid, invoice.paidMinorUnits, color: Colors.green.shade700),
+                    total(l10n.invoicePaid, invoice.paidMinorUnits, color: StatusColors.of(context).success),
                     if (invoice.isPayLater)
                       total(l10n.payRemaining, invoice.remainingMinorUnits, bold: true, color: theme.colorScheme.error),
                     if (invoice.debt != null) _PaymentHistory(debt: invoice.debt!, names: names),

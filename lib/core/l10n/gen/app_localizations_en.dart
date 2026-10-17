@@ -2848,4 +2848,126 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.';
+
+  @override
+  String get themeNameLight => 'Light';
+
+  @override
+  String get themeNameDark => 'Dark';
+
+  @override
+  String get themeNameChristmas => 'Christmas';
+
+  @override
+  String get themeNameHalloween => 'Halloween';
+
+  @override
+  String get themeNameEidAlFitr => 'Eid al-Fitr';
+
+  @override
+  String get themeNameEidAlAdha => 'Eid al-Adha';
+
+  @override
+  String get themeNameNowruz => 'Nowruz';
+
+  @override
+  String get themeNameRamadan => 'Ramadan';
+
+  @override
+  String get themeNameSummer => 'Summer';
+
+  @override
+  String get themeNameAutumn => 'Autumn';
+
+  @override
+  String get themeNameSpring => 'Spring';
+
+  @override
+  String get themeNameWinter => 'Winter';
+
+  @override
+  String get themeAutomatic => 'Automatic';
+
+  @override
+  String get themeAutomaticHelp =>
+      'Uses the theme set by UNOPOS support, otherwise Light.';
+
+  @override
+  String get themeFollowDevice => 'Light or Dark, like the device';
+
+  @override
+  String get themeLockedNote =>
+      'UNOPOS support set this store\'s theme. It can\'t be changed here.';
+
+  @override
+  String themeInUse(String name) {
+    return 'In use: $name';
+  }
+
+  @override
+  String themeYourChoice(String name) {
+    return 'This store\'s choice: $name';
+  }
+
+  @override
+  String themeDeveloperSet(String name) {
+    return 'Set by UNOPOS support: $name';
+  }
+
+  @override
+  String get themeDeveloperNone => 'UNOPOS support hasn\'t set a theme';
+
+  @override
+  String themeLastSynced(String time) {
+    return 'Last synced: $time';
+  }
+
+  @override
+  String get themeNeverSynced => 'Not synced on this device yet';
+
+  @override
+  String get themeLocked => 'Locked';
+
+  @override
+  String get themeDevTab => 'Themes';
+
+  @override
+  String get themeDevGlobal => 'All stores';
+
+  @override
+  String get themeDevGlobalHelp =>
+      'Used by every store that has no theme of its own from you.';
+
+  @override
+  String get themeDevLock => 'Lock (the store can\'t change it)';
+
+  @override
+  String get themeDevNotSet => 'Not set';
+
+  @override
+  String get themeDevRemove => 'Remove';
+
+  @override
+  String get themeDevAssign => 'Set theme';
+
+  @override
+  String themeDevStoreChoice(String name) {
+    return 'Store\'s choice: $name';
+  }
+
+  @override
+  String themeDevShowing(String name) {
+    return 'Showing: $name';
+  }
+
+  @override
+  String themeDevAssigned(String name) {
+    return 'Your theme: $name';
+  }
+
+  @override
+  String get themeDevSearch => 'Search stores';
+
+  @override
+  String get themeDevSaved => 'Theme saved';
 }

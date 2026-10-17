@@ -27,6 +27,7 @@ import 'pos_stock.dart';
 import 'process_return_dialog.dart';
 import 'scan_search_field.dart';
 import 'sales_history_screen.dart';
+import '../../../core/theming/store_themes.dart';
 
 typedef _ProductQueryKey = ({String storeId, String query});
 typedef _BranchKey = ({String storeId, String branchId});
@@ -641,7 +642,7 @@ class _ProductTile extends ConsumerWidget {
                     color: out
                         ? theme.colorScheme.error
                         : stock <= product.reorderLevel
-                            ? Colors.orange.shade800
+                            ? StatusColors.of(context).warning
                             : theme.colorScheme.onSurfaceVariant,
                     fontWeight: out ? FontWeight.bold : null,
                   ),

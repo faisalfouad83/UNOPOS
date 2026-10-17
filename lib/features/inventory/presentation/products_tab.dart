@@ -14,6 +14,7 @@ import 'stock_receive_dialog.dart';
 import 'product_thumb.dart';
 import 'product_import_dialog.dart';
 import 'qr_label_dialog.dart';
+import '../../../core/theming/store_themes.dart';
 
 final _productsSearchProvider = StateProvider.autoDispose<String>((ref) => '');
 
@@ -121,7 +122,7 @@ class ProductsTab extends ConsumerWidget {
                                 size: 16,
                                 color: expiry == ExpiryStatus.expired
                                     ? Theme.of(context).colorScheme.error
-                                    : Colors.orange.shade800,
+                                    : StatusColors.of(context).warning,
                               ),
                             ),
                         ],

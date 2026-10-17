@@ -8,6 +8,7 @@ import '../../auth/domain/session_controller.dart';
 import '../domain/inventory_models.dart';
 import '../domain/product_expiry.dart';
 import 'product_edit_dialog.dart';
+import '../../../core/theming/store_themes.dart';
 
 final _productsForExpiryProvider = StreamProvider.autoDispose.family<List<ProductRecord>, String>((ref, storeId) {
   return ref.watch(inventoryRepositoryProvider).watchProducts(storeId);
@@ -59,7 +60,7 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
                     final p = near[i];
                     final days = daysUntilExpiry(p)!;
                     final expired = days < 0;
-                    final color = expired ? scheme.error : Colors.orange.shade800;
+                    final color = expired ? scheme.error : StatusColors.of(context).warning;
                     return ListTile(
                       leading: Icon(expired ? Icons.dangerous_outlined : Icons.schedule, color: color),
                       title: Text(p.name),

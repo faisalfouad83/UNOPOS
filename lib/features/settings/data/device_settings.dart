@@ -53,6 +53,7 @@ class DeviceSettings {
       storeId: settings.storeId,
       defaultLanguage: settings.defaultLanguage,
       themeMode: settings.themeMode,
+      themeKey: settings.themeKey,
       currencyCode: settings.currencyCode,
       currencySymbol: settings.currencySymbol,
       defaultVatRatePercent: settings.defaultVatRatePercent,

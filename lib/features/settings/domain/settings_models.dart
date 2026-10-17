@@ -122,6 +122,7 @@ class AppSettingsRecord {
     required this.storeId,
     this.defaultLanguage = 'en',
     this.themeMode = AppThemeMode.system,
+    this.themeKey,
     this.currencyCode = 'IQD',
     this.currencySymbol = 'د.ع',
     this.defaultVatRatePercent = 0,
@@ -143,7 +144,35 @@ class AppSettingsRecord {
 
   final String storeId;
   final String defaultLanguage;
+  /// The light/dark setting older app versions read and write. Kept in
+  /// step with [themeKey] (see [withThemeChoice]).
   final AppThemeMode themeMode;
+
+  /// The store's own theme choice (`app_settings.theme_key`): one of the
+  /// twelve theme keys, 'system' (Light/Dark following the device), or null
+  /// for "Automatic" — the developer's assignment, else Light.
+  final String? themeKey;
+
+  /// The store's own choice, falling back to what an older app version set:
+  /// an explicit Light or Dark counts as a choice; the old default
+  /// ('system') counts as Automatic, so a developer assignment can apply.
+  String? get themeChoice =>
+      themeKey ??
+      switch (themeMode) {
+        AppThemeMode.light => 'light',
+        AppThemeMode.dark => 'dark',
+        AppThemeMode.system => null,
+      };
+
+  /// These settings with the store's theme choice set to [choice] (see
+  /// [themeKey]); [themeMode] follows for older app versions: Dark for a dark
+  /// theme, Light for a light one, 'system' for Automatic and follow-device.
+  AppSettingsRecord withThemeChoice(String? choice, {required bool darkTheme}) {
+    final mode = choice == null || choice == 'system'
+        ? AppThemeMode.system
+        : (darkTheme ? AppThemeMode.dark : AppThemeMode.light);
+    return copyWith(themeMode: mode, themeKey: choice, clearThemeKey: choice == null);
+  }
   final String currencyCode;
   final String currencySymbol;
   final double defaultVatRatePercent;
@@ -183,6 +212,8 @@ class AppSettingsRecord {
   AppSettingsRecord copyWith({
     String? defaultLanguage,
     AppThemeMode? themeMode,
+    String? themeKey,
+    bool clearThemeKey = false,
     String? currencyCode,
     String? currencySymbol,
     double? defaultVatRatePercent,
@@ -205,6 +236,7 @@ class AppSettingsRecord {
         storeId: storeId,
         defaultLanguage: defaultLanguage ?? this.defaultLanguage,
         themeMode: themeMode ?? this.themeMode,
+        themeKey: clearThemeKey ? null : (themeKey ?? this.themeKey),
         currencyCode: currencyCode ?? this.currencyCode,
         currencySymbol: currencySymbol ?? this.currencySymbol,
         defaultVatRatePercent: defaultVatRatePercent ?? this.defaultVatRatePercent,

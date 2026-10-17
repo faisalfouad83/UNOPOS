@@ -2841,4 +2841,125 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'تم تسجيل الدفعة، لكن تعذّر حفظ قيدها المحاسبي. راجع دفتر اليومية.';
+
+  @override
+  String get themeNameLight => 'فاتح';
+
+  @override
+  String get themeNameDark => 'داكن';
+
+  @override
+  String get themeNameChristmas => 'عيد الميلاد';
+
+  @override
+  String get themeNameHalloween => 'الهالوين';
+
+  @override
+  String get themeNameEidAlFitr => 'عيد الفطر';
+
+  @override
+  String get themeNameEidAlAdha => 'عيد الأضحى';
+
+  @override
+  String get themeNameNowruz => 'نوروز';
+
+  @override
+  String get themeNameRamadan => 'رمضان';
+
+  @override
+  String get themeNameSummer => 'الصيف';
+
+  @override
+  String get themeNameAutumn => 'الخريف';
+
+  @override
+  String get themeNameSpring => 'الربيع';
+
+  @override
+  String get themeNameWinter => 'الشتاء';
+
+  @override
+  String get themeAutomatic => 'تلقائي';
+
+  @override
+  String get themeAutomaticHelp =>
+      'يستخدم المظهر الذي حدده دعم UNOPOS، وإلا فالمظهر الفاتح.';
+
+  @override
+  String get themeFollowDevice => 'فاتح أو داكن حسب الجهاز';
+
+  @override
+  String get themeLockedNote =>
+      'حدد دعم UNOPOS مظهر هذا المتجر، ولا يمكن تغييره من هنا.';
+
+  @override
+  String themeInUse(String name) {
+    return 'المستخدم الآن: $name';
+  }
+
+  @override
+  String themeYourChoice(String name) {
+    return 'اختيار هذا المتجر: $name';
+  }
+
+  @override
+  String themeDeveloperSet(String name) {
+    return 'حدده دعم UNOPOS: $name';
+  }
+
+  @override
+  String get themeDeveloperNone => 'لم يحدد دعم UNOPOS مظهرًا';
+
+  @override
+  String themeLastSynced(String time) {
+    return 'آخر مزامنة: $time';
+  }
+
+  @override
+  String get themeNeverSynced => 'لم تتم المزامنة على هذا الجهاز بعد';
+
+  @override
+  String get themeLocked => 'مقفل';
+
+  @override
+  String get themeDevTab => 'المظاهر';
+
+  @override
+  String get themeDevGlobal => 'كل المتاجر';
+
+  @override
+  String get themeDevGlobalHelp => 'يستخدمه كل متجر لم تحدد له مظهرًا خاصًا.';
+
+  @override
+  String get themeDevLock => 'قفل (لا يمكن للمتجر تغييره)';
+
+  @override
+  String get themeDevNotSet => 'غير محدد';
+
+  @override
+  String get themeDevRemove => 'إزالة';
+
+  @override
+  String get themeDevAssign => 'تحديد المظهر';
+
+  @override
+  String themeDevStoreChoice(String name) {
+    return 'اختيار المتجر: $name';
+  }
+
+  @override
+  String themeDevShowing(String name) {
+    return 'المعروض: $name';
+  }
+
+  @override
+  String themeDevAssigned(String name) {
+    return 'مظهرك: $name';
+  }
+
+  @override
+  String get themeDevSearch => 'البحث في المتاجر';
+
+  @override
+  String get themeDevSaved => 'تم حفظ المظهر';
 }
