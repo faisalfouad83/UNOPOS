@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/security/activation_code_codec.dart';
+import '../domain/entitlement.dart';
 import '../domain/licensing_models.dart';
 import '../domain/licensing_repository.dart';
 
@@ -30,6 +31,7 @@ class SupabaseLicensingRepository implements LicensingRepository {
         status: ActivationCodeStatus.values.firstWhere((s) => s.name == row['status']),
         redeemedByStoreId: row['redeemed_by_store_id'] as String?,
         redeemedAt: row['redeemed_at'] == null ? null : DateTime.parse(row['redeemed_at'] as String).toLocal(),
+        planId: row['plan_id'] as String?,
       );
 
   @override
@@ -45,6 +47,8 @@ class SupabaseLicensingRepository implements LicensingRepository {
       'p_store_name_ref': storeNameRef,
       'p_tier': tier.name,
       'p_expires_at': payload.expiresAt?.toIso8601String(),
+      'p_plan_id': null,
+      'p_target_store_id': null,
     }).single();
 
     return _mapRow(row);
@@ -154,5 +158,12 @@ class SupabaseLicensingRepository implements LicensingRepository {
       status: ActivationCodeStatus.active,
       redeemedByStoreId: storeId,
     );
+  }
+
+  @override
+  Future<Entitlement?> entitlementFor(String storeId) async {
+    final json = await _client.rpc('store_entitlement').timeout(const Duration(seconds: 12));
+    return Entitlement.fromJson(
+        {...(json as Map).cast<String, dynamic>(), 'verified_at': DateTime.now().toIso8601String()});
   }
 }

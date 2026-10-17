@@ -3102,4 +3102,855 @@ class AppLocalizationsCkb extends AppLocalizations {
 
   @override
   String get themeDevSaved => 'ڕووکار پاشەکەوت کرا';
+
+  @override
+  String get storeResetSubtitle =>
+      'فرۆشتن، کڕیاران، کۆگا یان هەموو شتێک بسڕەوە و لە سەرەتاوە دەست پێبکەرەوە. سەرەتا فایلێکی پاشەکەوت هەڵدەگیرێت و پشکنینی بۆ دەکرێت.';
+
+  @override
+  String get storeResetButton => 'ڕێکخستنەوە…';
+
+  @override
+  String get storeResetChooseTitle => 'دەتەوێت چی ڕێکبخەیتەوە؟';
+
+  @override
+  String get storeResetImpliedNote =>
+      'لەگەڵیدایە: ئەو بەشەی هەڵتبژارد بەبێ ئەمە ناسڕدرێتەوە.';
+
+  @override
+  String get storeResetScopeFull => 'ڕێکخستنەوەی تەواوی فرۆشگا';
+
+  @override
+  String get storeResetScopeFullHelp =>
+      'هەموو تۆمارە بازرگانییەکان: فرۆشتن و پسوولەکان، کڕیاران و قەرزەکان، خەرجییەکان، ژمێریاری، کاڵا و کۆگا، دابینکەران، شیفتەکان و داشکاندنەکان. فرۆشگاکە وەک نوێ دەست پێدەکاتەوە.';
+
+  @override
+  String get storeResetScopeSales => 'فرۆشتن و پسوولەکان';
+
+  @override
+  String get storeResetScopeSalesHelp =>
+      'پسوولە و فرۆشتن هەمان تۆمارن، بۆیە ئەمە هەردووکیان دەسڕێتەوە: هەموو پسوولەیەک (هەڵگیراوەکانیش)، گەڕاندنەوەکانی، ئەو قەرزانەی دروستی کردوون، خاڵەکانی دڵسۆزی کە پێی وەرگیراون یان خەرجکراون، و تۆمارە ژمێرارییەکانی. ڕاپۆرتەکانی فرۆشتن لە سفرەوە دەست پێدەکەنەوە و ژمارەی پسوولەکان لە 1ەوە. بڕی کۆگا ناگۆڕێت.';
+
+  @override
+  String get storeResetScopeDebts => 'قەرزی کڕیاران';
+
+  @override
+  String get storeResetScopeDebtsHelp =>
+      'هەموو قەرزێکی کڕیاران و ئەو پارانەی لەسەری وەرگیراون لەگەڵ تۆمارە ژمێرارییەکانیان دەسڕێتەوە. کڕیاران و پسوولەکان دەمێننەوە؛ ئەو بڕە قەرزەی هەر پسوولەیەک تۆماری کردووە لە تۆمارەکەی خۆیدا دەمێنێتەوە تا تۆمارە ژمێرارییەکان ڕێکدەخرێنەوە.';
+
+  @override
+  String get storeResetScopeExpenses => 'خەرجییەکان';
+
+  @override
+  String get storeResetScopeExpensesHelp =>
+      'هەموو خەرجییەک لەگەڵ تۆماری ژمێرارییەکەی دەسڕێتەوە. ڕاپۆرتی خەرجی، ژمارەکانی قازانج و کۆی پارەی شیفتەکان دەگۆڕێن.';
+
+  @override
+  String get storeResetScopeAccounting => 'تۆمارە ژمێرارییەکان';
+
+  @override
+  String get storeResetScopeAccountingHelp =>
+      'هەموو تۆمارێکی ڕۆژانە دەسڕێتەوە، خەرجییەکانیش: باڵانسی هەژمارەکان، قازانج و زیان و تەرازووی پشکنین لە سفرەوە دەست پێدەکەن. فرۆشتن، قەرز، کۆگا و دابینکەران دەمێننەوە بەبێ تۆمارە ژمێرارییەکانیان. لیستی هەژمارەکان دەمێنێتەوە.';
+
+  @override
+  String get storeResetScopeCustomers => 'کڕیاران';
+
+  @override
+  String get storeResetScopeCustomersHelp =>
+      'هەموو کڕیارێک لەگەڵ مێژووی دڵسۆزی و قەرزەکانیان دەسڕێتەوە. پسوولە کۆنەکانیان دەمێننەوە بەبێ کڕیار.';
+
+  @override
+  String get storeResetScopeInventory => 'کاڵا و کۆگا';
+
+  @override
+  String get storeResetScopeInventoryHelp =>
+      'هەموو کاڵایەک لەگەڵ بڕی کۆگا و مێژووی جوڵەکانی، پۆلەکان، داشکاندنی کاڵا و پۆل، داواکارییەکانی کڕین و گواستنەوەی کۆگا دەسڕێتەوە. هەموو پسوولەکانیش دەسڕێنەوە، چونکە ڕیزەکانی پسوولە ئاماژە بە کاڵاکان دەکەن. دابینکەران و ئەوەی قەرزاریانین دەمێننەوە.';
+
+  @override
+  String get storeResetScopeSuppliers => 'دابینکەران';
+
+  @override
+  String get storeResetScopeSuppliersHelp =>
+      'هەموو دابینکەرێک، ئەو کڕین و پارەدانانەی لەگەڵیان تۆمارکراون، و داواکارییەکانی کڕین لەگەڵ تۆمارە ژمێرارییەکانیان دەسڕێتەوە. ئەو کۆگایەی وەرگیراوە دەمێنێتەوە.';
+
+  @override
+  String get storeResetScopeShifts => 'شیفتەکان';
+
+  @override
+  String get storeResetScopeShiftsHelp =>
+      'شیفتە داخراوەکان و پشووە تەواوبووەکان دەسڕێتەوە. شیفتە کراوەکان و پشووە بەردەوامەکان دەمێننەوە. پسوولەکان دەمێننەوە بەبێ شیفت.';
+
+  @override
+  String get storeResetKeptNote =>
+      'هەمیشە دەمێننەوە: فرۆشگاکە، مۆڵەت و پلانەکەی، لقەکان، کارمەندان و PINەکانیان، ڕێکخستنەکان، ڕێژەی باج، لیستی هەژمارەکان و تۆماری چاودێری.';
+
+  @override
+  String get storeResetConsequencesTitle => 'پێش بەردەوامبوون';
+
+  @override
+  String get storeResetWillRemove =>
+      'ئەمە لە هەموو لقەکان و لەسەر هەموو ئامێرەکان دەسڕێتەوە:';
+
+  @override
+  String get storeResetNothingToRemove =>
+      'هیچ تۆمارێک نییە بۆ سڕینەوە لەوەی هەڵتبژارد.';
+
+  @override
+  String get storeResetBackupNote =>
+      'سەرەتا فایلێکی پاشەکەوت لەم تۆمارانە (و لەو گۆڕانکارییانەی ئەم ئامێرە کە هێشتا نەنێردراون) لەو شوێنەی هەڵیدەبژێریت هەڵدەگیرێت و پشکنینی بۆ دەکرێت. ئەگەر نەتوانرا هەڵبگیرێت و بپشکنرێت، هیچ شتێک ڕێکناخرێتەوە.';
+
+  @override
+  String get storeResetLoadingPreview => 'تۆمارەکان دەژمێردرێن…';
+
+  @override
+  String storeResetFinalTitle(String scopes) {
+    return '$scopes بسڕدرێتەوە؟';
+  }
+
+  @override
+  String get storeResetFinalFull =>
+      'هەموو تۆمارە بازرگانییەکانی ئەم فرۆشگایە لەسەر هەموو ئامێرەکان دەسڕدرێنەوە. لە ئەپەکەوە ناگەڕێندرێتەوە: تەنها فایلی پاشەکەوت دەتوانێت بیانگەڕێنێتەوە.';
+
+  @override
+  String storeResetFinalPartial(String scopes) {
+    return '$scopes لەسەر هەموو ئامێرەکان دەسڕدرێتەوە. لە ئەپەکەوە ناگەڕێندرێتەوە: تەنها فایلی پاشەکەوت دەتوانێت بیگەڕێنێتەوە.';
+  }
+
+  @override
+  String get storeResetConfirmButton => 'پاشەکەوت و سڕینەوە';
+
+  @override
+  String get storeResetSaveDialogTitle => 'پاشەکەوتەکە پێش ڕێکخستنەوە هەڵبگرە';
+
+  @override
+  String get storeResetStageBackup => 'هەڵگرتنی فایلی پاشەکەوت';
+
+  @override
+  String get storeResetStageVerify => 'پشکنینی فایلی پاشەکەوت';
+
+  @override
+  String get storeResetStageServer => 'ڕێکخستنەوەی داتاکان لەسەر ڕاژەکار';
+
+  @override
+  String get storeResetStageLocal => 'ڕێکخستنەوەی داتاکان';
+
+  @override
+  String get storeResetStageCleanup => 'پاککردنەوەی ئەم ئامێرە';
+
+  @override
+  String get storeResetDoneTitle => 'ڕێکخستنەوە تەواو بوو';
+
+  @override
+  String storeResetDoneRemoved(int count) {
+    return '$count تۆمار سڕایەوە یان نوێکرایەوە.';
+  }
+
+  @override
+  String storeResetDoneBackup(String path) {
+    return 'پاشەکەوت هەڵگیرا لە: $path';
+  }
+
+  @override
+  String storeResetDoneDropped(int count) {
+    return '$count گۆڕانکاریی نەنێردراوی ئەم ئامێرە بۆ تۆمارە سڕاوەکان لابران (لە فایلی پاشەکەوتدا هەن).';
+  }
+
+  @override
+  String get storeResetFailedTitle => 'ڕێکخستنەوەکە تەواو نەبوو';
+
+  @override
+  String get storeResetErrorOffline =>
+      'پەیوەندی ئینتەرنێت نییە. داتای فرۆشگاکە لەسەر ڕاژەکارە، بۆیە تەنها بە ئینتەرنێت ڕێکدەخرێتەوە. هیچ شتێک نەگۆڕا.';
+
+  @override
+  String get storeResetErrorUnsent =>
+      'هەندێک گۆڕانکاری لەم ئامێرە هێشتا نەگەیشتوونەتە ڕاژەکار. چاوەڕێ بکە تا دەنێردرێن (شریتی دۆخ ببینە)، پاشان دووبارە هەوڵ بدەرەوە. هیچ شتێک نەگۆڕا.';
+
+  @override
+  String storeResetErrorBackup(String error) {
+    return 'فایلی پاشەکەوت دروست نەکرا یان هەڵنەگیرا ($error). هیچ شتێک نەگۆڕا.';
+  }
+
+  @override
+  String get storeResetErrorVerify =>
+      'فایلی پاشەکەوتی هەڵگیراو بە دروستی نەخوێندرایەوە، بۆیە هیچ شتێک ڕێکنەخرایەوە. هەوڵ بدە لە شوێنێکی تر هەڵیبگریت.';
+
+  @override
+  String storeResetErrorRefused(String error) {
+    return 'ڕێکخستنەوەکە ڕەتکرایەوە ($error). هیچ شتێک نەگۆڕا.';
+  }
+
+  @override
+  String get storeResetErrorUnknown =>
+      'پەیوەندی پچڕا پێش ئەوەی ڕاژەکار وەڵام بداتەوە. لەوانەیە ڕێکخستنەوەکە تەواو بووبێت: جاری داهاتوو کە ئەپەکە بە ئینتەرنێتەوە دەکرێتەوە خۆکارانە دەپشکنرێت. تا ئەو کاتە ڕێکخستنەوەیەکی تر دەست پێمەکە.';
+
+  @override
+  String get storeResetErrorCancelled =>
+      'هیچ شوێنێک بۆ فایلی پاشەکەوت هەڵنەبژێردرا، بۆیە هیچ شتێک ڕێکنەخرایەوە.';
+
+  @override
+  String get storeResetResumed =>
+      'ڕێکخستنەوەیەک کە پێشتر دەستی پێکردبوو لەسەر ئەم ئامێرە تەواو کرا.';
+
+  @override
+  String get storeResetTableSales => 'پسوولەکان';
+
+  @override
+  String get storeResetTableSaleLines => 'ڕیزەکانی پسوولە';
+
+  @override
+  String get storeResetTableSaleReturns => 'گەڕاندنەوەکان';
+
+  @override
+  String get storeResetTableSaleReturnLines => 'ڕیزەکانی گەڕاندنەوە';
+
+  @override
+  String get storeResetTableDebts => 'قەرزی کڕیاران';
+
+  @override
+  String get storeResetTableDebtPayments => 'پارەدانەکانی قەرز';
+
+  @override
+  String get storeResetTableLoyalty => 'تۆمارەکانی خاڵی دڵسۆزی';
+
+  @override
+  String get storeResetTablePointsAdjusted => 'کڕیارانی خاڵەکانیان ڕاستکرایەوە';
+
+  @override
+  String get storeResetTableCustomers => 'کڕیاران';
+
+  @override
+  String get storeResetTableSalesUnlinked => 'پسوولەی بێ کڕیار';
+
+  @override
+  String get storeResetTableExpenses => 'خەرجییەکان';
+
+  @override
+  String get storeResetTableJournalEntries => 'تۆمارە ڕۆژانەکان';
+
+  @override
+  String get storeResetTableJournalLines => 'ڕیزەکانی تۆمار';
+
+  @override
+  String get storeResetTableProducts => 'کاڵاکان';
+
+  @override
+  String get storeResetTableStockItems => 'بڕی کۆگا';
+
+  @override
+  String get storeResetTableStockMovements => 'مێژووی کۆگا';
+
+  @override
+  String get storeResetTableCategories => 'پۆلەکان';
+
+  @override
+  String get storeResetTableDiscounts => 'داشکاندنەکان';
+
+  @override
+  String get storeResetTablePurchaseOrders => 'داواکارییەکانی کڕین';
+
+  @override
+  String get storeResetTablePurchaseOrderLines => 'ڕیزەکانی داواکاریی کڕین';
+
+  @override
+  String get storeResetTableTransfers => 'گواستنەوەکانی کۆگا';
+
+  @override
+  String get storeResetTableTransferLines => 'ڕیزەکانی گواستنەوە';
+
+  @override
+  String get storeResetTableSuppliers => 'دابینکەران';
+
+  @override
+  String get storeResetTableSupplierTransactions =>
+      'کڕین و پارەدانی دابینکەران';
+
+  @override
+  String get storeResetTableShifts => 'شیفتەکان';
+
+  @override
+  String get storeResetTableBreaks => 'پشووەکان';
+
+  @override
+  String get acxOverview => 'پوختە';
+
+  @override
+  String get acxCashAndBank => 'پارەی نەختینە و بانک';
+
+  @override
+  String get acxReceivables => 'قەرزی کڕیاران';
+
+  @override
+  String get acxPayables => 'قەرزی دابینکەران';
+
+  @override
+  String get acxCashFlow => 'جووڵەی پارە';
+
+  @override
+  String get acxAuditTrail => 'تۆماری چاودێری';
+
+  @override
+  String get acxPeriodToday => 'ئەمڕۆ';
+
+  @override
+  String get acxPeriodWeek => 'ئەم هەفتەیە';
+
+  @override
+  String get acxPeriodMonth => 'ئەم مانگە';
+
+  @override
+  String get acxPeriodYear => 'ئەمساڵ';
+
+  @override
+  String get acxPeriodCustom => 'هەڵبژاردنی بەروار';
+
+  @override
+  String get acxRefresh => 'نوێکردنەوە';
+
+  @override
+  String acxOfflineEstimate(String time) {
+    return 'خەمڵاندنی بێ ئینتەرنێت: پەیوەندی نییە، بۆیە ئەم ژمارانە لەسەر ئەم ئامێرە ژمێردران (ژمارەکانی سێرڤەر لە $time لەگەڵ ئەوەی لێرە تۆمارکراوە). لەوانەیە ناتەواو بن.';
+  }
+
+  @override
+  String acxUnsentEntriesIncluded(int count) {
+    return '$count تۆماری ئەم ئامێرە کە هێشتا نەنێردراون لەخۆدەگرێت.';
+  }
+
+  @override
+  String acxUnsentSalesMissing(int count) {
+    return '$count فرۆشتنی بێ ئینتەرنێت هێشتا نەژمێردراون؛ کاتێک دەگەنە سێرڤەر زیاد دەکرێن.';
+  }
+
+  @override
+  String get acxNetSales => 'فرۆشتن';
+
+  @override
+  String get acxNetSalesInfo =>
+      'ئەوەی کڕیاران لەم ماوەیەدا کڕیویانە، دوای گەڕاندنەوە و داشکاندن، بەبێ باجی فرۆشتن. فرۆشتنی قەرز کاتی فرۆشتن دەژمێردرێت نەک کاتی پارەدان.';
+
+  @override
+  String acxNetSalesBreakdown(String gross, String returns, String discounts) {
+    return '$gross فرۆشراو، $returns گەڕێنراوە، $discounts داشکاندن';
+  }
+
+  @override
+  String get acxGrossProfit => 'قازانجی گشتی';
+
+  @override
+  String get acxGrossProfitInfo =>
+      'فرۆشتن کەمکراوە لە نرخی کڕینی ئەو کاڵایانەی فرۆشراون. ئەوەیە کە بۆ خەرجییەکانی کارکردن دەمێنێتەوە.';
+
+  @override
+  String acxMargin(int percent) {
+    return '$percent% ی فرۆشتن';
+  }
+
+  @override
+  String get acxNetProfit => 'قازانجی پاک';
+
+  @override
+  String get acxNetLoss => 'زیانی پاک';
+
+  @override
+  String get acxNetProfitInfo =>
+      'قازانجی گشتی کەمکراوە لە خەرجییەکانی کارکردن (کرێ، مووچە، پسوولە…). ئەمە ئەوەیە کە دووکانەکە بەڕاستی لەم ماوەیەدا قازانجی کردووە. هەمان پارەی نەختینە نییە: فرۆشتنی قەرز و پسوولەی نەدراو دەژمێردرێن.';
+
+  @override
+  String get acxLoss => 'زیان لەم ماوەیەدا';
+
+  @override
+  String get acxCashOnHand => 'پارەی نەختینە';
+
+  @override
+  String get acxCashOnHandInfo =>
+      'ئەو پارەیەی لە سندوق و قاسەدایە بەپێی دەفتەرەکان (هەژماری 1000).';
+
+  @override
+  String get acxBank => 'بانک';
+
+  @override
+  String get acxBankInfo =>
+      'پارەی ناو هەژماری بانک، لەگەڵ پارەدانی کارت (هەژماری 1010).';
+
+  @override
+  String get acxProfitSummary => 'قازانج لەم ماوەیەدا';
+
+  @override
+  String get acxProfitSummaryInfo =>
+      'لە فرۆشتنەوە تا ئەوەی بۆ دووکانەکە مایەوە، هەنگاو بە هەنگاو. بەشی قازانج و زیان هەموو خەرجییەک پیشان دەدات.';
+
+  @override
+  String get acxCogs => 'تێچووی کاڵای فرۆشراو';
+
+  @override
+  String get acxCogsInfo =>
+      'نرخی کڕینی ئەو کاڵایانەی فرۆشتووتن (بە نرخی کڕین)، نەک ئەوەی لەم ماوەیەدا بە دابینکەرانت داوە.';
+
+  @override
+  String get acxOperatingExpenses => 'خەرجییەکانی کارکردن';
+
+  @override
+  String get acxOperatingExpensesInfo =>
+      'تێچووی بەڕێوەبردنی دووکان: کرێ، مووچە، کارەبا، پێداویستی، کرێی کارت، کاڵای تێکچوو یان ونبوو و خەرجی تر.';
+
+  @override
+  String get acxCashMovement => 'سندوقی پارە لەم ماوەیەدا';
+
+  @override
+  String get acxCashMovementInfo =>
+      'ئەو پارەیەی هاتە ناو یان چووە دەرەوەی پارەی نەختینە (هەژماری 1000) لەم ماوەیەدا، بە هەر هۆیەک: فرۆشتن، دانەوەی قەرز، خەرجی، گەڕاندنەوە، پارەدان بە دابینکەر.';
+
+  @override
+  String get acxCashReceived => 'پارەی وەرگیراو';
+
+  @override
+  String get acxCashPaidOut => 'پارەی دراو';
+
+  @override
+  String get acxCashNet => 'گۆڕانی پارەی نەختینە';
+
+  @override
+  String acxBalancesNow(String date) {
+    return 'باڵانسەکان لە $date';
+  }
+
+  @override
+  String get acxBalancesInfo =>
+      'ئەوەی دووکانەکە هەیەتی و قەرزی لای خەڵک یان قەرزی سەرشانی، لە کۆتایی ماوەکە (یان ئێستا).';
+
+  @override
+  String get acxReceivablesInfo =>
+      'ئەو پارەیەی کڕیاران هێشتا قەرزارن بۆ فرۆشتنی قەرز (هەژماری 1100). کاتێک دەیدەنەوە کەم دەبێتەوە.';
+
+  @override
+  String get acxPayablesInfo =>
+      'ئەو پارەیەی دووکانەکە هێشتا قەرزاری دابینکەرانە بۆ کاڵای وەرگیراو بە قەرز (هەژماری 2000). کاتێک پارەیان دەدەیت کەم دەبێتەوە.';
+
+  @override
+  String get acxProfitLossInfo =>
+      'قازانج و زیان پیشان دەدات دووکانەکە چی دەستکەوتووە و چی خەرج کردووە لەم ماوەیەدا و قازانجی ماوە. فرۆشتن و تێچوو کاتی ڕوودانیان دەژمێردرێن نەک کاتی جووڵەی پارە.';
+
+  @override
+  String get acxGrossSales => 'فرۆشتن پێش گەڕاندنەوە و داشکاندن';
+
+  @override
+  String get acxGrossSalesInfo =>
+      'هەموو ئەوەی لەم ماوەیەدا فرۆشراوە بە نرخی فرۆشتن، بەبێ باج (هەژماری 4000).';
+
+  @override
+  String get acxReturns => 'گەڕاندنەوەکان';
+
+  @override
+  String get acxReturnsInfo =>
+      'ئەو پارەیەی بۆ کاڵای گەڕێنراوە درایەوە بە کڕیاران (هەژماری 4100).';
+
+  @override
+  String get acxDiscounts => 'داشکاندنەکان';
+
+  @override
+  String get acxDiscountsInfo =>
+      'ئەو داشکاندنانەی جیا لە نرخی فرۆشتن تۆمارکراون (هەژماری 4200).';
+
+  @override
+  String get acxOtherRevenue => 'داهاتی تر';
+
+  @override
+  String get acxNone => 'هیچ';
+
+  @override
+  String get acxTotalExpenses => 'کۆی خەرجییەکانی کارکردن';
+
+  @override
+  String get acxAssetsInfo =>
+      'سامانەکان ئەوەن کە دووکانەکە هەیەتی: پارەی نەختینە، بانک، قەرزی کڕیاران، و کۆگا بە نرخی تێچوو.';
+
+  @override
+  String get acxLiabilitiesInfo =>
+      'قەرزەکان ئەوەن کە دووکانەکە قەرزاری خەڵکە: دابینکەران، و باجی فرۆشتنی وەرگیراو کە هێشتا نەدراوە.';
+
+  @override
+  String get acxEquityInfo =>
+      'مافی خاوەن ئەوەیە کە هی خاوەنەکەیە: ئەوەی خراوەتە ناو کارەکە لەگەڵ ئەو قازانجەی کردوویەتی.';
+
+  @override
+  String get acxRevenueInfo =>
+      'داهاتی فرۆشتن، کەمکراوە لە گەڕاندنەوە و داشکاندن.';
+
+  @override
+  String get acxTotalAssets => 'کۆی سامانەکان';
+
+  @override
+  String get acxLiabilitiesAndEquity => 'قەرزەکان و مافی خاوەن';
+
+  @override
+  String get acxLiabilitiesAndEquityInfo =>
+      'کێ مافی لەسەر سامانەکان هەیە: خەڵکی تر (قەرزەکان) و خاوەن (مافی خاوەن، لەگەڵ ئەو قازانجەی هێشتا نەبراوە).';
+
+  @override
+  String get acxTotalLiabilities => 'کۆی قەرزەکان';
+
+  @override
+  String get acxEarlierProfit => 'قازانجی پێش ئەم ماوەیە';
+
+  @override
+  String get acxEarlierProfitInfo =>
+      'هەموو ئەو قازانجەی پێش دەستپێکی ماوەکە کراوە و هێشتا بە تۆماری داخستن نەگوازراوەتەوە بۆ مافی خاوەن.';
+
+  @override
+  String get acxPeriodProfit => 'قازانجی ئەم ماوەیە';
+
+  @override
+  String get acxPeriodProfitInfo =>
+      'قازانجی پاک لە بەشی قازانج و زیان. هی خاوەنە، بۆیە لەم لایە دەژمێردرێت.';
+
+  @override
+  String get acxTotalEquity => 'کۆی مافی خاوەن';
+
+  @override
+  String get acxTotalLiabilitiesAndEquity => 'کۆی قەرزەکان و مافی خاوەن';
+
+  @override
+  String acxAsAt(String date) {
+    return 'تا $date';
+  }
+
+  @override
+  String get acxBalanced =>
+      'هاوسەنگە: سامانەکان یەکسانن بە قەرزەکان و مافی خاوەن.';
+
+  @override
+  String acxNotBalanced(String amount) {
+    return 'هاوسەنگ نییە: جیاوازی $amount. دەفتەری ڕۆژانە بپشکنە بۆ تۆمارێک کە لە دەرەوەی ئەپ دەستکاری کراوە.';
+  }
+
+  @override
+  String get acxBalanceRule =>
+      'هەر تۆمارێک هەمان بڕ بۆ هەردوو لا زیاد دەکات، بۆیە هەردوو کۆ هەمیشە یەکسانن.';
+
+  @override
+  String get acxCashFlowInfo =>
+      'پارەی نەختینە و بانک لە کوێوە هات و بۆ کوێ چوو لەم ماوەیەدا، بە پێی هۆکار. جیاواز لە قازانج، تەنها ئەو پارەیەیە کە بەڕاستی جووڵاوە.';
+
+  @override
+  String get acxOpeningCash => 'نەختینە و بانک لە سەرەتادا';
+
+  @override
+  String get acxOpeningCashInfo =>
+      'پارەی نەختینە لەگەڵ بانک لە سەرەتای ماوەکەدا.';
+
+  @override
+  String get acxMoneyIn => 'پارەی هاتوو';
+
+  @override
+  String get acxMoneyOut => 'پارەی چوو';
+
+  @override
+  String get acxTotalIn => 'کۆی هاتوو';
+
+  @override
+  String get acxTotalOut => 'کۆی چوو';
+
+  @override
+  String get acxNetCashChange => 'گۆڕانی پاک';
+
+  @override
+  String get acxClosingCash => 'نەختینە و بانک لە کۆتاییدا';
+
+  @override
+  String acxCashFlowMismatch(String amount) {
+    return 'هەژمارەکان $amount پیشان دەدەن؛ جیاوازییەکە لە تۆمارێکدایە کە هێشتا دانەبەزێنراوە.';
+  }
+
+  @override
+  String get acxCashFlowTransfersNote =>
+      'گواستنەوەی پارە لە نێوان سندوق و بانک وەک هاتوو و چوو پیشان دەدرێت؛ کۆکە ناگۆڕێت.';
+
+  @override
+  String get acxTrialBalanceInfo =>
+      'باڵانسی هەر هەژمارێک لە ستوونی قەرزدار یان قەرزدەر. ئەگەر هەردوو کۆ یەکسان بن، هەموو تۆمارەکان بە هاوسەنگی تۆمارکراون.';
+
+  @override
+  String get acxTotal => 'کۆ';
+
+  @override
+  String get acxOpeningBalance => 'باڵانس لە سەرەتادا';
+
+  @override
+  String get acxClosingBalance => 'باڵانس لە کۆتاییدا';
+
+  @override
+  String get acxAddedOwed => 'زیادکراو (قەرزی نوێ)';
+
+  @override
+  String get acxPaidOff => 'دراوەتەوە';
+
+  @override
+  String get acxMovements => 'جووڵەکان لەم ماوەیەدا';
+
+  @override
+  String get acxNoMovements => 'هیچ جووڵەیەک لەم ماوەیەدا نییە.';
+
+  @override
+  String acxShowingFirst(int count) {
+    return 'یەکەم $count پیشان دەدرێن. ماوەیەکی کورتتر هەڵبژێرە بۆ بینینی ئەوانی تر.';
+  }
+
+  @override
+  String get acxOpenDebts => 'کردنەوەی قەرزەکان';
+
+  @override
+  String get acxOpenSuppliers => 'کردنەوەی دابینکەران';
+
+  @override
+  String acxChangeInPeriod(String amount) {
+    return '$amount گۆڕا لەم ماوەیەدا';
+  }
+
+  @override
+  String get acxFilterCause => 'جۆر';
+
+  @override
+  String get acxFilterAccount => 'هەژمار';
+
+  @override
+  String get acxFilterSearch => 'گەڕان';
+
+  @override
+  String get acxAll => 'هەموو';
+
+  @override
+  String get acxNoEntries => 'هیچ تۆمارێکی گونجاو لەم ماوەیەدا نییە.';
+
+  @override
+  String get acxReversalEntry => 'تۆماری پێچەوانە';
+
+  @override
+  String get acxWasReversed => 'پێچەوانە کراوەتەوە';
+
+  @override
+  String get acxNotSentYet => 'هێشتا نەنێردراوە';
+
+  @override
+  String get acxReverseTitle => 'ئەم تۆمارە پێچەوانە بکرێتەوە؟';
+
+  @override
+  String get acxReverseBody =>
+      'تۆمارێکی نوێ بە بڕی پێچەوانە ئەمڕۆ زیاد دەکرێت و ئەمە هەڵدەوەشێنێتەوە. تۆماری سەرەکی لە دەفتەردا دەمێنێتەوە بۆ پاراستنی مێژوو. پاشان ئەگەر پێویست بوو تۆماری دروست تۆمار بکە.';
+
+  @override
+  String get acxReverse => 'پێچەوانەکردنەوە';
+
+  @override
+  String get acxReversed => 'تۆماری پێچەوانە زیادکرا.';
+
+  @override
+  String get acxReversalOf => 'ئەم تۆمارە تۆمارێکی پێشوو هەڵدەوەشێنێتەوە.';
+
+  @override
+  String get acxAccount => 'هەژمار';
+
+  @override
+  String get acxSourceDocument => 'سەرچاوە';
+
+  @override
+  String get acxNoSourceDocument => 'ڕاستەوخۆ لە دەفتەردا تۆمارکراوە.';
+
+  @override
+  String get acxOpenSource => 'کردنەوە';
+
+  @override
+  String get acxCorrectionsNote =>
+      'تۆمارەکان هەرگیز دەستکاری یان سڕینەوە ناکرێن؛ هەڵەکان بە تۆماری پێچەوانە ڕاست دەکرێنەوە.';
+
+  @override
+  String acxSaleNotFound(String id) {
+    return 'فرۆشتنی $id (وردەکاری بێ ئینتەرنێت بەردەست نییە)';
+  }
+
+  @override
+  String acxSaleSummary(String number, String total, String method) {
+    return 'پسوولە $number · $total · $method';
+  }
+
+  @override
+  String get acxAuditTrailInfo =>
+      'تۆمارێکی کارە هەستیارەکانی دووکان — کێ چی کرد و کەی (گۆڕینی نرخ، گەڕاندنەوە، هەڵوەشاندنەوە، ئازادکردنی ئامێر…). لە ئەپەوە ناگۆڕدرێت.';
+
+  @override
+  String get acxNoAudit => 'هیچ شتێک لەم ماوەیەدا تۆمار نەکراوە.';
+
+  @override
+  String get acxBefore => 'پێشتر';
+
+  @override
+  String get acxAfter => 'دواتر';
+
+  @override
+  String get planNotInPlanTitle => 'لە پلانەکەتدا نییە';
+
+  @override
+  String planNotInPlanBody(String plan) {
+    return 'ئەم بەشە لە پلانی $plan دا نییە. بۆ بەرزکردنەوە پەیوەندی بە پشتگیری UNOPOS بکە.';
+  }
+
+  @override
+  String get planBackHome => 'گەڕانەوە بۆ سەرەکی';
+
+  @override
+  String planCurrent(String plan) {
+    return 'پلان: $plan';
+  }
+
+  @override
+  String get planNoEndDate => 'بێ بەرواری کۆتایی';
+
+  @override
+  String planEndsOn(String date) {
+    return 'کۆتایی دێت لە $date';
+  }
+
+  @override
+  String get planUnlimited => 'بێسنوور';
+
+  @override
+  String planExcludedSections(String sections) {
+    return 'نەگیراوەتەوە: $sections';
+  }
+
+  @override
+  String planVerifiedAt(String time) {
+    return 'لەگەڵ سێرڤەر پشکنرا $time';
+  }
+
+  @override
+  String planVerifiedOffline(String time) {
+    return 'بێ ئینتەرنێت: دوایین پشکنین لەگەڵ سێرڤەر $time';
+  }
+
+  @override
+  String get planStatusActive => 'چالاک';
+
+  @override
+  String get planStatusTrial => 'تاقیکردنەوە';
+
+  @override
+  String get planStatusExpired => 'بەسەرچوو';
+
+  @override
+  String get planStatusSuspended => 'ڕاگیراو';
+
+  @override
+  String get planStatusDisabled => 'ناچالاک';
+
+  @override
+  String get planLimitEmployees => 'کارمەندان';
+
+  @override
+  String get planLimitBranches => 'لقەکان';
+
+  @override
+  String get planLimitProducts => 'بەرهەمەکان';
+
+  @override
+  String get planLimitDevices => 'ئامێرەکانی کاشێر';
+
+  @override
+  String get planLimitDailySales => 'فرۆشتنی ئەمڕۆ';
+
+  @override
+  String get planModulePos => 'خاڵی فرۆشتن';
+
+  @override
+  String get planModuleInvoices => 'پسوولەکان';
+
+  @override
+  String get planModuleInventory => 'کۆگا';
+
+  @override
+  String get planModuleDebts => 'قەرزەکان';
+
+  @override
+  String get planModuleCustomers => 'کڕیاران';
+
+  @override
+  String get planModuleSuppliers => 'دابینکەران';
+
+  @override
+  String get planModuleAccounting => 'ژمێریاری';
+
+  @override
+  String get planModuleExpenses => 'خەرجی و پارە';
+
+  @override
+  String get planModuleHr => 'ستاف';
+
+  @override
+  String get planModuleReports => 'ڕاپۆرتەکان';
+
+  @override
+  String planDeviceLimitReached(int count) {
+    return 'پلانەکەت ڕێگە بە کاشێر دەدات لەسەر $count ئامێر لە یەک کاتدا و هەموویان بەکاردێن. کاشێرێک لە ئامێرێکی تر دەربکە، یان داوای بەرزکردنەوەی پلان لە UNOPOS بکە.';
+  }
+
+  @override
+  String get devPlanCodesTab => 'کۆدی پلانەکان';
+
+  @override
+  String get devPlanIssueTitle => 'دەرکردنی کۆد لەگەڵ پلان';
+
+  @override
+  String get devPlanTargetStore => 'بۆ دووکان (ئارەزوومەندانە)';
+
+  @override
+  String get devPlanTargetStoreHelp =>
+      'ئەگەر دیاری بکرێت، تەنها ئەم دووکانە دەتوانێت کۆدەکە بەکاربهێنێت.';
+
+  @override
+  String get devPlanAnyStore => 'هەر دووکانێک';
+
+  @override
+  String get devPlanPlan => 'پلان';
+
+  @override
+  String get devPlanKeepPlan => 'پلانی ئێستای دووکان بمێنێتەوە';
+
+  @override
+  String devPlanEndsOn(String date) {
+    return 'کۆتایی دێت لە $date';
+  }
+
+  @override
+  String get devPlanEndsNever => 'بێ کۆتایی (هەمیشەیی)';
+
+  @override
+  String get devPlanEndsHelp =>
+      'ماوەکە لە ئەمڕۆوە دەژمێردرێت، کاتی دەرکردنی کۆدەکە.';
+
+  @override
+  String get devPlanIssueAndActivate => 'دەرکردن و چالاککردن ئێستا';
+
+  @override
+  String get devPlanNameNeeded => 'ناوی دووکان بنووسە یان دووکانێک هەڵبژێرە.';
+
+  @override
+  String get devPlanCopy => 'کۆپی';
+
+  @override
+  String get devPlanFeaturesTitle => 'هەر پلانێک چی لەخۆدەگرێت';
+
+  @override
+  String devPlanFeaturesSummary(int on, int all, String devices) {
+    return '$on لە $all بەش · ئامێرەکان: $devices';
+  }
+
+  @override
+  String get devPlanMaxDevices => 'ئامێری کاشێری چوونەژوورەوە لە یەک کاتدا';
+
+  @override
+  String get devPlanMaxDevicesHelp => 'بەتاڵی بهێڵەوە بۆ بێسنوور.';
+
+  @override
+  String get devPlanDevicesInvalid =>
+      'ژمارەیەکی تەواو کە لانیکەم 1 بێت بنووسە، یان بەتاڵی بهێڵەوە.';
 }

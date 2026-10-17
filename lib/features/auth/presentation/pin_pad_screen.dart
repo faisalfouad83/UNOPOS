@@ -29,6 +29,9 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
   /// Set when the account is open on another device (its name).
   String? _inUseOn;
 
+  /// The plan's till limit, when that is why sign-in was refused.
+  int? _planDeviceLimit;
+
   static const _maxAttemptsBeforeLock = 5;
   static const _lockDurationSeconds = 30;
 
@@ -107,6 +110,7 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
           _pin = '';
           _checking = false;
           _inUseOn = ref.read(sessionControllerProvider.notifier).blockedByDevice ?? '';
+          _planDeviceLimit = ref.read(sessionControllerProvider.notifier).blockedByPlanDeviceLimit;
         });
       case PinResult.incorrect:
         _wrongAttempts++;
@@ -163,7 +167,9 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
-                    l10n.pinDeviceInUse(_inUseOn!.isEmpty ? '—' : _inUseOn!),
+                    _planDeviceLimit != null
+                        ? l10n.planDeviceLimitReached(_planDeviceLimit!)
+                        : l10n.pinDeviceInUse(_inUseOn!.isEmpty ? '—' : _inUseOn!),
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Theme.of(context).colorScheme.error),
                   ),

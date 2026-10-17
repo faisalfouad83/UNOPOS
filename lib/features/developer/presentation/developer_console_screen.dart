@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/l10n/l10n_ext.dart';
 import '../../../core/providers.dart';
-import '../../../core/security/activation_code_codec.dart';
 import '../../../core/utils/formatters.dart';
 import '../../licensing/presentation/license_console.dart';
 import '../../support/presentation/support_agents_tab.dart';
 import '../domain/developer_models.dart';
+import 'plan_codes_tab.dart';
 import 'theme_assignments_tab.dart';
 
 // This whole console is internal admin/operator tooling, never seen by a
@@ -24,7 +24,7 @@ class DeveloperConsoleScreen extends StatefulWidget {
 }
 
 class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with SingleTickerProviderStateMixin {
-  late final TabController _tabController = TabController(length: 8, vsync: this);
+  late final TabController _tabController = TabController(length: 9, vsync: this);
 
   @override
   void dispose() {
@@ -46,6 +46,7 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
               Tab(text: context.l10n.devStores),
               Tab(text: context.l10n.devPlans),
               Tab(text: context.l10n.devLicenses),
+              Tab(text: context.l10n.devPlanCodesTab),
               Tab(text: context.l10n.notificationsTitle),
               Tab(text: context.l10n.devAuditLog),
               Tab(text: context.l10n.supportAgentsTitle),
@@ -61,6 +62,7 @@ class _DeveloperConsoleScreenState extends State<DeveloperConsoleScreen> with Si
               _StoresTab(),
               _PlansTab(),
               LicenseConsole(),
+              PlanCodesTab(),
               _NotificationsTab(),
               _AuditLogTab(),
               SupportAgentsTab(),
@@ -390,40 +392,8 @@ class _StoreCard extends ConsumerWidget {
     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.devSubscriptionExtended)));
   }
 
-  Future<void> _generateLicense(BuildContext context, WidgetRef ref) async {
-    var tier = LicenseTier.trial1Month;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setState) => AlertDialog(
-          title: Text(context.l10n.devGenerateAssignLicense),
-          content: Wrap(
-            spacing: 8,
-            children: LicenseTier.values
-                .map((t) => ChoiceChip(
-                      label: Text(licenseTierLabel(context.l10n, t)),
-                      selected: tier == t,
-                      onSelected: (_) => setState(() => tier = t),
-                    ))
-                .toList(),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.l10n.actionCancel)),
-            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.l10n.developerGenerateCode)),
-          ],
-        ),
-      ),
-    );
-    if (confirmed != true) return;
-    try {
-      final record = await ref.read(developerRepositoryProvider)!.generateAndAssignLicense(storeId: store.id, tier: tier);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.devLicenseAssigned(record.code))));
-      }
-    } catch (e) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetails('$e'))));
-    }
-  }
+  /// Plan + duration, for this store only, activated at once.
+  Future<void> _generateLicense(BuildContext context, WidgetRef ref) => showIssueLicenseDialog(context, ref, store);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

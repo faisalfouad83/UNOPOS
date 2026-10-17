@@ -22,6 +22,7 @@ import '../supabase/supabase_config.dart';
 import '../../features/licensing/domain/license_watch.dart';
 import '../../features/licensing/presentation/developer_home_screen.dart';
 import '../../features/licensing/presentation/license_expired_screen.dart';
+import '../../features/licensing/presentation/plan_gate.dart';
 import '../../features/onboarding/presentation/create_manager_screen.dart';
 import '../../features/onboarding/presentation/create_store_screen.dart';
 import '../../features/pos/presentation/invoices_screen.dart';
@@ -99,7 +100,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: RoutePaths.support, builder: (context, state) => const SupportPortalScreen()),
       GoRoute(path: RoutePaths.priceChecker, builder: (context, state) => const PriceCheckerScreen()),
       ShellRoute(
-        builder: (context, state, child) => HomeShell(currentPath: state.matchedLocation, child: child),
+        builder: (context, state, child) => HomeShell(
+          currentPath: state.matchedLocation,
+          // Sections the store's plan leaves out show "not in your plan".
+          child: PlanGate(path: state.matchedLocation, child: child),
+        ),
         routes: [
           GoRoute(path: RoutePaths.home, builder: (context, state) => const DashboardScreen()),
           GoRoute(path: RoutePaths.pos, builder: (context, state) => const PosScreen()),

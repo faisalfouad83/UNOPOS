@@ -5643,6 +5643,1476 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Theme saved'**
   String get themeDevSaved;
+
+  /// No description provided for @storeResetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase sales, customers, stock or everything, and start again. A backup file is saved and checked first.'**
+  String get storeResetSubtitle;
+
+  /// No description provided for @storeResetButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset…'**
+  String get storeResetButton;
+
+  /// No description provided for @storeResetChooseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to reset?'**
+  String get storeResetChooseTitle;
+
+  /// No description provided for @storeResetImpliedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Included: the part you chose can\'t be removed without it.'**
+  String get storeResetImpliedNote;
+
+  /// No description provided for @storeResetScopeFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full store reset'**
+  String get storeResetScopeFull;
+
+  /// No description provided for @storeResetScopeFullHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Every business record: sales and invoices, customers and debts, expenses, the books, products and stock, suppliers, shifts and discounts. The store starts again as new.'**
+  String get storeResetScopeFullHelp;
+
+  /// No description provided for @storeResetScopeSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales and invoices'**
+  String get storeResetScopeSales;
+
+  /// No description provided for @storeResetScopeSalesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices and sales are the same records, so this removes both: every invoice (held ones too), its returns, the debts it created, loyalty points earned or spent on it, and its accounting entries. Sales reports start from zero and invoice numbers start again at 1. Stock on hand is not changed.'**
+  String get storeResetScopeSalesHelp;
+
+  /// No description provided for @storeResetScopeDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer debts'**
+  String get storeResetScopeDebts;
+
+  /// No description provided for @storeResetScopeDebtsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every customer debt and the payments received on it, with the payments\' accounting entries. Customers and invoices stay; the amount owed recorded by each invoice stays in its own entry until the accounting records are reset.'**
+  String get storeResetScopeDebtsHelp;
+
+  /// No description provided for @storeResetScopeExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get storeResetScopeExpenses;
+
+  /// No description provided for @storeResetScopeExpensesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every expense with its accounting entry. Expense reports, profit figures and shift cash totals change.'**
+  String get storeResetScopeExpensesHelp;
+
+  /// No description provided for @storeResetScopeAccounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounting records'**
+  String get storeResetScopeAccounting;
+
+  /// No description provided for @storeResetScopeAccountingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every journal entry, expenses included: account balances, profit and loss and the trial balance start at zero. Sales, debts, stock and suppliers stay, without their accounting entries. The chart of accounts is kept.'**
+  String get storeResetScopeAccountingHelp;
+
+  /// No description provided for @storeResetScopeCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get storeResetScopeCustomers;
+
+  /// No description provided for @storeResetScopeCustomersHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every customer with their loyalty history and their debts. Their past invoices stay, without a customer.'**
+  String get storeResetScopeCustomersHelp;
+
+  /// No description provided for @storeResetScopeInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Products and stock'**
+  String get storeResetScopeInventory;
+
+  /// No description provided for @storeResetScopeInventoryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every product with its stock levels and stock history, categories, product and category discounts, purchase orders and stock transfers. Every invoice is removed too, because invoice lines refer to products. Suppliers and what is owed to them stay.'**
+  String get storeResetScopeInventoryHelp;
+
+  /// No description provided for @storeResetScopeSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get storeResetScopeSuppliers;
+
+  /// No description provided for @storeResetScopeSuppliersHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every supplier, the purchases and payments recorded with them, and purchase orders, with their accounting entries. Stock already received stays.'**
+  String get storeResetScopeSuppliersHelp;
+
+  /// No description provided for @storeResetScopeShifts.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifts'**
+  String get storeResetScopeShifts;
+
+  /// No description provided for @storeResetScopeShiftsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes closed shifts and finished breaks. Open shifts and breaks in progress stay. Invoices stay, without a shift.'**
+  String get storeResetScopeShiftsHelp;
+
+  /// No description provided for @storeResetKeptNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Always kept: the store, its licence and plan, branches, employees and their PINs, settings, tax rates, the chart of accounts and the audit log.'**
+  String get storeResetKeptNote;
+
+  /// No description provided for @storeResetConsequencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you continue'**
+  String get storeResetConsequencesTitle;
+
+  /// No description provided for @storeResetWillRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove, for every branch and every device:'**
+  String get storeResetWillRemove;
+
+  /// No description provided for @storeResetNothingToRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no records to remove for what you chose.'**
+  String get storeResetNothingToRemove;
+
+  /// No description provided for @storeResetBackupNote.
+  ///
+  /// In en, this message translates to:
+  /// **'First a backup file of these records (and of this device\'s changes not yet sent) is saved where you choose and checked. If it can\'t be saved and checked, nothing is reset.'**
+  String get storeResetBackupNote;
+
+  /// No description provided for @storeResetLoadingPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting the records…'**
+  String get storeResetLoadingPreview;
+
+  /// No description provided for @storeResetFinalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase {scopes}?'**
+  String storeResetFinalTitle(String scopes);
+
+  /// No description provided for @storeResetFinalFull.
+  ///
+  /// In en, this message translates to:
+  /// **'All business records of this store will be erased on every device. This cannot be undone from the app: only the backup file can bring them back.'**
+  String get storeResetFinalFull;
+
+  /// No description provided for @storeResetFinalPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{scopes} will be erased on every device. This cannot be undone from the app: only the backup file can bring them back.'**
+  String storeResetFinalPartial(String scopes);
+
+  /// No description provided for @storeResetConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up and erase'**
+  String get storeResetConfirmButton;
+
+  /// No description provided for @storeResetSaveDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the backup before resetting'**
+  String get storeResetSaveDialogTitle;
+
+  /// No description provided for @storeResetStageBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving the backup file'**
+  String get storeResetStageBackup;
+
+  /// No description provided for @storeResetStageVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking the backup file'**
+  String get storeResetStageVerify;
+
+  /// No description provided for @storeResetStageServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting the data on the server'**
+  String get storeResetStageServer;
+
+  /// No description provided for @storeResetStageLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting the data'**
+  String get storeResetStageLocal;
+
+  /// No description provided for @storeResetStageCleanup.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaning up this device'**
+  String get storeResetStageCleanup;
+
+  /// No description provided for @storeResetDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset complete'**
+  String get storeResetDoneTitle;
+
+  /// No description provided for @storeResetDoneRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records removed or updated.'**
+  String storeResetDoneRemoved(int count);
+
+  /// No description provided for @storeResetDoneBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved to: {path}'**
+  String storeResetDoneBackup(String path);
+
+  /// No description provided for @storeResetDoneDropped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unsent changes on this device for the erased records were dropped (they are in the backup file).'**
+  String storeResetDoneDropped(int count);
+
+  /// No description provided for @storeResetFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The reset did not finish'**
+  String get storeResetFailedTitle;
+
+  /// No description provided for @storeResetErrorOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. The store\'s data is kept on the server, so it can only be reset online. Nothing was changed.'**
+  String get storeResetErrorOffline;
+
+  /// No description provided for @storeResetErrorUnsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Some changes made on this device haven\'t reached the server yet. Wait until they are sent (see the status bar), then try again. Nothing was changed.'**
+  String get storeResetErrorUnsent;
+
+  /// No description provided for @storeResetErrorBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'The backup file could not be made or saved ({error}). Nothing was changed.'**
+  String storeResetErrorBackup(String error);
+
+  /// No description provided for @storeResetErrorVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved backup file did not read back correctly, so nothing was reset. Try saving it somewhere else.'**
+  String get storeResetErrorVerify;
+
+  /// No description provided for @storeResetErrorRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'The reset was refused ({error}). Nothing was changed.'**
+  String storeResetErrorRefused(String error);
+
+  /// No description provided for @storeResetErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection dropped before the server answered. The reset may have finished: this is checked automatically the next time the app opens with a connection. Do not start another reset until then.'**
+  String get storeResetErrorUnknown;
+
+  /// No description provided for @storeResetErrorCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'No place was chosen for the backup file, so nothing was reset.'**
+  String get storeResetErrorCancelled;
+
+  /// No description provided for @storeResetResumed.
+  ///
+  /// In en, this message translates to:
+  /// **'A reset started earlier has been finished on this device.'**
+  String get storeResetResumed;
+
+  /// No description provided for @storeResetTableSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get storeResetTableSales;
+
+  /// No description provided for @storeResetTableSaleLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice lines'**
+  String get storeResetTableSaleLines;
+
+  /// No description provided for @storeResetTableSaleReturns.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns'**
+  String get storeResetTableSaleReturns;
+
+  /// No description provided for @storeResetTableSaleReturnLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Return lines'**
+  String get storeResetTableSaleReturnLines;
+
+  /// No description provided for @storeResetTableDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer debts'**
+  String get storeResetTableDebts;
+
+  /// No description provided for @storeResetTableDebtPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt payments'**
+  String get storeResetTableDebtPayments;
+
+  /// No description provided for @storeResetTableLoyalty.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyalty point records'**
+  String get storeResetTableLoyalty;
+
+  /// No description provided for @storeResetTablePointsAdjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers whose points were corrected'**
+  String get storeResetTablePointsAdjusted;
+
+  /// No description provided for @storeResetTableCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get storeResetTableCustomers;
+
+  /// No description provided for @storeResetTableSalesUnlinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices no longer linked to a customer'**
+  String get storeResetTableSalesUnlinked;
+
+  /// No description provided for @storeResetTableExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get storeResetTableExpenses;
+
+  /// No description provided for @storeResetTableJournalEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal entries'**
+  String get storeResetTableJournalEntries;
+
+  /// No description provided for @storeResetTableJournalLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal lines'**
+  String get storeResetTableJournalLines;
+
+  /// No description provided for @storeResetTableProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get storeResetTableProducts;
+
+  /// No description provided for @storeResetTableStockItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock levels'**
+  String get storeResetTableStockItems;
+
+  /// No description provided for @storeResetTableStockMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock history'**
+  String get storeResetTableStockMovements;
+
+  /// No description provided for @storeResetTableCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get storeResetTableCategories;
+
+  /// No description provided for @storeResetTableDiscounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts'**
+  String get storeResetTableDiscounts;
+
+  /// No description provided for @storeResetTablePurchaseOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase orders'**
+  String get storeResetTablePurchaseOrders;
+
+  /// No description provided for @storeResetTablePurchaseOrderLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order lines'**
+  String get storeResetTablePurchaseOrderLines;
+
+  /// No description provided for @storeResetTableTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock transfers'**
+  String get storeResetTableTransfers;
+
+  /// No description provided for @storeResetTableTransferLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock transfer lines'**
+  String get storeResetTableTransferLines;
+
+  /// No description provided for @storeResetTableSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get storeResetTableSuppliers;
+
+  /// No description provided for @storeResetTableSupplierTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier purchases and payments'**
+  String get storeResetTableSupplierTransactions;
+
+  /// No description provided for @storeResetTableShifts.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifts'**
+  String get storeResetTableShifts;
+
+  /// No description provided for @storeResetTableBreaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks'**
+  String get storeResetTableBreaks;
+
+  /// No description provided for @acxOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get acxOverview;
+
+  /// No description provided for @acxCashAndBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash & bank'**
+  String get acxCashAndBank;
+
+  /// No description provided for @acxReceivables.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers owe'**
+  String get acxReceivables;
+
+  /// No description provided for @acxPayables.
+  ///
+  /// In en, this message translates to:
+  /// **'We owe suppliers'**
+  String get acxPayables;
+
+  /// No description provided for @acxCashFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash flow'**
+  String get acxCashFlow;
+
+  /// No description provided for @acxAuditTrail.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit trail'**
+  String get acxAuditTrail;
+
+  /// No description provided for @acxPeriodToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get acxPeriodToday;
+
+  /// No description provided for @acxPeriodWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get acxPeriodWeek;
+
+  /// No description provided for @acxPeriodMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get acxPeriodMonth;
+
+  /// No description provided for @acxPeriodYear.
+  ///
+  /// In en, this message translates to:
+  /// **'This year'**
+  String get acxPeriodYear;
+
+  /// No description provided for @acxPeriodCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose dates'**
+  String get acxPeriodCustom;
+
+  /// No description provided for @acxRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get acxRefresh;
+
+  /// No description provided for @acxOfflineEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline estimate: no connection, so these figures were worked out on this device (server figures from {time} plus what was entered here). They may be incomplete.'**
+  String acxOfflineEstimate(String time);
+
+  /// No description provided for @acxUnsentEntriesIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes {count} entries made on this device that are not sent yet.'**
+  String acxUnsentEntriesIncluded(int count);
+
+  /// No description provided for @acxUnsentSalesMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sales made offline are not counted yet; they are added when they reach the server.'**
+  String acxUnsentSalesMissing(int count);
+
+  /// No description provided for @acxNetSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get acxNetSales;
+
+  /// No description provided for @acxNetSalesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'What customers bought in this period, after returns and discounts, without sales tax. Sales on credit count when made, not when paid.'**
+  String get acxNetSalesInfo;
+
+  /// No description provided for @acxNetSalesBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{gross} sold, {returns} returned, {discounts} discounts'**
+  String acxNetSalesBreakdown(String gross, String returns, String discounts);
+
+  /// No description provided for @acxGrossProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Gross profit'**
+  String get acxGrossProfit;
+
+  /// No description provided for @acxGrossProfitInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales minus what the goods sold cost you to buy. It is what is left to pay running costs.'**
+  String get acxGrossProfitInfo;
+
+  /// No description provided for @acxMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of sales'**
+  String acxMargin(int percent);
+
+  /// No description provided for @acxNetProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Net profit'**
+  String get acxNetProfit;
+
+  /// No description provided for @acxNetLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Net loss'**
+  String get acxNetLoss;
+
+  /// No description provided for @acxNetProfitInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Gross profit minus running costs (rent, salaries, bills…). This is what the shop really earned in the period. It is not the same as cash: credit sales and unpaid bills count too.'**
+  String get acxNetProfitInfo;
+
+  /// No description provided for @acxLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'A loss in this period'**
+  String get acxLoss;
+
+  /// No description provided for @acxCashOnHand.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on hand'**
+  String get acxCashOnHand;
+
+  /// No description provided for @acxCashOnHandInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in the cash drawers and safe, according to the books (account 1000).'**
+  String get acxCashOnHandInfo;
+
+  /// No description provided for @acxBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank'**
+  String get acxBank;
+
+  /// No description provided for @acxBankInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in the bank account, including card payments (account 1010).'**
+  String get acxBankInfo;
+
+  /// No description provided for @acxProfitSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit in this period'**
+  String get acxProfitSummary;
+
+  /// No description provided for @acxProfitSummaryInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'From sales down to what the shop kept, step by step. The Profit & loss tab shows every expense.'**
+  String get acxProfitSummaryInfo;
+
+  /// No description provided for @acxCogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost of goods sold'**
+  String get acxCogs;
+
+  /// No description provided for @acxCogsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'What the goods you sold cost you to buy (at their purchase price), not what you paid suppliers this period.'**
+  String get acxCogsInfo;
+
+  /// No description provided for @acxOperatingExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Running costs'**
+  String get acxOperatingExpenses;
+
+  /// No description provided for @acxOperatingExpensesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Costs of running the shop: rent, salaries, electricity, supplies, card fees, damaged or lost stock and other expenses.'**
+  String get acxOperatingExpensesInfo;
+
+  /// No description provided for @acxCashMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash drawer in this period'**
+  String get acxCashMovement;
+
+  /// No description provided for @acxCashMovementInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Money that came into and went out of cash on hand (account 1000) in the period, whatever the reason: sales, debt payments, expenses, refunds, supplier payments.'**
+  String get acxCashMovementInfo;
+
+  /// No description provided for @acxCashReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash received'**
+  String get acxCashReceived;
+
+  /// No description provided for @acxCashPaidOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash paid out'**
+  String get acxCashPaidOut;
+
+  /// No description provided for @acxCashNet.
+  ///
+  /// In en, this message translates to:
+  /// **'Change in cash'**
+  String get acxCashNet;
+
+  /// No description provided for @acxBalancesNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Balances on {date}'**
+  String acxBalancesNow(String date);
+
+  /// No description provided for @acxBalancesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'What the store holds and what is owed either way, at the end of the period (or now).'**
+  String get acxBalancesInfo;
+
+  /// No description provided for @acxReceivablesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Money customers still owe the store for sales on credit (account 1100). It goes down when they pay.'**
+  String get acxReceivablesInfo;
+
+  /// No description provided for @acxPayablesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Money the store still owes suppliers for goods received on credit (account 2000). It goes down when you pay them.'**
+  String get acxPayablesInfo;
+
+  /// No description provided for @acxProfitLossInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit and loss shows what the shop earned and spent in the period, and the profit left over. It counts sales and costs when they happen, not when cash moves.'**
+  String get acxProfitLossInfo;
+
+  /// No description provided for @acxGrossSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales before returns and discounts'**
+  String get acxGrossSales;
+
+  /// No description provided for @acxGrossSalesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything sold in the period at the selling price, without sales tax (account 4000).'**
+  String get acxGrossSalesInfo;
+
+  /// No description provided for @acxReturns.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns'**
+  String get acxReturns;
+
+  /// No description provided for @acxReturnsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Money given back to customers for returned goods (account 4100).'**
+  String get acxReturnsInfo;
+
+  /// No description provided for @acxDiscounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts'**
+  String get acxDiscounts;
+
+  /// No description provided for @acxDiscountsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts recorded separately from the selling price (account 4200).'**
+  String get acxDiscountsInfo;
+
+  /// No description provided for @acxOtherRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Other income'**
+  String get acxOtherRevenue;
+
+  /// No description provided for @acxNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get acxNone;
+
+  /// No description provided for @acxTotalExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Total running costs'**
+  String get acxTotalExpenses;
+
+  /// No description provided for @acxAssetsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assets are what the store has: cash, bank, money customers owe, and stock at cost.'**
+  String get acxAssetsInfo;
+
+  /// No description provided for @acxLiabilitiesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Liabilities are what the store owes others: suppliers, and sales tax collected but not yet paid.'**
+  String get acxLiabilitiesInfo;
+
+  /// No description provided for @acxEquityInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Equity is what belongs to the owner: what was put into the business plus the profit it has made.'**
+  String get acxEquityInfo;
+
+  /// No description provided for @acxRevenueInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Income from selling, less returns and discounts.'**
+  String get acxRevenueInfo;
+
+  /// No description provided for @acxTotalAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Total assets'**
+  String get acxTotalAssets;
+
+  /// No description provided for @acxLiabilitiesAndEquity.
+  ///
+  /// In en, this message translates to:
+  /// **'Liabilities and owner\'s equity'**
+  String get acxLiabilitiesAndEquity;
+
+  /// No description provided for @acxLiabilitiesAndEquityInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Who has a claim on the assets: others (liabilities) and the owner (equity, including profit not yet taken out).'**
+  String get acxLiabilitiesAndEquityInfo;
+
+  /// No description provided for @acxTotalLiabilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Total liabilities'**
+  String get acxTotalLiabilities;
+
+  /// No description provided for @acxEarlierProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit before this period'**
+  String get acxEarlierProfit;
+
+  /// No description provided for @acxEarlierProfitInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'All profit made before the period began, not yet moved into equity by a closing entry.'**
+  String get acxEarlierProfitInfo;
+
+  /// No description provided for @acxPeriodProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit in this period'**
+  String get acxPeriodProfit;
+
+  /// No description provided for @acxPeriodProfitInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'The net profit from the Profit & loss tab. It belongs to the owner, so it is counted on this side.'**
+  String get acxPeriodProfitInfo;
+
+  /// No description provided for @acxTotalEquity.
+  ///
+  /// In en, this message translates to:
+  /// **'Total owner\'s equity'**
+  String get acxTotalEquity;
+
+  /// No description provided for @acxTotalLiabilitiesAndEquity.
+  ///
+  /// In en, this message translates to:
+  /// **'Total liabilities and equity'**
+  String get acxTotalLiabilitiesAndEquity;
+
+  /// No description provided for @acxAsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'As at {date}'**
+  String acxAsAt(String date);
+
+  /// No description provided for @acxBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'It balances: assets equal liabilities plus owner\'s equity.'**
+  String get acxBalanced;
+
+  /// No description provided for @acxNotBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'It does not balance: {amount} difference. Check the journal for an entry that was edited outside the app.'**
+  String acxNotBalanced(String amount);
+
+  /// No description provided for @acxBalanceRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Every entry adds the same to both sides, so the two totals always match.'**
+  String get acxBalanceRule;
+
+  /// No description provided for @acxCashFlowInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Where cash and bank money came from and where it went in the period, grouped by reason. Unlike profit, this is only money that actually moved.'**
+  String get acxCashFlowInfo;
+
+  /// No description provided for @acxOpeningCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash and bank at the start'**
+  String get acxOpeningCash;
+
+  /// No description provided for @acxOpeningCashInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on hand plus bank when the period began.'**
+  String get acxOpeningCashInfo;
+
+  /// No description provided for @acxMoneyIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in'**
+  String get acxMoneyIn;
+
+  /// No description provided for @acxMoneyOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Money out'**
+  String get acxMoneyOut;
+
+  /// No description provided for @acxTotalIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Total in'**
+  String get acxTotalIn;
+
+  /// No description provided for @acxTotalOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Total out'**
+  String get acxTotalOut;
+
+  /// No description provided for @acxNetCashChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Net change'**
+  String get acxNetCashChange;
+
+  /// No description provided for @acxClosingCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash and bank at the end'**
+  String get acxClosingCash;
+
+  /// No description provided for @acxCashFlowMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The accounts show {amount}; the difference is in entries not yet downloaded.'**
+  String acxCashFlowMismatch(String amount);
+
+  /// No description provided for @acxCashFlowTransfersNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving money between the cash drawer and the bank shows as both in and out; it does not change the total.'**
+  String get acxCashFlowTransfersNote;
+
+  /// No description provided for @acxTrialBalanceInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Every account\'s balance in a debit or credit column. If the two totals match, every entry was recorded in balance.'**
+  String get acxTrialBalanceInfo;
+
+  /// No description provided for @acxTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get acxTotal;
+
+  /// No description provided for @acxOpeningBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance at the start'**
+  String get acxOpeningBalance;
+
+  /// No description provided for @acxClosingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance at the end'**
+  String get acxClosingBalance;
+
+  /// No description provided for @acxAddedOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Added (new amounts owed)'**
+  String get acxAddedOwed;
+
+  /// No description provided for @acxPaidOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid off'**
+  String get acxPaidOff;
+
+  /// No description provided for @acxMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements in this period'**
+  String get acxMovements;
+
+  /// No description provided for @acxNoMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'No movements in this period.'**
+  String get acxNoMovements;
+
+  /// No description provided for @acxShowingFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the first {count}. Choose a shorter period to see the rest.'**
+  String acxShowingFirst(int count);
+
+  /// No description provided for @acxOpenDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Open debts'**
+  String get acxOpenDebts;
+
+  /// No description provided for @acxOpenSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Open suppliers'**
+  String get acxOpenSuppliers;
+
+  /// No description provided for @acxChangeInPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed by {amount} in this period'**
+  String acxChangeInPeriod(String amount);
+
+  /// No description provided for @acxFilterCause.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get acxFilterCause;
+
+  /// No description provided for @acxFilterAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get acxFilterAccount;
+
+  /// No description provided for @acxFilterSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get acxFilterSearch;
+
+  /// No description provided for @acxAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get acxAll;
+
+  /// No description provided for @acxNoEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No journal entries match in this period.'**
+  String get acxNoEntries;
+
+  /// No description provided for @acxReversalEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversal'**
+  String get acxReversalEntry;
+
+  /// No description provided for @acxWasReversed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversed'**
+  String get acxWasReversed;
+
+  /// No description provided for @acxNotSentYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent yet'**
+  String get acxNotSentYet;
+
+  /// No description provided for @acxReverseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse this entry?'**
+  String get acxReverseTitle;
+
+  /// No description provided for @acxReverseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A new entry with the opposite amounts is added today, cancelling this one out. The original stays in the journal so the history is kept. Then record the correct entry if needed.'**
+  String get acxReverseBody;
+
+  /// No description provided for @acxReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse'**
+  String get acxReverse;
+
+  /// No description provided for @acxReversed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversing entry added.'**
+  String get acxReversed;
+
+  /// No description provided for @acxReversalOf.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry cancels out an earlier one.'**
+  String get acxReversalOf;
+
+  /// No description provided for @acxAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get acxAccount;
+
+  /// No description provided for @acxSourceDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Where it came from'**
+  String get acxSourceDocument;
+
+  /// No description provided for @acxNoSourceDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Entered directly in the journal.'**
+  String get acxNoSourceDocument;
+
+  /// No description provided for @acxOpenSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get acxOpenSource;
+
+  /// No description provided for @acxCorrectionsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal entries are never edited or deleted; mistakes are corrected with a reversing entry.'**
+  String get acxCorrectionsNote;
+
+  /// No description provided for @acxSaleNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale {id} (details not available offline)'**
+  String acxSaleNotFound(String id);
+
+  /// No description provided for @acxSaleSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {number} · {total} · {method}'**
+  String acxSaleSummary(String number, String total, String method);
+
+  /// No description provided for @acxAuditTrailInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'A record of sensitive actions in the store — who did what and when (price changes, refunds, voids, releasing devices…). It cannot be changed from the app.'**
+  String get acxAuditTrailInfo;
+
+  /// No description provided for @acxNoAudit.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded in this period.'**
+  String get acxNoAudit;
+
+  /// No description provided for @acxBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Before'**
+  String get acxBefore;
+
+  /// No description provided for @acxAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'After'**
+  String get acxAfter;
+
+  /// No description provided for @planNotInPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in your plan'**
+  String get planNotInPlanTitle;
+
+  /// No description provided for @planNotInPlanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This section is not included in your {plan} plan. Contact UNOPOS support to upgrade.'**
+  String planNotInPlanBody(String plan);
+
+  /// No description provided for @planBackHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get planBackHome;
+
+  /// No description provided for @planCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan: {plan}'**
+  String planCurrent(String plan);
+
+  /// No description provided for @planNoEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No end date'**
+  String get planNoEndDate;
+
+  /// No description provided for @planEndsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends on {date}'**
+  String planEndsOn(String date);
+
+  /// No description provided for @planUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'unlimited'**
+  String get planUnlimited;
+
+  /// No description provided for @planExcludedSections.
+  ///
+  /// In en, this message translates to:
+  /// **'Not included: {sections}'**
+  String planExcludedSections(String sections);
+
+  /// No description provided for @planVerifiedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked with the server {time}'**
+  String planVerifiedAt(String time);
+
+  /// No description provided for @planVerifiedOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline: last checked with the server {time}'**
+  String planVerifiedOffline(String time);
+
+  /// No description provided for @planStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get planStatusActive;
+
+  /// No description provided for @planStatusTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial'**
+  String get planStatusTrial;
+
+  /// No description provided for @planStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get planStatusExpired;
+
+  /// No description provided for @planStatusSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get planStatusSuspended;
+
+  /// No description provided for @planStatusDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get planStatusDisabled;
+
+  /// No description provided for @planLimitEmployees.
+  ///
+  /// In en, this message translates to:
+  /// **'Employees'**
+  String get planLimitEmployees;
+
+  /// No description provided for @planLimitBranches.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches'**
+  String get planLimitBranches;
+
+  /// No description provided for @planLimitProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get planLimitProducts;
+
+  /// No description provided for @planLimitDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Tills in use'**
+  String get planLimitDevices;
+
+  /// No description provided for @planLimitDailySales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales today'**
+  String get planLimitDailySales;
+
+  /// No description provided for @planModulePos.
+  ///
+  /// In en, this message translates to:
+  /// **'Point of sale'**
+  String get planModulePos;
+
+  /// No description provided for @planModuleInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get planModuleInvoices;
+
+  /// No description provided for @planModuleInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get planModuleInventory;
+
+  /// No description provided for @planModuleDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Debts'**
+  String get planModuleDebts;
+
+  /// No description provided for @planModuleCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get planModuleCustomers;
+
+  /// No description provided for @planModuleSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get planModuleSuppliers;
+
+  /// No description provided for @planModuleAccounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounting'**
+  String get planModuleAccounting;
+
+  /// No description provided for @planModuleExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses & cash'**
+  String get planModuleExpenses;
+
+  /// No description provided for @planModuleHr.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get planModuleHr;
+
+  /// No description provided for @planModuleReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get planModuleReports;
+
+  /// No description provided for @planDeviceLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan allows cashiers on {count} tills at a time, and they are all in use. Sign a cashier out on another till, or ask UNOPOS to upgrade the plan.'**
+  String planDeviceLimitReached(int count);
+
+  /// No description provided for @devPlanCodesTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan codes'**
+  String get devPlanCodesTab;
+
+  /// No description provided for @devPlanIssueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue a code with a plan'**
+  String get devPlanIssueTitle;
+
+  /// No description provided for @devPlanTargetStore.
+  ///
+  /// In en, this message translates to:
+  /// **'For store (optional)'**
+  String get devPlanTargetStore;
+
+  /// No description provided for @devPlanTargetStoreHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'When set, only this store can use the code.'**
+  String get devPlanTargetStoreHelp;
+
+  /// No description provided for @devPlanAnyStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Any store'**
+  String get devPlanAnyStore;
+
+  /// No description provided for @devPlanPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get devPlanPlan;
+
+  /// No description provided for @devPlanKeepPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the store\'s current plan'**
+  String get devPlanKeepPlan;
+
+  /// No description provided for @devPlanEndsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends on {date}'**
+  String devPlanEndsOn(String date);
+
+  /// No description provided for @devPlanEndsNever.
+  ///
+  /// In en, this message translates to:
+  /// **'No end date (lifetime)'**
+  String get devPlanEndsNever;
+
+  /// No description provided for @devPlanEndsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The duration counts from today, when the code is issued.'**
+  String get devPlanEndsHelp;
+
+  /// No description provided for @devPlanIssueAndActivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue and activate now'**
+  String get devPlanIssueAndActivate;
+
+  /// No description provided for @devPlanNameNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the store name or choose a store.'**
+  String get devPlanNameNeeded;
+
+  /// No description provided for @devPlanCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get devPlanCopy;
+
+  /// No description provided for @devPlanFeaturesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What each plan includes'**
+  String get devPlanFeaturesTitle;
+
+  /// No description provided for @devPlanFeaturesSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{on} of {all} sections · tills: {devices}'**
+  String devPlanFeaturesSummary(int on, int all, String devices);
+
+  /// No description provided for @devPlanMaxDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Tills with a cashier signed in at once'**
+  String get devPlanMaxDevices;
+
+  /// No description provided for @devPlanMaxDevicesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty for no limit.'**
+  String get devPlanMaxDevicesHelp;
+
+  /// No description provided for @devPlanDevicesInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number of at least 1, or leave it empty.'**
+  String get devPlanDevicesInvalid;
 }
 
 class _AppLocalizationsDelegate

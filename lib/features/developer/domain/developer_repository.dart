@@ -34,9 +34,24 @@ abstract class DeveloperRepository {
 
   Future<void> updatePlanLimits(SubscriptionPlanRecord plan);
 
+  /// Which sections [planId] includes and its till limit (null = none).
+  Future<void> updatePlanEntitlements(String planId, {required Map<String, bool> features, int? maxDevices});
+
+  /// Issues a signed code for [tier]. With [planId], using it switches the
+  /// store to that plan; with [targetStoreId], only that store can use it.
+  Future<ActivationCodeRecord> issueCode({
+    required LicenseTier tier,
+    required String storeNameRef,
+    String? planId,
+    String? targetStoreId,
+  });
+
+  /// Issues a code for [storeId] only and activates it there at once,
+  /// switching the store to [planId] when given.
   Future<ActivationCodeRecord> generateAndAssignLicense({
     required String storeId,
     required LicenseTier tier,
+    String? planId,
   });
 
   /// [targetStoreIds] null broadcasts to every store; otherwise only those.

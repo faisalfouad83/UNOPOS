@@ -57,6 +57,7 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
         status: ActivationCodeStatus.values.firstWhere((s) => s.name == row['status']),
         redeemedByStoreId: row['redeemed_by_store_id'] as String?,
         redeemedAt: row['redeemed_at'] == null ? null : DateTime.parse(row['redeemed_at'] as String).toLocal(),
+        planId: row['plan_id'] as String?,
       );
 
   @override
@@ -143,6 +144,11 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
         maxStorageMb: (row['max_storage_mb'] as num).toInt(),
         maxDailyTransactions: (row['max_daily_transactions'] as num).toInt(),
         isActive: row['is_active'] as bool? ?? true,
+        features: {
+          for (final e in ((row['features'] as Map?) ?? const {}).entries)
+            if (e.value is bool) e.key as String: e.value as bool,
+        },
+        maxDevices: (row['max_devices'] as num?)?.toInt(),
       );
 
   @override
@@ -167,27 +173,58 @@ class SupabaseDeveloperRepository implements DeveloperRepository {
   }
 
   @override
+  Future<void> updatePlanEntitlements(String planId, {required Map<String, bool> features, int? maxDevices}) async {
+    await _client.from('subscription_plans').update({
+      'features': features,
+      'max_devices': maxDevices,
+    }).eq('id', planId);
+    await _logAudit('plan.edit_features', null, {'plan_id': planId, 'features': features, 'max_devices': maxDevices});
+  }
+
+  @override
+  Future<ActivationCodeRecord> issueCode({
+    required LicenseTier tier,
+    required String storeNameRef,
+    String? planId,
+    String? targetStoreId,
+  }) async {
+    final code = ActivationCodeCodec.generate(tier: tier, storeNameRef: storeNameRef);
+    final payload = ActivationCodeCodec.verifyAndDecode(code);
+    // The server checks the plan, the store and that the end date matches
+    // the duration; using the code applies plan and end date together.
+    final row = await _client.rpc('record_activation_code', params: {
+      'p_code': code,
+      'p_store_name_ref': storeNameRef,
+      'p_tier': tier.name,
+      'p_expires_at': payload.expiresAt?.toIso8601String(),
+      // Always named (null when unset): only the six-argument version of the
+      // function takes them, so the call can't be confused with the older one.
+      'p_plan_id': planId,
+      'p_target_store_id': targetStoreId,
+    }).single();
+    return _mapActivationCode(row);
+  }
+
+  @override
   Future<ActivationCodeRecord> generateAndAssignLicense({
     required String storeId,
     required LicenseTier tier,
+    String? planId,
   }) async {
     final storeRow = await _client.from('stores').select('display_name').eq('id', storeId).single();
     final storeName = storeRow['display_name'] as String;
 
-    final code = ActivationCodeCodec.generate(tier: tier, storeNameRef: storeName);
-    final payload = ActivationCodeCodec.verifyAndDecode(code);
+    final record = await issueCode(
+      tier: tier,
+      storeNameRef: storeName,
+      planId: planId,
+      targetStoreId: planId == null ? null : storeId,
+    );
 
-    final row = await _client.rpc('record_activation_code', params: {
-      'p_code': code,
-      'p_store_name_ref': storeName,
-      'p_tier': tier.name,
-      'p_expires_at': payload.expiresAt?.toIso8601String(),
-    }).single();
+    await _client.rpc('developer_assign_license', params: {'p_store_id': storeId, 'p_code': record.code});
+    await _logAudit('license.generate_and_assign', storeId, {'tier': tier.name, 'code': record.code, 'plan_id': planId});
 
-    await _client.rpc('developer_assign_license', params: {'p_store_id': storeId, 'p_code': code});
-    await _logAudit('license.generate_and_assign', storeId, {'tier': tier.name, 'code': code});
-
-    return _mapActivationCode(row);
+    return record;
   }
 
   @override

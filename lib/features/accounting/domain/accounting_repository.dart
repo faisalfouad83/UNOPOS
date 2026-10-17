@@ -1,3 +1,4 @@
+import 'account_totals.dart';
 import 'accounting_models.dart';
 
 abstract class AccountingRepository {
@@ -35,6 +36,23 @@ abstract class AccountingRepository {
   /// account code -> net balance in minor units (debits - credits for
   /// asset/expense/cogs types, credits - debits for liability/equity/revenue).
   Future<Map<String, int>> trialBalance(String storeId, {DateTime? asOf});
+
+  /// Every account's debits and credits from [from] (inclusive; null = the
+  /// first entry) to [to] (exclusive), and in total up to [to] — added up
+  /// by the server on the shared backend (no row limit). With no
+  /// connection, an estimate from what this device has kept
+  /// ([AccountTotals.isEstimate]).
+  Future<AccountTotals> accountTotals(String storeId, {DateTime? from, required DateTime to});
+
+  /// Journal entries dated from [from] (inclusive) to [to] (exclusive),
+  /// newest first, at most [limit]; entries made on this device and not yet
+  /// sent included.
+  Future<List<JournalEntryRecord>> journalEntriesBetween(
+    String storeId, {
+    required DateTime from,
+    required DateTime to,
+    int limit = 1000,
+  });
 }
 
 class DateTimeRange {

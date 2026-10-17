@@ -114,6 +114,19 @@ final _cases = <_Case>[
   const _Case('/suppliers'),
   _Case('/suppliers', 'supplier-new', (t) => _tap(t, find.byType(FloatingActionButton))),
   const _Case('/accounting'),
+  // Accounting sections: journal, receivables, balance sheet, cash flow, audit trail.
+  for (final (i, name) in const [
+    (1, 'journal'),
+    (4, 'receivables'),
+    (8, 'balance-sheet'),
+    (9, 'cash-flow'),
+    (10, 'audit')
+  ])
+    _Case('/accounting', 'accounting-$name', (t) async {
+      final tab = find.byType(Tab).at(i);
+      await t.ensureVisible(tab);
+      await _tap(t, tab);
+    }),
   const _Case('/expenses-cash'),
   _Case('/expenses-cash', 'expense-new', (t) => _tap(t, find.byIcon(Icons.add))),
   const _Case('/hr'),

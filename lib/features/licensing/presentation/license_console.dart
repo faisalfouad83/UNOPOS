@@ -244,7 +244,9 @@ class _CodeTile extends ConsumerWidget {
     return Card(
       child: ListTile(
         leading: Icon(statusIcon, color: statusColor),
-        title: Text('${code.storeNameRef} · ${licenseTierLabel(l10n, code.tier)}'),
+        title: Text(
+          '${code.storeNameRef} · ${licenseTierLabel(l10n, code.tier)}${code.planId == null ? '' : ' · ${code.planId}'}',
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

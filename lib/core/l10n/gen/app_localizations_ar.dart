@@ -3111,4 +3111,851 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get themeDevSaved => 'تم حفظ المظهر';
+
+  @override
+  String get storeResetSubtitle =>
+      'امسح المبيعات أو العملاء أو المخزون أو كل شيء وابدأ من جديد. يُحفظ ملف نسخة احتياطية ويُتحقق منه أولاً.';
+
+  @override
+  String get storeResetButton => 'إعادة ضبط…';
+
+  @override
+  String get storeResetChooseTitle => 'ماذا تريد أن تعيد ضبطه؟';
+
+  @override
+  String get storeResetImpliedNote =>
+      'مُضمَّن: لا يمكن حذف الجزء الذي اخترته بدونه.';
+
+  @override
+  String get storeResetScopeFull => 'إعادة ضبط المتجر بالكامل';
+
+  @override
+  String get storeResetScopeFullHelp =>
+      'كل السجلات التجارية: المبيعات والفواتير، العملاء والديون، المصروفات، الدفاتر المحاسبية، المنتجات والمخزون، الموردون، الورديات والخصومات. يبدأ المتجر من جديد كأنه جديد.';
+
+  @override
+  String get storeResetScopeSales => 'المبيعات والفواتير';
+
+  @override
+  String get storeResetScopeSalesHelp =>
+      'الفواتير والمبيعات هي السجلات نفسها، لذا يحذف هذا الاثنين معاً: كل فاتورة (والمعلّقة أيضاً)، ومرتجعاتها، والديون الناتجة عنها، ونقاط الولاء المكتسبة أو المستخدمة فيها، وقيودها المحاسبية. تبدأ تقارير المبيعات من الصفر وتبدأ أرقام الفواتير من 1 مجدداً. لا تتغير كميات المخزون.';
+
+  @override
+  String get storeResetScopeDebts => 'ديون العملاء';
+
+  @override
+  String get storeResetScopeDebtsHelp =>
+      'يحذف كل ديون العملاء والدفعات المستلمة عليها مع قيودها المحاسبية. يبقى العملاء والفواتير؛ ويبقى المبلغ المستحق المسجّل في قيد كل فاتورة حتى تُعاد ضبط السجلات المحاسبية.';
+
+  @override
+  String get storeResetScopeExpenses => 'المصروفات';
+
+  @override
+  String get storeResetScopeExpensesHelp =>
+      'يحذف كل المصروفات مع قيودها المحاسبية. تتغير تقارير المصروفات وأرقام الأرباح ومجاميع نقد الورديات.';
+
+  @override
+  String get storeResetScopeAccounting => 'السجلات المحاسبية';
+
+  @override
+  String get storeResetScopeAccountingHelp =>
+      'يحذف كل القيود اليومية بما فيها المصروفات: تبدأ أرصدة الحسابات والأرباح والخسائر وميزان المراجعة من الصفر. تبقى المبيعات والديون والمخزون والموردون بدون قيودها المحاسبية. يُحتفظ بدليل الحسابات.';
+
+  @override
+  String get storeResetScopeCustomers => 'العملاء';
+
+  @override
+  String get storeResetScopeCustomersHelp =>
+      'يحذف كل العملاء مع سجل الولاء وديونهم. تبقى فواتيرهم السابقة بدون عميل.';
+
+  @override
+  String get storeResetScopeInventory => 'المنتجات والمخزون';
+
+  @override
+  String get storeResetScopeInventoryHelp =>
+      'يحذف كل المنتجات مع كميات المخزون وسجل حركته، والفئات، وخصومات المنتجات والفئات، وأوامر الشراء وتحويلات المخزون. تُحذف كل الفواتير أيضاً لأن بنود الفواتير تشير إلى المنتجات. يبقى الموردون والمبالغ المستحقة لهم.';
+
+  @override
+  String get storeResetScopeSuppliers => 'الموردون';
+
+  @override
+  String get storeResetScopeSuppliersHelp =>
+      'يحذف كل الموردين والمشتريات والدفعات المسجلة معهم وأوامر الشراء مع قيودها المحاسبية. يبقى المخزون المستلَم.';
+
+  @override
+  String get storeResetScopeShifts => 'الورديات';
+
+  @override
+  String get storeResetScopeShiftsHelp =>
+      'يحذف الورديات المغلقة والاستراحات المنتهية. تبقى الورديات المفتوحة والاستراحات الجارية. تبقى الفواتير بدون وردية.';
+
+  @override
+  String get storeResetKeptNote =>
+      'يُحتفظ دائماً بـ: المتجر وترخيصه وخطته، الفروع، الموظفين ورموزهم السرية، الإعدادات، نسب الضريبة، دليل الحسابات وسجل التدقيق.';
+
+  @override
+  String get storeResetConsequencesTitle => 'قبل المتابعة';
+
+  @override
+  String get storeResetWillRemove => 'سيحذف هذا، في كل الفروع وعلى كل الأجهزة:';
+
+  @override
+  String get storeResetNothingToRemove => 'لا توجد سجلات لحذفها فيما اخترته.';
+
+  @override
+  String get storeResetBackupNote =>
+      'أولاً يُحفظ ملف نسخة احتياطية لهذه السجلات (ولتغييرات هذا الجهاز التي لم تُرسل بعد) في المكان الذي تختاره ويُتحقق منه. إن تعذّر حفظه والتحقق منه فلن يُعاد ضبط شيء.';
+
+  @override
+  String get storeResetLoadingPreview => 'جارٍ عدّ السجلات…';
+
+  @override
+  String storeResetFinalTitle(String scopes) {
+    return 'مسح $scopes؟';
+  }
+
+  @override
+  String get storeResetFinalFull =>
+      'ستُمسح كل السجلات التجارية لهذا المتجر على كل الأجهزة. لا يمكن التراجع عن ذلك من التطبيق: ملف النسخة الاحتياطية وحده يمكنه استعادتها.';
+
+  @override
+  String storeResetFinalPartial(String scopes) {
+    return 'سيُمسح $scopes على كل الأجهزة. لا يمكن التراجع عن ذلك من التطبيق: ملف النسخة الاحتياطية وحده يمكنه استعادتها.';
+  }
+
+  @override
+  String get storeResetConfirmButton => 'نسخ احتياطي ثم مسح';
+
+  @override
+  String get storeResetSaveDialogTitle =>
+      'احفظ النسخة الاحتياطية قبل إعادة الضبط';
+
+  @override
+  String get storeResetStageBackup => 'حفظ ملف النسخة الاحتياطية';
+
+  @override
+  String get storeResetStageVerify => 'التحقق من ملف النسخة الاحتياطية';
+
+  @override
+  String get storeResetStageServer => 'إعادة ضبط البيانات على الخادم';
+
+  @override
+  String get storeResetStageLocal => 'إعادة ضبط البيانات';
+
+  @override
+  String get storeResetStageCleanup => 'تنظيف هذا الجهاز';
+
+  @override
+  String get storeResetDoneTitle => 'اكتملت إعادة الضبط';
+
+  @override
+  String storeResetDoneRemoved(int count) {
+    return 'تم حذف أو تحديث $count سجل.';
+  }
+
+  @override
+  String storeResetDoneBackup(String path) {
+    return 'حُفظت النسخة الاحتياطية في: $path';
+  }
+
+  @override
+  String storeResetDoneDropped(int count) {
+    return 'أُسقط $count من تغييرات هذا الجهاز غير المرسلة الخاصة بالسجلات الممسوحة (وهي موجودة في ملف النسخة الاحتياطية).';
+  }
+
+  @override
+  String get storeResetFailedTitle => 'لم تكتمل إعادة الضبط';
+
+  @override
+  String get storeResetErrorOffline =>
+      'لا يوجد اتصال بالإنترنت. بيانات المتجر محفوظة على الخادم، لذا لا يمكن إعادة ضبطها إلا عبر الإنترنت. لم يتغير شيء.';
+
+  @override
+  String get storeResetErrorUnsent =>
+      'بعض التغييرات على هذا الجهاز لم تصل إلى الخادم بعد. انتظر حتى تُرسل (راجع شريط الحالة) ثم حاول مجدداً. لم يتغير شيء.';
+
+  @override
+  String storeResetErrorBackup(String error) {
+    return 'تعذّر إنشاء ملف النسخة الاحتياطية أو حفظه ($error). لم يتغير شيء.';
+  }
+
+  @override
+  String get storeResetErrorVerify =>
+      'لم يُقرأ ملف النسخة الاحتياطية المحفوظ بشكل صحيح، لذا لم يُعَد ضبط شيء. جرّب حفظه في مكان آخر.';
+
+  @override
+  String storeResetErrorRefused(String error) {
+    return 'رُفضت إعادة الضبط ($error). لم يتغير شيء.';
+  }
+
+  @override
+  String get storeResetErrorUnknown =>
+      'انقطع الاتصال قبل أن يرد الخادم. ربما اكتملت إعادة الضبط: سيُتحقق من ذلك تلقائياً في المرة القادمة التي يُفتح فيها التطبيق مع اتصال. لا تبدأ إعادة ضبط أخرى قبل ذلك.';
+
+  @override
+  String get storeResetErrorCancelled =>
+      'لم يُختر مكان لملف النسخة الاحتياطية، لذا لم يُعَد ضبط شيء.';
+
+  @override
+  String get storeResetResumed =>
+      'اكتملت على هذا الجهاز إعادة ضبط بدأت سابقاً.';
+
+  @override
+  String get storeResetTableSales => 'الفواتير';
+
+  @override
+  String get storeResetTableSaleLines => 'بنود الفواتير';
+
+  @override
+  String get storeResetTableSaleReturns => 'المرتجعات';
+
+  @override
+  String get storeResetTableSaleReturnLines => 'بنود المرتجعات';
+
+  @override
+  String get storeResetTableDebts => 'ديون العملاء';
+
+  @override
+  String get storeResetTableDebtPayments => 'دفعات الديون';
+
+  @override
+  String get storeResetTableLoyalty => 'سجلات نقاط الولاء';
+
+  @override
+  String get storeResetTablePointsAdjusted => 'عملاء صُحّحت نقاطهم';
+
+  @override
+  String get storeResetTableCustomers => 'العملاء';
+
+  @override
+  String get storeResetTableSalesUnlinked => 'فواتير لم تعد مرتبطة بعميل';
+
+  @override
+  String get storeResetTableExpenses => 'المصروفات';
+
+  @override
+  String get storeResetTableJournalEntries => 'القيود اليومية';
+
+  @override
+  String get storeResetTableJournalLines => 'بنود القيود';
+
+  @override
+  String get storeResetTableProducts => 'المنتجات';
+
+  @override
+  String get storeResetTableStockItems => 'كميات المخزون';
+
+  @override
+  String get storeResetTableStockMovements => 'سجل حركة المخزون';
+
+  @override
+  String get storeResetTableCategories => 'الفئات';
+
+  @override
+  String get storeResetTableDiscounts => 'الخصومات';
+
+  @override
+  String get storeResetTablePurchaseOrders => 'أوامر الشراء';
+
+  @override
+  String get storeResetTablePurchaseOrderLines => 'بنود أوامر الشراء';
+
+  @override
+  String get storeResetTableTransfers => 'تحويلات المخزون';
+
+  @override
+  String get storeResetTableTransferLines => 'بنود التحويلات';
+
+  @override
+  String get storeResetTableSuppliers => 'الموردون';
+
+  @override
+  String get storeResetTableSupplierTransactions => 'مشتريات ودفعات الموردين';
+
+  @override
+  String get storeResetTableShifts => 'الورديات';
+
+  @override
+  String get storeResetTableBreaks => 'الاستراحات';
+
+  @override
+  String get acxOverview => 'نظرة عامة';
+
+  @override
+  String get acxCashAndBank => 'النقد والبنك';
+
+  @override
+  String get acxReceivables => 'ديون الزبائن';
+
+  @override
+  String get acxPayables => 'مستحقات الموردين';
+
+  @override
+  String get acxCashFlow => 'التدفق النقدي';
+
+  @override
+  String get acxAuditTrail => 'سجل التدقيق';
+
+  @override
+  String get acxPeriodToday => 'اليوم';
+
+  @override
+  String get acxPeriodWeek => 'هذا الأسبوع';
+
+  @override
+  String get acxPeriodMonth => 'هذا الشهر';
+
+  @override
+  String get acxPeriodYear => 'هذه السنة';
+
+  @override
+  String get acxPeriodCustom => 'اختيار التواريخ';
+
+  @override
+  String get acxRefresh => 'تحديث';
+
+  @override
+  String acxOfflineEstimate(String time) {
+    return 'تقدير بدون اتصال: لا يوجد اتصال، لذا حُسبت هذه الأرقام على هذا الجهاز (أرقام الخادم من $time مع ما أُدخل هنا). قد تكون ناقصة.';
+  }
+
+  @override
+  String acxUnsentEntriesIncluded(int count) {
+    return 'يشمل $count قيود أُنشئت على هذا الجهاز ولم تُرسل بعد.';
+  }
+
+  @override
+  String acxUnsentSalesMissing(int count) {
+    return '$count مبيعات تمت بدون اتصال لم تُحتسب بعد؛ تُضاف عند وصولها إلى الخادم.';
+  }
+
+  @override
+  String get acxNetSales => 'المبيعات';
+
+  @override
+  String get acxNetSalesInfo =>
+      'ما اشتراه الزبائن في هذه الفترة بعد خصم المرتجعات والخصومات، ومن دون ضريبة المبيعات. البيع بالآجل يُحتسب عند البيع لا عند الدفع.';
+
+  @override
+  String acxNetSalesBreakdown(String gross, String returns, String discounts) {
+    return '$gross مبيعات، $returns مرتجعات، $discounts خصومات';
+  }
+
+  @override
+  String get acxGrossProfit => 'إجمالي الربح';
+
+  @override
+  String get acxGrossProfitInfo =>
+      'المبيعات مطروحًا منها كلفة شراء البضاعة المباعة. هو ما يبقى لتغطية مصاريف التشغيل.';
+
+  @override
+  String acxMargin(int percent) {
+    return '$percent% من المبيعات';
+  }
+
+  @override
+  String get acxNetProfit => 'صافي الربح';
+
+  @override
+  String get acxNetLoss => 'صافي الخسارة';
+
+  @override
+  String get acxNetProfitInfo =>
+      'إجمالي الربح مطروحًا منه مصاريف التشغيل (إيجار، رواتب، فواتير…). هذا ما ربحه المحل فعلًا في الفترة. وهو ليس النقد نفسه: البيع بالآجل والفواتير غير المدفوعة تُحتسب أيضًا.';
+
+  @override
+  String get acxLoss => 'خسارة في هذه الفترة';
+
+  @override
+  String get acxCashOnHand => 'النقد في الصندوق';
+
+  @override
+  String get acxCashOnHandInfo =>
+      'المال في أدراج النقد والخزنة حسب الدفاتر (الحساب 1000).';
+
+  @override
+  String get acxBank => 'البنك';
+
+  @override
+  String get acxBankInfo =>
+      'المال في الحساب المصرفي، بما فيه مدفوعات البطاقات (الحساب 1010).';
+
+  @override
+  String get acxProfitSummary => 'الربح في هذه الفترة';
+
+  @override
+  String get acxProfitSummaryInfo =>
+      'من المبيعات حتى ما بقي للمحل خطوة بخطوة. يعرض تبويب الأرباح والخسائر كل مصروف.';
+
+  @override
+  String get acxCogs => 'كلفة البضاعة المباعة';
+
+  @override
+  String get acxCogsInfo =>
+      'كلفة شراء البضاعة التي بعتها (بسعر الشراء)، لا ما دفعته للموردين في هذه الفترة.';
+
+  @override
+  String get acxOperatingExpenses => 'مصاريف التشغيل';
+
+  @override
+  String get acxOperatingExpensesInfo =>
+      'تكاليف تشغيل المحل: الإيجار، الرواتب، الكهرباء، المستلزمات، رسوم البطاقات، البضاعة التالفة أو المفقودة ومصاريف أخرى.';
+
+  @override
+  String get acxCashMovement => 'صندوق النقد في هذه الفترة';
+
+  @override
+  String get acxCashMovementInfo =>
+      'المال الذي دخل وخرج من النقد في الصندوق (الحساب 1000) في الفترة لأي سبب: مبيعات، تسديد ديون، مصاريف، مرتجعات، دفعات للموردين.';
+
+  @override
+  String get acxCashReceived => 'النقد المستلم';
+
+  @override
+  String get acxCashPaidOut => 'النقد المدفوع';
+
+  @override
+  String get acxCashNet => 'التغير في النقد';
+
+  @override
+  String acxBalancesNow(String date) {
+    return 'الأرصدة في $date';
+  }
+
+  @override
+  String get acxBalancesInfo =>
+      'ما يملكه المحل وما هو مستحق له أو عليه في نهاية الفترة (أو الآن).';
+
+  @override
+  String get acxReceivablesInfo =>
+      'المال الذي ما يزال الزبائن مدينين به للمحل عن البيع بالآجل (الحساب 1100). ينقص عند تسديدهم.';
+
+  @override
+  String get acxPayablesInfo =>
+      'المال الذي ما يزال المحل مدينًا به للموردين عن بضاعة استُلمت بالآجل (الحساب 2000). ينقص عند الدفع لهم.';
+
+  @override
+  String get acxProfitLossInfo =>
+      'تعرض الأرباح والخسائر ما كسبه المحل وما أنفقه في الفترة والربح المتبقي. تحتسب المبيعات والتكاليف عند حدوثها لا عند حركة النقد.';
+
+  @override
+  String get acxGrossSales => 'المبيعات قبل المرتجعات والخصومات';
+
+  @override
+  String get acxGrossSalesInfo =>
+      'كل ما بيع في الفترة بسعر البيع ومن دون ضريبة المبيعات (الحساب 4000).';
+
+  @override
+  String get acxReturns => 'المرتجعات';
+
+  @override
+  String get acxReturnsInfo =>
+      'المال المعاد للزبائن مقابل البضاعة المرتجعة (الحساب 4100).';
+
+  @override
+  String get acxDiscounts => 'الخصومات';
+
+  @override
+  String get acxDiscountsInfo =>
+      'الخصومات المسجلة منفصلة عن سعر البيع (الحساب 4200).';
+
+  @override
+  String get acxOtherRevenue => 'إيرادات أخرى';
+
+  @override
+  String get acxNone => 'لا شيء';
+
+  @override
+  String get acxTotalExpenses => 'مجموع مصاريف التشغيل';
+
+  @override
+  String get acxAssetsInfo =>
+      'الأصول هي ما يملكه المحل: النقد، البنك، ديون الزبائن، والمخزون بسعر الكلفة.';
+
+  @override
+  String get acxLiabilitiesInfo =>
+      'الالتزامات هي ما يدين به المحل للآخرين: الموردون، وضريبة المبيعات المحصلة غير المدفوعة بعد.';
+
+  @override
+  String get acxEquityInfo =>
+      'حقوق الملكية هي ما يعود للمالك: ما وُضع في العمل مضافًا إليه الأرباح التي حققها.';
+
+  @override
+  String get acxRevenueInfo =>
+      'الدخل من البيع مطروحًا منه المرتجعات والخصومات.';
+
+  @override
+  String get acxTotalAssets => 'مجموع الأصول';
+
+  @override
+  String get acxLiabilitiesAndEquity => 'الالتزامات وحقوق المالك';
+
+  @override
+  String get acxLiabilitiesAndEquityInfo =>
+      'من له حق في الأصول: الآخرون (الالتزامات) والمالك (حقوق الملكية، بما فيها الربح الذي لم يُسحب بعد).';
+
+  @override
+  String get acxTotalLiabilities => 'مجموع الالتزامات';
+
+  @override
+  String get acxEarlierProfit => 'الأرباح قبل هذه الفترة';
+
+  @override
+  String get acxEarlierProfitInfo =>
+      'كل الأرباح المحققة قبل بداية الفترة والتي لم تُنقل إلى حقوق الملكية بقيد إقفال.';
+
+  @override
+  String get acxPeriodProfit => 'ربح هذه الفترة';
+
+  @override
+  String get acxPeriodProfitInfo =>
+      'صافي الربح من تبويب الأرباح والخسائر. وهو يعود للمالك لذا يُحتسب في هذا الجانب.';
+
+  @override
+  String get acxTotalEquity => 'مجموع حقوق المالك';
+
+  @override
+  String get acxTotalLiabilitiesAndEquity => 'مجموع الالتزامات وحقوق المالك';
+
+  @override
+  String acxAsAt(String date) {
+    return 'كما في $date';
+  }
+
+  @override
+  String get acxBalanced => 'متوازنة: الأصول تساوي الالتزامات مع حقوق المالك.';
+
+  @override
+  String acxNotBalanced(String amount) {
+    return 'غير متوازنة: فرق $amount. راجع القيود بحثًا عن قيد عُدّل خارج التطبيق.';
+  }
+
+  @override
+  String get acxBalanceRule =>
+      'كل قيد يضيف المبلغ نفسه إلى الجانبين، لذا يتطابق المجموعان دائمًا.';
+
+  @override
+  String get acxCashFlowInfo =>
+      'من أين جاء نقد الصندوق والبنك وإلى أين ذهب في الفترة، مجمّعًا حسب السبب. بخلاف الربح، هذا هو المال الذي تحرك فعلًا فقط.';
+
+  @override
+  String get acxOpeningCash => 'النقد والبنك في البداية';
+
+  @override
+  String get acxOpeningCashInfo =>
+      'النقد في الصندوق مع البنك عند بداية الفترة.';
+
+  @override
+  String get acxMoneyIn => 'المال الداخل';
+
+  @override
+  String get acxMoneyOut => 'المال الخارج';
+
+  @override
+  String get acxTotalIn => 'مجموع الداخل';
+
+  @override
+  String get acxTotalOut => 'مجموع الخارج';
+
+  @override
+  String get acxNetCashChange => 'صافي التغير';
+
+  @override
+  String get acxClosingCash => 'النقد والبنك في النهاية';
+
+  @override
+  String acxCashFlowMismatch(String amount) {
+    return 'تُظهر الحسابات $amount؛ الفرق في قيود لم تُحمّل بعد.';
+  }
+
+  @override
+  String get acxCashFlowTransfersNote =>
+      'نقل المال بين الصندوق والبنك يظهر داخلًا وخارجًا معًا؛ ولا يغير المجموع.';
+
+  @override
+  String get acxTrialBalanceInfo =>
+      'رصيد كل حساب في عمود مدين أو دائن. إذا تطابق المجموعان فكل القيود سُجلت متوازنة.';
+
+  @override
+  String get acxTotal => 'المجموع';
+
+  @override
+  String get acxOpeningBalance => 'الرصيد في البداية';
+
+  @override
+  String get acxClosingBalance => 'الرصيد في النهاية';
+
+  @override
+  String get acxAddedOwed => 'أُضيف (مبالغ مستحقة جديدة)';
+
+  @override
+  String get acxPaidOff => 'سُدّد';
+
+  @override
+  String get acxMovements => 'الحركات في هذه الفترة';
+
+  @override
+  String get acxNoMovements => 'لا حركات في هذه الفترة.';
+
+  @override
+  String acxShowingFirst(int count) {
+    return 'يُعرض أول $count. اختر فترة أقصر لرؤية الباقي.';
+  }
+
+  @override
+  String get acxOpenDebts => 'فتح الديون';
+
+  @override
+  String get acxOpenSuppliers => 'فتح الموردين';
+
+  @override
+  String acxChangeInPeriod(String amount) {
+    return 'تغيّر بمقدار $amount في هذه الفترة';
+  }
+
+  @override
+  String get acxFilterCause => 'النوع';
+
+  @override
+  String get acxFilterAccount => 'الحساب';
+
+  @override
+  String get acxFilterSearch => 'بحث';
+
+  @override
+  String get acxAll => 'الكل';
+
+  @override
+  String get acxNoEntries => 'لا قيود مطابقة في هذه الفترة.';
+
+  @override
+  String get acxReversalEntry => 'قيد عكسي';
+
+  @override
+  String get acxWasReversed => 'تم عكسه';
+
+  @override
+  String get acxNotSentYet => 'لم يُرسل بعد';
+
+  @override
+  String get acxReverseTitle => 'عكس هذا القيد؟';
+
+  @override
+  String get acxReverseBody =>
+      'يُضاف اليوم قيد جديد بمبالغ معاكسة يلغي هذا القيد. يبقى القيد الأصلي في الدفتر حفاظًا على السجل. ثم سجّل القيد الصحيح عند الحاجة.';
+
+  @override
+  String get acxReverse => 'عكس القيد';
+
+  @override
+  String get acxReversed => 'أُضيف القيد العكسي.';
+
+  @override
+  String get acxReversalOf => 'هذا القيد يلغي قيدًا سابقًا.';
+
+  @override
+  String get acxAccount => 'الحساب';
+
+  @override
+  String get acxSourceDocument => 'المصدر';
+
+  @override
+  String get acxNoSourceDocument => 'أُدخل مباشرة في الدفتر.';
+
+  @override
+  String get acxOpenSource => 'فتح';
+
+  @override
+  String get acxCorrectionsNote =>
+      'لا تُعدّل القيود ولا تُحذف أبدًا؛ تُصحّح الأخطاء بقيد عكسي.';
+
+  @override
+  String acxSaleNotFound(String id) {
+    return 'البيع $id (التفاصيل غير متاحة دون اتصال)';
+  }
+
+  @override
+  String acxSaleSummary(String number, String total, String method) {
+    return 'فاتورة $number · $total · $method';
+  }
+
+  @override
+  String get acxAuditTrailInfo =>
+      'سجل بالإجراءات الحساسة في المحل — من فعل ماذا ومتى (تغيير أسعار، استرجاع، إلغاء، تحرير أجهزة…). لا يمكن تغييره من التطبيق.';
+
+  @override
+  String get acxNoAudit => 'لا شيء مسجل في هذه الفترة.';
+
+  @override
+  String get acxBefore => 'قبل';
+
+  @override
+  String get acxAfter => 'بعد';
+
+  @override
+  String get planNotInPlanTitle => 'غير مشمول في خطتك';
+
+  @override
+  String planNotInPlanBody(String plan) {
+    return 'هذا القسم غير مشمول في خطة $plan. تواصل مع دعم UNOPOS للترقية.';
+  }
+
+  @override
+  String get planBackHome => 'العودة للرئيسية';
+
+  @override
+  String planCurrent(String plan) {
+    return 'الخطة: $plan';
+  }
+
+  @override
+  String get planNoEndDate => 'بدون تاريخ انتهاء';
+
+  @override
+  String planEndsOn(String date) {
+    return 'ينتهي في $date';
+  }
+
+  @override
+  String get planUnlimited => 'غير محدود';
+
+  @override
+  String planExcludedSections(String sections) {
+    return 'غير مشمول: $sections';
+  }
+
+  @override
+  String planVerifiedAt(String time) {
+    return 'تم التحقق مع الخادم $time';
+  }
+
+  @override
+  String planVerifiedOffline(String time) {
+    return 'دون اتصال: آخر تحقق مع الخادم $time';
+  }
+
+  @override
+  String get planStatusActive => 'فعّالة';
+
+  @override
+  String get planStatusTrial => 'تجريبية';
+
+  @override
+  String get planStatusExpired => 'منتهية';
+
+  @override
+  String get planStatusSuspended => 'موقوفة';
+
+  @override
+  String get planStatusDisabled => 'معطلة';
+
+  @override
+  String get planLimitEmployees => 'الموظفون';
+
+  @override
+  String get planLimitBranches => 'الفروع';
+
+  @override
+  String get planLimitProducts => 'المنتجات';
+
+  @override
+  String get planLimitDevices => 'أجهزة الكاشير';
+
+  @override
+  String get planLimitDailySales => 'مبيعات اليوم';
+
+  @override
+  String get planModulePos => 'نقطة البيع';
+
+  @override
+  String get planModuleInvoices => 'الفواتير';
+
+  @override
+  String get planModuleInventory => 'المخزون';
+
+  @override
+  String get planModuleDebts => 'الديون';
+
+  @override
+  String get planModuleCustomers => 'الزبائن';
+
+  @override
+  String get planModuleSuppliers => 'الموردون';
+
+  @override
+  String get planModuleAccounting => 'المحاسبة';
+
+  @override
+  String get planModuleExpenses => 'المصاريف والنقد';
+
+  @override
+  String get planModuleHr => 'الموظفون';
+
+  @override
+  String get planModuleReports => 'التقارير';
+
+  @override
+  String planDeviceLimitReached(int count) {
+    return 'تسمح خطتك بالكاشير على $count أجهزة في الوقت نفسه وجميعها مستخدمة. سجّل خروج كاشير من جهاز آخر، أو اطلب من UNOPOS ترقية الخطة.';
+  }
+
+  @override
+  String get devPlanCodesTab => 'أكواد الخطط';
+
+  @override
+  String get devPlanIssueTitle => 'إصدار كود مع خطة';
+
+  @override
+  String get devPlanTargetStore => 'لمتجر (اختياري)';
+
+  @override
+  String get devPlanTargetStoreHelp =>
+      'عند التحديد، لا يستطيع استخدام الكود إلا هذا المتجر.';
+
+  @override
+  String get devPlanAnyStore => 'أي متجر';
+
+  @override
+  String get devPlanPlan => 'الخطة';
+
+  @override
+  String get devPlanKeepPlan => 'إبقاء خطة المتجر الحالية';
+
+  @override
+  String devPlanEndsOn(String date) {
+    return 'ينتهي في $date';
+  }
+
+  @override
+  String get devPlanEndsNever => 'بدون انتهاء (مدى الحياة)';
+
+  @override
+  String get devPlanEndsHelp => 'تُحسب المدة من اليوم، يوم إصدار الكود.';
+
+  @override
+  String get devPlanIssueAndActivate => 'إصدار وتفعيل الآن';
+
+  @override
+  String get devPlanNameNeeded => 'أدخل اسم المتجر أو اختر متجرًا.';
+
+  @override
+  String get devPlanCopy => 'نسخ';
+
+  @override
+  String get devPlanFeaturesTitle => 'ما تشمله كل خطة';
+
+  @override
+  String devPlanFeaturesSummary(int on, int all, String devices) {
+    return '$on من $all أقسام · أجهزة الكاشير: $devices';
+  }
+
+  @override
+  String get devPlanMaxDevices => 'أجهزة كاشير مسجلة الدخول في الوقت نفسه';
+
+  @override
+  String get devPlanMaxDevicesHelp => 'اتركه فارغًا لعدم التحديد.';
+
+  @override
+  String get devPlanDevicesInvalid =>
+      'أدخل عددًا صحيحًا لا يقل عن 1 أو اتركه فارغًا.';
 }

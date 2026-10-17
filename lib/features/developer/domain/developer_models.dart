@@ -79,6 +79,8 @@ class SubscriptionPlanRecord {
     required this.maxStorageMb,
     required this.maxDailyTransactions,
     this.isActive = true,
+    this.features = const {},
+    this.maxDevices,
   });
 
   final String id;
@@ -91,6 +93,13 @@ class SubscriptionPlanRecord {
   final int maxStorageMb;
   final int maxDailyTransactions;
   final bool isActive;
+
+  /// Section key → included (see PlanModules); a section not named is
+  /// included.
+  final Map<String, bool> features;
+
+  /// Tills that may have a cashier signed in at once; null = no limit.
+  final int? maxDevices;
 }
 
 class DashboardStats {

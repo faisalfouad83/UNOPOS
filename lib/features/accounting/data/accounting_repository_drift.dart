@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../../../core/constants/default_chart_of_accounts.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/utils/id_generator.dart';
+import '../domain/account_totals.dart';
 import '../domain/accounting_models.dart';
 import '../domain/accounting_repository.dart' as domain;
 
@@ -318,6 +319,62 @@ class DriftAccountingRepository implements domain.AccountingRepository {
       balances[code] = isDebitNormal ? debit - credit : credit - debit;
     }
     return balances;
+  }
+
+  @override
+  Future<AccountTotals> accountTotals(String storeId, {DateTime? from, required DateTime to}) async {
+    final chart = await listAccounts(storeId);
+    final idToCode = {for (final a in chart) a.id: a.code};
+    final rows = await (_db.select(_db.journalLines).join([
+      innerJoin(_db.journalEntries, _db.journalEntries.id.equalsExp(_db.journalLines.journalEntryId)),
+    ])
+          ..where(_db.journalLines.storeId.equals(storeId) & _db.journalEntries.entryDate.isSmallerThanValue(to)))
+        .get();
+    final entries = <String, JournalEntryRecord>{};
+    for (final row in rows) {
+      final entry = row.readTable(_db.journalEntries);
+      final line = row.readTable(_db.journalLines);
+      final record = entries[entry.id] ??= JournalEntryRecord(
+        id: entry.id,
+        storeId: entry.storeId,
+        branchId: entry.branchId,
+        entryDate: entry.entryDate,
+        referenceType: _referenceTypeFromDb(entry.referenceType),
+        referenceId: entry.referenceId,
+        memo: entry.memo,
+        createdByUserId: entry.createdByUserId,
+        isReversal: entry.isReversal,
+        reversalOfEntryId: entry.reversalOfEntryId,
+        createdAt: entry.createdAt,
+        lines: [],
+      );
+      record.lines.add(PostedJournalLine(
+        id: line.id,
+        accountId: line.accountId,
+        accountCode: idToCode[line.accountId] ?? '?',
+        debitMinorUnits: line.debitMinorUnits,
+        creditMinorUnits: line.creditMinorUnits,
+        description: line.description,
+      ));
+    }
+    return AccountTotals.fromEntries(
+      chart: chart,
+      entries: entries.values,
+      from: from,
+      to: to,
+      source: TotalsSource.local,
+    );
+  }
+
+  @override
+  Future<List<JournalEntryRecord>> journalEntriesBetween(
+    String storeId, {
+    required DateTime from,
+    required DateTime to,
+    int limit = 1000,
+  }) async {
+    final all = await watchJournalEntries(storeId, range: domain.DateTimeRange(from, to)).first;
+    return all.where((e) => e.entryDate.isBefore(to)).take(limit).toList();
   }
 
   static String _referenceTypeToDb(JournalReferenceType type) => switch (type) {

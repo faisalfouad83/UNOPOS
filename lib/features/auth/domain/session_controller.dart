@@ -81,6 +81,10 @@ class SessionController extends Notifier<SessionState> {
   /// The device holding the account after a [PinResult.deviceInUse].
   String? blockedByDevice;
 
+  /// Set with [PinResult.deviceInUse] when the store's plan allows no more
+  /// tills at once: that limit.
+  int? blockedByPlanDeviceLimit;
+
   Future<void> loadExistingStore() async {
     final store = await ref.read(authRepositoryProvider).getCurrentStore();
     if (store != null) {
@@ -149,6 +153,7 @@ class SessionController extends Notifier<SessionState> {
           final claim = await lock.claim(ok.id, pin);
           if (!claim.allowed) {
             blockedByDevice = claim.otherDevice;
+            blockedByPlanDeviceLimit = claim.planDeviceLimit;
             return PinResult.deviceInUse;
           }
         }

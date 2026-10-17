@@ -1,4 +1,5 @@
 import '../../../core/security/activation_code_codec.dart';
+import 'entitlement.dart';
 import 'licensing_models.dart';
 
 abstract class LicensingRepository {
@@ -37,4 +38,9 @@ abstract class LicensingRepository {
   /// Whether [storeId] may use the app right now, and until when (null
   /// expiry = no end date).
   Future<({bool licensed, DateTime? expiresAt})> licenseFor(String storeId);
+
+  /// The store's plan, limits and included sections as the server says now
+  /// (throws when it can't be asked). Null when plans don't apply (the
+  /// local single-device build: everything is included).
+  Future<Entitlement?> entitlementFor(String storeId);
 }
