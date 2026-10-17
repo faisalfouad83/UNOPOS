@@ -7,6 +7,7 @@ import '../offline/offline_warmup.dart';
 import '../providers.dart';
 import '../../features/auth/domain/auth_models.dart';
 import '../../features/auth/domain/session_controller.dart';
+import '../../features/price_checker/application/price_checker_mode.dart';
 
 class AppBootstrapResult {
   const AppBootstrapResult({this.store, required this.hasValidLicense, this.hasEmployees = false});
@@ -37,6 +38,8 @@ final storeHasEmployeesProvider = StateProvider<bool>((ref) => false);
 final appBootstrapProvider = FutureProvider<AppBootstrapResult>((ref) async {
   final authRepo = ref.watch(authRepositoryProvider);
   final gate = ref.watch(licenseGateServiceProvider);
+  // A device left as a price checker reopens as one.
+  await ref.read(priceCheckerModeProvider.notifier).load();
 
   final store = await authRepo.getCurrentStore();
   bool valid;

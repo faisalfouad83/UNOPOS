@@ -14,6 +14,7 @@ class RoutePaths {
   static const String licenseExpired = '/license-expired';
   static const String breakLock = '/break';
   static const String support = '/support';
+  static const String priceChecker = '/price-checker';
 
   static const String home = '/home';
   static const String pos = '/pos';

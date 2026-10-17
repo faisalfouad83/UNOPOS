@@ -2848,4 +2848,122 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.';
+
+  @override
+  String get priceCheckerTitle => 'Price Checker';
+
+  @override
+  String get priceCheckerSearchHint =>
+      'Scan a barcode or search by name, barcode or SKU';
+
+  @override
+  String get priceCheckerIdle => 'Scan a product to see its price';
+
+  @override
+  String get priceCheckerIdleHint =>
+      'Hold the barcode under the scanner, or type the product name.';
+
+  @override
+  String get priceCheckerLoading => 'Opening saved product data…';
+
+  @override
+  String get priceCheckerSyncing => 'Synchronizing store products…';
+
+  @override
+  String get priceCheckerSynced => 'Products synchronized successfully.';
+
+  @override
+  String get priceCheckerOffline => 'Offline mode — using saved product data.';
+
+  @override
+  String get priceCheckerSyncFailed =>
+      'Synchronization failed — continuing with the previous snapshot.';
+
+  @override
+  String get priceCheckerSaved =>
+      'Using saved product data — not refreshed yet.';
+
+  @override
+  String get priceCheckerNeedsInitialSync =>
+      'No product data on this device yet. Connect to the internet once so the store\'s products can be downloaded.';
+
+  @override
+  String get priceCheckerFirstSyncFailed =>
+      'The store\'s products could not be downloaded yet. It will try again automatically.';
+
+  @override
+  String priceCheckerLastSnapshot(String date) {
+    return 'Last snapshot: $date';
+  }
+
+  @override
+  String priceCheckerLastSync(String date) {
+    return 'Last successful sync: $date';
+  }
+
+  @override
+  String get priceCheckerNeverSynced => 'Never synchronized';
+
+  @override
+  String priceCheckerVersion(int version, int count) {
+    return 'Snapshot v$version · $count products';
+  }
+
+  @override
+  String get priceCheckerLatest => 'Latest data';
+
+  @override
+  String get priceCheckerOlder => 'Older saved data';
+
+  @override
+  String get priceCheckerOnline => 'Online';
+
+  @override
+  String get priceCheckerOfflineShort => 'Offline';
+
+  @override
+  String get priceCheckerSyncNow => 'Synchronize now';
+
+  @override
+  String priceCheckerNotFound(String query) {
+    return 'No product found for “$query”';
+  }
+
+  @override
+  String get priceCheckerChoose => 'Several products match — choose one';
+
+  @override
+  String get priceCheckerDuplicateCode =>
+      'This code belongs to several products — choose the right one';
+
+  @override
+  String priceCheckerPerUnit(String unit) {
+    return 'per $unit';
+  }
+
+  @override
+  String priceCheckerWholesale(String price) {
+    return 'Wholesale: $price';
+  }
+
+  @override
+  String get priceCheckerBarcode => 'Barcode';
+
+  @override
+  String get priceCheckerSku => 'SKU';
+
+  @override
+  String get priceCheckerExit => 'Exit price checker';
+
+  @override
+  String get priceCheckerExitPrompt =>
+      'Enter the code to leave the price checker';
+
+  @override
+  String get priceCheckerExitWrong => 'Wrong code. Try again.';
+
+  @override
+  String priceCheckerExitLocked(int seconds) {
+    return 'Too many wrong codes. Try again in $seconds s.';
+  }
 }

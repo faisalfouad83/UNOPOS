@@ -93,6 +93,8 @@ class _PinPadScreenState extends ConsumerState<PinPadScreen> {
         context.go(RoutePaths.home);
       case PinResult.developerGate:
         context.go(RoutePaths.developerHome);
+      case PinResult.priceChecker:
+        context.go(RoutePaths.priceChecker);
       case PinResult.developerGateNeedsAuth:
         setState(() {
           _pin = '';
