@@ -14,6 +14,7 @@ import 'invoice_branding_section.dart';
 import '../../breaks/presentation/break_settings_section.dart';
 import '../../support/presentation/contact_us_screen.dart';
 import 'printer_settings_section.dart';
+import 'theme_settings_section.dart';
 
 final _settingsStreamProvider = StreamProvider.autoDispose.family((ref, String storeId) {
   return ref.watch(settingsRepositoryProvider).watchSettings(storeId);
@@ -40,6 +41,8 @@ class SettingsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             children: [
               GeneralSettingsSection(storeId: storeId, settings: settings),
+              const SizedBox(height: 16),
+              ThemeSettingsSection(settings: settings),
               const SizedBox(height: 16),
               BranchSettingsSection(storeId: storeId),
               const SizedBox(height: 16),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/gen/app_localizations.dart';
 import '../../../core/providers.dart';
+import '../../../core/theming/store_themes.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../inventory/domain/inventory_models.dart';
 import 'cart_controller.dart';
@@ -99,7 +100,7 @@ void _tellStock(BuildContext context, String name, StockCheck result, {required 
   messenger.showSnackBar(
     SnackBar(
       content: Text(text),
-      backgroundColor: result == StockCheck.ok ? (left <= 0 ? Colors.orange.shade800 : null) : scheme.error,
+      backgroundColor: result == StockCheck.ok ? (left <= 0 ? StatusColors.of(context).warning : null) : scheme.error,
       duration: Duration(milliseconds: result == StockCheck.ok ? 1500 : 3000),
     ),
   );

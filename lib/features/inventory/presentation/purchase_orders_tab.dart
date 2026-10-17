@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../auth/domain/session_controller.dart';
 import '../../suppliers/domain/suppliers_models.dart';
 import '../domain/inventory_models.dart';
+import '../../../core/theming/store_themes.dart';
 
 final _purchaseOrdersProvider = StreamProvider.autoDispose.family<List<PurchaseOrderRecord>, String>((ref, storeId) {
   return ref.watch(inventoryRepositoryProvider).watchPurchaseOrders(storeId);
@@ -103,7 +104,7 @@ class _PurchaseOrdersTabState extends ConsumerState<PurchaseOrdersTab> {
                     Text('${context.l10n.poShort} ${po.id.substring(0, 8)} · ${Money.format(po.totalCostMinorUnits)}'),
                 subtitle: Text(po.status),
                 trailing: switch (po.status) {
-                  'received' => const Icon(Icons.check_circle, color: Colors.green),
+                  'received' => Icon(Icons.check_circle, color: StatusColors.of(context).success),
                   'cancelled' => const Icon(Icons.block),
                   _ => busy
                       ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))

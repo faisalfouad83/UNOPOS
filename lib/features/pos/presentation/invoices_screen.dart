@@ -16,6 +16,7 @@ import '../domain/invoice_query.dart';
 import '../domain/pos_models.dart';
 import '../domain/pos_repository.dart';
 import 'invoice_details_dialog.dart';
+import '../../../core/theming/store_themes.dart';
 
 final _customersProvider = StreamProvider.autoDispose.family<List<CustomerRecord>, String>((ref, storeId) {
   return ref.watch(debtsRepositoryProvider).watchCustomers(storeId);
@@ -42,11 +43,12 @@ String invoiceStatusLabel(AppLocalizations l10n, InvoiceStatus status) => switch
       InvoiceStatus.paid => l10n.invoiceStatusPaid,
     };
 
-Color invoiceStatusColor(ColorScheme scheme, InvoiceStatus status) => switch (status) {
-      InvoiceStatus.completed || InvoiceStatus.paid => Colors.green.shade700,
-      InvoiceStatus.unpaid || InvoiceStatus.cancelled => scheme.error,
-      InvoiceStatus.partiallyPaid || InvoiceStatus.partiallyRefunded => Colors.orange.shade800,
-      InvoiceStatus.refunded => scheme.outline,
+Color invoiceStatusColor(ThemeData theme, InvoiceStatus status) => switch (status) {
+      InvoiceStatus.completed || InvoiceStatus.paid => theme.extension<StatusColors>()?.success ?? ThemePalettes.light.success,
+      InvoiceStatus.unpaid || InvoiceStatus.cancelled => theme.colorScheme.error,
+      InvoiceStatus.partiallyPaid || InvoiceStatus.partiallyRefunded =>
+        theme.extension<StatusColors>()?.warning ?? ThemePalettes.light.warning,
+      InvoiceStatus.refunded => theme.colorScheme.outline,
     };
 
 /// Every invoice of the store: search by number or customer, filter by
@@ -406,12 +408,12 @@ class _InvoiceTile extends StatelessWidget {
     final statusChip = Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: invoiceStatusColor(theme.colorScheme, status).withValues(alpha: 0.12),
+        color: invoiceStatusColor(theme, status).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         invoiceStatusLabel(l10n, status),
-        style: theme.textTheme.labelSmall?.copyWith(color: invoiceStatusColor(theme.colorScheme, status)),
+        style: theme.textTheme.labelSmall?.copyWith(color: invoiceStatusColor(theme, status)),
       ),
     );
 

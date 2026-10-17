@@ -31,48 +31,20 @@ class GeneralSettingsSection extends ConsumerWidget {
           children: [
             Text(l10n.settingsGeneral, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            AdaptiveRow(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue: settings.defaultLanguage,
-                    decoration: InputDecoration(labelText: l10n.settingsLanguage),
-                    items: const [
-                      DropdownMenuItem(value: 'en', child: Text('English')),
-                      DropdownMenuItem(value: 'ar', child: Text('العربية')),
-                      DropdownMenuItem(value: 'ckb', child: Text('کوردی')),
-                    ],
-                    onChanged: (value) async {
-                      if (value == null) return;
-                      ref.read(appLocaleProvider.notifier).state = Locale(value);
-                      await _update(ref, settings.copyWith(defaultLanguage: value));
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: DropdownButtonFormField<AppThemeMode>(
-                    isExpanded: true,
-                    initialValue: settings.themeMode,
-                    decoration: InputDecoration(labelText: l10n.settingsTheme),
-                    items: [
-                      DropdownMenuItem(value: AppThemeMode.light, child: Text(l10n.settingsThemeLight)),
-                      DropdownMenuItem(value: AppThemeMode.dark, child: Text(l10n.settingsThemeDark)),
-                      DropdownMenuItem(value: AppThemeMode.system, child: Text(l10n.settingsThemeSystem)),
-                    ],
-                    onChanged: (value) async {
-                      if (value == null) return;
-                      ref.read(appThemeModeProvider.notifier).state = switch (value) {
-                        AppThemeMode.light => ThemeMode.light,
-                        AppThemeMode.dark => ThemeMode.dark,
-                        AppThemeMode.system => ThemeMode.system,
-                      };
-                      await _update(ref, settings.copyWith(themeMode: value));
-                    },
-                  ),
-                ),
+            DropdownButtonFormField<String>(
+              isExpanded: true,
+              initialValue: settings.defaultLanguage,
+              decoration: InputDecoration(labelText: l10n.settingsLanguage),
+              items: const [
+                DropdownMenuItem(value: 'en', child: Text('English')),
+                DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                DropdownMenuItem(value: 'ckb', child: Text('کوردی')),
               ],
+              onChanged: (value) async {
+                if (value == null) return;
+                ref.read(appLocaleProvider.notifier).state = Locale(value);
+                await _update(ref, settings.copyWith(defaultLanguage: value));
+              },
             ),
             const SizedBox(height: 12),
             AdaptiveRow(

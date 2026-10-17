@@ -21,6 +21,7 @@ class SupabaseSettingsRepository implements SettingsRepository {
         defaultLanguage: row['default_language'] as String,
         themeMode:
             AppThemeMode.values.firstWhere((m) => m.name == row['theme_mode'], orElse: () => AppThemeMode.system),
+        themeKey: row['theme_key'] as String?,
         currencyCode: row['currency_code'] as String,
         currencySymbol: row['currency_symbol'] as String,
         defaultVatRatePercent: (row['default_vat_rate_percent'] as num).toDouble(),
@@ -93,6 +94,7 @@ class SupabaseSettingsRepository implements SettingsRepository {
         {
           'default_language': settings.defaultLanguage,
           'theme_mode': settings.themeMode.name,
+          'theme_key': settings.themeKey,
           'currency_code': settings.currencyCode,
           'currency_symbol': settings.currencySymbol,
           'default_vat_rate_percent': settings.defaultVatRatePercent,

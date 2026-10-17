@@ -14,6 +14,7 @@ import '../../pos/presentation/invoice_details_dialog.dart';
 import '../../pos/presentation/invoices_screen.dart';
 import '../domain/debts_models.dart';
 import 'customers_screen.dart';
+import '../../../core/theming/store_themes.dart';
 
 final _customerInvoicesProvider =
     FutureProvider.autoDispose.family<List<InvoiceRecord>, ({String storeId, String customerId})>((ref, key) {
@@ -168,7 +169,7 @@ class _CustomerDetailsDialog extends ConsumerWidget {
                       contentPadding: EdgeInsets.zero,
                       leading: Icon(
                         d.status == DebtStatus.paid ? Icons.check_circle_outline : Icons.schedule,
-                        color: d.status == DebtStatus.paid ? Colors.green.shade700 : theme.colorScheme.error,
+                        color: d.status == DebtStatus.paid ? StatusColors.of(context).success : theme.colorScheme.error,
                       ),
                       title: Text('${d.receiptRef ?? ''} · ${Money.format(d.originalAmountMinorUnits)}'),
                       subtitle: Text(

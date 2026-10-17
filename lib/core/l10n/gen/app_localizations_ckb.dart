@@ -2980,4 +2980,126 @@ class AppLocalizationsCkb extends AppLocalizations {
   String priceCheckerExitLocked(int seconds) {
     return 'کۆدی هەڵەی زۆر. دوای $seconds چرکە هەوڵ بدەرەوە.';
   }
+
+  @override
+  String get themeNameLight => 'ڕووناک';
+
+  @override
+  String get themeNameDark => 'تاریک';
+
+  @override
+  String get themeNameChristmas => 'کریسمس';
+
+  @override
+  String get themeNameHalloween => 'هالۆوین';
+
+  @override
+  String get themeNameEidAlFitr => 'جەژنی ڕەمەزان';
+
+  @override
+  String get themeNameEidAlAdha => 'جەژنی قوربان';
+
+  @override
+  String get themeNameNowruz => 'نەورۆز';
+
+  @override
+  String get themeNameRamadan => 'ڕەمەزان';
+
+  @override
+  String get themeNameSummer => 'هاوین';
+
+  @override
+  String get themeNameAutumn => 'پاییز';
+
+  @override
+  String get themeNameSpring => 'بەهار';
+
+  @override
+  String get themeNameWinter => 'زستان';
+
+  @override
+  String get themeAutomatic => 'خۆکار';
+
+  @override
+  String get themeAutomaticHelp =>
+      'ئەو ڕووکارە بەکاردەهێنێت کە پشتگیریی UNOPOS دیاری کردووە، ئەگەر نا ڕووناک.';
+
+  @override
+  String get themeFollowDevice => 'ڕووناک یان تاریک، وەک ئامێرەکە';
+
+  @override
+  String get themeLockedNote =>
+      'پشتگیریی UNOPOS ڕووکاری ئەم فرۆشگایەی دیاری کردووە و لێرە ناگۆڕدرێت.';
+
+  @override
+  String themeInUse(String name) {
+    return 'ئێستا بەکاردێت: $name';
+  }
+
+  @override
+  String themeYourChoice(String name) {
+    return 'هەڵبژاردنی ئەم فرۆشگایە: $name';
+  }
+
+  @override
+  String themeDeveloperSet(String name) {
+    return 'پشتگیریی UNOPOS دیاری کردووە: $name';
+  }
+
+  @override
+  String get themeDeveloperNone => 'پشتگیریی UNOPOS ڕووکارێکی دیاری نەکردووە';
+
+  @override
+  String themeLastSynced(String time) {
+    return 'دوایین هاوکاتکردن: $time';
+  }
+
+  @override
+  String get themeNeverSynced => 'هێشتا لەسەر ئەم ئامێرە هاوکات نەکراوە';
+
+  @override
+  String get themeLocked => 'قفڵدراو';
+
+  @override
+  String get themeDevTab => 'ڕووکارەکان';
+
+  @override
+  String get themeDevGlobal => 'هەموو فرۆشگاکان';
+
+  @override
+  String get themeDevGlobalHelp =>
+      'هەر فرۆشگایەک کە ڕووکاری تایبەتی لە تۆوە نییە بەکاری دەهێنێت.';
+
+  @override
+  String get themeDevLock => 'قفڵ (فرۆشگا ناتوانێت بیگۆڕێت)';
+
+  @override
+  String get themeDevNotSet => 'دیاری نەکراوە';
+
+  @override
+  String get themeDevRemove => 'لابردن';
+
+  @override
+  String get themeDevAssign => 'دیاریکردنی ڕووکار';
+
+  @override
+  String themeDevStoreChoice(String name) {
+    return 'هەڵبژاردنی فرۆشگا: $name';
+  }
+
+  @override
+  String themeDevShowing(String name) {
+    return 'پیشاندراو: $name';
+  }
+
+  @override
+  String themeDevAssigned(String name) {
+    return 'ڕووکاری تۆ: $name';
+  }
+
+  @override
+  String get themeDevSearch => 'گەڕان لە فرۆشگاکان';
+
+  @override
+  String get themeDevSaved => 'ڕووکار پاشەکەوت کرا';
 }
