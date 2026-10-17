@@ -15,7 +15,7 @@ import 'backup_service.dart';
 /// migration 0001), so a client can never read PIN hashes even to back them
 /// up; restoring a store re-creates employees but not their PINs, which
 /// each employee simply resets afterward.
-const _backupTables = [
+const backupTablesInOrder = [
   'branches',
   'categories',
   'tax_rates',
@@ -43,6 +43,7 @@ const _backupTables = [
   'stock_transfers',
   'stock_transfer_lines',
   'shifts',
+  'employee_breaks',
   'app_settings',
   'audit_logs',
 ];
@@ -75,7 +76,7 @@ class SupabaseBackupService implements BackupExportService {
   }) async {
     try {
       final tables = <String, List<Map<String, dynamic>>>{};
-      for (final table in _backupTables) {
+      for (final table in backupTablesInOrder) {
         tables[table] = await _allRows(table, storeId);
       }
 
@@ -113,20 +114,8 @@ class SupabaseBackupService implements BackupExportService {
     }
   }
 
-  /// Every row of [table] for this store. The API returns at most 1000 rows
-  /// per request, so larger tables are read page by page (in id order, so
-  /// pages don't overlap or skip rows).
-  Future<List<Map<String, dynamic>>> _allRows(String table, String storeId) async {
-    const pageSize = 1000;
-    final rows = <Map<String, dynamic>>[];
-    for (var from = 0;; from += pageSize) {
-      final page =
-          await _client.from(table).select().eq('store_id', storeId).order('id').range(from, from + pageSize - 1);
-      rows.addAll(List<Map<String, dynamic>>.from(page as List));
-      if ((page as List).length < pageSize) break;
-    }
-    return rows;
-  }
+  Future<List<Map<String, dynamic>>> _allRows(String table, String storeId) =>
+      fetchAllStoreRows(_client, table, storeId);
 
   /// Brings back what the backup has and the store no longer does: rows
   /// missing now are added again, in the export's order (each table after
@@ -142,7 +131,7 @@ class SupabaseBackupService implements BackupExportService {
     final tables = payload['tables'] as Map<String, dynamic>;
     final failed = <String>[];
 
-    for (final table in _backupTables) {
+    for (final table in backupTablesInOrder) {
       final rows = tables[table];
       if (rows == null) continue;
       final rowList = List<Map<String, dynamic>>.from(rows as List);
@@ -165,6 +154,22 @@ class SupabaseBackupService implements BackupExportService {
     final recent = await _repository.mostRecentSuccessfulBackup(storeId, onlyToday: true);
     return recent != null;
   }
+}
+
+/// Every row of [table] for store [storeId]. The API returns at most 1000
+/// rows per request, so larger tables are read page by page, in key order
+/// (so pages don't overlap or skip rows). `expense_details` is keyed by its
+/// journal entry, not an `id`.
+Future<List<Map<String, dynamic>>> fetchAllStoreRows(SupabaseClient client, String table, String storeId) async {
+  const pageSize = 1000;
+  final key = table == 'expense_details' ? 'journal_entry_id' : 'id';
+  final rows = <Map<String, dynamic>>[];
+  for (var from = 0;; from += pageSize) {
+    final page = await client.from(table).select().eq('store_id', storeId).order(key).range(from, from + pageSize - 1);
+    rows.addAll(List<Map<String, dynamic>>.from(page as List));
+    if (page.length < pageSize) break;
+  }
+  return rows;
 }
 
 /// Some tables couldn't be restored (the rest were).

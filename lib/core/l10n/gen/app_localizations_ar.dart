@@ -2841,4 +2841,270 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'تم تسجيل الدفعة، لكن تعذّر حفظ قيدها المحاسبي. راجع دفتر اليومية.';
+
+  @override
+  String get storeResetSubtitle =>
+      'امسح المبيعات أو العملاء أو المخزون أو كل شيء وابدأ من جديد. يُحفظ ملف نسخة احتياطية ويُتحقق منه أولاً.';
+
+  @override
+  String get storeResetButton => 'إعادة ضبط…';
+
+  @override
+  String get storeResetChooseTitle => 'ماذا تريد أن تعيد ضبطه؟';
+
+  @override
+  String get storeResetImpliedNote =>
+      'مُضمَّن: لا يمكن حذف الجزء الذي اخترته بدونه.';
+
+  @override
+  String get storeResetScopeFull => 'إعادة ضبط المتجر بالكامل';
+
+  @override
+  String get storeResetScopeFullHelp =>
+      'كل السجلات التجارية: المبيعات والفواتير، العملاء والديون، المصروفات، الدفاتر المحاسبية، المنتجات والمخزون، الموردون، الورديات والخصومات. يبدأ المتجر من جديد كأنه جديد.';
+
+  @override
+  String get storeResetScopeSales => 'المبيعات والفواتير';
+
+  @override
+  String get storeResetScopeSalesHelp =>
+      'الفواتير والمبيعات هي السجلات نفسها، لذا يحذف هذا الاثنين معاً: كل فاتورة (والمعلّقة أيضاً)، ومرتجعاتها، والديون الناتجة عنها، ونقاط الولاء المكتسبة أو المستخدمة فيها، وقيودها المحاسبية. تبدأ تقارير المبيعات من الصفر وتبدأ أرقام الفواتير من 1 مجدداً. لا تتغير كميات المخزون.';
+
+  @override
+  String get storeResetScopeDebts => 'ديون العملاء';
+
+  @override
+  String get storeResetScopeDebtsHelp =>
+      'يحذف كل ديون العملاء والدفعات المستلمة عليها مع قيودها المحاسبية. يبقى العملاء والفواتير؛ ويبقى المبلغ المستحق المسجّل في قيد كل فاتورة حتى تُعاد ضبط السجلات المحاسبية.';
+
+  @override
+  String get storeResetScopeExpenses => 'المصروفات';
+
+  @override
+  String get storeResetScopeExpensesHelp =>
+      'يحذف كل المصروفات مع قيودها المحاسبية. تتغير تقارير المصروفات وأرقام الأرباح ومجاميع نقد الورديات.';
+
+  @override
+  String get storeResetScopeAccounting => 'السجلات المحاسبية';
+
+  @override
+  String get storeResetScopeAccountingHelp =>
+      'يحذف كل القيود اليومية بما فيها المصروفات: تبدأ أرصدة الحسابات والأرباح والخسائر وميزان المراجعة من الصفر. تبقى المبيعات والديون والمخزون والموردون بدون قيودها المحاسبية. يُحتفظ بدليل الحسابات.';
+
+  @override
+  String get storeResetScopeCustomers => 'العملاء';
+
+  @override
+  String get storeResetScopeCustomersHelp =>
+      'يحذف كل العملاء مع سجل الولاء وديونهم. تبقى فواتيرهم السابقة بدون عميل.';
+
+  @override
+  String get storeResetScopeInventory => 'المنتجات والمخزون';
+
+  @override
+  String get storeResetScopeInventoryHelp =>
+      'يحذف كل المنتجات مع كميات المخزون وسجل حركته، والفئات، وخصومات المنتجات والفئات، وأوامر الشراء وتحويلات المخزون. تُحذف كل الفواتير أيضاً لأن بنود الفواتير تشير إلى المنتجات. يبقى الموردون والمبالغ المستحقة لهم.';
+
+  @override
+  String get storeResetScopeSuppliers => 'الموردون';
+
+  @override
+  String get storeResetScopeSuppliersHelp =>
+      'يحذف كل الموردين والمشتريات والدفعات المسجلة معهم وأوامر الشراء مع قيودها المحاسبية. يبقى المخزون المستلَم.';
+
+  @override
+  String get storeResetScopeShifts => 'الورديات';
+
+  @override
+  String get storeResetScopeShiftsHelp =>
+      'يحذف الورديات المغلقة والاستراحات المنتهية. تبقى الورديات المفتوحة والاستراحات الجارية. تبقى الفواتير بدون وردية.';
+
+  @override
+  String get storeResetKeptNote =>
+      'يُحتفظ دائماً بـ: المتجر وترخيصه وخطته، الفروع، الموظفين ورموزهم السرية، الإعدادات، نسب الضريبة، دليل الحسابات وسجل التدقيق.';
+
+  @override
+  String get storeResetConsequencesTitle => 'قبل المتابعة';
+
+  @override
+  String get storeResetWillRemove => 'سيحذف هذا، في كل الفروع وعلى كل الأجهزة:';
+
+  @override
+  String get storeResetNothingToRemove => 'لا توجد سجلات لحذفها فيما اخترته.';
+
+  @override
+  String get storeResetBackupNote =>
+      'أولاً يُحفظ ملف نسخة احتياطية لهذه السجلات (ولتغييرات هذا الجهاز التي لم تُرسل بعد) في المكان الذي تختاره ويُتحقق منه. إن تعذّر حفظه والتحقق منه فلن يُعاد ضبط شيء.';
+
+  @override
+  String get storeResetLoadingPreview => 'جارٍ عدّ السجلات…';
+
+  @override
+  String storeResetFinalTitle(String scopes) {
+    return 'مسح $scopes؟';
+  }
+
+  @override
+  String get storeResetFinalFull =>
+      'ستُمسح كل السجلات التجارية لهذا المتجر على كل الأجهزة. لا يمكن التراجع عن ذلك من التطبيق: ملف النسخة الاحتياطية وحده يمكنه استعادتها.';
+
+  @override
+  String storeResetFinalPartial(String scopes) {
+    return 'سيُمسح $scopes على كل الأجهزة. لا يمكن التراجع عن ذلك من التطبيق: ملف النسخة الاحتياطية وحده يمكنه استعادتها.';
+  }
+
+  @override
+  String get storeResetConfirmButton => 'نسخ احتياطي ثم مسح';
+
+  @override
+  String get storeResetSaveDialogTitle =>
+      'احفظ النسخة الاحتياطية قبل إعادة الضبط';
+
+  @override
+  String get storeResetStageBackup => 'حفظ ملف النسخة الاحتياطية';
+
+  @override
+  String get storeResetStageVerify => 'التحقق من ملف النسخة الاحتياطية';
+
+  @override
+  String get storeResetStageServer => 'إعادة ضبط البيانات على الخادم';
+
+  @override
+  String get storeResetStageLocal => 'إعادة ضبط البيانات';
+
+  @override
+  String get storeResetStageCleanup => 'تنظيف هذا الجهاز';
+
+  @override
+  String get storeResetDoneTitle => 'اكتملت إعادة الضبط';
+
+  @override
+  String storeResetDoneRemoved(int count) {
+    return 'تم حذف أو تحديث $count سجل.';
+  }
+
+  @override
+  String storeResetDoneBackup(String path) {
+    return 'حُفظت النسخة الاحتياطية في: $path';
+  }
+
+  @override
+  String storeResetDoneDropped(int count) {
+    return 'أُسقط $count من تغييرات هذا الجهاز غير المرسلة الخاصة بالسجلات الممسوحة (وهي موجودة في ملف النسخة الاحتياطية).';
+  }
+
+  @override
+  String get storeResetFailedTitle => 'لم تكتمل إعادة الضبط';
+
+  @override
+  String get storeResetErrorOffline =>
+      'لا يوجد اتصال بالإنترنت. بيانات المتجر محفوظة على الخادم، لذا لا يمكن إعادة ضبطها إلا عبر الإنترنت. لم يتغير شيء.';
+
+  @override
+  String get storeResetErrorUnsent =>
+      'بعض التغييرات على هذا الجهاز لم تصل إلى الخادم بعد. انتظر حتى تُرسل (راجع شريط الحالة) ثم حاول مجدداً. لم يتغير شيء.';
+
+  @override
+  String storeResetErrorBackup(String error) {
+    return 'تعذّر إنشاء ملف النسخة الاحتياطية أو حفظه ($error). لم يتغير شيء.';
+  }
+
+  @override
+  String get storeResetErrorVerify =>
+      'لم يُقرأ ملف النسخة الاحتياطية المحفوظ بشكل صحيح، لذا لم يُعَد ضبط شيء. جرّب حفظه في مكان آخر.';
+
+  @override
+  String storeResetErrorRefused(String error) {
+    return 'رُفضت إعادة الضبط ($error). لم يتغير شيء.';
+  }
+
+  @override
+  String get storeResetErrorUnknown =>
+      'انقطع الاتصال قبل أن يرد الخادم. ربما اكتملت إعادة الضبط: سيُتحقق من ذلك تلقائياً في المرة القادمة التي يُفتح فيها التطبيق مع اتصال. لا تبدأ إعادة ضبط أخرى قبل ذلك.';
+
+  @override
+  String get storeResetErrorCancelled =>
+      'لم يُختر مكان لملف النسخة الاحتياطية، لذا لم يُعَد ضبط شيء.';
+
+  @override
+  String get storeResetResumed =>
+      'اكتملت على هذا الجهاز إعادة ضبط بدأت سابقاً.';
+
+  @override
+  String get storeResetTableSales => 'الفواتير';
+
+  @override
+  String get storeResetTableSaleLines => 'بنود الفواتير';
+
+  @override
+  String get storeResetTableSaleReturns => 'المرتجعات';
+
+  @override
+  String get storeResetTableSaleReturnLines => 'بنود المرتجعات';
+
+  @override
+  String get storeResetTableDebts => 'ديون العملاء';
+
+  @override
+  String get storeResetTableDebtPayments => 'دفعات الديون';
+
+  @override
+  String get storeResetTableLoyalty => 'سجلات نقاط الولاء';
+
+  @override
+  String get storeResetTablePointsAdjusted => 'عملاء صُحّحت نقاطهم';
+
+  @override
+  String get storeResetTableCustomers => 'العملاء';
+
+  @override
+  String get storeResetTableSalesUnlinked => 'فواتير لم تعد مرتبطة بعميل';
+
+  @override
+  String get storeResetTableExpenses => 'المصروفات';
+
+  @override
+  String get storeResetTableJournalEntries => 'القيود اليومية';
+
+  @override
+  String get storeResetTableJournalLines => 'بنود القيود';
+
+  @override
+  String get storeResetTableProducts => 'المنتجات';
+
+  @override
+  String get storeResetTableStockItems => 'كميات المخزون';
+
+  @override
+  String get storeResetTableStockMovements => 'سجل حركة المخزون';
+
+  @override
+  String get storeResetTableCategories => 'الفئات';
+
+  @override
+  String get storeResetTableDiscounts => 'الخصومات';
+
+  @override
+  String get storeResetTablePurchaseOrders => 'أوامر الشراء';
+
+  @override
+  String get storeResetTablePurchaseOrderLines => 'بنود أوامر الشراء';
+
+  @override
+  String get storeResetTableTransfers => 'تحويلات المخزون';
+
+  @override
+  String get storeResetTableTransferLines => 'بنود التحويلات';
+
+  @override
+  String get storeResetTableSuppliers => 'الموردون';
+
+  @override
+  String get storeResetTableSupplierTransactions => 'مشتريات ودفعات الموردين';
+
+  @override
+  String get storeResetTableShifts => 'الورديات';
+
+  @override
+  String get storeResetTableBreaks => 'الاستراحات';
 }

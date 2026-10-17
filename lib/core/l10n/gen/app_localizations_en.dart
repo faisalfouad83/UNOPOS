@@ -2848,4 +2848,274 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.';
+
+  @override
+  String get storeResetSubtitle =>
+      'Erase sales, customers, stock or everything, and start again. A backup file is saved and checked first.';
+
+  @override
+  String get storeResetButton => 'Reset…';
+
+  @override
+  String get storeResetChooseTitle => 'What do you want to reset?';
+
+  @override
+  String get storeResetImpliedNote =>
+      'Included: the part you chose can\'t be removed without it.';
+
+  @override
+  String get storeResetScopeFull => 'Full store reset';
+
+  @override
+  String get storeResetScopeFullHelp =>
+      'Every business record: sales and invoices, customers and debts, expenses, the books, products and stock, suppliers, shifts and discounts. The store starts again as new.';
+
+  @override
+  String get storeResetScopeSales => 'Sales and invoices';
+
+  @override
+  String get storeResetScopeSalesHelp =>
+      'Invoices and sales are the same records, so this removes both: every invoice (held ones too), its returns, the debts it created, loyalty points earned or spent on it, and its accounting entries. Sales reports start from zero and invoice numbers start again at 1. Stock on hand is not changed.';
+
+  @override
+  String get storeResetScopeDebts => 'Customer debts';
+
+  @override
+  String get storeResetScopeDebtsHelp =>
+      'Removes every customer debt and the payments received on it, with the payments\' accounting entries. Customers and invoices stay; the amount owed recorded by each invoice stays in its own entry until the accounting records are reset.';
+
+  @override
+  String get storeResetScopeExpenses => 'Expenses';
+
+  @override
+  String get storeResetScopeExpensesHelp =>
+      'Removes every expense with its accounting entry. Expense reports, profit figures and shift cash totals change.';
+
+  @override
+  String get storeResetScopeAccounting => 'Accounting records';
+
+  @override
+  String get storeResetScopeAccountingHelp =>
+      'Removes every journal entry, expenses included: account balances, profit and loss and the trial balance start at zero. Sales, debts, stock and suppliers stay, without their accounting entries. The chart of accounts is kept.';
+
+  @override
+  String get storeResetScopeCustomers => 'Customers';
+
+  @override
+  String get storeResetScopeCustomersHelp =>
+      'Removes every customer with their loyalty history and their debts. Their past invoices stay, without a customer.';
+
+  @override
+  String get storeResetScopeInventory => 'Products and stock';
+
+  @override
+  String get storeResetScopeInventoryHelp =>
+      'Removes every product with its stock levels and stock history, categories, product and category discounts, purchase orders and stock transfers. Every invoice is removed too, because invoice lines refer to products. Suppliers and what is owed to them stay.';
+
+  @override
+  String get storeResetScopeSuppliers => 'Suppliers';
+
+  @override
+  String get storeResetScopeSuppliersHelp =>
+      'Removes every supplier, the purchases and payments recorded with them, and purchase orders, with their accounting entries. Stock already received stays.';
+
+  @override
+  String get storeResetScopeShifts => 'Shifts';
+
+  @override
+  String get storeResetScopeShiftsHelp =>
+      'Removes closed shifts and finished breaks. Open shifts and breaks in progress stay. Invoices stay, without a shift.';
+
+  @override
+  String get storeResetKeptNote =>
+      'Always kept: the store, its licence and plan, branches, employees and their PINs, settings, tax rates, the chart of accounts and the audit log.';
+
+  @override
+  String get storeResetConsequencesTitle => 'Before you continue';
+
+  @override
+  String get storeResetWillRemove =>
+      'This will remove, for every branch and every device:';
+
+  @override
+  String get storeResetNothingToRemove =>
+      'There are no records to remove for what you chose.';
+
+  @override
+  String get storeResetBackupNote =>
+      'First a backup file of these records (and of this device\'s changes not yet sent) is saved where you choose and checked. If it can\'t be saved and checked, nothing is reset.';
+
+  @override
+  String get storeResetLoadingPreview => 'Counting the records…';
+
+  @override
+  String storeResetFinalTitle(String scopes) {
+    return 'Erase $scopes?';
+  }
+
+  @override
+  String get storeResetFinalFull =>
+      'All business records of this store will be erased on every device. This cannot be undone from the app: only the backup file can bring them back.';
+
+  @override
+  String storeResetFinalPartial(String scopes) {
+    return '$scopes will be erased on every device. This cannot be undone from the app: only the backup file can bring them back.';
+  }
+
+  @override
+  String get storeResetConfirmButton => 'Back up and erase';
+
+  @override
+  String get storeResetSaveDialogTitle => 'Save the backup before resetting';
+
+  @override
+  String get storeResetStageBackup => 'Saving the backup file';
+
+  @override
+  String get storeResetStageVerify => 'Checking the backup file';
+
+  @override
+  String get storeResetStageServer => 'Resetting the data on the server';
+
+  @override
+  String get storeResetStageLocal => 'Resetting the data';
+
+  @override
+  String get storeResetStageCleanup => 'Cleaning up this device';
+
+  @override
+  String get storeResetDoneTitle => 'Reset complete';
+
+  @override
+  String storeResetDoneRemoved(int count) {
+    return '$count records removed or updated.';
+  }
+
+  @override
+  String storeResetDoneBackup(String path) {
+    return 'Backup saved to: $path';
+  }
+
+  @override
+  String storeResetDoneDropped(int count) {
+    return '$count unsent changes on this device for the erased records were dropped (they are in the backup file).';
+  }
+
+  @override
+  String get storeResetFailedTitle => 'The reset did not finish';
+
+  @override
+  String get storeResetErrorOffline =>
+      'No internet connection. The store\'s data is kept on the server, so it can only be reset online. Nothing was changed.';
+
+  @override
+  String get storeResetErrorUnsent =>
+      'Some changes made on this device haven\'t reached the server yet. Wait until they are sent (see the status bar), then try again. Nothing was changed.';
+
+  @override
+  String storeResetErrorBackup(String error) {
+    return 'The backup file could not be made or saved ($error). Nothing was changed.';
+  }
+
+  @override
+  String get storeResetErrorVerify =>
+      'The saved backup file did not read back correctly, so nothing was reset. Try saving it somewhere else.';
+
+  @override
+  String storeResetErrorRefused(String error) {
+    return 'The reset was refused ($error). Nothing was changed.';
+  }
+
+  @override
+  String get storeResetErrorUnknown =>
+      'The connection dropped before the server answered. The reset may have finished: this is checked automatically the next time the app opens with a connection. Do not start another reset until then.';
+
+  @override
+  String get storeResetErrorCancelled =>
+      'No place was chosen for the backup file, so nothing was reset.';
+
+  @override
+  String get storeResetResumed =>
+      'A reset started earlier has been finished on this device.';
+
+  @override
+  String get storeResetTableSales => 'Invoices';
+
+  @override
+  String get storeResetTableSaleLines => 'Invoice lines';
+
+  @override
+  String get storeResetTableSaleReturns => 'Returns';
+
+  @override
+  String get storeResetTableSaleReturnLines => 'Return lines';
+
+  @override
+  String get storeResetTableDebts => 'Customer debts';
+
+  @override
+  String get storeResetTableDebtPayments => 'Debt payments';
+
+  @override
+  String get storeResetTableLoyalty => 'Loyalty point records';
+
+  @override
+  String get storeResetTablePointsAdjusted =>
+      'Customers whose points were corrected';
+
+  @override
+  String get storeResetTableCustomers => 'Customers';
+
+  @override
+  String get storeResetTableSalesUnlinked =>
+      'Invoices no longer linked to a customer';
+
+  @override
+  String get storeResetTableExpenses => 'Expenses';
+
+  @override
+  String get storeResetTableJournalEntries => 'Journal entries';
+
+  @override
+  String get storeResetTableJournalLines => 'Journal lines';
+
+  @override
+  String get storeResetTableProducts => 'Products';
+
+  @override
+  String get storeResetTableStockItems => 'Stock levels';
+
+  @override
+  String get storeResetTableStockMovements => 'Stock history';
+
+  @override
+  String get storeResetTableCategories => 'Categories';
+
+  @override
+  String get storeResetTableDiscounts => 'Discounts';
+
+  @override
+  String get storeResetTablePurchaseOrders => 'Purchase orders';
+
+  @override
+  String get storeResetTablePurchaseOrderLines => 'Purchase order lines';
+
+  @override
+  String get storeResetTableTransfers => 'Stock transfers';
+
+  @override
+  String get storeResetTableTransferLines => 'Stock transfer lines';
+
+  @override
+  String get storeResetTableSuppliers => 'Suppliers';
+
+  @override
+  String get storeResetTableSupplierTransactions =>
+      'Supplier purchases and payments';
+
+  @override
+  String get storeResetTableShifts => 'Shifts';
+
+  @override
+  String get storeResetTableBreaks => 'Breaks';
 }

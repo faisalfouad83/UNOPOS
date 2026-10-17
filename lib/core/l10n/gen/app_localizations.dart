@@ -5187,6 +5187,468 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment recorded, but its accounting entry couldn\'t be saved. Check the journal.'**
   String get invPaymentNotPosted;
+
+  /// No description provided for @storeResetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase sales, customers, stock or everything, and start again. A backup file is saved and checked first.'**
+  String get storeResetSubtitle;
+
+  /// No description provided for @storeResetButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset…'**
+  String get storeResetButton;
+
+  /// No description provided for @storeResetChooseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to reset?'**
+  String get storeResetChooseTitle;
+
+  /// No description provided for @storeResetImpliedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Included: the part you chose can\'t be removed without it.'**
+  String get storeResetImpliedNote;
+
+  /// No description provided for @storeResetScopeFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full store reset'**
+  String get storeResetScopeFull;
+
+  /// No description provided for @storeResetScopeFullHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Every business record: sales and invoices, customers and debts, expenses, the books, products and stock, suppliers, shifts and discounts. The store starts again as new.'**
+  String get storeResetScopeFullHelp;
+
+  /// No description provided for @storeResetScopeSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales and invoices'**
+  String get storeResetScopeSales;
+
+  /// No description provided for @storeResetScopeSalesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices and sales are the same records, so this removes both: every invoice (held ones too), its returns, the debts it created, loyalty points earned or spent on it, and its accounting entries. Sales reports start from zero and invoice numbers start again at 1. Stock on hand is not changed.'**
+  String get storeResetScopeSalesHelp;
+
+  /// No description provided for @storeResetScopeDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer debts'**
+  String get storeResetScopeDebts;
+
+  /// No description provided for @storeResetScopeDebtsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every customer debt and the payments received on it, with the payments\' accounting entries. Customers and invoices stay; the amount owed recorded by each invoice stays in its own entry until the accounting records are reset.'**
+  String get storeResetScopeDebtsHelp;
+
+  /// No description provided for @storeResetScopeExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get storeResetScopeExpenses;
+
+  /// No description provided for @storeResetScopeExpensesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every expense with its accounting entry. Expense reports, profit figures and shift cash totals change.'**
+  String get storeResetScopeExpensesHelp;
+
+  /// No description provided for @storeResetScopeAccounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounting records'**
+  String get storeResetScopeAccounting;
+
+  /// No description provided for @storeResetScopeAccountingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every journal entry, expenses included: account balances, profit and loss and the trial balance start at zero. Sales, debts, stock and suppliers stay, without their accounting entries. The chart of accounts is kept.'**
+  String get storeResetScopeAccountingHelp;
+
+  /// No description provided for @storeResetScopeCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get storeResetScopeCustomers;
+
+  /// No description provided for @storeResetScopeCustomersHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every customer with their loyalty history and their debts. Their past invoices stay, without a customer.'**
+  String get storeResetScopeCustomersHelp;
+
+  /// No description provided for @storeResetScopeInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Products and stock'**
+  String get storeResetScopeInventory;
+
+  /// No description provided for @storeResetScopeInventoryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every product with its stock levels and stock history, categories, product and category discounts, purchase orders and stock transfers. Every invoice is removed too, because invoice lines refer to products. Suppliers and what is owed to them stay.'**
+  String get storeResetScopeInventoryHelp;
+
+  /// No description provided for @storeResetScopeSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get storeResetScopeSuppliers;
+
+  /// No description provided for @storeResetScopeSuppliersHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes every supplier, the purchases and payments recorded with them, and purchase orders, with their accounting entries. Stock already received stays.'**
+  String get storeResetScopeSuppliersHelp;
+
+  /// No description provided for @storeResetScopeShifts.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifts'**
+  String get storeResetScopeShifts;
+
+  /// No description provided for @storeResetScopeShiftsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes closed shifts and finished breaks. Open shifts and breaks in progress stay. Invoices stay, without a shift.'**
+  String get storeResetScopeShiftsHelp;
+
+  /// No description provided for @storeResetKeptNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Always kept: the store, its licence and plan, branches, employees and their PINs, settings, tax rates, the chart of accounts and the audit log.'**
+  String get storeResetKeptNote;
+
+  /// No description provided for @storeResetConsequencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you continue'**
+  String get storeResetConsequencesTitle;
+
+  /// No description provided for @storeResetWillRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove, for every branch and every device:'**
+  String get storeResetWillRemove;
+
+  /// No description provided for @storeResetNothingToRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no records to remove for what you chose.'**
+  String get storeResetNothingToRemove;
+
+  /// No description provided for @storeResetBackupNote.
+  ///
+  /// In en, this message translates to:
+  /// **'First a backup file of these records (and of this device\'s changes not yet sent) is saved where you choose and checked. If it can\'t be saved and checked, nothing is reset.'**
+  String get storeResetBackupNote;
+
+  /// No description provided for @storeResetLoadingPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting the records…'**
+  String get storeResetLoadingPreview;
+
+  /// No description provided for @storeResetFinalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase {scopes}?'**
+  String storeResetFinalTitle(String scopes);
+
+  /// No description provided for @storeResetFinalFull.
+  ///
+  /// In en, this message translates to:
+  /// **'All business records of this store will be erased on every device. This cannot be undone from the app: only the backup file can bring them back.'**
+  String get storeResetFinalFull;
+
+  /// No description provided for @storeResetFinalPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{scopes} will be erased on every device. This cannot be undone from the app: only the backup file can bring them back.'**
+  String storeResetFinalPartial(String scopes);
+
+  /// No description provided for @storeResetConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up and erase'**
+  String get storeResetConfirmButton;
+
+  /// No description provided for @storeResetSaveDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the backup before resetting'**
+  String get storeResetSaveDialogTitle;
+
+  /// No description provided for @storeResetStageBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving the backup file'**
+  String get storeResetStageBackup;
+
+  /// No description provided for @storeResetStageVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking the backup file'**
+  String get storeResetStageVerify;
+
+  /// No description provided for @storeResetStageServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting the data on the server'**
+  String get storeResetStageServer;
+
+  /// No description provided for @storeResetStageLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting the data'**
+  String get storeResetStageLocal;
+
+  /// No description provided for @storeResetStageCleanup.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaning up this device'**
+  String get storeResetStageCleanup;
+
+  /// No description provided for @storeResetDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset complete'**
+  String get storeResetDoneTitle;
+
+  /// No description provided for @storeResetDoneRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records removed or updated.'**
+  String storeResetDoneRemoved(int count);
+
+  /// No description provided for @storeResetDoneBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved to: {path}'**
+  String storeResetDoneBackup(String path);
+
+  /// No description provided for @storeResetDoneDropped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unsent changes on this device for the erased records were dropped (they are in the backup file).'**
+  String storeResetDoneDropped(int count);
+
+  /// No description provided for @storeResetFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The reset did not finish'**
+  String get storeResetFailedTitle;
+
+  /// No description provided for @storeResetErrorOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. The store\'s data is kept on the server, so it can only be reset online. Nothing was changed.'**
+  String get storeResetErrorOffline;
+
+  /// No description provided for @storeResetErrorUnsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Some changes made on this device haven\'t reached the server yet. Wait until they are sent (see the status bar), then try again. Nothing was changed.'**
+  String get storeResetErrorUnsent;
+
+  /// No description provided for @storeResetErrorBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'The backup file could not be made or saved ({error}). Nothing was changed.'**
+  String storeResetErrorBackup(String error);
+
+  /// No description provided for @storeResetErrorVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved backup file did not read back correctly, so nothing was reset. Try saving it somewhere else.'**
+  String get storeResetErrorVerify;
+
+  /// No description provided for @storeResetErrorRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'The reset was refused ({error}). Nothing was changed.'**
+  String storeResetErrorRefused(String error);
+
+  /// No description provided for @storeResetErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection dropped before the server answered. The reset may have finished: this is checked automatically the next time the app opens with a connection. Do not start another reset until then.'**
+  String get storeResetErrorUnknown;
+
+  /// No description provided for @storeResetErrorCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'No place was chosen for the backup file, so nothing was reset.'**
+  String get storeResetErrorCancelled;
+
+  /// No description provided for @storeResetResumed.
+  ///
+  /// In en, this message translates to:
+  /// **'A reset started earlier has been finished on this device.'**
+  String get storeResetResumed;
+
+  /// No description provided for @storeResetTableSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get storeResetTableSales;
+
+  /// No description provided for @storeResetTableSaleLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice lines'**
+  String get storeResetTableSaleLines;
+
+  /// No description provided for @storeResetTableSaleReturns.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns'**
+  String get storeResetTableSaleReturns;
+
+  /// No description provided for @storeResetTableSaleReturnLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Return lines'**
+  String get storeResetTableSaleReturnLines;
+
+  /// No description provided for @storeResetTableDebts.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer debts'**
+  String get storeResetTableDebts;
+
+  /// No description provided for @storeResetTableDebtPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt payments'**
+  String get storeResetTableDebtPayments;
+
+  /// No description provided for @storeResetTableLoyalty.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyalty point records'**
+  String get storeResetTableLoyalty;
+
+  /// No description provided for @storeResetTablePointsAdjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers whose points were corrected'**
+  String get storeResetTablePointsAdjusted;
+
+  /// No description provided for @storeResetTableCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get storeResetTableCustomers;
+
+  /// No description provided for @storeResetTableSalesUnlinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices no longer linked to a customer'**
+  String get storeResetTableSalesUnlinked;
+
+  /// No description provided for @storeResetTableExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get storeResetTableExpenses;
+
+  /// No description provided for @storeResetTableJournalEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal entries'**
+  String get storeResetTableJournalEntries;
+
+  /// No description provided for @storeResetTableJournalLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal lines'**
+  String get storeResetTableJournalLines;
+
+  /// No description provided for @storeResetTableProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get storeResetTableProducts;
+
+  /// No description provided for @storeResetTableStockItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock levels'**
+  String get storeResetTableStockItems;
+
+  /// No description provided for @storeResetTableStockMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock history'**
+  String get storeResetTableStockMovements;
+
+  /// No description provided for @storeResetTableCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get storeResetTableCategories;
+
+  /// No description provided for @storeResetTableDiscounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts'**
+  String get storeResetTableDiscounts;
+
+  /// No description provided for @storeResetTablePurchaseOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase orders'**
+  String get storeResetTablePurchaseOrders;
+
+  /// No description provided for @storeResetTablePurchaseOrderLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order lines'**
+  String get storeResetTablePurchaseOrderLines;
+
+  /// No description provided for @storeResetTableTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock transfers'**
+  String get storeResetTableTransfers;
+
+  /// No description provided for @storeResetTableTransferLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock transfer lines'**
+  String get storeResetTableTransferLines;
+
+  /// No description provided for @storeResetTableSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get storeResetTableSuppliers;
+
+  /// No description provided for @storeResetTableSupplierTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier purchases and payments'**
+  String get storeResetTableSupplierTransactions;
+
+  /// No description provided for @storeResetTableShifts.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifts'**
+  String get storeResetTableShifts;
+
+  /// No description provided for @storeResetTableBreaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Breaks'**
+  String get storeResetTableBreaks;
 }
 
 class _AppLocalizationsDelegate

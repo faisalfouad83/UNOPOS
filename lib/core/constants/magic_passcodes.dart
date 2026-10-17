@@ -22,11 +22,7 @@ class MagicPasscodes {
   /// (an ordinary tap or short press never does).
   static const Duration gateHold = Duration(seconds: 3);
 
-  /// Confirmation code required inside Settings to perform a full factory
-  /// reset (wipes the local database and all preferences).
-  static const String factoryReset = '9090';
-
-  /// Employees may not choose either magic sequence as their personal PIN,
-  /// to avoid any ambiguity with these two flows.
-  static bool isReserved(String pin) => pin == developerGate || pin == factoryReset || pin == supportGate;
+  /// Employees may not choose a magic sequence as their personal PIN, to
+  /// avoid any ambiguity with these flows.
+  static bool isReserved(String pin) => pin == developerGate || pin == supportGate;
 }

@@ -20,6 +20,7 @@ import '../core/window/full_screen.dart';
 import '../core/utils/formatters.dart';
 import '../core/widgets/unopos_logo.dart';
 import '../features/auth/domain/session_controller.dart';
+import '../features/backup/data/store_reset_providers.dart';
 import '../features/backup/domain/auto_backup_checker.dart';
 import '../features/licensing/domain/license_watch.dart';
 import '../features/settings/domain/settings_models.dart';
@@ -70,6 +71,8 @@ class _UnoposAppState extends ConsumerState<UnoposApp> with WidgetsBindingObserv
   Future<void> _syncSettingsOnce(String storeId) async {
     if (_settingsSynced) return;
     _settingsSynced = true;
+    // A store reset left half-way, or made on another device, is finished here.
+    unawaited(finishStoreResets(ref, storeId));
     final settings = await ref.read(settingsRepositoryProvider).ensureSettings(storeId);
     if (!mounted) return;
     ref.read(appLocaleProvider.notifier).state = Locale(settings.defaultLanguage);

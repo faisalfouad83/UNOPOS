@@ -2830,4 +2830,272 @@ class AppLocalizationsCkb extends AppLocalizations {
   @override
   String get invPaymentNotPosted =>
       'پارەدانەکە تۆمار کرا، بەڵام تۆماری ژمێریاریەکەی پاشەکەوت نەکرا. ڕۆژنامەکە بپشکنە.';
+
+  @override
+  String get storeResetSubtitle =>
+      'فرۆشتن، کڕیاران، کۆگا یان هەموو شتێک بسڕەوە و لە سەرەتاوە دەست پێبکەرەوە. سەرەتا فایلێکی پاشەکەوت هەڵدەگیرێت و پشکنینی بۆ دەکرێت.';
+
+  @override
+  String get storeResetButton => 'ڕێکخستنەوە…';
+
+  @override
+  String get storeResetChooseTitle => 'دەتەوێت چی ڕێکبخەیتەوە؟';
+
+  @override
+  String get storeResetImpliedNote =>
+      'لەگەڵیدایە: ئەو بەشەی هەڵتبژارد بەبێ ئەمە ناسڕدرێتەوە.';
+
+  @override
+  String get storeResetScopeFull => 'ڕێکخستنەوەی تەواوی فرۆشگا';
+
+  @override
+  String get storeResetScopeFullHelp =>
+      'هەموو تۆمارە بازرگانییەکان: فرۆشتن و پسوولەکان، کڕیاران و قەرزەکان، خەرجییەکان، ژمێریاری، کاڵا و کۆگا، دابینکەران، شیفتەکان و داشکاندنەکان. فرۆشگاکە وەک نوێ دەست پێدەکاتەوە.';
+
+  @override
+  String get storeResetScopeSales => 'فرۆشتن و پسوولەکان';
+
+  @override
+  String get storeResetScopeSalesHelp =>
+      'پسوولە و فرۆشتن هەمان تۆمارن، بۆیە ئەمە هەردووکیان دەسڕێتەوە: هەموو پسوولەیەک (هەڵگیراوەکانیش)، گەڕاندنەوەکانی، ئەو قەرزانەی دروستی کردوون، خاڵەکانی دڵسۆزی کە پێی وەرگیراون یان خەرجکراون، و تۆمارە ژمێرارییەکانی. ڕاپۆرتەکانی فرۆشتن لە سفرەوە دەست پێدەکەنەوە و ژمارەی پسوولەکان لە 1ەوە. بڕی کۆگا ناگۆڕێت.';
+
+  @override
+  String get storeResetScopeDebts => 'قەرزی کڕیاران';
+
+  @override
+  String get storeResetScopeDebtsHelp =>
+      'هەموو قەرزێکی کڕیاران و ئەو پارانەی لەسەری وەرگیراون لەگەڵ تۆمارە ژمێرارییەکانیان دەسڕێتەوە. کڕیاران و پسوولەکان دەمێننەوە؛ ئەو بڕە قەرزەی هەر پسوولەیەک تۆماری کردووە لە تۆمارەکەی خۆیدا دەمێنێتەوە تا تۆمارە ژمێرارییەکان ڕێکدەخرێنەوە.';
+
+  @override
+  String get storeResetScopeExpenses => 'خەرجییەکان';
+
+  @override
+  String get storeResetScopeExpensesHelp =>
+      'هەموو خەرجییەک لەگەڵ تۆماری ژمێرارییەکەی دەسڕێتەوە. ڕاپۆرتی خەرجی، ژمارەکانی قازانج و کۆی پارەی شیفتەکان دەگۆڕێن.';
+
+  @override
+  String get storeResetScopeAccounting => 'تۆمارە ژمێرارییەکان';
+
+  @override
+  String get storeResetScopeAccountingHelp =>
+      'هەموو تۆمارێکی ڕۆژانە دەسڕێتەوە، خەرجییەکانیش: باڵانسی هەژمارەکان، قازانج و زیان و تەرازووی پشکنین لە سفرەوە دەست پێدەکەن. فرۆشتن، قەرز، کۆگا و دابینکەران دەمێننەوە بەبێ تۆمارە ژمێرارییەکانیان. لیستی هەژمارەکان دەمێنێتەوە.';
+
+  @override
+  String get storeResetScopeCustomers => 'کڕیاران';
+
+  @override
+  String get storeResetScopeCustomersHelp =>
+      'هەموو کڕیارێک لەگەڵ مێژووی دڵسۆزی و قەرزەکانیان دەسڕێتەوە. پسوولە کۆنەکانیان دەمێننەوە بەبێ کڕیار.';
+
+  @override
+  String get storeResetScopeInventory => 'کاڵا و کۆگا';
+
+  @override
+  String get storeResetScopeInventoryHelp =>
+      'هەموو کاڵایەک لەگەڵ بڕی کۆگا و مێژووی جوڵەکانی، پۆلەکان، داشکاندنی کاڵا و پۆل، داواکارییەکانی کڕین و گواستنەوەی کۆگا دەسڕێتەوە. هەموو پسوولەکانیش دەسڕێنەوە، چونکە ڕیزەکانی پسوولە ئاماژە بە کاڵاکان دەکەن. دابینکەران و ئەوەی قەرزاریانین دەمێننەوە.';
+
+  @override
+  String get storeResetScopeSuppliers => 'دابینکەران';
+
+  @override
+  String get storeResetScopeSuppliersHelp =>
+      'هەموو دابینکەرێک، ئەو کڕین و پارەدانانەی لەگەڵیان تۆمارکراون، و داواکارییەکانی کڕین لەگەڵ تۆمارە ژمێرارییەکانیان دەسڕێتەوە. ئەو کۆگایەی وەرگیراوە دەمێنێتەوە.';
+
+  @override
+  String get storeResetScopeShifts => 'شیفتەکان';
+
+  @override
+  String get storeResetScopeShiftsHelp =>
+      'شیفتە داخراوەکان و پشووە تەواوبووەکان دەسڕێتەوە. شیفتە کراوەکان و پشووە بەردەوامەکان دەمێننەوە. پسوولەکان دەمێننەوە بەبێ شیفت.';
+
+  @override
+  String get storeResetKeptNote =>
+      'هەمیشە دەمێننەوە: فرۆشگاکە، مۆڵەت و پلانەکەی، لقەکان، کارمەندان و PINەکانیان، ڕێکخستنەکان، ڕێژەی باج، لیستی هەژمارەکان و تۆماری چاودێری.';
+
+  @override
+  String get storeResetConsequencesTitle => 'پێش بەردەوامبوون';
+
+  @override
+  String get storeResetWillRemove =>
+      'ئەمە لە هەموو لقەکان و لەسەر هەموو ئامێرەکان دەسڕێتەوە:';
+
+  @override
+  String get storeResetNothingToRemove =>
+      'هیچ تۆمارێک نییە بۆ سڕینەوە لەوەی هەڵتبژارد.';
+
+  @override
+  String get storeResetBackupNote =>
+      'سەرەتا فایلێکی پاشەکەوت لەم تۆمارانە (و لەو گۆڕانکارییانەی ئەم ئامێرە کە هێشتا نەنێردراون) لەو شوێنەی هەڵیدەبژێریت هەڵدەگیرێت و پشکنینی بۆ دەکرێت. ئەگەر نەتوانرا هەڵبگیرێت و بپشکنرێت، هیچ شتێک ڕێکناخرێتەوە.';
+
+  @override
+  String get storeResetLoadingPreview => 'تۆمارەکان دەژمێردرێن…';
+
+  @override
+  String storeResetFinalTitle(String scopes) {
+    return '$scopes بسڕدرێتەوە؟';
+  }
+
+  @override
+  String get storeResetFinalFull =>
+      'هەموو تۆمارە بازرگانییەکانی ئەم فرۆشگایە لەسەر هەموو ئامێرەکان دەسڕدرێنەوە. لە ئەپەکەوە ناگەڕێندرێتەوە: تەنها فایلی پاشەکەوت دەتوانێت بیانگەڕێنێتەوە.';
+
+  @override
+  String storeResetFinalPartial(String scopes) {
+    return '$scopes لەسەر هەموو ئامێرەکان دەسڕدرێتەوە. لە ئەپەکەوە ناگەڕێندرێتەوە: تەنها فایلی پاشەکەوت دەتوانێت بیگەڕێنێتەوە.';
+  }
+
+  @override
+  String get storeResetConfirmButton => 'پاشەکەوت و سڕینەوە';
+
+  @override
+  String get storeResetSaveDialogTitle => 'پاشەکەوتەکە پێش ڕێکخستنەوە هەڵبگرە';
+
+  @override
+  String get storeResetStageBackup => 'هەڵگرتنی فایلی پاشەکەوت';
+
+  @override
+  String get storeResetStageVerify => 'پشکنینی فایلی پاشەکەوت';
+
+  @override
+  String get storeResetStageServer => 'ڕێکخستنەوەی داتاکان لەسەر ڕاژەکار';
+
+  @override
+  String get storeResetStageLocal => 'ڕێکخستنەوەی داتاکان';
+
+  @override
+  String get storeResetStageCleanup => 'پاککردنەوەی ئەم ئامێرە';
+
+  @override
+  String get storeResetDoneTitle => 'ڕێکخستنەوە تەواو بوو';
+
+  @override
+  String storeResetDoneRemoved(int count) {
+    return '$count تۆمار سڕایەوە یان نوێکرایەوە.';
+  }
+
+  @override
+  String storeResetDoneBackup(String path) {
+    return 'پاشەکەوت هەڵگیرا لە: $path';
+  }
+
+  @override
+  String storeResetDoneDropped(int count) {
+    return '$count گۆڕانکاریی نەنێردراوی ئەم ئامێرە بۆ تۆمارە سڕاوەکان لابران (لە فایلی پاشەکەوتدا هەن).';
+  }
+
+  @override
+  String get storeResetFailedTitle => 'ڕێکخستنەوەکە تەواو نەبوو';
+
+  @override
+  String get storeResetErrorOffline =>
+      'پەیوەندی ئینتەرنێت نییە. داتای فرۆشگاکە لەسەر ڕاژەکارە، بۆیە تەنها بە ئینتەرنێت ڕێکدەخرێتەوە. هیچ شتێک نەگۆڕا.';
+
+  @override
+  String get storeResetErrorUnsent =>
+      'هەندێک گۆڕانکاری لەم ئامێرە هێشتا نەگەیشتوونەتە ڕاژەکار. چاوەڕێ بکە تا دەنێردرێن (شریتی دۆخ ببینە)، پاشان دووبارە هەوڵ بدەرەوە. هیچ شتێک نەگۆڕا.';
+
+  @override
+  String storeResetErrorBackup(String error) {
+    return 'فایلی پاشەکەوت دروست نەکرا یان هەڵنەگیرا ($error). هیچ شتێک نەگۆڕا.';
+  }
+
+  @override
+  String get storeResetErrorVerify =>
+      'فایلی پاشەکەوتی هەڵگیراو بە دروستی نەخوێندرایەوە، بۆیە هیچ شتێک ڕێکنەخرایەوە. هەوڵ بدە لە شوێنێکی تر هەڵیبگریت.';
+
+  @override
+  String storeResetErrorRefused(String error) {
+    return 'ڕێکخستنەوەکە ڕەتکرایەوە ($error). هیچ شتێک نەگۆڕا.';
+  }
+
+  @override
+  String get storeResetErrorUnknown =>
+      'پەیوەندی پچڕا پێش ئەوەی ڕاژەکار وەڵام بداتەوە. لەوانەیە ڕێکخستنەوەکە تەواو بووبێت: جاری داهاتوو کە ئەپەکە بە ئینتەرنێتەوە دەکرێتەوە خۆکارانە دەپشکنرێت. تا ئەو کاتە ڕێکخستنەوەیەکی تر دەست پێمەکە.';
+
+  @override
+  String get storeResetErrorCancelled =>
+      'هیچ شوێنێک بۆ فایلی پاشەکەوت هەڵنەبژێردرا، بۆیە هیچ شتێک ڕێکنەخرایەوە.';
+
+  @override
+  String get storeResetResumed =>
+      'ڕێکخستنەوەیەک کە پێشتر دەستی پێکردبوو لەسەر ئەم ئامێرە تەواو کرا.';
+
+  @override
+  String get storeResetTableSales => 'پسوولەکان';
+
+  @override
+  String get storeResetTableSaleLines => 'ڕیزەکانی پسوولە';
+
+  @override
+  String get storeResetTableSaleReturns => 'گەڕاندنەوەکان';
+
+  @override
+  String get storeResetTableSaleReturnLines => 'ڕیزەکانی گەڕاندنەوە';
+
+  @override
+  String get storeResetTableDebts => 'قەرزی کڕیاران';
+
+  @override
+  String get storeResetTableDebtPayments => 'پارەدانەکانی قەرز';
+
+  @override
+  String get storeResetTableLoyalty => 'تۆمارەکانی خاڵی دڵسۆزی';
+
+  @override
+  String get storeResetTablePointsAdjusted => 'کڕیارانی خاڵەکانیان ڕاستکرایەوە';
+
+  @override
+  String get storeResetTableCustomers => 'کڕیاران';
+
+  @override
+  String get storeResetTableSalesUnlinked => 'پسوولەی بێ کڕیار';
+
+  @override
+  String get storeResetTableExpenses => 'خەرجییەکان';
+
+  @override
+  String get storeResetTableJournalEntries => 'تۆمارە ڕۆژانەکان';
+
+  @override
+  String get storeResetTableJournalLines => 'ڕیزەکانی تۆمار';
+
+  @override
+  String get storeResetTableProducts => 'کاڵاکان';
+
+  @override
+  String get storeResetTableStockItems => 'بڕی کۆگا';
+
+  @override
+  String get storeResetTableStockMovements => 'مێژووی کۆگا';
+
+  @override
+  String get storeResetTableCategories => 'پۆلەکان';
+
+  @override
+  String get storeResetTableDiscounts => 'داشکاندنەکان';
+
+  @override
+  String get storeResetTablePurchaseOrders => 'داواکارییەکانی کڕین';
+
+  @override
+  String get storeResetTablePurchaseOrderLines => 'ڕیزەکانی داواکاریی کڕین';
+
+  @override
+  String get storeResetTableTransfers => 'گواستنەوەکانی کۆگا';
+
+  @override
+  String get storeResetTableTransferLines => 'ڕیزەکانی گواستنەوە';
+
+  @override
+  String get storeResetTableSuppliers => 'دابینکەران';
+
+  @override
+  String get storeResetTableSupplierTransactions =>
+      'کڕین و پارەدانی دابینکەران';
+
+  @override
+  String get storeResetTableShifts => 'شیفتەکان';
+
+  @override
+  String get storeResetTableBreaks => 'پشووەکان';
 }
